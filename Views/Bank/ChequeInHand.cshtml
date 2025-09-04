@@ -1,0 +1,377 @@
+﻿@{
+    ViewBag.Title = "ChequeInHand";
+}
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+@*<script src="../../Scripts/custom.js" type="text/javascript"></script>*@
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+@model IEnumerable<XenERP.Models.ReceiptPayment>
+
+
+@{
+    
+    ViewBag.Title = "Cheque In Hand List";
+    int SlNo = 0;
+
+    decimal Totalopening = 0;
+    //  int id = ViewBag.bankid;
+    decimal? totalsellrate = 0;
+}
+<style type="text/css">
+.input-group.date.recondateclass {
+    margin-left: 3px;
+    margin-top:2px;
+    margin-bottom:3px;
+    width: 96%;
+}
+.table-striped tr td input { height:31px!important; }
+
+</style>
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+    
+         var Culture="@Session["DateCulture"]";
+
+        $(".recondateclass").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnreconcile").on("click", function () {
+            var countchk = 0;
+            var countchkerr = 0;
+            var countchkerrd = 0;
+            $("input:checkbox[class=Bankreconcile]:checked").each(function () {
+                countchk = countchk + 1;
+                var comptd = $(this).closest('td');
+                var comptr = comptd.closest('tr');
+                var depositat = comptr.find('.clearance');
+                var depositatval = depositat.val();
+                var depositto = comptr.find('.dbank');
+                var deposittoval = depositto.val();
+                if (depositatval == "") {
+                    countchkerr = countchkerr + 1;
+                    depositat.addClass('input-red-shadow');
+                }
+                if (deposittoval == "") {
+                    countchkerrd = countchkerrd + 1;
+                    depositto.addClass('input-red-shadow');
+                }
+
+                //    return false;
+
+            });
+            // alert(countchk);
+            if (countchk == 0) {
+                alert("Please Select Atleast One Check");
+                return false;
+            }
+            if (countchkerr > 0) {
+                alert("Please Give Cheque Deposit On Date.");
+                return false;
+            }
+            if (countchkerrd > 0) {
+                alert("Please Choose Bank where cheque is Deposit To.");
+                return false;
+            }
+
+
+            var rpid = "";
+            var Bankid = "";
+            var Cldate = "";
+
+            $("input:checkbox[class=Bankreconcile]:checked").each(function () {
+
+               
+                var comptd = $(this).closest('td');
+                var comptr = comptd.closest('tr');
+                var depositat = comptr.find('.clearance').val();
+                var depositto = comptr.find('.dbank').val();
+
+               
+
+                if (rpid == "") {
+
+                    rpid = $(this).val();
+                    Bankid = depositto;
+                    Cldate = depositat;
+                }
+
+                else {
+                    rpid = rpid + "," + $(this).val();
+                    Bankid = Bankid + "," + depositto;
+                    Cldate = Cldate + "," + depositat;
+                }
+
+               
+
+            });
+
+                    
+
+
+            if (Cldate == "" || Bankid == "" || rpid == "") {
+
+                alert("Please select");
+                return false;
+
+
+            }
+
+            else {
+
+                $.post("/Bank/SendForClearance", { id: rpid, bank: Bankid, date: Cldate }, function (data) {
+
+
+
+                    if (data == "insert") {
+
+
+                        alert("Cheque/DD Deposited to Bank successfully..");
+                        window.location.href = "/Bank/ChequeInHand";
+                    }
+                    else {
+
+                        alert("Error:Please Try Agian..");
+
+                    }
+
+                });
+            }
+
+
+
+        });
+
+    });
+
+
+</script>
+@if (Model.Count() > 0)
+{
+    
+    <aside class="right-side">
+
+     <section  class="content-header">
+                    <h1>
+                   Deposit Cheque/DD In Hand <small>To Bank</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                   <!-- Main content -->
+                <section class="content">
+            
+                    <div class="row top-mar">
+                      
+                           
+                                <div class="col-md-12">
+                                  <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+              <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    
+                        <th>
+                  
+                        </th>
+                        
+                        <th>
+                 Party
+                        </th>
+                        <th>
+                  Cheque No
+                        </th>
+                      <th>
+                     Cheque Date
+                      </th>
+
+                        <th>
+                 Cheque Details
+                        </th>
+
+                        <th>
+                   Amount
+                        </th>
+                      
+
+
+                      
+                      
+                      
+
+                        <th>
+                        Deposited On
+                       </th>
+
+                      <th>
+                 Deposited To
+                        </th>
+                   
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+
+                        SlNo = SlNo + 1;
+                      
+                        
+                        <tr>
+
+                        <td align="center">
+                         @if (DateTime.Now >= item.chequeDate)
+                         {
+                      <input type="checkbox" id="reconcile" class="Bankreconcile" value="@item.Id" name="reconcile" />
+                         }
+                         @* </td>
+                              <td align="left">   
+                            Voucher No. @Html.DisplayFor(modelItem => item.VoucherNo) &nbsp; Dated : @String.Format(Session["DateFormatUpper"].ToString(),item.RPdate)
+                     
+                            </td>*@
+                             </td>
+                              <td align="left">   
+                            @Html.DisplayFor(modelItem => item.transactionType)
+                     
+                            </td>
+                            <td align="left">   
+                                 @Html.DisplayFor(modelItem => item.chequeNo)
+                     
+                            </td>
+                               
+
+                            <td align="left">   
+                            @if (DateTime.Now >= item.chequeDate)
+                            {
+                   <span style="color:Green;">      @String.Format(Session["DateFormatUpper"].ToString(), item.chequeDate)</span>
+                            }
+                            else
+                            {
+                                   @String.Format(Session["DateFormatUpper"].ToString(), item.chequeDate)
+                            }
+                            
+                            </td>
+                           
+                            
+
+                          
+                                           
+                               
+                      
+                             
+                            <td align="left" width="20%"> 
+                          @Html.DisplayFor(modelItem => item.chequeDetails)
+                     
+
+                          </td>
+                         
+                            
+                                   
+                        <td align="right"> 
+                         @Html.DisplayFor(modelItem => item.RPBankAmount)
+                     
+
+                        </td>
+                       
+                        
+                            <td width="15%">
+                          
+                 <div class="input-group date recondateclass" data-date-format="@Session["DateFormatLower"]" id="@String.Concat("Recon", @SlNo)">  <input type="text" readonly="readonly" class = "form-control clearance" id="ReconDate" name="ReconDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+                        </td>   
+                         <td>
+                                @Html.DropDownListFor(modelItem => item.RPBankId, new SelectList(ViewBag.Bank, "Id", "Name"), "-----Select a Bank----", new { @class = "form-control dbank" })
+
+
+                            </td>
+                           
+                        
+                       
+                                   
+                                   
+  
+                        </tr>
+                        
+                        
+                    }
+                </tbody>
+     
+   
+            </table>
+
+            <br />
+            <br />
+
+
+            <table>
+            <tr>
+              <td>
+                            <input type="button" id="btnreconcile"class="btn btn-primary" value="Deposit Cheque" />
+                            </td>
+                                      
+            </tr>
+            </table>
+
+            </div>
+            </div>
+
+            </div>
+            </div>
+            </div>
+            </section>
+            </aside>
+}
+else
+{
+    <aside class="right-side">
+              <div class="box">
+        <div class="box-body table-responsive">
+           @Html.Raw("Sorry...Data Not Found")
+    </div>
+    </div>
+    </aside>
+}
+

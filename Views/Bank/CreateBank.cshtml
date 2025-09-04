@@ -1,0 +1,279 @@
+﻿@model XenERP.Models.Bank
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<title>New Bank</title>
+
+
+<script type="text/javascript" language="javascript">
+
+    $(document).ready(function () {
+
+
+
+
+        $("#LId").on("click", function () {
+            var lid = $("#LId").val();
+            if (lid != '') {
+                $.get("/Bank/GetOpeningBalance", { LId: lid }, function (data) {
+                    $("#OpeningBalance").val(data);
+
+                });
+            }
+            else {
+                $("#OpeningBalance").val('0.0');
+            }
+        });
+
+
+
+
+        $("#btnsubmit").on("click", function () {
+
+
+
+            if ($("#Name").val() == "") {
+                alert("Please enter bank name");
+                return false;
+            }
+
+            if ($("#OpeningBalance").val() == "") {
+                alert("Please enter Opening Balance");
+                return false;
+            }
+        });
+
+    });
+
+  </script>
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Bank   <small>Master Entry</small>                    
+                    </h1>
+                    @*<ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>*@
+                </section>
+
+
+
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+    
+                <section class="content">
+
+
+                 
+           
+
+
+
+
+
+                    <div class="row">
+         
+                                  
+                <!-- Main content -->
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                                   <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                    
+                
+                                           
+                           
+                                   <div class="box-body">
+                                       
+@*
+                                         <div class="form-group">
+                                          <label class="black_txt_010">
+                   Bank Code</label>
+                   
+  @Html.TextBoxFor(model => model.Code, new { @class = "form-control", @Maxlength = "50" })               
+
+
+                        </div>*@
+                                  
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                      Bank Name<span style="color:Red;">*</span></label>
+               @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @Maxlength="100" })               
+
+
+             
+                                        </div>
+
+
+
+
+                                        
+
+                                                    <div class="form-group">
+                                          <label class="black_txt_010">
+              Bank Type</label>
+                 
+                  
+                 
+  @Html.TextBoxFor(model => model.Type, new { @class = "form-control", @Maxlength = "100" })     
+                 
+                                      
+                                         </div>
+                                         
+
+                                         
+                                           <div class="form-group">
+                                          <label class="black_txt_010">
+                   Description</label>
+                  
+                 
+  @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })     
+                 
+                                      
+                                         </div>
+
+
+                                           <div class="form-group">
+                                          <label class="black_txt_010">
+                   Address</label>
+                  
+                    
+  @Html.TextAreaFor(model => model.Address, new { @class = "form-control" })        
+                                         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        </div>
+                                        </div>
+                                       </div> 
+
+                                        
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                                    <div class="form-group">
+                                          <label class="black_txt_010">
+              Account Name</label>
+                 
+                  
+                 
+  @Html.TextBoxFor(model => model.Type, new { @class = "form-control",@onkeypress="return Character(event)", @Maxlength = "100" })     
+                 
+                                      
+                                         </div>
+
+
+
+                                            <div class="form-group">
+                                          <label class="black_txt_010">
+              Account Number</label>
+                 
+                  
+                 
+  @Html.TextBoxFor(model => model.AccountNo, new { @class = "form-control", @onkeypress = "return Numeric(event)", @Maxlength = "30" })     
+                 
+                                      
+                                         </div>
+
+                                             <div class="form-group">
+                                          <label class="black_txt_010">
+                  Ledger Name :<span style="color:Red;">*</span></label>
+
+               
+                                   @Html.DropDownListFor(model => model.LId, new SelectList(ViewBag.ledger, "Id", "Name"), "-----Select a Ledger----", new { @class = "form-control" })
+
+                 @Html.ValidationMessageFor(model => model.LId)
+
+                                      
+                                     
+                                    </div>
+                                         
+
+                                            <div class="form-group">
+                                          <label class="black_txt_010">
+           Opening Balance<span style="color:Red;">*</span></label>
+                 
+                  
+                 
+  @Html.TextBoxFor(model => model.OpeningBalance, new { @class = "form-control", @Maxlength = "20",@readonly="readonly" })     
+                    @Html.ValidationMessageFor(model => model.OpeningBalance)
+                                      
+                                         </div>
+
+
+                                         
+                                         
+
+                                            <div class="form-group">
+                                          <label class="black_txt_010">
+          Active </label>
+                 
+                  
+                 
+  @Html.CheckBoxFor(model => model.Active, new { @class = "form-control" ,@checked="checked"})     
+                 
+                                      
+                                         </div>
+                                    
+                                  
+
+                                     </div>
+                                     </div>
+                                     </div>
+                                
+                                    
+
+                         
+                    </div>   
+                 
+                
+
+              </section>
+        
+        
+        </aside>
+        
+        
+        
+        
+}

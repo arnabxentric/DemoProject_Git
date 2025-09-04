@@ -1,0 +1,695 @@
+﻿@model XenERP.Models.Company
+@{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+
+@{
+    
+    var compid=Session["companyid"];
+    ViewBag.Title = "Xpert | Edit Company";
+}
+
+
+
+
+<script type="text/javascript" language="javascript">
+
+    $(document).ready(function () {
+
+
+        $('.iCheck-helper').click(function () {
+
+            var parent = $(this).parent().get(0);
+            var checkboxId = parent.getElementsByTagName('input')[0].id;
+
+
+
+
+            if ($('input[name="chkpostal"]:checked').length > 0) {
+
+
+                $("#PostalCountryId").val($("#CountryId").val());
+
+
+                $("#PostalStateId").val($("#StateId").val());
+
+
+
+                $("#PostalCity").val($("#City").val());
+
+                $("#PostalAddress").val($("#Address").val());
+
+
+                $("#PostalZipcode").val($("#Zipcode").val());
+
+            }
+
+            if ($('input[name="chkpostal"]:checked').length == 0) {
+                $("#PostalCountryId").val("");
+
+
+                $("#PostalStateId").val("");
+
+
+
+                $("#PostalCity").val("");
+
+                $("#PostalAddress").val("");
+
+
+                $("#PostalZipcode").val("");
+            }
+
+
+
+        });
+
+
+
+
+    });
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#productimg").change(function () {
+        readURL(this);
+    });
+
+
+</script>
+
+
+
+
+
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+
+
+@using (Html.BeginForm("EditCompany", "Start", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Company   <small>Edit</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+               
+                   <section class="content">
+                <!--3-7-2014-->
+                 <div class="container2">
+                 	<div class="setup-steps">
+                    <input type="hidden" value="setup" name="setcompany" id="setcompany" />
+                    	<ul>
+                        
+                      
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>
+                            <li class="selected">Organization Settings</li>
+                            <li>Financial Settings</li>
+                          @*  <li>Currencies</li>
+                             <li>Tax Rates</li>*@
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+                    
+             
+                 </div>
+					<!--3-7-2014 END --> 
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#tab_1" data-toggle="tab">Details</a></li>
+                                    <li><a href="#tab_2" data-toggle="tab">Address</a></li>
+                                      <li><a href="#tab_3" data-toggle="tab">Contact</a></li>
+                           @*             <li><a href="#tab_4" data-toggle="tab">Logo</a></li>
+                                    *@
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                                                     
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                       
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Company Name :<span style="color:Red;">*</span></label>
+
+                   @Html.HiddenFor(d => d.Id)
+                     @Html.HiddenFor(d => d.Userid)
+                   @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Company Name" })
+                 @Html.ValidationMessageFor(model => model.Name)
+
+                                      
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                                Company Dispaly Name:</label>
+                                    @Html.TextBoxFor(model => model.CompanyDisplayName, new { @class = "form-control", @placeholder = "Enter Company Display Name" })
+                                      @Html.ValidationMessageFor(model => model.CompanyDisplayName)
+
+                                  
+                                    </div>
+
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                                Bussiness Line:</label>
+                                    @Html.TextBoxFor(model => model.BusinessLine, new { @class = "form-control", @placeholder = "Enter Bussiness Line" })
+
+                                    </div>
+
+
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Organization Type:</label>
+                                 @Html.DropDownList("CompanyType", ViewData["list"] as SelectList, new { @class = "form-control" })
+
+                                    </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description:</label>
+                                    @Html.TextAreaFor(model => model.CompanyDescription, new { @class = "form-control", @placeholder = "Enter Description" })
+
+                                    </div>
+
+
+
+
+                                                                        </div>
+                                    </div>
+                                    </div>
+
+
+
+
+
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+              Base Currency :<span style="color:Red;">*</span></label>
+
+             
+
+                                            
+                <input type="text" id="Currency" name="Currency" readonly="readonly" class = "form-control" value="@ViewBag.cur" />
+                
+                    
+           @Html.HiddenFor(model => model.CurrencyId)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               GST/VAT No. :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.GST_VATNumber, new { @class = "form-control", @placeholder = " GST/VAT No." })
+                                  @Html.ValidationMessageFor(model => model.GST_VATNumber)
+
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Website:</label>
+                                    @Html.TextBoxFor(model => model.Website, new { @class = "form-control", @placeholder = "Enter Website" })
+                                      @Html.ValidationMessageFor(model => model.Website)
+
+                                    </div>
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             TIN No:</label>
+                                    @Html.TextBoxFor(model => model.TANNO, new { @class = "form-control", @placeholder = "Enter TAN No." })
+                                        @Html.ValidationMessageFor(model => model.TANNO)
+
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             PAN No:</label>
+                                    @Html.TextBoxFor(model => model.PANNO, new { @class = "form-control", @placeholder = "Enter PAN No." })
+                                    @Html.ValidationMessageFor(model => model.PANNO)
+
+                                    </div>
+
+
+                                    
+
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+                                      Date Format:</label>
+                                 @Html.DropDownList("Dateformat", ViewData["format"] as SelectList, new { @class = "form-control" })
+                                    </div>
+
+
+
+                                         </div>
+                                    </div>
+                                    </div>
+
+
+
+                         
+                                        </div>   
+                                        
+                                        </div>
+                                    <div class="tab-pane" id="tab_2">
+                                                <div class="row">         
+      <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                        
+                   <h4>Postal Address </h4>
+
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Country :<span style="color:Red;">*</span></label>
+
+            
+                   @Html.TextBoxFor(model => model.CountryId, new { @class = "form-control", @placeholder = "Enter Country" })
+                                      @Html.ValidationMessageFor(model => model.CountryId)
+
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              State :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.StateId, new { @class = "form-control", @placeholder = "Enter State" })
+                                   @Html.ValidationMessageFor(model => model.StateId)
+
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             City:</label>
+                                    @Html.TextBoxFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })
+                                                                        @Html.ValidationMessageFor(model => model.City)
+
+                                    </div>
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Address:</label>
+                                    @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @placeholder = "Enter Address" })
+                                       </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Zip Code:</label>
+                                    @Html.TextBoxFor(model => model.Zipcode, new { @class = "form-control", @placeholder = "Enter Zip Code" })
+                                      @Html.ValidationMessageFor(model => model.Zipcode)
+
+
+                                    </div>
+
+
+
+
+
+
+
+                 
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                                                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                                                           
+                <h4>Physical Address </h4> 
+
+                @if (ViewBag.postal==true)
+                {
+                           
+                                <input type="checkbox" checked="checked"  class="chk" id="chkpostal" name="chkpostal" />
+                }
+                
+                else
+                {
+                
+                   <input type="checkbox"  class="chk" id="chkpostal2" name="chkpostal" />
+                }
+                           
+                            [Same as Postal Address]   
+
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Country :<span style="color:Red;">*</span></label>
+
+             
+                   @Html.TextBoxFor(model => model.PostalCountryId, new { @class = "form-control", @placeholder = "Enter Country" })
+                 @Html.ValidationMessageFor(model => model.PostalCountryId)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              State :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.PostalStateId, new { @class = "form-control", @placeholder = "Enter State" })
+                                           @Html.ValidationMessageFor(model => model.PostalStateId)
+            
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             City:</label>
+                                    @Html.TextBoxFor(model => model.PostalCity, new { @class = "form-control", @placeholder = "Enter City" })
+                                      @Html.ValidationMessageFor(model => model.PostalCity)
+            
+                                    </div>
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Address:</label>
+                                    @Html.TextAreaFor(model => model.PostalAddress, new { @class = "form-control", @placeholder = "Enter Address" })
+                                       @Html.ValidationMessageFor(model => model.PostalAddress)
+            
+                                    </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Zip Code:</label>
+                                    @Html.TextBoxFor(model => model.PostalZipcode, new { @class = "form-control", @placeholder = "Enter Zip Code" })
+                                     @Html.ValidationMessageFor(model => model.PostalZipcode)
+            
+                                    </div>
+                                    
+
+
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>            
+                                     <div class="tab-pane" id="tab_3">
+                                                <div class="row">         
+      <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Contact Number :<span style="color:Red;">*</span></label>
+
+             
+                   @Html.TextBoxFor(model => model.ContactNumber, new { @class = "form-control", @placeholder = "Enter  Contact Number " })
+                 @Html.ValidationMessageFor(model => model.ContactNumber)
+            
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Email Id :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.EmailId, new { @class = "form-control", @placeholder = "Enter   Email Id " })
+                                  @Html.ValidationMessageFor(model => model.EmailId)
+            
+                                        
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Fax:</label>
+                                    @Html.TextBoxFor(model => model.Fax, new { @class = "form-control", @placeholder = "Enter Fax" })
+                                      @Html.ValidationMessageFor(model => model.Fax)
+            
+                      
+                                    </div>
+
+
+                                    
+                                                            
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                   
+                                  
+                                         <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+               
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Purchase Email :</label>
+
+             
+                   @Html.TextBoxFor(model => model.PurchaseEmailId, new { @class = "form-control", @placeholder = "Enter  Purchase Email" })
+                             @Html.ValidationMessageFor(model => model.PurchaseEmailId)
+            
+                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Sales Email :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.SalesEmailId, new { @class = "form-control", @placeholder = "Enter Sales Email " })
+               @Html.ValidationMessageFor(model => model.SalesEmailId)
+            
+                      
+                                                     
+                                     
+                                    </div>
+
+
+
+                                         
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+                                      <div class="tab-pane" id="tab_4">
+                                                <div class="row">         
+                          <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                        </div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                       
+                       @*             <div class="form-group">
+                                          <label class="black_txt_010">
+           Logo :</label>
+
+            
+
+<input  type="file"  id="productimg" onchange="readURL(this);" name="productimg" accept="image/*" /> 
+
+@if (ViewBag.image != null)
+{
+   <img  style="width:224px;height:112px;" id="blahh" src="@Url.Content("~/Companyimages/" + Model.CompanyLogo)" alt="Logo not found"  /> 
+}  <br />       
+                       <img  style="width:224px;height:112px;" id="blah" src="#" alt="Logo" />   <br />         
+                        <span class="image-text" style="color:Red;">Supported image formats are: .jpg, .jpeg, .png, .gif, .bmp</span>
+                
+                                      
+                                     
+                                    </div>
+                                    
+
+
+*@
+
+                                    
+                                                            
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                  
+                        
+                                          </div>
+                                         </div>
+
+
+                                         </div>
+                                         </div>
+                                         </div> 
+                                       
+                         
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("Next", "Start")"><span>Back</span></a></span></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("CreateFinancial", "Start")"><span>Next</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                  
+                        </section>
+                      
+                        </aside>
+    
+     
+}
+        @* <a href="@Url.Action("CreateFinancial", "Start")"><span>Next</span></a>*@
+                       
+                         

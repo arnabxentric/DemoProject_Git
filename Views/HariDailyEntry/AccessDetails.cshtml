@@ -1,0 +1,156 @@
+﻿@model XenERP.Models.EntryAccess
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<title>New Bank</title>
+
+
+
+
+
+@using (Html.BeginForm("AccessDetails", "HariDailyEntry", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+
+
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                Daily Entry Access
+            </h1>
+            @*<ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li><a href="#">Forms</a></li>
+                    <li class="active">General Elements</li>
+                </ol>*@
+        </section>
+
+
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+
+                <li class="pull-right">
+                    <input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+
+                </li>
+            </ul>
+
+        </div>
+
+
+        <section class="content">
+
+            <div class="row">
+
+
+                <!-- Main content -->
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <div class="box-header">
+
+                        </div>
+                        <div class="box-body">
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Branch Name<span style="color:Red;">*</span>
+                                </label>
+                                @Html.TextBoxFor(model => model.BranchName, new { @class = "form-control", @Maxlength = "100" })
+                                @Html.HiddenFor(m => m.AccessId)
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Entry Active Linesman<span style="color:Red;">*</span>
+                                </label>
+                                @Html.TextBoxFor(model => model.BranchLinsman, new { @class = "form-control", @Maxlength = "100" })
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Edit Active Linesman<span style="color:Red;">*</span>
+                                </label>
+                                @Html.TextBoxFor(model => model.EditLinsman, new { @class = "form-control", @Maxlength = "100" })
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Linesman Name :<span style="color:Red;">*</span>
+                                </label>
+
+
+                                @Html.DropDownListFor(model => model.LinsId, new SelectList(ViewBag.linesMan, "Value", "Text"), "----Select Linesman----", new { @class = "form-control" })
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+
+                        </div>
+                        <div class="box-body">
+
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Entry Access Status :<span style="color:Red;">*</span>
+                                </label>
+
+
+                                @Html.DropDownListFor(model => model.EntryStatus, new SelectList(ViewBag.status, "Value", "Text", Model.EntryStatus), "----Select Status----", new { @class = "form-control" })
+
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Edit Access Status :<span style="color:Red;">*</span>
+                                </label>
+
+
+                                @Html.DropDownListFor(model => model.EditStatus, new SelectList(ViewBag.status, "Value", "Text", Model.EditStatus), "----Select Status----", new { @class = "form-control" })
+
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Sales Access Status :<span style="color:Red;">*</span>
+                                </label>
+
+
+                                @Html.DropDownListFor(model => model.SalesStatus, new SelectList(ViewBag.status, "Value", "Text", Model.SalesStatus), "----Select Status----", new { @class = "form-control" })
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </section>
+
+
+    </aside>
+
+
+
+
+}

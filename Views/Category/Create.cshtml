@@ -1,0 +1,251 @@
+﻿@model XenERP.Models.Category
+
+@{
+    
+    int slno = 0;    
+    
+}
+  <!-- DATA TABES SCRIPT -->
+       
+    <script type="text/javascript">
+        $(function () {
+         
+            $('#example1').dataTable({
+                "bPaginate": true,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": true,
+                "bInfo": true,
+                "bAutoWidth": false
+            });
+        });
+        </script>
+ <script type="text/javascript">
+ $(document).ready(function(){
+     $("form").on("submit", function (event) {
+        
+         var isValid = $(this).valid();
+
+         if (isValid) {
+
+             $("#loading").fadeIn();
+             var opts = {
+                 lines: 12, // The number of lines to draw
+                 length: 7, // The length of each line
+                 width: 4, // The line thickness
+                 radius: 10, // The radius of the inner circle
+                 color: '#000', // #rgb or #rrggbb
+                 speed: 2.0, // Rounds per second
+                 trail: 60, // Afterglow percentage
+                 shadow: false, // Whether to render a shadow
+                 hwaccel: false // Whether to use hardware acceleration
+             };
+             var target = document.getElementById('loading');
+             var spinner = new Spinner(opts).spin(target);
+         }
+
+         else {
+
+             $("#btnsave").show();
+         }
+
+
+     });
+
+
+ });
+
+ $(document).ready(function () {
+     $("a.item-link").click(function (event) {
+         event.preventDefault(); // Stop the browser from redirecting as it normally would
+         //         $.get(this.href, function (response) {
+         //             // Do whatever you want with the data.
+         //         });
+      
+         $("#loading").fadeIn();
+         var opts = {
+             lines: 12, // The number of lines to draw
+             length: 7, // The length of each line
+             width: 4, // The line thickness
+             radius: 10, // The radius of the inner circle
+             color: '#000', // #rgb or #rrggbb
+             speed: 2.0, // Rounds per second
+             trail: 60, // Afterglow percentage
+             shadow: false, // Whether to render a shadow
+             hwaccel: false // Whether to use hardware acceleration
+         };
+         var target = document.getElementById('loading');
+         var spinner = new Spinner(opts).spin(target);
+         location.href = this.href;
+     });
+ });
+ </script>
+    @using (Html.BeginForm(new { @role = "form" }))
+    {
+                                @Html.ValidationSummary(true)
+   <aside class="right-side">
+<!-- Content Header (Page header) -->
+<section class="content-header">
+                    <h1>
+                        Product Category
+                        <small>Master</small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">Product Category</li>
+                    </ol>
+                </section>
+                  <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    
+<!-- Main content -->
+<section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3 class="box-title">Add/Edit Category</h3>
+                                </div><!-- /.box-header -->
+                                <!-- form start -->
+                             
+                                    <div class="box-body">
+
+
+       @if (ViewBag.Message != null)
+       {
+           string message = ViewBag.Message;
+           if (message == "Success")
+           {
+                     <div class="alert alert-success alert-dismissable">
+                                    <i class="fa fa-check"></i>
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     Insert/Update Success.
+                     </div>
+           }
+           else
+           {
+                     <div class="alert alert-danger alert-dismissable">
+                                    <i class="fa fa-ban"></i>
+                                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                                    <b>Error!</b>
+                                     @message
+                    </div>
+           }
+       }
+
+
+
+
+
+                                        <div class="form-group">
+                                            <label for="name">Category Name</label>
+                                          
+                                              @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Category Name" })
+                                              @Html.ValidationMessageFor(model => model.Name)
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Under">Under Category</label>
+                                               @Html.DropDownListFor(model => model.GId, new SelectList(ViewBag.ddlCategories, "Id", "Name"), new { @class = "form-control" })
+                                        </div>
+                                       
+                                    </div><!-- /.box-body -->
+                                    <div id="loading">
+                                    <div id="loadingcontent">
+                                         <p id="loadingspinner">
+                                          Loading...
+                                      </p>
+                                     </div>
+                                    </div>
+                                   @* <div class="box-footer">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>*@
+                              
+                            </div><!-- /.box -->
+
+                            
+
+                        </div><!--/.col (left) -->
+                        <!-- right column -->
+                      
+                           <div class="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3 class="box-title">List of Categories</h3>
+                                </div><!-- /.box-header -->
+                                <div class="box-body table-responsive">
+
+                        <table id="example1" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                    
+            <th>
+              SR. No.
+            </th>
+            <th>
+               Category Name
+            </th>
+           
+            <th>
+            </th>
+            @* <th>
+            </th>*@
+            
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                             @foreach (XenERP.Models.Category item in @ViewBag.Categories)
+                                             {
+                                                 slno = slno + 1;
+                                                 
+                                                 
+                                                 
+        <tr>
+           <td>@slno</td>
+           
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            
+           
+            <td>
+            <i class="fa fa-fw fa-edit"></i>
+                @Html.ActionLink("Edit", "Create", new { id = item.Id }, new { @class = "item-link" }) 
+                
+            </td>
+          @*  <td>
+              
+             <i class="fa fa-fw fa-times-circle"></i>
+                @Html.ActionLink("Delete", "DeleteTax", new { id = item.Id })
+            </td>*@
+           
+        </tr>
+                                      
+                                                 
+                                                 
+                                             }
+                                               </tbody>
+                                       
+                                    </table>
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                           
+                        </div><!--/.col (right) -->
+                    </div>   <!-- /.row -->
+                      @*<div class="footerdynamic">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                              </div>*@
+                </section>
+<!-- /.content -->
+</aside>
+        
+    }

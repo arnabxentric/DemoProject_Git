@@ -1,0 +1,477 @@
+﻿@model XenERP.Models.ConsolidatedInvoice
+@{
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+<script src="../../Chart/highcharts.js" type="text/javascript"></script>
+<script src="../../Chart/exporting.js" type="text/javascript"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/jQuery.print.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1',
+                                                                 'packages':['corechart']}]}">
+</script>
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function ($) {
+
+
+
+
+        $('#print').click(function () {
+
+            var CustomerId = $("#CustomerId").val();
+            var InvoiceNo = $("#InvoiceNo").val();
+            var DateStr = $("#DateStr").val();
+            var StartInvoiceId = $("#StartInvoiceId").val();
+            var EndInvoiceId = $("#EndInvoiceId").val();
+
+            if (CustomerId == 0) {
+                alert("Customer Name cannot be blank");
+                return false;
+            }
+
+
+
+            if (StartInvoiceId == "") {
+
+                alert("Start InvoiceId cannot be blank");
+                return false;
+            }
+            if (EndInvoiceId == "") {
+
+                alert("End InvoiceId cannot be blank");
+                return false;
+            }
+
+            if (InvoiceNo == "") {
+
+                alert("InvoiceNo cannot be blank");
+                return false;
+            }
+
+
+            //if (parseInt(StartInvoiceId) > parseInt(EndInvoiceId)) {
+             
+            //    alert("Start InvoiceId cannot be greater than End InvoiceId");
+            //    return false;
+            //}
+            window.location.href = "/ConsolidatedInvoice/PrintConsolidatedInvoice?CustomerId=" + CustomerId + "&&StartInvoiceId=" + StartInvoiceId + "&&EndInvoiceId=" + EndInvoiceId + "&&InvoiceNo=" + InvoiceNo + "&&DateStr=" + DateStr;
+
+        });
+
+    });
+    
+
+
+</script>
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#remove').click(function () {
+
+
+            $('#CustomerDetails').show();
+
+
+        });
+
+
+
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading
+    {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+    
+    .ErrorControl
+    {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+    
+    .pad
+    {
+        width: 100% !important;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+       $("#loader").hide();
+
+         var Culture="@Session["DateCulture"]";
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true,language:Culture});
+
+
+        $("#graph").hide();
+
+
+        $('#btnsubmit').click(function () {
+
+
+
+            var CustomerId=$("#CustomerId").val();
+            var InvoiceNo=$("#InvoiceNo").val();
+            var DateStr=$("#DateStr").val();
+            var StartInvoiceId=$("#StartInvoiceId").val();
+            var EndInvoiceId=$("#EndInvoiceId").val();
+
+            if(CustomerId==0)
+            {
+              alert("Customer Name cannot be blank");
+              return false;
+            }
+
+
+
+            if(StartInvoiceId=="")
+            {
+
+            alert("Start InvoiceId cannot be blank");
+            return false;
+            }
+             if(EndInvoiceId=="")
+            {
+
+            alert("End InvoiceId cannot be blank");
+            return false;
+            }
+            
+            if(InvoiceNo=="")
+            {
+
+            alert("InvoiceNo cannot be blank");
+            return false;
+            }
+
+
+            //if(parseInt(StartInvoiceId) > parseInt(EndInvoiceId))
+            //{
+            //    alert("Start InvoiceId cannot be greater than End InvoiceId");
+            //return false;
+            //}
+
+            //else
+            //{
+            
+
+            // $("#btnshow").hide();  
+                     
+            //$("#loader").show();
+
+            $.get("/ConsolidatedInvoice/GenerateConsolidatedInvoice", {  CustomerId: CustomerId,StartInvoiceId: StartInvoiceId, EndInvoiceId: EndInvoiceId,InvoiceNo:InvoiceNo,DateStr:DateStr }, function (data) {
+
+
+          
+                $("#btnshow").show();        
+                $("#loader").hide();
+                $("#CustomerDetails").css("display", "block");
+                $("#CustomerDetails").html(data);                
+                
+
+                 
+
+            });
+
+           // }
+
+        });
+
+    });
+
+
+</script>
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#txtcustomer').autocomplete({
+
+            source: function (request, response) {
+                $.ajax({
+                    url: '/SalesReport/getCustomer',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+
+                $('#txtcustomer').val(ui.item.label);
+                $('#CustomerId').val(ui.item.value);
+
+                $.get('/ConsolidatedInvoice/getCustomerInvoice', { 'id': ui.item.value }, function (data, status) {
+
+                    //$('#txtcustomer').val(data.Name);
+
+                    var select = $("#StartInvoiceId");
+                    select.empty();
+                    //                select.append($('<option/>', {
+                    //                    value: "",
+                    //                    text: "--Select--"
+                    //                }));
+
+                    $.each(data, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Id,
+                            text: itemData.NO
+                        }));
+                    });
+
+                    var select = $("#EndInvoiceId");
+                    select.empty();
+                    //                select.append($('<option/>', {
+                    //                    value: "",
+                    //                    text: "--Select--"
+                    //                }));
+
+                    $.each(data, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Id,
+                            text: itemData.NO
+                        }));
+
+                        if (data[0].InvoiceNo != '') {
+                            $('#InvoiceNo').val(data[0].InvoiceNo);
+                        }
+                    });
+                });
+
+                return false;
+            },
+            minLength: 1
+        });
+
+
+    });
+
+
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+
+    
+
+    
+        
+          <section  class="content-header">
+                    <h1>
+                   Create Consolidated Invoice  <small></small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                
+            
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                 <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                 
+                                    <li class="pull-right"></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-12">
+                                <div class="box box-primary">
+                              
+                                   <div class="box-body">
+                                       
+                                       
+                          <table>
+                          <tr>
+                          
+                          
+                          <td> Customer :</td>
+                              <td>
+                            
+                              <input type="text" id="txtcustomer" name="txtcustomer" class="form-control" />
+
+                              
+                              <input type="hidden" id="CustomerId" name="CustomerId" class="form-control" />
+                              </td>
+                          
+
+                         
+                          
+                                <td>
+
+                          <span class="r-txt">First Invoice No:</span>
+                          </td>
+                            
+                            <td>
+                         <select id="StartInvoiceId" name="StartInvoiceId" class="form-control">
+                         </select>
+                       
+                          </td>
+
+                            <td>
+
+                          <span class="r-txt">Last Invoice No:</span>
+                          </td>
+                            
+                            <td width="15%">
+                         <select id="EndInvoiceId" name="EndInvoiceId" class="form-control">
+                         </select>
+                        
+                          </td>
+
+                          </tr>
+                          <tr>
+
+                           <td>Invoice No :</td>
+                              <td>
+                            
+                              
+                              @Html.TextBoxFor(model => model.InvoiceNo, new { @class = "form-control" })
+                              
+                           
+                           
+                              </td>
+                            <td>
+
+                          <span class="r-txt">Invoice Date:</span>
+                          </td>
+                               <td>
+                          
+                          
+                       <div class="input-group date" id="dp3"  data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateStr, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                 @Html.ValidationMessageFor(model => model.DateStr)
+
+                          </td>
+                              <td>
+                          
+                          
+                           
+                          <div>
+
+                          
+                       <div id="loader"><img src="../../Images/ajax-loader(1).gif" /> </div>
+                          <div id="btnshow"> <input type="button" id="btnsubmit"class="btn btn-primary" value="Show" /></div>
+                           
+                         </div>
+                        
+
+                          </td>
+                          <td> <input type="submit" class="btn btn-primary"  value="Save"/></td>
+                          </tr>
+                          </table>
+
+                                                       
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+                                      <div class="tab-pane" id="tab_4">
+                                                <div class="row">         
+                          <div class="col-md-12">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                        </div>
+                                   <div class="box-body">
+                                   
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                  
+                        
+                                          </div>
+                                         </div>
+
+
+
+                                         </div>
+                                         </div>
+
+
+                                      
+                                         
+</div>
+                              
+                        </section>
+                        </aside>
+}
+<div id="ProductDetailsprint">
+</div>
+<aside class="right-side">
+
+    
+
+   
+<div class="input-group input-group-lg">
+                                        
+                                        
+                                        <div class="col-lg-12" id="exportformat">
+                                            
+                                         
+                                         
+<table>
+    <tr>
+        <td>                                        <button data-toggle="dropdown" class="btn btn-primary" type="button">Exports <span class="fa fa-caret-down"></span></button>
+           <ul class="dropdown-menu">
+                                               <li><a href="@Url.Action("SalesbyCustomerPDFlink", "SalesReport")"><img alt="img" src="../../img/pdf.png">PDF</a></li>
+                                              
+                                               
+                                            </ul>
+</td>
+       
+        <td>   <button id="print" class="btn btn-primary" type="button"><i class="fa fa-print"></i>Print </button>
+</td>
+    </tr>
+
+</table>
+
+
+
+
+                                        </div><!-- /btn-group -->
+                                       
+                                    </div>
+
+</aside>
+<div id="CustomerDetails">
+</div>

@@ -1,0 +1,195 @@
+﻿@model XenERP.Models.CashTransfer
+
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                Cash Transfer No. @Model.NO  @if (Model.Approved == true)
+                {<small> Approved </small>}
+                else
+                {<small> Edit </small> }
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+
+
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+@if (Model.FromUnit == ViewBag.Branch && Model.Approved == false)
+{
+                <li class="pull-right">
+                    <input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+
+                </li>
+}
+else if (Model.ToUnit == ViewBag.Branch && Model.Approved == false)
+{
+    <li class="pull-right">
+        <input type="submit" id="btnsubmit" class="btn btn-primary" value="Approve" />
+
+    </li>
+}
+else
+{
+    <li class="pull-right">
+        <input type="submit" id="btnsubmit" class="btn btn-primary" value="Approved" />
+
+    </li>
+}
+            </ul>
+
+        </div>
+
+
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                @*<div class="col-md-6">*@
+                <!-- general form elements -->
+                <!-- form start -->
+
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+
+                        </div>
+                        <div class="box-body">
+                            @if (Model.FromUnit == ViewBag.Branch && Model.Approved == false)
+                            {
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Transfer Date :<span style="color:Red;">*</span>
+                                </label>
+
+                                <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">
+                                    @Html.TextBoxFor(model => model.DateString, new { @class = "form-control", @readonly = "" })
+                                    <span class="input-group-addon" style="width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.DateString)
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Cash Transfer From :<span style="color:Red;">*</span>
+                                </label>
+
+                                @Html.DropDownListFor(model => model.FromUnit, new SelectList(ViewBag.From, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.FromUnit)
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Cash Transfer To :<span style="color:Red;">*</span>
+                                </label>
+
+                                @Html.DropDownListFor(model => model.ToUnit, new SelectList(ViewBag.To, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ToUnit)
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Cash Transfer Amount :<span style="color:Red;">*</span>
+                                </label>
+                                @Html.TextBoxFor(model => model.CashAmount, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CashAmount)
+                            </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Transfer Date :<span style="color:Red;">*</span>
+                                    </label>
+
+                                   
+                                        @Html.TextBoxFor(model => model.DateString, new { @class = "form-control", @readonly = "" })
+                                       
+                                    @Html.ValidationMessageFor(model => model.DateString)
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Cash Transfer From :<span style="color:Red;">*</span>
+                                    </label>
+                                    @Html.HiddenFor(model => model.FromUnit)
+                                    @Html.DisplayFor(model => model.BranchMaster1.Name)
+                                    @Html.ValidationMessageFor(model => model.FromUnit)
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Cash Transfer To :<span style="color:Red;">*</span>
+                                    </label>
+                                    @Html.HiddenFor(model => model.ToUnit)
+                                    @Html.DisplayFor(model => model.BranchMaster.Name)
+                                    @Html.ValidationMessageFor(model => model.ToUnit)
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Cash Transfer Amount :<span style="color:Red;">*</span>
+                                    </label>
+                                    @Html.TextBoxFor(model => model.CashAmount, new { @class = "form-control", @readonly = "" })
+                                    @Html.ValidationMessageFor(model => model.CashAmount)
+                                </div>
+                            }
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Remarks :
+                                </label>
+                                @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Remarks)
+                            </div>
+                          
+                            
+                            @Html.HiddenFor(model => model.CashLedger)
+                            @Html.HiddenFor(model => model.CashTransferLedger)
+                            @Html.HiddenFor(model => model.CreatedBy)
+                            @Html.HiddenFor(model => model.FinancialYearId)
+                            @Html.HiddenFor(model => model.CreatedOn)
+                            @Html.HiddenFor(model => model.BranchId)
+                            @Html.HiddenFor(model => model.NO)
+                            @Html.HiddenFor(model => model.Serial)
+                            @Html.HiddenFor(model => model.Approved)
+
+
+                        </div>
+                    </div> <!-- /.row -->
+                </div>
+            </div>
+        </section><!-- /.content -->
+
+
+
+    </aside>
+}
+

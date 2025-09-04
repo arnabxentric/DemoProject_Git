@@ -1,0 +1,222 @@
+﻿@model XenERP.Models.CurrencyRate
+           @{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+@* <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js" type="text/javascript"></script>*@
+
+
+
+  
+
+
+    <script language="javascript">
+
+
+        $(document).ready(function () {
+
+            $("#PurchaseRate").change(function () {
+
+                if ($("#PurchaseRate").val() <= 0) {
+
+                    alert(" Please enter Purchase Rate greater than 0");
+                    $("#PurchaseRate").val('')
+                    return false;
+                }
+
+            });
+
+
+            $("#SellRate").change(function () {
+
+                if ($("#SellRate").val() <= 0) {
+
+                    alert(" Please enter Sell Rate greater than 0");
+                    $("#SellRate").val('')
+                    return false;
+                }
+
+            });
+
+
+            $("#purchase").attr("maxlength", "5");
+            $("#sell").attr("maxlength", "5");
+            $(".taxpercent").attr("maxlength", "8");
+
+
+
+            $("#Currencyselection").change(function () {
+
+
+                var curid = $("#Currencyselection").val();
+
+                $.post("/Tax/Getcurrency", { id: curid }, function (data) {
+
+
+                    $("#currencyrate").text(data.Currencyname);
+
+                    $("#currencyrate2").text(data.Currencyname);
+
+                });
+
+            });
+
+
+
+
+
+        });
+    </script>
+    
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/Tax/ShowAllCurrencyrate";
+
+
+        });
+
+
+
+    });
+    </script>
+
+
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+       
+        
+        <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Currency Rate   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right">
+                                    <input type="submit" id="btnsubmit" class="btn btn-primary" value="Update" />
+                                        <input type="submit" id="btncancel" class="btn btn-primary" value="Cancel" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+
+
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                               
+
+ <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                                <form role="form">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                     Base Currency:<span style="color:Red;">*</span></label>
+                  <input   class="form-control" name="basecurrency" id="basecurrency" value="@ViewBag.Basecurrency" disabled="disabled" type="text" />
+                                    
+                                      
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                 Currency Selection:<span style="color:Red;">*</span></label>
+              
+               @Html.HiddenFor(d=>d.Id)
+               
+               @Html.HiddenFor(d=>d.IsBaseCurrency)
+               
+               @Html.HiddenFor(d=>d.CreatedDate)           
+               
+                 @Html.HiddenFor(d=>d.ModifiedOn)           
+               
+               
+               @Html.HiddenFor(d=>d.CompanyId)
+               @Html.HiddenFor(d=>d.UserId)
+
+
+                   @Html.DropDownListFor(model => model.CurrencyId, new SelectList(ViewBag.currency, "Currencyid", "Currencyname"), new { @class = "form-control",@readonly="readonly" })
+            @Html.ValidationMessageFor(model => model.CurrencyId)
+    
+                                     
+                                    </div>
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                     Buy <label id="currencyrate"></label>   Rate:<span style="color:Red;">*</span></label>
+                 @Html.TextBoxFor(model => model.PurchaseRate, new { @class = "form-control", @placeholder = "Enter Buy Rate", @maxlength = "10", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.PurchaseRate)
+                 <span style="color:Red">   <label id="currencyratebuy"></label> </span>
+                                      
+                                     
+                                    </div>
+
+
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                     Sell <label id="currencyrate2"></label>  Rate:<span style="color:Red;">*</span></label>
+    @Html.TextBoxFor(model => model.SellRate, new { @class = "form-control", @placeholder = "Enter Buy Rate", @maxlength = "10", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.SellRate)
+
+                                                             <span style="color:Red">   <label id="currencyratesell"></label> </span>
+                                      
+                                     
+                                    </div>
+
+
+
+
+
+
+
+
+                                    </div>
+                                </form>
+                         
+                    </div>   <!-- /.row -->
+                </section><!-- /.content -->
+        
+        
+        </aside>
+        
+        
+        
+        
+    }

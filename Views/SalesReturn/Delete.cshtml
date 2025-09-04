@@ -1,0 +1,189 @@
+﻿@model XenERP.Models.SalesReturn
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<aside class="right-side">
+    <section class="content">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header"> </div>
+                    <div class="box-body">
+
+
+                        <h3>Are you sure you want to delete this?</h3>
+                        <fieldset>
+                            <legend>SalesReturn</legend>
+
+
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.ReferenceNo)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.ReferenceNo)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.OrderNo)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.OrderNo)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Customer.Code)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Customer.Code)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Reference)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Reference)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Date)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Date)
+                            </div>
+
+
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.GrandTotal)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.GrandTotal)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.BCGrandTotal)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.BCGrandTotal)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.NO)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.NO)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Memo)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Memo)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Type)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Type)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Warehouse.Code)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Warehouse.Code)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.DeliveryName)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.DeliveryName)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.StreetPoBox)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.StreetPoBox)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Suburb)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Suburb)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.City)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.City)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.StateRegion)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.StateRegion)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Country)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Country)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.PostalCode)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.PostalCode)
+                            </div>
+
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.Status)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.Status)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.PaymentTermId)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.PaymentTermId)
+                            </div>
+
+                            <div class="display-label">
+                                @Html.DisplayNameFor(model => model.SalesPerson)
+                            </div>
+                            <div class="display-field">
+                                @Html.DisplayFor(model => model.SalesPerson)
+                            </div>
+
+
+                        </fieldset>
+                        @using (Html.BeginForm())
+                        {
+                            <p>
+                                <input type="submit" value="Delete" /> |
+                                @Html.ActionLink("Back to List", "Index")
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</aside>

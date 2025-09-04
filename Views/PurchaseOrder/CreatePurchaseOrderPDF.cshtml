@@ -1,0 +1,293 @@
+﻿@model XenERP.Models.PurchaseOrder
+
+@{
+    Layout = null;
+}
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Sales Invoice";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+    Company company = ViewBag.company;
+   
+}
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+
+
+     <!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Untitled Document</title>
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+</head>
+
+<body>
+<table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+  <tr>
+    <td colspan="6">
+    	<div class="logo"><img src="@Url.Content("~/Companyimages/" + @company.CompanyLogo)" /></div>
+        <div class="header">
+        	<span style="font:bold;font-size:x-large;"><strong> @company.Name </strong></span>
+            <br/><strong>Head Office</strong> 
+            <br /><span>@company.Address</span>
+            <br /><b>Email :@company.EmailId ,&nbsp;Website :@company.Website</b>
+        </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><h2>Purchase Order</h2></td>
+  </tr>
+  <tr>
+      <td colspan="2" width="30%">
+          <p>
+              <span style="font:bold;font-size:larger;">
+                  <strong>
+                      Delivery & Invoice To,
+                  </strong>
+              </span>
+              <br /><span style="font:bold;font-size:larger;">
+                  <strong>
+                      @company.Name
+                  </strong>
+              </span>
+              <br /><strong>Warehouse :@Model.Warehouse.Name</strong>
+              <br />Address :@Model.StreetPoBox
+
+              <br />@Model.City
+              <br />@Model.StateRegion
+              <br />PIN :@Model.PostalCode
+              <br /><strong>Contact Name :@Model.Warehouse.PhoneNumber</strong>
+              <br /><strong>Contact No. :@Model.DeliveryName</strong>
+          </p>
+          <hr /><p>
+              <strong>Supplier/Broker :@Model.Supplier.Name</strong>
+              <br />Address : @Model.Supplier.PoAddressName
+              <br />@Model.Supplier.PoCity
+              <br />@Model.Supplier.PoStateRegion
+
+              <br />TIN :@Model.Supplier.TinNo
+              <br />PIN :@Model.Supplier.PoPostalCode
+              <br /><strong>Contact No. :@Model.Supplier.ContactMobile</strong>
+          </p>
+      </td>
+    <td colspan="4" width="70%" class="date">
+    <p>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td width="80%" style="padding:0px 15px;"><strong>Order No.  :</strong> :&nbsp;@Model.NO</td>
+               
+            </tr>
+            <tr>
+            	
+                <td width="80%" style="padding:0px 15px;"><strong>Order Date  :</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.Date)</td>
+            </tr>
+            
+           
+            <tr>
+            	<td width="80%"  style="padding:0px 15px;"><strong>Expected Delivery Date :</strong> :&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.DueDate)</td>
+                
+            </tr>
+        </table>
+        </p>
+        <p>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="80%" style="padding:0px 15px;"><strong>Payment Terms :</strong> :&nbsp;@ViewBag.PaymentTerm</td>
+
+                </tr>
+                <tr>
+
+                    <td width="80%" style="padding:0px 15px;"><strong>Credit Period  :</strong> :&nbsp; @ViewBag.CreditDays</td>
+                </tr>
+                <tr>
+                    <td width="80%" style="padding:0px 15px;"><strong>Vat No. :</strong> :&nbsp;@company.GST_VATNumber</td>
+
+                </tr>
+
+                <tr>
+                    <td width="80%" style="padding:0px 15px;"><strong>CST No. :</strong> :&nbsp;@company.TANNO</td>
+
+                </tr>
+            </table>
+        </p>
+    </td>
+  </tr>
+  <tr>
+    <th align="center" colspan="2" width="50%" >Item Name</th>
+    @*<th align="center" width="25%">Description</th>*@
+    <th align="center" width="10%">Quantity</th>
+    <th align="center" width="10%">Unit</th>
+    <th align="center" width="10%">Unit Price</th>
+   
+     @*<th align="center" width="15%">Tax</th>*@
+    <th align="center" width="15%">Amount</th>
+  </tr>
+    @foreach (PurchaseOrderDetailModelView item in ViewBag.podmvList)
+    { 
+  <tr>
+  <td colspan="2">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+            	<td align="left"  style="padding:10px;">@item.ItemName</td>
+                <td align="right"  style="padding:10px;">&nbsp;</td>
+            </tr>
+  </table>
+  </td>
+   @* <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="left"  style="padding:10px;">@item.Description</td>
+                <td align="right"  style="padding:10px;">&nbsp;</td>
+            </tr>
+        </table>
+    </td>*@
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.Quantity</td>
+            </tr>
+        </table>
+    </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.UnitName</td>
+            </tr>
+        </table>
+    </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.Price</td>
+            </tr>
+        
+        </table>
+    </td>
+    
+
+       @*<td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.TaxName</td>
+            </tr>
+        </table>
+    </td>*@
+
+       <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@Math.Round( @item.TotalAmount,2)</td>
+            </tr>
+        </table>
+    </td>
+  </tr>
+  }
+ 
+   <tr class="total">
+    <td colspan="5" style="padding:10px;"><strong>Grand Total</strong></td>
+    <td align="right" style="padding:10px;"><strong>@Math.Round(@Model.BCGrandTotal, 2)</strong> </td>
+  </tr>
+  
+   
+
+  <tr class="total">
+    <td colspan="6" style="padding:10px;"><strong><span>Rupees</span>: @ViewBag.BCTotalAmount &nbsp;only</strong></td>
+  
+  </tr>
+  <tr>
+    <td width="100%" colspan="6">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        		
+            <tr>
+            	<td style="padding:10px;"><strong>Term & Condition:</strong></td>
+            </tr>                  
+            <tr>                   
+            	<td style="padding:10px;">1) Quality should be maintained as per our Discussion or Sample.</td>
+            </tr>                  
+             <tr>                  
+            	<td style="padding:10px;">2) Delivery Period should be as per aforesaid expected delivery date & Deliver should be Delivery Address.</td>
+            </tr>                  
+             <tr>                  
+            	<td style="padding:10px;">3) Supplier will be Responsible for any supply mandate document, Damages or Loss of material in transit.</td>
+            </tr>                  
+             <tr>                  
+            	<td style="padding:10px;">4) Payment will be Release only after acceptance and Verification of our Warehouse/Store Department.</td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">5) Please send two copies of the invoice where Purchase Order No. Should be mention or a copy of Purchase Order Should be given along with Challan & Invoice.</td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">6) Please notify us immediately if you are unable to ship as specified.</td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">7) Late Delivery will be subject to cancellation.</td>
+            </tr>
+            <tr>
+                <td style="padding:10px;">8) Our factory unloading/working time is in between 8:30 AM to 5 PM. Weekly holiday on every Tuesday and other holiday(s) as per company holiday list.</td>
+            </tr>
+        </table>
+    </td>
+    
+  </tr>
+
+
+    <tr>
+    <td width="50%" colspan="3">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	
+             <tr>
+            	<td align="left" style="padding:5px 10px;"><strong>Prepared By,</strong></td>
+            </tr>
+             <tr>
+            	<td align="left" style="padding:5px 10px;">@ViewBag.PreparedBy</td>
+            </tr>
+             <tr>
+            	<td align="left" style="padding:5px 10px;">Contact No. :@ViewBag.PreparedContact</td>
+            </tr>
+        </table>
+    </td>
+    <td width="50%" colspan="3">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	
+             <tr>
+            	<td align="left" style="padding:5px 10px;"><strong>Approved By,</strong></td>
+            </tr>
+            <tr>
+            	<td align="left" style="padding:5px 10px;">@ViewBag.ApprovedBy</td>
+            </tr>
+             <tr>
+            	<td align="left" style="padding:5px 10px;">Contact No. :@ViewBag.ApprovedContact</td>
+            </tr>
+           
+          
+            
+        </table>
+    </td>
+  </tr>
+</table>
+<div class="bottom">
+
+	@company.Address ,&nbsp;Email : @company.EmailId ,&nbsp;Website: @company.Website
+</div>
+<div class="clr"></div>
+
+
+</body>
+</html>
+
+                 

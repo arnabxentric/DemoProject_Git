@@ -1,0 +1,404 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FlockModelView>
+
+@using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    long? RoleId = Convert.ToInt64(Session["RoleId"]);
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+
+
+
+    $(document).ready(function () {
+
+        //$('#example1').DataTable({
+        //    fixedHeader: true
+        //});
+
+
+        $("#example1").on('click', '.btnAccept', function () {
+
+            $("#loading").fadeIn();
+            var opts = {
+                lines: 12, // The number of lines to draw
+                length: 7, // The length of each line
+                width: 4, // The line thickness
+                radius: 10, // The radius of the inner circle
+                color: '#000', // #rgb or #rrggbb
+                speed: 2.0, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false // Whether to use hardware acceleration
+            };
+            var target = document.getElementById('loading');
+            var spinner = new Spinner(opts).spin(target);
+
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var vgh = parseInt(ctr.find(".HiddenId").val()) || 0;
+
+            window.location.href = '/Flock/FlockReceiveInFarm?id=' + vgh;
+        });
+
+    });
+
+
+
+
+</script>
+<aside class="right-side">
+
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                Loading...
+            </p>
+        </div>
+    </div>
+    @{
+        long Branchid = Convert.ToInt64(Session["BranchId"]);
+
+    }
+    <section class="content-header">
+        <h1>Flock Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+        @if (ViewBag.Side != 1)
+        {
+            if (RoleId != 5)
+            {
+                <div class="col-xs-12"><a href="@Url.Action("CreateFlock", "Flock")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Create New Flock</a></div><br /><br />
+            }
+        }
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Flock Name</th>
+                        <th>FarmerName</th>
+                        <th>Unit Name</th>
+                        <th>ReceivedChallanNo</th>
+                        <th>Breed name</th>
+                        <th>Available Chicks</th>
+                        <th>ChallanNo</th>
+                        <th>No of Chicks</th>
+                        <th>Chicks Weight</th>
+                        <th>Date of Issue</th>
+                        <th>Status</th>
+                        <th></th>
+                        @*<th></th>*@
+                        <th></th>
+                        @if (RoleId == 1)
+                        {
+                        <th></th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                    <tr>
+                        <td>@Slno</td>
+                        <td align="center"><a href='@Url.Action("FlockInformationDetails", "Flock", new { id = item.Id })' class="AccoDet">@item.FlockCode</a> @Html.HiddenFor(m => item.Id, new { @class = "AcId" })</td>
+                        <td> @Html.DisplayFor(modelItem => item.FarmerName)</td>
+                        <td> @Html.DisplayFor(modelItem => item.BranchName)</td>
+
+                        <td align="right">
+                            @foreach (var fl in item.flockdetails)
+                            {
+                                <table id="#example5" class="chompa">
+
+
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => fl.ChickReceivedChallanNo)
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            }
+                        </td>
+                        <td align="right">
+                            @foreach (var fl in item.flockdetails)
+                            {
+                                <table id="#example5" class="chompa">
+
+
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => fl.ChickName)
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            }
+                        </td>
+                        <td align="right">
+                            @foreach (var fl in item.flockdetails)
+                            {
+                                <table id="#example5" class="chompa">
+
+
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => fl.AvailableChicks)
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            }
+                        </td>
+
+                        <td> @Html.DisplayFor(modelItem => item.ChallanNo)</td>
+
+
+
+                        <td align="right">
+                            @foreach (var fl in item.flockdetails)
+                            {
+                                <table id="#example5" class="chompa">
+                                    @if (fl.IssuingChicks != null)
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => fl.IssuingChicks)
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            }
+                        </td>
+
+                        <td align="right">
+                            @foreach (var fl in item.flockdetails)
+                            {
+                                <table id="#example5" class="chompa">
+                                    @if (fl.IssuingChicksWt != null)
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => fl.IssuingChicksWt)
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            }
+                        </td>
+
+                        <td> @Html.DisplayFor(modelItem => item.DateOfDespatchString)</td>
+
+                        @if (Session["PoultryEditId"] != null)
+                        {
+                            if (item.IsReceived == true)
+                            {
+
+                                <td> @Html.Label("Already Received") </td>
+                                @*<td> @Html.ActionLink("Edit", "EditFlock", "Flock", new { id = item.Id }, null)  </td>*@
+                                if (RoleId != 5)
+                                {
+                                    <td> @Html.ActionLink("Delete", "DeleteFlock", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                if (Branchid == 0)
+                                {
+                                    <td> @Html.ActionLink("Delete All", "DeleteFlockWithAllReferences", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this Flock with All the References?');" })</td>
+                                }
+                                else
+                                {
+
+                                    <td></td>
+                                }
+                            }
+
+                            else
+                            {
+                                <td> @Html.Label("Received Not Yet") </td>
+                                @*<td> @Html.ActionLink("Edit", "EditFlock", "Flock", new { id = item.Id }, null)  </td>*@
+                                if (RoleId != 5)
+                                {
+
+                                    <td> @Html.ActionLink("Delete", "DeleteFlock", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                                }
+                                else
+                                {
+                                    <td></td>}
+                                if (Branchid == 0)
+                                {
+                                    <td> @Html.ActionLink("Delete All", "DeleteFlockWithAllReferences", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this Flock with All the References?');" })</td>
+                                }
+                                else
+                                {
+
+                                    <td></td>
+                                }
+                            }
+
+                        }
+
+                        else
+                        {
+
+                            if (ViewBag.Side != 1)
+                            {
+                                if (item.IsReceived == true)
+                                {
+                                    <td> @Html.Label("Already Received") </td>
+                                    @*<td> @Html.Label("Cannot Be Edited") </td>*@
+                                    <td> @Html.Label("Cannot Be Deleted") </td>
+                                    if (Branchid == 0)
+                                    {
+                                        <td> @Html.ActionLink("Delete All", "DeleteFlockWithAllReferences", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this Flock with All the References?');" })</td>
+                                    }
+                                    else
+                                    {
+
+                                        <td></td>
+                                    }
+                                }
+
+                                else
+                                {
+
+                                    <td> @Html.Label("Received Not Yet") </td>
+                                    @*<td> @Html.ActionLink("Edit", "EditFlock", "Flock", new { id = item.Id }, null)  </td>*@
+                                    if (RoleId != 5)
+                                    {
+
+                                        <td> @Html.ActionLink("Delete", "DeleteFlock", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>}
+                                    if (Branchid == 0)
+
+                                    {
+                                        <td> @Html.ActionLink("Delete All", "DeleteFlockWithAllReferences", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this Flock with All the References?');" })</td>
+                                    }
+                                    else
+                                    {
+
+                                        <td></td>
+                                    }
+                                }
+
+
+                            }
+                            else
+                            {
+                                if (item.IsReceived == false)
+                                {
+                                    <td> <input type="button" value="Accept" id="btnAccept" class="btn btn-primary btnAccept" /> @Html.HiddenFor(modelItem => item.Id, new { @class = "HiddenId" })</td>
+                                    @*<td> @Html.ActionLink("Accept", "ReceiveFlockInFarm", "Flock", new { id = item.Id }, new { onclick = "return confirm('Are you sure you wish to Accept this Flock?');" })  </td>*@
+
+                                    <td></td>
+                                    @*<td></td>*@
+                                    if (RoleId != 5)
+                                    {
+                                        <td> @Html.ActionLink("Delete All", "DeleteFlockWithAllReferences", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this Flock with All the References?');" })</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td> }
+                                }
+
+                                else
+                                {
+
+                                    <td> @Html.Label("Already Received") </td>
+
+                                    <td> </td>
+                                    @*<td> </td>*@
+                                    if (Branchid == 0)
+                                    {
+                                        <td> @Html.ActionLink("Delete All", "DeleteFlockWithAllReferences", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this Flock with All the References?');" })</td>
+                                    }
+                                    else
+                                    {
+
+                                        <td></td>
+                                    }
+                                }
+
+                            }
+
+                        }
+                        @if (RoleId == 1)
+                        {
+                            <td> @Html.ActionLink("Inactive Flock", "InactiveFlock", "Flock", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to inactive this flock?');" })</td>
+
+                        }
+
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>
+

@@ -1,0 +1,284 @@
+﻿@model IEnumerable<XenERP.Models.AccountsBook_LedgerWise_DateRange_Result>
+
+@{
+
+    var SlNo = 0;
+    decimal? tdebit = 0;
+    decimal? tcredit = 0;
+    decimal? total = 0;
+    string openingDate = "";
+    decimal openingbal = 0;
+    string DRCR = "DR";
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<aside class="right-side">
+    <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+            <div class="box-body table-responsive divContent">
+                <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+                            <th colspan="8">
+
+                                <h3>@ViewBag.LedgerName</h3>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th>SlNo.</th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.RPdate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LedgerName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.RPType)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.VoucherNo)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.ChequeNo)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.Remarks)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Debit)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Credit)
+                            </th>
+                            <th>
+
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            tdebit += item.Debit;
+                            tcredit += item.Credit;
+
+                            if (SlNo == 0)
+                            {
+
+                                openingDate = "";// @String.Format(@Session["DateFormatUpper"].ToString(), item.RPdate);
+
+                                if (item.DRCR == "DR")
+                                {
+                                    openingbal = item.OpeningBalance ?? 0;
+
+                                }
+                                else
+                                {
+                                    openingbal = item.OpeningBalance ?? 0;
+                                    DRCR = "CR";
+                                }
+
+                            }
+                            <tr>
+
+
+                                <td> @SlNo</td>
+                                <td style="text-align:left;">
+                                    @String.Format(@Session["DateFormatUpper"].ToString(), item.RPdate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LedgerName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RPType)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.VoucherNo)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ChequeNo)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Remarks)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.Debit)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.Credit)
+                                </td>
+                                <td align="center">
+                                    @if (item.RPType == "Receive" || item.RPType == "Payment")
+                                    {
+                                        @Html.ActionLink("Details", "EditReceiveVoucher", "Voucher", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                    else if (item.RPType == "Contra")
+                                    {
+                                        @Html.ActionLink("Details", "EditContra", "Contra", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                    else if (item.RPType == "Journal")
+                                    {
+                                        @Html.ActionLink("Details", "EditJournal", "Journal", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                    else if (item.RPType == "Sales")
+                                    {
+                                        @Html.ActionLink("Details", "Create", "SalesInvoice", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                    else if (item.RPType == "Purchase")
+                                    {
+                                        @Html.ActionLink("Details", "Create", "PurchaseInvoice", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                    else if (item.RPType == "Sales Return")
+                                    {
+                                        @Html.ActionLink("Details", "Create", "SalesReturn", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                    else if (item.RPType == "Purchase Return")
+                                    {
+                                        @Html.ActionLink("Details", "Create", "PurchaseReturn", new { id = item.Id }, new { target = "_blank" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Details", "Create", "PurchaseReturn", new { id = item.Id }, new { target = "_blank" })
+                                    }
+                                </td>
+
+                            </tr>
+                                    SlNo = SlNo + 1;
+                        }
+
+                        <tr>
+                            <td colspan="7"> Current Total</td>
+
+                            <td align="right">
+                                @tdebit
+                            </td>
+                            <td align="right">
+                                @tcredit
+                            </td>
+                            <td></td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td style="text-align:left;" colspan="7">
+                                Opening Balance
+                            </td>
+
+                            @if (DRCR == "DR")
+                            {
+                                tdebit += openingbal;
+                                <td align="right">
+                                    @openingbal
+                                </td>
+                                <td align="right"></td>
+
+                            }
+                            else
+                            {
+                                tcredit += openingbal;
+                                <td align="right"></td>
+                                <td align="right">
+                                    @openingbal
+                                </td>
+                            }
+                            <td></td>
+                        </tr>
+
+                        @if (tcredit >= tdebit)
+                        {
+                            var balance = tcredit - tdebit;
+                            total = tcredit;
+                            <tr>
+                                <td colspan="7"> Closing Balance</td>
+
+                                <td align="right">
+                                    @balance
+                                </td>
+                                <td align="right">
+                                    &nbsp;
+                                </td>
+                                <td></td>
+
+                            </tr>
+                        }
+                        else
+                        {
+                            var balance = tdebit - tcredit;
+                            total = tdebit;
+                            <tr>
+                                <td colspan="7">Closing Balance</td>
+
+                                <td align="right">
+                                    &nbsp;
+                                </td>
+                                <td align="right">
+                                    @balance
+                                </td>
+
+                                <td></td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="7">Net Total</td>
+
+                            <td align="right">
+                                @total
+                            </td>
+                            <td align="right">
+                                @total
+                            </td>
+                            <td></td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</aside>

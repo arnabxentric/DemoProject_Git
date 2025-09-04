@@ -1,0 +1,1135 @@
+﻿@model XenERP.Models.Customer
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<script type="text/javascript" language="javascript">
+
+    $(document).ready(function () {
+
+
+        $("#Discount").val('0');
+        $("#OpeningBal").val('0');
+        $("#FD1").val('0');
+        $("#FD2").val('0');
+        $("#FD3").val('0');
+        $("#FD4").val('0');
+
+
+        //        $(".clickcheck").on("click", function () {
+        //
+        //            if (this.value === "0.0") {
+        //                this.value = '';
+        //            }
+        //        });
+
+
+
+        $('.iCheck-helper').click(function () {
+
+            var parent = $(this).parent().get(0);
+            var checkboxId = parent.getElementsByTagName('input')[0].id;
+
+
+
+
+            if ($('input[name="chkpostal"]:checked').length > 0) {
+
+
+                $("#Country").val($("#PoCountry").val());
+                $("#StateRegion").val($("#PoStateRegion").val());
+                $("#City").val($("#PoCity").val());
+                $("#AddressName").val($("#PoAddressName").val());
+                $("#PostalCode").val($("#PoPostalCode").val());
+            }
+
+            if ($('input[name="chkpostal"]:checked').length == 0) {
+                $("#PostalCountryId").val("");
+                $("#StateRegion").val("");
+                $("#City").val("");
+                $("#AddressName").val("");
+                $("#PostalCode").val("");
+            }
+
+
+
+        });
+
+
+
+
+    });
+
+</script>
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#groupID").change(function () {
+
+
+            $.post("/LedgerMaster/GetSubGroupName", { type: $("#groupID").val() }, function (data) {
+                var select = $("#subgrp");
+                select.empty();
+
+
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Id,
+                        text: itemData.Name
+                    }));
+                });
+            });
+        });
+
+
+
+    });
+
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#subgrp").change(function () {
+
+
+            $.post("/Customer/GetLedgerName", { type: $("#subgrp").val() }, function (data) {
+                var select = $("#DiscountLedger");
+                select.empty();
+
+
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Id2,
+                        text: itemData.Name
+                    }));
+                });
+            });
+        });
+
+
+
+    });
+
+</script>
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#btnsubmit").click(function () {
+
+
+
+            if ($("#Code").val() == "") {
+
+                alert("Please Enter Customer Code");
+                return false;
+
+            }
+
+            if ($("#Name").val() == "") {
+
+                alert("Please Enter Customer Name");
+                return false;
+
+            }
+
+
+            if ($("#Discount").val() == "") {
+
+                alert("Please Enter Discount");
+                return false;
+
+            }
+            if ($("#FD1").val() == "") {
+
+                alert("Please Enter Further Discount1");
+                return false;
+
+            }
+            if ($("#FD2").val() == "") {
+
+                alert("Please Enter Further Discount2");
+                return false;
+
+            }
+            if ($("#FD3").val() == "") {
+
+                alert("Please Enter Further Discount3");
+                return false;
+
+            }
+            if ($("#FD4").val() == "") {
+
+                alert("Please Enter Further Discount4");
+                return false;
+
+            }
+
+
+
+
+            if ($("#FD2").val() > 0 && $("#FD1").val() == 0) {
+
+                alert("Please select Further discount1");
+                return false;
+
+            }
+
+
+
+            if ($("#FD3").val() > 0 && $("#FD2").val() == 0) {
+
+                alert("Please select Further discount2");
+                return false;
+
+            }
+
+
+            if ($("#FD4").val() > 0 && $("#FD3").val() == 0) {
+
+                alert("Please select Further discount3");
+                return false;
+
+            }
+
+
+            if ($("#OpeningBal").val() == "") {
+
+                alert("Please Opening Balance");
+                return false;
+
+            }
+
+
+
+
+        });
+
+
+
+        $("#Discount").change(function () {
+
+            if ($("#Discount").val() == '') {
+                $("#Discount").val(0.0);
+            }
+        });
+        $("#FD1").change(function () {
+
+            if ($("#FD1").val() == '') {
+                $("#FD1").val(0.0);
+            }
+        });
+        $("#FD2").change(function () {
+
+            if ($("#FD2").val() == '') {
+                $("#FD2").val(0.0);
+            }
+        });
+        $("#FD3").change(function () {
+
+            if ($("#FD3").val() == '') {
+                $("#FD3").val(0.0);
+            }
+        });
+        $("#FD4").change(function () {
+
+            if ($("#FD4").val() == '') {
+                $("#FD4").val(0.0);
+            }
+        });
+
+    });
+
+</script>
+
+
+
+
+
+
+
+
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateCustomer", "Customer"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                Customer  <small>Master Entry</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+
+
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success alert-dismissable">
+                        <i class="fa fa-check"></i>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        @ViewBag.Message
+                    </div>
+                }
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger alert-dismissable">
+                        <i class="fa fa-ban"></i>
+                        <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                        <b>Error!</b>
+                        @ViewBag.Error
+                    </div>
+                }
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab_1" data-toggle="tab">Details</a></li>
+                        <li><a href="#tab_2" data-toggle="tab">Address</a></li>
+                        <li><a href="#tab_3" data-toggle="tab">Contact</a></li>
+                        <li><a href="#tab_4" data-toggle="tab">Bank</a></li>
+                        <li><a href="#tab_5" data-toggle="tab">Delivery</a></li>
+
+                        <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" /></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+                                            @*
+                                                                   <div class="form-group">
+                                                                         <label class="black_txt_010">
+                                                 Customer Code :<span style="color:Red;">*</span></label>
+
+                                                  @Html.HiddenFor(d => d.Id)
+                                                    @Html.HiddenFor(d => d.UserId)
+                                                  @Html.TextBoxFor(model => model.Code, new { @class = "form-control", @placeholder = "Enter Customer Code",@Maxlength="7" })
+                                                @Html.ValidationMessageFor(model => model.Code)
+
+
+
+                                                                   </div>*@
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Customer Code:<span style="color:Red;">*</span>
+                                                </label>
+                                                @Html.TextBoxFor(model => model.Code, new { @class = "form-control", @placeholder = "Enter Customer Code", @maxlength = "120" })
+                                                @Html.ValidationMessageFor(model => model.Code)
+
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Customer Name:<span style="color:Red;">*</span>
+                                                </label>
+                                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Customer Name", @maxlength = "120" })
+                                                @Html.ValidationMessageFor(model => model.Name)
+
+                                            </div>
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Customer Type:<span style="color:Red;">*</span>
+                                                </label>
+                                                @Html.DropDownList("CustomerType", ViewData["type"] as SelectList, new { @class = "form-control" })
+
+                                                @Html.ValidationMessageFor(model => model.CustomerType)
+
+
+                                            </div>
+
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Discount(%):
+                                                </label>
+                                                @Html.TextBoxFor(model => model.Discount, new { @class = "form-control clickcheck", @onkeypress = "return Decimal(event)", @maxlength = "3" })
+                                                @Html.ValidationMessageFor(model => model.Discount)
+
+
+                                            </div>
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Further Discount1(%):
+                                                </label>
+                                                @Html.TextBoxFor(model => model.FD1, new { @class = "form-control clickcheck", @onkeypress = "return Decimal(event)", @maxlength = "3" })
+                                                @Html.ValidationMessageFor(model => model.FD1)
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Further Discount2(%):
+                                                </label>
+                                                @Html.TextBoxFor(model => model.FD2, new { @class = "form-control clickcheck", @onkeypress = "return Decimal(event)", @maxlength = "3" })
+                                                @Html.ValidationMessageFor(model => model.FD2)
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Further Discount3(%):
+                                                </label>
+                                                @Html.TextBoxFor(model => model.FD3, new { @class = "form-control clickcheck", @onkeypress = "return Decimal(event)", @maxlength = "3" })
+                                                @Html.ValidationMessageFor(model => model.FD3)
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Further Discount4(%):
+                                                </label>
+                                                @Html.TextBoxFor(model => model.FD4, new { @class = "form-control clickcheck", @onkeypress = "return Decimal(event)", @maxlength = "3" })
+                                                @Html.ValidationMessageFor(model => model.FD4)
+
+
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Is Further Discounts Compunded:
+                                                </label>
+                                                @Html.CheckBoxFor(model => model.IsFDCompounded)
+                                                @Html.ValidationMessageFor(model => model.IsFDCompounded)
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Parent Customer Code(If Customer is Under a Group):
+                                                </label>
+                                                @Html.TextBoxFor(model => model.PCode, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.PCode)
+
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    GST/VAT No:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.GstVatNumber, new { @class = "form-control", @placeholder = "Enter GST/VAT No", @onkeypress = "return AlphaNumeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.GstVatNumber)
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Opening Balance:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.OpeningBal, new { @class = "form-control clickcheck" })
+                                                @Html.ValidationMessageFor(model => model.Notes)
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    PAN No:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.PanNo, new { @class = "form-control", @placeholder = " PAN No.", @onkeypress = "return AlphaNumeric(event)", @maxlength = "40" })
+                                                @Html.ValidationMessageFor(model => model.PanNo)
+
+                                            </div>
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    TIN No:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.TinNo, new { @class = "form-control", @placeholder = "Enter TIN No.", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.TinNo)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Service Tax No:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.ServiceTaxNo, new { @class = "form-control", @placeholder = "Enter Service Tax No", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.ServiceTaxNo)
+
+                                            </div>
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Currency:
+                                                </label>
+                                                @Html.DropDownListFor(model => model.CurrencyId, new SelectList(ViewBag.currency, "Id", "Name"), new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.CurrencyId)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Notes:
+                                                </label>
+                                                @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @placeholder = "Enter Notes" })
+                                                @Html.ValidationMessageFor(model => model.Notes)
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Sales Person:
+                                                </label>
+                                                @Html.DropDownListFor(model => model.SalesPersonId, new SelectList(ViewBag.SalesPerson, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.SalesPersonId)
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+                        </div>
+                        <div class="tab-pane" id="tab_2">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+                                            <h4>Postal Address </h4>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Country :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.PoCountry, new { @class = "form-control", @placeholder = "Enter Country", @onkeypress = "return Character(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.PoCountry)
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    State:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.PoStateRegion, new { @class = "form-control", @placeholder = "Enter State", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.PoStateRegion)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    City:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.PoCity, new { @class = "form-control", @placeholder = "Enter City", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.PoCity)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Address:
+                                                </label>
+                                                @Html.TextAreaFor(model => model.PoAddressName, new { @class = "form-control", @placeholder = "Enter Address" })
+                                                @Html.ValidationMessageFor(model => model.PoAddressName)
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Zip Code:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.PoPostalCode, new { @class = "form-control", @placeholder = "Enter Zip Code", @onkeypress = "return Numeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.PoPostalCode)
+
+
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+                                            <h4>Physical Address </h4>
+
+                                            <input type="checkbox" class="chk" id="chkpostal" name="chkpostal" />
+
+                                            [Same as Postal Address]
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Country :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.Country, new { @class = "form-control", @placeholder = "Enter Country", @onkeypress = "return Character(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.Country)
+
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    State :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.StateRegion, new { @class = "form-control", @placeholder = "Enter State", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.StateRegion)
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    City:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.City)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Address:
+                                                </label>
+                                                @Html.TextAreaFor(model => model.AddressName, new { @class = "form-control", @placeholder = "Enter Address" })
+                                                @Html.ValidationMessageFor(model => model.AddressName)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Zip Code:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.PostalCode, new { @class = "form-control", @placeholder = "Enter Zip Code", @onkeypress = "return Numeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.PostalCode)
+
+                                            </div>
+
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab_3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Contact Name:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactName, new { @class = "form-control", @placeholder = "Enter Contact Name", @onkeypress = "return Character(event)", @maxlength = "180" })
+                                                @Html.ValidationMessageFor(model => model.ContactName)
+
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Email Id :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactEmail, new { @class = "form-control", @placeholder = "Enter Email Id ", @type = "email", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.ContactEmail)
+
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Office Phone:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.ContactOfficePhone, new { @class = "form-control", @placeholder = "Enter Office Phone with area code", @onkeypress = "return Numeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.ContactOfficePhone)
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Website:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactWebsite, new { @class = "form-control", @placeholder = "Enter Website", @onkeypress = "return AlphaNumeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.ContactWebsite)
+
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Phone Number:
+                                                </label>
+
+                                                @Html.TextBoxFor(model => model.ContactPhone, new { @class = "form-control", @placeholder = "Enter Office Phone with area code", @onkeypress = "return Numeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.ContactPhone)
+
+
+
+
+                                            </div>
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Mobile Number:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactMobile, new { @class = "form-control", @placeholder = "Enter  Mobile Number", @onkeypress = "return Numeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.ContactMobile)
+
+
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    DDI Number:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactDDINumber, new { @class = "form-control", @placeholder = "Enter DDI Number", @onkeypress = "return AlphaNumeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.ContactDDINumber)
+
+
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Fax:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactFaxNo, new { @class = "form-control", @placeholder = "Enter Fax Number with area code", @onkeypress = "return Numeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.ContactFaxNo)
+
+
+
+
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Toll Free Number:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.ContactTollFreeNo, new { @class = "form-control", @placeholder = "Enter Toll Free Number", @onkeypress = "return Numeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.ContactTollFreeNo)
+
+
+
+
+                                            </div>
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="tab-pane" id="tab_4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Bank Name :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.BankName, new { @class = "form-control", @placeholder = "Enter Bank Name ", @onkeypress = "return AlphaNumeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.BankName)
+
+
+
+                                            </div>
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Bank Branch :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.BankBranch, new { @class = "form-control", @placeholder = "Enter Bank Branch", @onkeypress = "return AlphaNumeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.BankBranch)
+
+
+
+                                            </div>
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Bank Account :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.BankAccount, new { @class = "form-control", @placeholder = "Enter Bank Account Number", @onkeypress = "return Numeric(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.BankAccount)
+
+
+
+                                            </div>
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="tab-pane" id="tab_5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Country :
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.DelCountry, new { @class = "form-control", @placeholder = "Enter Country", @onkeypress = "return AlphaNumeric(event)", @maxlength = "130" })
+                                                @Html.ValidationMessageFor(model => model.DelCountry)
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    State:
+                                                </label>
+
+
+                                                @Html.TextBoxFor(model => model.DelStateRegion, new { @class = "form-control", @placeholder = "Enter State", @onkeypress = "return AlphaNumeric(event)", @maxlength = "130" })
+                                                @Html.ValidationMessageFor(model => model.DelStateRegion)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    City:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.DelCity, new { @class = "form-control", @placeholder = "Enter City", @onkeypress = "return AlphaNumeric(event)", @maxlength = "130" })
+                                                @Html.ValidationMessageFor(model => model.DelCity)
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Suburb:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.DelSuburb, new { @class = "form-control", @placeholder = "Enter Suburb" })
+                                                @Html.ValidationMessageFor(model => model.DelSuburb)
+
+                                            </div>
+
+
+
+
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Address:
+                                                </label>
+                                                @Html.TextAreaFor(model => model.DelAddressName, new { @class = "form-control", @placeholder = "Enter Address" })
+                                                @Html.ValidationMessageFor(model => model.DelAddressName)
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Zip Code:
+                                                </label>
+                                                @Html.TextBoxFor(model => model.DelPostalCode, new { @class = "form-control", @placeholder = "Enter Zip Code", @onkeypress = "return Numeric(event)", @maxlength = "30" })
+                                                @Html.ValidationMessageFor(model => model.DelPostalCode)
+
+
+                                            </div>
+
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+        </section>
+    </aside>
+}

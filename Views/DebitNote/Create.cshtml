@@ -1,0 +1,639 @@
+﻿@model XenERP.Models.DebitNoteModelView
+
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Debit Note";
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+@*
+<script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>*@
+
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+ <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".select2").select2();
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+
+        $('#TaxId,#TotalAmount').change(function (event) {
+            var productresults = [];
+            var taxid = $('#TaxId').val();
+
+            var tamount = $('#TotalAmount').val();
+            var compoundedsub = parseFloat(tamount);
+
+            if (typeof taxid === "undefined" || taxid == '') {
+            }
+            else {
+                var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                if (taxComps.length != 0) {
+                    var effectiveTotal = 0;
+                    var parentEffectiveRate = 0;
+                    for (var j = 0; j < taxComps.length; j++) {
+                        var rate = taxComps[j].Taxrate1;
+                        var IsDependTax = taxComps[j].IsDependTax;
+                        var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                        var amount1 = 0;
+                        if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                            var crate = parseFloat(rate);
+                            parentEffectiveRate = crate * parseFloat(compoundedsub) / 100;
+                            effectiveTotal += parentEffectiveRate;
+                            amount1 = parentEffectiveRate;
+                        }
+                        if (IsDependTax == true && IsCompoundedTax == false) {
+                            var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                            effectiveTotal += crate;
+                            amount1 = crate;
+                        }
+                        if (IsDependTax == false && IsCompoundedTax == true) {
+                            var crate = (effectiveTotal + compoundedsub) * parseFloat(rate) / 100;
+                            effectiveTotal += crate;
+                            parentEffectiveRate = crate;
+                            amount1 = parentEffectiveRate;
+                        }
+
+                        var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                        productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) ',
+                            "Amount": amount1
+                        });
+
+                    }
+                }
+                else {
+                    var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                    var amount1 = (taxMain[0].Rate * parseFloat(compoundedsub) / 100);
+                    productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) ',
+                        "Amount": amount1
+                    });
+
+                }
+
+            }
+
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            if (compoundedsub != 0) {
+                productresults.push({ "Id": 1, "Name": "Sub Total", "Amount": compoundedsub });
+            }
+
+            var result11 = productresults.reduce(function (res, obj) {
+                if (!(obj.Name in res))
+                    res.__array.push(res[obj.Name] = obj);
+                else {
+                    res[obj.Name].Id += obj.Id;
+                    res[obj.Name].Amount += obj.Amount;
+                }
+                return res;
+            }, { __array: [] }).__array
+                                .sort(function (a, b) { return a.Id - b.Id; });
+
+            $("#example11 > tbody").html("");
+
+            var totalbill = 0;
+            if (result11 != '') {
+                for (var i = 0; i < result11.length; i++) {
+                    totalbill += result11[i].Amount;
+
+                    var newRow1 = "<tr> \
+                                                        <td>" + result11[i].Name + "</td> \
+                                    					<td>" + result11[i].Amount.toFixed(2) + "</td> \
+                                                        </tr>"
+                    $('#example11 tbody').append(newRow1);
+                }
+            }
+
+            var tcurrcode = $('#TransactionCurrencyCode').val();
+            var bcurrcode = $('#BaseCurrencyCode').val();
+            if (tcurrcode != '') {
+                tcurrcode = 'In ' + tcurrcode;
+                bcurrcode = 'In ' + bcurrcode;
+            }
+            if (totalbill != 0) {
+                var newrow2 = "<tr> \
+                                                <td>Grand Total " + tcurrcode + "</td> \
+                            					<td>" + totalbill.toFixed(2) + "</td> \
+                                                </tr>";
+                $('#example11 tbody').append(newrow2);
+                if (tcurrcode != bcurrcode) {
+                    var bcurrencytotal = totalbill * currencyrate;
+                    //bcurrencytotal = Math.round(bcurrencytotal);
+                    var newrow2 = "<tr> \
+                                                <td>Grand Total " + bcurrcode + "</td> \
+                            					<td>" + bcurrencytotal.toFixed(2) + "</td> \
+                                                </tr>";
+                    $('#example11 tbody').append(newrow2);
+                }
+            }
+
+        });
+
+    });
+
+    $(document).ready(function () {
+
+
+        $('#TotalAmount').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+
+
+
+        $('#CustomerCode').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Customer/getCustomer',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Code,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+
+                if (ui.item == null || ui.item == undefined) {
+                    $('#CustomerCode').val('');
+                    $('#CustomerName').val('');
+                    $('#CustomerCode').parents("td:first").removeClass("has-success");
+                    $('#CustomerName').parents("td:first").removeClass("has-success");
+                    $('#CustomerCode').parents("td:first").addClass("has-error");
+
+                    $('#Currencyrate').val('');
+                    $('#TransactionCurrencyCode').val('');
+                    $('#tcc').text('Total In Supplier Currency');
+                    $('#TransactionCurrency').val('');
+                    $('#DeliveryName').val('');
+                    $('#StreetPoBox').val('');
+                    $('#Suburb').val('');
+                    $('#City').val('');
+                    $('#StateRegion').val('');
+                    $('#Country').val('');
+                    $('#PostalCode').val('');
+                    $("table#example1").find("tr:gt(0)").remove();
+
+                    for (var i = 0; i < 2; i++) {
+                        $add_row();
+                    }
+                }
+
+            },
+            select: function (event, ui) {
+                $('#CustomerCode').val(ui.item.label);
+                $('#CustomerId').val(ui.item.value);
+
+                $.get('/Customer/checkCustomer', { 'query': ui.item.label }, function (data, status) {
+
+
+                    if (data == '') {
+                        $('#CustomerCode').val('');
+                        $('#CustomerName').val('');
+                        $('#CustomerCode').parents("td:first").addClass("has-error");
+                        $('#CustomerId').val(0);
+
+                        $('#Currencyrate').val('');
+                        $('#TransactionCurrencyCode').val('');
+                        $('#tcc').text('Total In Supplier Currency');
+                        $('#TransactionCurrency').val('');
+                        $('#DeliveryName').val('');
+                        $('#StreetPoBox').val('');
+                        $('#Suburb').val('');
+                        $('#City').val('');
+                        $('#StateRegion').val('');
+                        $('#Country').val('');
+                        $('#PostalCode').val('');
+                    }
+                    else {
+                        $('#CustomerCode').parents("td:first").removeClass("has-error");
+                        $('#CustomerName').parents("td:first").removeClass("has-error");
+                        $('#CustomerCode').parents("td:first").addClass("has-success");
+                        $('#CustomerName').parents("td:first").addClass("has-success");
+                        $('#CustomerName').val(data.Name);
+
+                        $('#CustomerCode').val(data.Code);
+                        $('#CustomerId').val(data.Id);
+                        $('#Currencyrate').val(data.CurrencyPurchaseRate);
+                        $('#TransactionCurrencyCode').val(data.CurrencyCode);
+                        $('#tcc').text('In ' + data.CurrencyCode);
+                        $('#TransactionCurrency').val(data.CurrencyId);
+                        $('#DeliveryName').val(data.ContactName);
+                        $('#StreetPoBox').val(data.DelAddressName);
+                        $('#Suburb').val(data.DelSuburb);
+                        $('#City').val(data.DelCity);
+                        $('#StateRegion').val(data.DelStateRegion);
+                        $('#Country').val(data.DelCountry);
+                        $('#PostalCode').val(data.DelPostalCode);
+
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+        $('#CustomerName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Customer/getCustomerN',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#CustomerName").val("");
+                    $('#CustomerCode').val('');
+                    $('#CustomerName').val('');
+                    $('#CustomerCode').parents("td:first").removeClass("has-success");
+                    $('#CustomerName').parents("td:first").removeClass("has-success");
+                    $('#CustomerName').parents("td:first").addClass("has-error");
+                    $('#CustomerId').val(0);
+                    $('#Currencyrate').val('');
+                    $('#TransactionCurrencyCode').val('');
+                    $('#tcc').text('Total In Supplier Currency');
+                    $('#TransactionCurrency').val('');
+                    $('#DeliveryName').val('');
+                    $('#StreetPoBox').val('');
+                    $('#Suburb').val('');
+                    $('#City').val('');
+                    $('#StateRegion').val('');
+                    $('#Country').val('');
+                    $('#PostalCode').val('');
+                    $("table#example1").find("tr:gt(0)").remove();
+
+                    for (var i = 0; i < 2; i++) {
+                        $add_row();
+                    }
+                }
+            },
+            select: function (event, ui) {
+                $('#CustomerName').val(ui.item.label);
+                $('#CustomerId').val(ui.item.value);
+
+                $.get('/Customer/checkCustomerN', { 'query': ui.item.label }, function (data, status) {
+
+
+
+                    if (data == '') {
+                        $('#CustomerCode').val('');
+                        $('#CustomerName').val('');
+                        $('#CustomerCode').parents("td:first").addClass("has-error");
+
+                        $('#TaxId').val(1);
+                        $('#Currencyrate').val('');
+                        $('#TransactionCurrencyCode').val('');
+                        $('#tcc').text('Total In Supplier Currency');
+                        $('#TransactionCurrency').val('');
+                        $('#DeliveryName').val('');
+                        $('#StreetPoBox').val('');
+                        $('#Suburb').val('');
+                        $('#City').val('');
+                        $('#StateRegion').val('');
+                        $('#Country').val('');
+                        $('#PostalCode').val('');
+
+                    }
+                    else {
+                        $('#CustomerCode').parents("td:first").removeClass("has-error");
+                        $('#CustomerName').parents("td:first").removeClass("has-error");
+                        $('#CustomerCode').parents("td:first").addClass("has-success");
+                        $('#CustomerName').parents("td:first").addClass("has-success");
+                        $('#CustomerName').val(data.Name);
+                        $('#TaxId').val(data.TaxId);
+                        $('#CustomerCode').val(data.Code);
+                        $('#CustomerId').val(data.Id);
+                        $('#Currencyrate').val(data.CurrencyPurchaseRate);
+                        $('#TransactionCurrencyCode').val(data.CurrencyCode);
+                        $('#tcc').text('In ' + data.CurrencyCode);
+                        $('#TransactionCurrency').val(data.CurrencyId);
+                        $('#DeliveryName').val(data.ContactName);
+                        $('#StreetPoBox').val(data.DelAddressName);
+                        $('#Suburb').val(data.DelSuburb);
+                        $('#City').val(data.DelCity);
+                        $('#StateRegion').val(data.DelStateRegion);
+                        $('#Country').val(data.DelCountry);
+                        $('#PostalCode').val(data.DelPostalCode);
+
+
+                    }
+
+                });
+                return false;
+            },
+
+            minLength: 1
+        });
+        
+
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnPark").on("click", function (event) {
+            $("#Status").val("Saved As Draft");
+
+        });
+
+        $("#btnPlace").on("click", function (event) {
+            $("#Status").val("Saved");
+
+        });
+
+
+
+        $("form").on("submit", function (event) {
+
+            var isValid = $(this).valid();
+
+            if (isValid) {
+                
+
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+            }
+
+            else {
+
+                //                $("#btnsave").show();
+            }
+
+
+        });
+
+
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+        
+    });
+</script>
+
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+ @using (Html.BeginForm())
+  {
+<aside class="right-side">
+ <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>
+                       Debit Note
+                        <small>Entry/Edit Form</small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#"></a></li>
+                        <li class="active"> </li>
+                    </ol>
+                </section>
+                   <div class="nav-tabs-custom">
+
+           
+                                <ul class="nav nav-tabs">
+                                @if(Model.Id != 0){
+                                   <li class="pull-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Debit Note @Model.NO (@Model.Status)</li>
+                                    
+
+                                    }
+                                      
+                                   
+                                    @if(Model.Status=="Saved")
+                                    {
+                                        <li class="pull-right"><input type="submit" id="btnPlace" class="btn btn-primary" value="Save" /></li>
+                                  
+                                    }
+                                     else 
+                                    {
+                                          <li class="pull-right"><input type="submit" id="btnPlace" class="btn btn-primary" value="Save" /></li>
+                                          <li class="pull-right"><input type="submit" id="btnPark" class="btn btn-primary" value="Save As Draft" /></li>
+                                   
+                                    }
+
+                                </ul>
+                         
+                                         </div>   
+                                       @if (ViewBag.Message != null)
+                                       {
+                                          <div class="alert alert-success alert-dismissable" >
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <b>Debit Note</b><br />
+                                     @ViewBag.Message. <a href='/SalesReturn/Create'> Enter a new Debit Note?</a> 
+                                    </div> 
+                                       }
+                <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+ </div>
+  <div id="loading">
+                                    <div id="loadingcontent">
+                                         <p id="loadingspinner">
+                                          Loading...
+                                      </p>
+                                     </div>
+                                    </div>
+                <!-- Main content -->
+                <section class="content">
+                 @* <div class="form-group row"> <div class="col-xs-8"> <label class="control-label">Effective Date</label> <div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="mm-dd-yyyy"> <input class="form-control" type="text" readonly="" value="12-02-2012"> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div> </div> </div>*@
+                
+                      @* <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    *@
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table2">
+                                        @Html.HiddenFor(model => model.Id)
+                                        @Html.HiddenFor(model => model.NO)
+                                        @Html.HiddenFor(model => model.CustomerId)
+                                        @Html.HiddenFor(model => model.Status)
+                                        @Html.HiddenFor(model => model.TransactionCurrency)
+                                        @Html.HiddenFor(model => model.BaseCurrencyCode)
+                                        <tbody>
+                                            <tr>
+                                                <td> @Html.Label("Customer Code")<span style="font-weight:bold;color:Red;">*</span></td>
+
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.CustomerCode, new { @class = "form-control", @placeholder = "Enter Customer Code" })
+                                                    @Html.ValidationMessageFor(model => model.CustomerCode)
+                                                </td>
+
+                                                <td></td>
+                                                <td> @Html.Label("Delivery Name") </td>
+
+
+                                                <td> @Html.TextBoxFor(model => model.DeliveryName, new { @class = "form-control", @placeholder = "Enter Delivery Name" })</td>
+                                            </tr>
+                                            <tr>
+                                                <td> @Html.Label("Customer Name")<span style="font-weight:bold;color:Red;">*</span></td>
+
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @placeholder = "Enter Customer Name" })
+                                                    @Html.ValidationMessageFor(model => model.CustomerName)
+                                                </td>
+                                                <td></td>
+                                                <td>@Html.Label("Street Address")</td>
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.StreetPoBox, new { @class = "form-control", @placeholder = "Enter Street Address" })
+                                                    @Html.ValidationMessageFor(model => model.StreetPoBox)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td> @Html.Label("Customer Reference")</td>
+                                                <td>  @Html.TextBoxFor(model => model.Reference, new { @class = "form-control", @placeholder = "Enter Customer Refence" })</td>
+                                                <td></td>
+                                                <td>@Html.Label("Suhurb")</td>
+                                                <td> @Html.TextBoxFor(model => model.Suburb, new { @class = "form-control", @placeholder = "Enter Suhurb" })</td>
+                                            </tr>
+                                            <tr>
+                                                <td> @Html.Label("Payment Term")</td>
+                                                <td>    @Html.DropDownListFor(model => model.PaymentTermId, new SelectList(ViewBag.PaymentTerms, "Id", "PaymentTermDescription"), "----Select----", new { @class = "form-control" })</td>
+                                                <td></td>
+                                                <td>@Html.Label("City")</td>
+                                                <td> @Html.TextBoxFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Reference Invoice No </td>
+                                                <td>@Html.DropDownListFor(model => model.ReferenceNo, new SelectList(ViewBag.Invoices, "Id", "NO"), "----Select----", new { @class = "form-control select2" })</td>
+
+                                                <td></td>
+                                                <td>@Html.Label("State/Region")</td>
+                                                <td> @Html.TextBoxFor(model => model.StateRegion, new { @class = "form-control", @placeholder = "Enter State/Region" })</td>
+                                            </tr>
+                                            <tr>
+
+                                                <td> @Html.Label("Order Date")</td>
+                                                <td>
+                                                    <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.Date, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                    @Html.ValidationMessageFor(model => model.Date)
+                                                </td>
+
+                                                <td></td>
+                                                <td>@Html.Label("Country")</td>
+                                                <td> @Html.TextBoxFor(model => model.Country, new { @class = "form-control", @placeholder = "Enter Country" })</td>
+                                            </tr>
+
+                                           
+                                        </tbody>
+
+                                    </table>
+                                 
+                                        <table id="example101">
+
+                                            <tbody>
+                                                <tr>
+                                                    <td>@Html.Label("Amount")</td>
+
+                                                    <td> @Html.TextBoxFor(model => model.TotalAmount, new { @class = "form-control", @placeholder = "Enter Amount" })</td>
+                                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+
+                                                    <td>@Html.Label("Tax")</td>
+                                                    <td> @Html.DropDownListFor(model => model.TaxId, new SelectList(ViewBag.TaxSingle, "TaxId", "Name"), "----Select----", new { @class = "form-control" })</td>
+                                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                   
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+
+                        </div>
+                        
+
+                           
+                               
+                           
+                        
+
+                            <div class="col-md-6">
+                                <div class="box">
+                                    @*<textarea class="form-control" placeholder="Enter Comments" rows="7"></textarea>*@
+                                    @Html.TextAreaFor(model => model.Memo, new { @rows = 7, @class = "form-control", @placeholder = "Enter Comments" })
+
+                                </div>
+                            </div>
+
+
+
+                            <!-- /.box-body -->
+                            <!-- Modal -->
+
+
+
+</div>
+</section><!-- /.content -->
+           </aside>     
+     
+                 }

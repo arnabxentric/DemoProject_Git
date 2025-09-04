@@ -1,0 +1,408 @@
+﻿@model XenERP.Models.SalesInvoice
+@using XenERP.Models
+@{
+    ViewBag.Title = "PrintBillOfSupply";
+    var slno = 0;
+    var slno1 = 0;
+    decimal quan = 0;
+
+}
+
+<h2>PrintChallan</h2>
+<head>
+    <style type="text/css" media="print">
+        @Page
+        {
+            size:  auto;   /* auto is the initial value */
+            margin: 0mm;  /* this affects the margin in the printer settings */
+        }
+
+        html
+        {
+            background-color: #FFFFFF;
+            margin: 0px;  /* this affects the margin on the html before sending to printer */
+        }
+
+        body
+        {
+            border: solid 1px blue ;
+            margin: 10mm 15mm 10mm 15mm; /* margin you want for the content */
+        }
+    </style>
+
+    <style type="text/css">
+        #scissors {
+            height: 43px; /* image height */
+            width: 90%;
+            margin: auto auto;
+            background-image: url('../../Images/scissor.png');
+            background-repeat: no-repeat;
+            background-position: right;
+            position: relative;
+        }
+
+            #scissors div {
+                position: relative;
+                top: 50%;
+                border-top: 3px dashed black;
+                margin-top: -3px;
+            }
+
+        u {
+            border-bottom: 1px dotted #000;
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+
+            $('#btnprnt').click(function () {
+                var divElements = document.getElementById("print1").innerHTML;
+
+
+                document.body.innerHTML =
+                    "<html><head><title>Challan</title></head><body>" +
+                    divElements + "</body>";
+
+
+                //Print Page
+                window.print();
+                window.location.href = "/SalesInvoice/Index";
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.nxt').click(function () {
+                window.location.href = "/SalesInvoice/Create";
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <aside class="right-side">
+        <div id="content">
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="widget-box">
+
+                        <input name="" type="button" value="Next Invoice" class="btn nxt btn-info pull-left" />
+                        <div style="text-align:center">
+                            <input name="" type="button" id="btnprnt" value="PRINT" class="btn btn-danger" />
+                        </div>
+
+                        <br />
+
+
+                        <div class="col-md-12" id="print1" style="padding:10px;border:5px solid gray;margin:0;">
+                            <br />
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                    <tr style="border:1px solid black; margin-bottom:5px;">
+
+                                        <td colspan="1">
+                                            <table width="100%">
+                                                <tr>
+                                                    <td style="text-align:left ;width:90%">
+                                                        <img src="~/Images/Picture1.png" />
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td>
+                                            <table width="100%">
+                                                <tr>
+
+                                                    <td style="text-align:left ;width:90%">
+                                                        <h4 style="margin:5px 0 0 0;font-family:Arial"><b>Hi-Breed International Sales & Service </b></h4>
+                                                        <br /><b>H.O.: </b>22,R.N. Mukherjee Road,5th Floor,Kolkata-700001
+                                                        <br /><b>Phone: </b>(033)4007-0525/9051040404
+                                                        <br /><b>Farm: </b>58 D.H Road, P.O. Joka,Kolkata-700104
+                                                        <br /><b>Phone: </b>2453-3300/9051030333
+                                                        <br /><b>GSTIN: </b>19AABFH7726DIZG
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                    <tr>
+                                        <td colspan="4" align="center"><span style="font-size:xx-large;font-weight:bolder;">Bill Of Supply</span></td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                                <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+
+                                    <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                            <td colspan="2" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+                                                From,
+                                                <p>
+                                                    <strong>HI-BREED INTERNATIONAL SALES & SERVICE</strong>
+                                                    <br />Factory-58, D.H. Road Joka, Kolkata700104
+                                                    <br />Landline No:(033)2453-3300, Mobile:7980706411
+                                                </p>
+
+                                                To,
+                                                <p>
+
+                                                    <strong>@ViewBag.customer</strong>
+                                                    <br />Address :@ViewBag.address
+
+                                                </p>
+                                            </td>
+                                            <td colspan="1" class="date">
+                                                <p>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td width="" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>No.</strong>&nbsp;&nbsp;&nbsp;:&nbsp;@Model.NO</td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td width="" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Date</strong>&nbsp;:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.InvoiceDate)</td>
+                                                        </tr>
+
+
+                                                    </table>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+
+                                <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                    <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+
+                                        <thead>
+                                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                                <th style="text-align:center; border:1px solid black; margin-bottom:5px;" width="5%">SL.No.</th>
+                                                <th style="text-align:center; border:1px solid black; margin-bottom:5px;" width="25%">Item</th>
+                                                <th style="text-align:center; border:1px solid black; margin-bottom:5px;" width="10%">HSN Code</th>
+                                                <th style=" text-align:center; border:1px solid black; margin-bottom:5px;padding:8px;" colspan="2" width="15%">Quantity</th>
+                                                <th style=" text-align:center; border:1px solid black; margin-bottom:5px;padding:8px;" colspan="2" width="15%">Unit</th>
+                                                <th style=" text-align:center; border:1px solid black; margin-bottom:5px;padding:8px;" colspan="2" width="15%">Rate</th>
+                                                <th style=" text-align:center; border:1px solid black; margin-bottom:5px;padding:8px;" colspan="2" width="15%">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in ViewBag.podmvList)
+                                            {
+                                                ++slno;
+                                                quan = item.Quantity + quan;
+                                            <tr>
+                                                <td width="5%">
+
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@slno</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td width="25%">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:35px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.ItemName</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td width="10%">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:35px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.HsnCode</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td width="15%" colspan="2">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.Quantity</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                                <td width="15%" colspan="2">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.UnitName</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                                <td width="15%" colspan="2">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.Price</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                                <td width="15%" colspan="2">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(@item.SubTotal, 2)</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+
+                                            </tr>
+                                            }
+
+                                            <tr>
+                                                <td colspan="3">
+
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">Total Quantity</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td colspan="2">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:35px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@quan</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td colspan="6">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:35px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">---</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                            </tr>
+
+
+                                            @foreach (InvoiceTotal item in ViewBag.InvoiceTotalList)
+                                            {
+                                                <tr class="total">
+
+
+                                                    <td colspan="9">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                                                <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.Name</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+
+                                                    <td>
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                                                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                                                <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.Amount</td>
+                                                            </tr>
+
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        <tr class="">
+                                            <td colspan="10">
+
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr style="border:1px solid black; margin-bottom:5px;">
+                                                        <td align="left" style="padding:8px;border:1px solid black; margin-bottom:5px;"><strong><span>Rupees</span>: @ViewBag.BCTotalAmount Only</strong></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+
+                                <div>
+                                    <table width="100%" border="1" cellspacing="0" cellpadding="0" bottom="0px">
+                                        <tbody>
+                                            <tr>
+                                                <td width="50%" colspan="4">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                                                        <tr>
+                                                            <td style="padding:5px 10px;"><strong>Payment Details:</strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding:5px 10px;"><span>Company Name</span>: Hi-Breed International Sales & Service</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding:5px 10px;"><span>Bank</span>: ICICI Bank </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding:5px 10px;"><span>Account No.</span> : 000605034956​</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding:5px 10px;"><span>IFSC Code</span>: ICIC0000006​</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="padding:5px 10px;"><span>Payment Mode-</span>: By A/C payee check/DD/NEFT/RTGS</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td width="50%" colspan="3">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td align="center" style="padding:5px 10px;"><strong>E. & O. E.</strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="padding:5px 10px;"><strong>For Hi-Breed International Sales & Service</strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="padding:5px 10px;">&nbsp;</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="padding:5px 10px;">&nbsp;</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="padding:5px 10px;"><strong>Authorised Signatory</strong></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="left" style="padding:5px 10px;"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="right" style="padding:5px 10px;"></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                    </table>
+                                </div>
+
+                               
+                            </div>
+
+                        </div>
+                </div>
+            </div>
+
+
+        </div>
+    </aside>
+</body>

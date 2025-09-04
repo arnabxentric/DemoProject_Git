@@ -1,0 +1,2748 @@
+﻿@model XenERP.Models.ModelView.FarmerReportModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+
+<style>
+    .table-responsive {
+        min-height: 0.01%;
+        overflow-x: auto;
+    }
+
+    table.chompa td input[type="text"] {
+        width: 100%;
+    }
+
+    table.chompa td select {
+        width: 100%;
+    }
+
+    label.heading {
+        padding: 10px;
+        font-weight: bold;
+        border: 1px solid #000000;
+        display: block;
+        margin-bottom: 0;
+        background: #e9e9e9;
+    }
+
+    table.heading {
+        padding: 10px;
+        border: 1px solid #000000;
+        border-top: 0;
+        display: block;
+        margin-bottom: 30px;
+    }
+</style>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+    });
+
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+
+        $('#FarmerName').autocomplete({
+
+
+            source: function (request, response) {
+                $.ajax({
+                    url: '/FarmerReport/getFarmer',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#FarmerName").val("");
+                    $('#FarmId').val(0);
+
+
+                }
+                else {
+
+                    $('#FarmerName').val(ui.item.label);
+                    $('#FarmId').val(ui.item.value);
+                }
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                $('#FarmerName').val(ui.item.label);
+                $('#FarmId').val(ui.item.value);
+                var v = $("#FarmId").val();
+
+                $.get("/FarmerReport/GetFlockCode", { data: v }, function (data) {
+
+                    $("#FlockId").empty();
+                    var options = $("#FlockId");
+                    options.append(new Option("---Select Flock Code-----", "-1"));
+                    $.each(data, function () {
+                        options.append(new Option(this.FlockCode, this.Id));
+                    });
+
+
+                });
+
+
+                return false;
+            },
+
+            minLength: 1
+        });
+
+
+        //    $("#FlockId").change(function () {
+
+
+
+        $("#ShowFlockDetails").click(function () {
+
+            $("#loading").fadeIn();
+            var opts = {
+                lines: 12, // The number of lines to draw
+                length: 7, // The length of each line
+                width: 4, // The line thickness
+                radius: 10, // The radius of the inner circle
+                color: '#000', // #rgb or #rrggbb
+                speed: 2.0, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false // Whether to use hardware acceleration
+            };
+            var target = document.getElementById('loading');
+            var spinner = new Spinner(opts).spin(target);
+
+
+
+            var f = $("#FarmId").val();
+            var v = $("#FlockId option:selected").text();
+
+            $.get("/FarmerReport/GetFlockDetails", {Farmer:f, Flock: v }, function (data) {
+
+                $("#loading").fadeOut();
+                alert(data.Status);
+
+                if (data.Status != "Success")
+                {
+                    $("#FlockId option").remove();
+
+                }
+
+
+
+
+                $("#BranchId").val(data.BranchId);
+                $("#FlockCode").val(data.FlockCode);
+                $("#DateOfPlacementString").val(data.DateOfPlacementString);
+                $("#FlockEndDateString").val(data.FlockEndDateString);
+                $("#AgeOfChicks").val(data.AgeOfChicks);
+                $("#NoOfChicks").val(data.NoOfChicks);
+                $("#NoOfChicksLeft").val(data.NoOfChicksLeft);
+                $("#ShortageOfBirds").val(data.ShortageOfBirds);
+                $("#FarmerName").val(data.FarmerName);
+                $("#Address").val(data.Address);
+                $("#SupervisorName").val(data.SupervisorName);
+                $("#ChicksCost").val(data.ChicksCost);
+                $("#MortalityOfBirds").val(data.MortalityOfBirds);
+                $("#ExcessBirds").val(data.ExcessBirds);
+                $("#TotalWeightOfChicks").val(data.TotalWeightOfChicks);
+                $("#ChikRateCost").val(data.ChikRateCost);
+                $("#FeedRateCost").val(data.FeedRateCost);
+                $("#MedicineCost").val(data.MedicineCost);
+                $("#OverHeadCost").val(data.OverHeadCost);
+                $("#GrowingChargeFormula").val(data.GrowingChargeFormula);
+                $("#GrowingChargefixed").val(data.GrowingChargefixed);
+                $("#GrowingCharge").val(data.GrowingCharge);
+                $("#RateBonus").val(data.RateBonus);
+                $("#FCRActual").val(data.FCRActual);
+                $("#StandarCost").val(data.StandardCost);
+                $("#TotalWeightOfChicksClosing").val(data.TotalWeightOfChicksClosing);
+                $("#AdvanceDeduction").val(data.AdvanceDeduction);
+                $("#AverageSaleRateForReadyBirdPurchase").val(data.AverageSaleRateForReadyBirdPurchase)
+
+                $("#AmountDueForReadyBirdPurchase").val(data.AmountDueForReadyBirdPurchase)
+                $(".GrowingChargefixedType").text(data.GrowingChargefixedType);
+                $(".ChickRateType").text(data.ChickRateType);
+                $(".FeedRateType").text(data.FeedRateType);
+                $(".MedicineType").text(data.MedicineType);
+                $(".OverHeadType").text(data.OverHeadType);
+                $(".GrowingChargefixedType").text(data.GrowingChargefixedType);
+                $(".GrowingChargeType").text(data.GrowingChargeType);
+                $(".RateBonusType").text(data.RateBonusType);
+                $(".StandardCostType").text(data.StandardCostType);
+                $("#dataTable").find("tr:gt(0)").remove();
+
+
+                $.each(data.feedlist, function (index, item) {
+                    //-----AYAN---------
+
+
+                    if (item.CategoryId == 4) {
+                        var table = document.getElementById("dataTable");
+                        var rowCount = table.rows.length;
+                        var row = table.insertRow(rowCount);
+
+                        //------------Code By Ayan--------------------
+
+
+                        var elementH = document.createElement("input");
+                        elementH.type = "hidden";
+                        elementH.className = "IdToHoldInEdit";
+
+                        var elementH0 = document.createElement("input");
+                        elementH0.type = "hidden";
+                        elementH0.name = "CategoryId" + index;
+                        elementH0.id = "CategoryId" + index;
+                        elementH0.value = item.CategoryId;
+                        elementH0.className = "CategoryId";
+
+                        var cell0 = row.insertCell(0);
+                        var element0 = document.createElement("label");
+                        element0.className = "CategoryName";
+                        element0.id = "Category" + index;
+                        element0.name = "CategoryName" + index;
+                        element0.innerHTML = item.CategoryName;
+
+                        cell0.appendChild(element0);
+                        cell0.appendChild(elementH);
+                        cell0.appendChild(elementH0);
+
+
+                        var cell1 = row.insertCell(1);
+
+                        var elementH1 = document.createElement("input");
+                        elementH1.type = "hidden";
+                        elementH1.name = "FeedId" + index;
+                        elementH1.id = "FeedId" + index;
+                        elementH1.value = item.ProductId;
+                        elementH1.className = "FeedId";
+
+
+                        var element1 = document.createElement("label");
+                        element1.className = "FeedName";
+                        element1.id = "Feed" + index;
+                        element1.name = "FeedName" + index;
+                        element1.innerHTML = item.ProductName;
+                        cell1.appendChild(element1);
+                        cell1.appendChild(elementH1);
+
+
+                        var cell2 = row.insertCell(2);
+
+                        var elementH2 = document.createElement("input");
+                        elementH2.type = "hidden";
+                        elementH2.name = "UOMId" + index;
+                        elementH2.id = "UOMId" + index;
+                        elementH2.value = item.UOMId;
+                        elementH2.className = "UOMId";
+
+
+                        var element2 = document.createElement("label");
+                        element2.name = "UOMName" + index;
+                        element2.id = "UOMName" + index;
+                        element2.className = "UOMName";
+                        element2.innerHTML = item.UOMName;
+                        cell2.appendChild(element2);
+                        cell2.appendChild(elementH2);
+
+
+                        var cell3 = row.insertCell(3);
+
+                        var element3 = document.createElement("label");
+                        element3.name = "UnitOf" + index;
+                        element3.className = "UnitOf";
+                        element3.id = "UnitOf" + index;
+                        element3.innerHTML = item.UnitFormula;
+
+
+
+                        var element3H = document.createElement("input");
+                        element3H.type = "hidden";
+                        element3H.name = "UnitOfInput" + index;
+                        element3H.className = "UnitOfInput";
+                        element3H.id = "UnitOfInput" + index;
+                        element3H.value = item.UnitFormula;
+
+
+
+
+                        cell3.appendChild(element3H);
+                        cell3.appendChild(element3);
+
+
+                        var cell4 = row.insertCell(4);
+
+                        var element4 = document.createElement("label");
+                        element4.className = "Quantity";
+                        element4.id = "Quantity" + index;
+                        element4.name = "Quantity" + index;
+                        element4.innerHTML = item.Quantity;
+                        //     element4.readOnly = true;
+
+
+
+                        var element4H = document.createElement("input");
+                        element4H.type = "hidden";
+                        element4H.className = "QuantityInput";
+                        element4H.id = "QuantityInput" + index;
+                        element4H.name = "QuantityInput" + index;
+                        element4H.value = item.Quantity;
+
+
+
+                        cell4.appendChild(element4H);
+                        cell4.appendChild(element4);
+
+
+                        var cell5 = row.insertCell(5);
+
+                        var element5 = document.createElement("label");
+                        element5.className = "LeftQuantity";
+                        element5.id = "LeftQuantity" + index;
+                        element5.name = "LeftQuantity" + index;
+                        element5.innerHTML = item.LeftQuantity;
+
+
+                        var element5H = document.createElement("input");
+                        element5H.type = "hidden";
+                        element5H.className = "LeftQuantityInput";
+                        element5H.id = "LeftQuantityInput" + index;
+                        element5H.name = "LeftQuantityInput" + index;
+                        element5H.value = item.LeftQuantity;
+
+
+
+                        cell5.appendChild(element5H);
+                        cell5.appendChild(element5);
+
+
+
+                        var cell6 = row.insertCell(6);
+
+
+                        var element6 = document.createElement("label");
+
+                        element6.name = "Desc" + index;
+                        element6.className = "Desc";
+                        element6.id = "Desc" + index;
+                        element6.innerHTML = item.Description;
+
+
+
+
+
+                        var element6H = document.createElement("input");
+                        element6H.type = "hidden";
+                        element6H.name = "DescInput" + index;
+                        element6H.className = "DescInput";
+                        element6H.id = "DescInput" + index;
+                        element6H.value = item.Description;
+
+                        cell6.appendChild(element6);
+                        cell6.appendChild(element6H);
+
+
+                        var cell7 = row.insertCell(7);
+                        var element7 = document.createElement("label");
+                        //     element7.type = "text";
+                        element7.name = "ConsumedQuantity" + index;
+                        element7.className = "ConsumedQuantity";
+                        element7.id = "ConsumedQuantity" + index;
+                        element7.innerHTML = item.ConsumedQuantity;
+
+
+                        var element7H = document.createElement("input");
+                        element7H.type = "hidden";
+                        element7H.name = "ConsumedQuantityInput" + index;
+                        element7H.className = "ConsumedQuantityInput";
+                        element7H.id = "ConsumedQuantityInput" + index;
+                        element7H.value = item.ConsumedQuantity;
+
+
+                        cell7.appendChild(element7H);
+                        cell7.appendChild(element7);
+
+
+
+
+                        var cell8 = row.insertCell(8);
+                        var element8 = document.createElement("label");
+
+                        element8.name = "PriceRate" + index;
+                        element8.className = "PriceRate";
+                        element8.id = "PriceRate" + index;
+                        element8.innerHTML = item.PriceRate;
+
+
+
+                        var element8H1 = document.createElement("input");
+                        element8H1.type = "hidden";
+                        element8H1.name = "PriceRateInput" + index;
+                        element8H1.className = "PriceRateInput";
+                        element8H1.id = "PriceRateInput" + index;
+                        element8H1.value = item.PriceRate;
+
+
+
+
+                        var element8H = document.createElement("input");
+                        element8H.type = "hidden";
+                        element8H.name = "UnitPrice" + index;
+                        element8H.className = "UnitPrice";
+                        element8H.id = "UnitPrice" + index;
+                        element8H.value = item.UnitPrice;
+                        cell8.appendChild(element8);
+                        cell8.appendChild(element8H);
+                        cell8.appendChild(element8H1);
+
+
+
+                        var cell9 = row.insertCell(9);
+                        var element9 = document.createElement("label");
+                        element9.name = "TotalExpenditure" + index;
+                        element9.className = "TotalExpenditure";
+                        element9.id = "TotalExpenditure" + index;
+                        element9.innerHTML = item.ConsumedQuantity * item.PriceRate;
+                        cell9.appendChild(element9);
+
+
+
+
+                        var element9H = document.createElement("input");
+                        element9H.type = "hidden";
+                        element9H.name = "TotalExpenditureInPut" + index;
+                        element9H.className = "TotalExpenditureInPut";
+                        element9H.id = "TotalExpenditureInPut" + index;
+                        element9H.value = item.ConsumedQuantity * item.PriceRate;
+                        cell9.appendChild(element9);
+                        cell9.appendChild(element9H);
+
+
+                    }
+                });
+
+                $("#dataTableMed").find("tr:gt(0)").remove();
+                var amountMedTotalUnit = 0;
+                var amountMedTotal = 0;
+
+                $.each(data.medlist, function (index, item) {
+                    //-----AYAN---------
+
+
+                    //alert(item.ConsumedQuantity);
+                    //alert(item.UnitPrice);
+
+                    if (item.CategoryId == 2 || item.CategoryId == 5) {
+                        var table = document.getElementById("dataTableMed");
+                        var rowCount = table.rows.length;
+                        var row = table.insertRow(rowCount);
+
+                        //------------Code By Ayan--------------------
+
+
+                        var elementH = document.createElement("input");
+                        elementH.type = "hidden";
+                        elementH.className = "IdToHoldInMedEdit";
+                        var elementH0 = document.createElement("input");
+                        elementH0.type = "hidden";
+                        elementH0.name = "CategoryMedId" + index;
+                        elementH0.id = "CategoryMedId" + index;
+                        elementH0.value = item.CategoryId;
+                        elementH0.className = "CategoryMedId";
+
+                        var cell0 = row.insertCell(0);
+                        var element0 = document.createElement("label");
+                        element0.className = "CategoryMedName";
+                        element0.id = "CategoryMed" + index;
+                        element0.name = "CategoryMedName" + index;
+                        element0.innerHTML = item.CategoryName;
+                        cell0.appendChild(element0);
+                        cell0.appendChild(elementH);
+                        cell0.appendChild(elementH0);
+
+
+
+                        var cell1 = row.insertCell(1);
+
+                        var elementH1 = document.createElement("input");
+                        elementH1.type = "hidden";
+                        elementH1.name = "FeedMedId" + index;
+                        elementH1.id = "FeedMedId" + index;
+                        elementH1.value = item.ProductId;
+                        elementH1.className = "FeedMedId";
+
+
+                        var element1 = document.createElement("label");
+                        element1.className = "FeedMedName";
+                        element1.id = "FeedMed" + index;
+                        element1.name = "FeedMedName" + index;
+                        element1.innerHTML = item.ProductName;
+                        cell1.appendChild(element1);
+                        cell1.appendChild(elementH1);
+
+
+                        var cell2 = row.insertCell(2);
+
+                        var elementH2 = document.createElement("input");
+                        elementH2.type = "hidden";
+                        elementH2.name = "UOMMedId" + index;
+                        elementH2.id = "UOMMedId" + index;
+                        elementH2.value = item.UOMId;
+                        elementH2.className = "UOMMedId";
+
+
+                        var element2 = document.createElement("label");
+                        element2.name = "UOMMedName" + index;
+                        element2.id = "UOMMedName" + index;
+                        element2.className = "UOMMedName";
+                        element2.innerHTML = item.UOMName;
+
+                        cell2.appendChild(element2);
+                        cell2.appendChild(elementH2);
+
+
+                        var cell3 = row.insertCell(3);
+
+                        var element3 = document.createElement("label");
+                        element3.name = "UnitMedOf" + index;
+                        element3.className = "UnitMedOf";
+                        element3.id = "UnitMedOf" + index;
+                        element3.innerHTML = item.UnitFormula;
+
+
+
+                        var element3H = document.createElement("input");
+                        element3H.type = "hidden";
+                        element3H.name = "UnitMedOfInput" + index;
+                        element3H.className = "UnitMedOfInput";
+                        element3H.id = "UnitMedOfInput" + index;
+                        element3H.value = item.UnitFormula;
+                        cell3.appendChild(element3);
+                        cell3.appendChild(element3H);
+
+
+
+                        var cell4 = row.insertCell(4);
+                        var element4 = document.createElement("label");
+                        element4.name = "MedConsumedQuantity" + index;
+                        element4.className = "MedConsumedQuantity";
+                        element4.id = "MedConsumedQuantity" + index;
+                        element4.innerHTML = item.ConsumedQuantity;
+
+
+                        var element4H = document.createElement("input");
+                        element4H.type = "hidden";
+                        element4H.name = "MedConsumedQuantityInput" + index;
+                        element4H.className = "MedConsumedQuantityInput";
+                        element4H.id = "MedConsumedQuantityInput" + index;
+                        element4H.value = item.ConsumedQuantity;
+                        cell4.appendChild(element4H);
+                        cell4.appendChild(element4);
+
+
+
+
+                        var cell5 = row.insertCell(5);
+                        var element5 = document.createElement("label");
+                        //     element5.type = "text";
+                        element5.name = "MedPriceRate" + index;
+                        element5.className = "MedPriceRate";
+                        element5.id = "MedPriceRate" + index;
+                        element5.innerHTML = item.PriceRate;
+
+
+                        var element5H = document.createElement("input");
+                        element5H.type = "hidden";
+                        element5H.name = "MedPriceRateInput" + index;
+                        element5H.className = "MedPriceRateInput";
+                        element5H.id = "MedPriceRateInput" + index;
+                        element5H.value = item.PriceRate;
+                        cell5.appendChild(element5H);
+                        cell5.appendChild(element5);
+
+
+
+                        var cell6 = row.insertCell(6);
+                        var element6 = document.createElement("label");
+                        //     element6.type = "text";
+                        element6.name = "MedUnitPrice" + index;
+                        element6.className = "MedUnitPrice";
+                        element6.id = "MedUnitPrice" + index;
+                        element6.innerHTML = item.UnitPrice;
+
+
+                        var element6H = document.createElement("input");
+                        element6H.type = "hidden";
+                        element6H.name = "MedUnitPriceInput" + index;
+                        element6H.className = "MedUnitPriceInput";
+                        element6H.id = "MedUnitPriceInput" + index;
+                        element6H.value = item.UnitPrice;
+
+                        cell6.appendChild(element6H);
+                        cell6.appendChild(element6);
+
+
+
+                        var cell7 = row.insertCell(7);
+                        var element7 = document.createElement("label");
+                        //    element7.type = "text";
+                        element7.name = "MedTotalExpenditure" + index;
+                        element7.className = "MedTotalExpenditure";
+                        element7.id = "MedTotalExpenditure" + index;
+                        element7.innerHTML = item.ConsumedQuantity * item.UnitPrice;
+
+
+                        var element7H = document.createElement("input");
+                        element7H.type = "hidden";
+                        element7H.name = "MedTotalExpenditureInput" + index;
+                        element7H.className = "MedTotalExpenditureInput";
+                        element7H.id = "MedTotalExpenditureInput" + index;
+                        element7H.value = item.ConsumedQuantity * item.UnitPrice;
+                        amountMedTotalUnit = amountMedTotalUnit + item.ConsumedQuantity * item.UnitPrice;
+
+
+                        cell7.appendChild(element7);
+                        cell7.appendChild(element7H);
+
+                        var cell8 = row.insertCell(8);
+
+                        var element8 = document.createElement("label");
+                        //    element8.type = "text";
+                        element8.name = "MedActualExpenditure" + index;
+                        element8.className = "MedActualExpenditure";
+                        element8.id = "MedActualExpenditure" + index;
+                        element8.innerHTML = item.ConsumedQuantity * item.PriceRate;
+                        amountMedTotal = amountMedTotal + item.ConsumedQuantity * item.PriceRate;
+
+
+                        var element8H = document.createElement("input");
+                        element8H.type = "hidden";
+                        element8H.name = "MedActualExpenditureInput" + index;
+                        element8H.className = "MedActualExpenditureInput";
+                        element8H.id = "MedActualExpenditureInput" + index;
+                        element8H.value = item.ConsumedQuantity * item.PriceRate;
+
+                        cell8.appendChild(element8H);
+                        cell8.appendChild(element8);
+
+                    }
+
+
+
+                });
+
+
+
+                var tableF = document.getElementById("dataTableMed");
+                var rowCountF = tableF.rows.length;
+                var rowF = tableF.insertRow(rowCountF);
+                var cellF0 = rowF.insertCell(0);
+                var cellF1 = rowF.insertCell(1);
+                var cellF2 = rowF.insertCell(2);
+                var cellF3 = rowF.insertCell(3);
+                var cellF4 = rowF.insertCell(4);
+                var cellF5 = rowF.insertCell(5);
+                var cellF6 = rowF.insertCell(6);
+                var cellF7 = rowF.insertCell(7);
+                var elementF7 = document.createElement("label");
+                elementF7.innerHTML = amountMedTotalUnit;
+                cellF7.appendChild(elementF7);
+                var cellF8 = rowF.insertCell(8);
+                var elementF8 = document.createElement("label");
+                elementF8.innerHTML = amountMedTotal;
+                cellF8.appendChild(elementF8);
+
+                $("#murgisell").find("tr:gt(0)").remove();
+                var amountSaleTotal = 0;
+
+                $.each(data.murgibikri, function (index, item) {
+
+
+                    var table = document.getElementById("murgisell");
+                    var rowCount = table.rows.length;
+                    var row = table.insertRow(rowCount);
+
+                    //---AYAN----------------
+
+
+                    var elementH0 = document.createElement("input");
+                    elementH0.type = "hidden";
+                    elementH0.name = "PartyIdSold" + index;
+                    elementH0.id = "PartyIdSold" + index;
+                    elementH0.value = item.PartyId;
+                    elementH0.className = "PartyIdSold";
+
+                    var cell0 = row.insertCell(0);
+
+                    var element0 = document.createElement("label");
+                    element0.className = "PartyNameSold";
+                    element0.id = "PartyNameSold" + index;
+                    element0.name = "PartyNameSold" + index;
+                    element0.innerHTML = item.PartyName;
+
+                    var element0H = document.createElement("input");
+                    element0H.type = "hidden";
+                    element0H.className = "PartyNameSoldInput";
+                    element0H.id = "PartyNameSoldInput" + index;
+                    element0H.name = "PartyNameSoldInput" + index;
+                    element0H.value = item.PartyName;
+
+
+
+
+                    cell0.appendChild(element0);
+                    cell0.appendChild(elementH0);
+                    cell0.appendChild(element0H);
+
+                    var cell1 = row.insertCell(1);
+
+                    var elementH1 = document.createElement("input");
+                    elementH1.type = "hidden";
+                    elementH1.name = "FlockIdSold" + index;
+                    elementH1.id = "FlockIdSold" + index;
+                    elementH1.value = item.FlockIdSold;
+                    elementH1.className = "FlockIdSold";
+
+
+
+
+                    var elementH11 = document.createElement("input");
+                    elementH11.type = "hidden";
+                    elementH11.name = "ItemId" + index;
+                    elementH11.id = "ItemId" + index;
+                    elementH11.value = item.ItemId;
+                    elementH11.className = "ItemId";
+
+
+                    var element1 = document.createElement("label");
+                    element1.className = "ItemCode";
+                    element1.id = "ItemCode" + index;
+                    element1.name = "ItemCode" + index;
+                    element1.innerHTML = item.ItemCode;
+                    cell1.appendChild(element1);
+                    cell1.appendChild(elementH1);
+                    cell1.appendChild(elementH11)
+
+                    var cell2 = row.insertCell(2);
+
+
+                    var element2 = document.createElement("label");
+
+                    element2.name = "MurgirOzon" + index;
+                    element2.id = "MurgirOzon" + index;
+                    element2.className = "MurgirOzon";
+                    element2.innerHTML = item.Quantity;
+                    //     element2.readOnly = true;
+
+
+                    var element2H = document.createElement("input");
+                    element2H.type = "hidden";
+                    element2H.name = "MurgirOzonInput" + index;
+                    element2H.id = "MurgirOzonInput" + index;
+                    element2H.className = "MurgirOzonInput";
+                    element2H.value = item.Quantity;
+
+
+                    cell2.appendChild(element2H);
+                    cell2.appendChild(element2);
+
+
+
+                    var cell3 = row.insertCell(3);
+
+                    var element3 = document.createElement("label");
+                    element3.name = "MurgirPrice" + index;
+                    element3.className = "MurgirPrice";
+                    element3.id = "MurgirPrice" + index;
+                    element3.innerHTML = item.Price;
+
+
+                    var element3H = document.createElement("input");
+                    element3H.type = "hidden";
+                    element3H.name = "MurgirPriceInput" + index;
+                    element3H.className = "MurgirPriceInput";
+                    element3H.id = "MurgirPriceInput" + index;
+                    element3H.value = item.Price;
+
+
+
+                    cell3.appendChild(element3);
+                    cell3.appendChild(element3H);
+
+                    var cell4 = row.insertCell(4);
+                    var element4 = document.createElement("label");
+                    element4.className = "NoOfPieces";
+                    element4.id = "NoOfPieces" + index;
+                    element4.name = "NoOfPieces" + index;
+                    element4.innerHTML = item.UnitFormula;
+
+
+                    var element4H = document.createElement("input");
+                    element4H.type = "hidden";
+                    element4H.className = "NoOfPiecesInput";
+                    element4H.id = "NoOfPiecesInput" + index;
+                    element4H.name = "NoOfPiecesInput" + index;
+                    element4H.value = item.UnitFormula;
+
+
+                    cell4.appendChild(element4H);
+                    cell4.appendChild(element4);
+
+
+                    var cell5 = row.insertCell(5);
+                    var element5 = document.createElement("label");
+                    element5.className = "TotalAmount";
+                    element5.id = "TotalAmount" + index;
+                    element5.name = "TotalAmount" + index;
+                    element5.innerHTML = item.TotalAmount;
+                    amountSaleTotal = amountSaleTotal + item.TotalAmount;
+
+
+
+                    var element5H = document.createElement("input");
+                    element5H.type = "hidden";
+                    element5H.className = "TotalAmountInput";
+                    element5H.id = "TotalAmountInput" + index;
+                    element5H.name = "TotalAmountInput" + index;
+                    element5H.value = item.TotalAmount;
+
+                    cell5.appendChild(element5H);
+                    cell5.appendChild(element5);
+
+                    var cell6 = row.insertCell(6);
+                    var element6 = document.createElement("label");
+                    element6.className = "InvoiceNo";
+                    element6.id = "InvoiceNo" + index;
+                    element6.name = "InvoiceNo" + index;
+                    element6.innerHTML = item.NO;
+
+
+
+                    var element6H = document.createElement("input");
+                    element6H.type = "hidden";
+                    element6H.className = "InvoiceNoInput";
+                    element6H.id = "InvoiceNoInput" + index;
+                    element6H.name = "InvoiceNoInput" + index;
+                    element6H.value = item.NO;
+                    cell6.appendChild(element6);
+                    cell6.appendChild(element6H);
+
+
+
+                    var cell7 = row.insertCell(7);
+                    var element7 = document.createElement("label");
+                    element7.className = "SaleDate";
+                    element7.id = "SaleDate" + index;
+                    element7.name = "SaleDate" + index;
+                    element7.innerHTML = item.SaleDateString;
+
+
+                    var element7H = document.createElement("input");
+                    element7H.type = "hidden";
+                    element7H.className = "SaleDateString";
+                    element7H.id = "SaleDateString" + index;
+                    element7H.name = "SaleDateString" + index;
+                    element7H.value = item.SaleDateString;
+
+                    cell7.appendChild(element7);
+                    cell7.appendChild(element7H);
+
+
+                });
+
+
+                var tableS = document.getElementById("murgisell");
+                var rowCountS = tableS.rows.length;
+                var rowS = tableS.insertRow(rowCountS);
+                var cellS0 = rowS.insertCell(0);
+                var cellS1 = rowS.insertCell(1);
+                var cellS2 = rowS.insertCell(2);
+                var cellS3 = rowS.insertCell(3);
+                var cellS4 = rowS.insertCell(4);
+                var cellS5 = rowS.insertCell(5);
+
+                var elementS5 = document.createElement("label");
+                elementS5.innerHTML = amountSaleTotal;
+                cellS5.appendChild(elementS5);
+
+                var cellS6 = rowS.insertCell(6);
+                var cellS7 = rowS.insertCell(7);
+
+                $.each(data.rb , function (index, item) {
+
+
+                    var table = document.getElementById("dataTableRateBonus");
+                    var rowCount = table.rows.length;
+                    var row = table.insertRow(rowCount);
+
+                    //---AYAN----------------
+
+                    var cell0 = row.insertCell(0);
+
+
+                    var element0 = document.createElement("input");
+                    element0.type = "text";
+                    element0.name = "ProductionCost" + index;
+                    element0.id = "ProductionCost" + index;
+                    element0.className = "ProductionCost";
+                    element0.value = item.ProductionCost;
+                    element0.readOnly = true;
+                    cell0.appendChild(element0);
+
+
+                    var cell1 = row.insertCell(1);
+
+                    var element1 = document.createElement("input");
+                    element1.type = "text";
+                    element1.name = "RateBonusPercentage" + index;
+                    element1.className = "RateBonusPercentage";
+                    element1.id = "RateBonusPercentage" + index;
+                    element1.value = item.RateBonusPercentage;
+                    element1.readOnly = true;
+                    cell1.appendChild(element1);
+
+
+                });
+
+
+
+                //----------Shortage Of Chicks--------------
+                var NoOfMurgiSold = 0;
+                var NoOfChicksLeft = 0;
+
+
+
+                $(".NoOfPieces").each(function () {
+                    NoOfMurgiSold += +parseInt($(this).text());
+                });
+
+
+                var NoOfChicksLeft = $("#NoOfChicksLeft").val();
+
+
+                //------------Average Weight Of Chicks---------
+                var ncl = $("#NoOfChicksLeft").val();// No Of chicks (end time)
+                var twcl = $("#TotalWeightOfChicksClosing").val()//Total Weight Of Chicks Closing
+                var awc = parseFloat(twcl / ncl).toFixed(2);
+
+                $("#AverageWeightOfChicks").val(awc);
+
+            });
+
+
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#CalculateCost").click(function () {
+
+            var feedexpn = 0;
+            var Medexpn = 0;
+            var Medexpact = 0;
+            var conquan = 0;
+            var recquan = 0;
+            var retquan = 0;
+            var medquan = 0;
+            var NoOfMurgiSold = 0;
+            var NoOfMurgiTaken = 0;
+            var TakenMurgiPrice = 0;
+            var murgirozon = 1;
+            var morgirOzonWithExcessbird = 0;
+            var totalamount = 0;
+            var shortmurgi = 0;
+            var AdditionalMedicineCost = $("#AdditionalMedicineCost").val();
+            $("#myModal").modal('show');
+
+
+
+
+            var k = $("#ChicksCost").val(); // original chick cost
+            var l = $("#NoOfChicks").val(); // No Of chicks (starting time)
+            var tmo = $("#TotalWeightOfChicks").val(); // Total Murgir Ozon
+
+
+            var h = k * l;
+
+
+            $("#MurgirRate").val(k); // Original murgir rate in the pop up
+            $("#MurgirDam").val(h); // Original Murgir Total Dam
+
+
+            $(".ConsumedQuantity").each(function () {
+                var UM = $(this).text();
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+                var vgh = ctr.find(".CategoryName").text();
+                if (vgh == 'FEED') {
+                    conquan += + parseFloat($(this).text()).toFixed(2);
+                }
+            });
+
+
+
+            $(".Quantity").each(function () {
+                var UM = $(this).val();
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+                var vgh = ctr.find(".CategoryName").text();
+                if (vgh == 'FEED') {
+                    recquan += +parseFloat($(this).text()).toFixed(2);
+                }
+            });
+
+
+
+
+            $(".MedConsumedQuantity").each(function () {
+                var UM = $(this).text();
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+                var vgh = ctr.find(".CategoryMedName").text();
+                if (vgh == 'MEDICINE') {
+                    medquan += +parseFloat($(this).text()).toFixed(2);
+                }
+            });
+
+
+
+
+            $(".TotalExpenditure").each(function () {
+                feedexpn += + parseFloat($(this).text()).toFixed(2);
+            });
+
+
+            $(".MedTotalExpenditure").each(function () {
+                Medexpn += + parseFloat($(this).text()).toFixed(2);
+            });
+
+            $(".MedActualExpenditure").each(function () {
+                Medexpact += +parseFloat($(this).text()).toFixed(2);
+            });
+
+
+            $(".MurgirOzon").each(function () {
+                morgirOzonWithExcessbird += +parseFloat($(this).text()).toFixed(2);
+            });
+
+
+            $(".NoOfPieces").each(function () {
+                NoOfMurgiSold += + parseInt($(this).text());
+            });
+            if (NoOfMurgiSold == 0) {
+                NoOfMurgiSold = 1;
+            }
+            $("#NoOfBirdsSold").val(NoOfMurgiSold);
+            var excessBirdWeight = parseInt($("#ExcessBirds").val()) * morgirOzonWithExcessbird / NoOfMurgiSold||0;
+            murgirozon = morgirOzonWithExcessbird - parseFloat(excessBirdWeight);
+
+            $("#NoOfBirdsSoldWt").val(murgirozon.toFixed(2));
+
+
+
+            //-------------Over Head Cost Calculation---------------------------------------
+
+            var otypeforfarmer = $(".OverHeadType").text();
+            var ocostforfarmer = $("#OverHeadCost").val(); // Over head cost given to farmers
+            $("#OverHeadRateForFarmer").val(ocostforfarmer); // Over Head Rate in the modal pop up
+
+            if (otypeforfarmer == 'KG') {
+
+                overheadforfarmer = (parseFloat(ocostforfarmer * murgirozon)).toFixed(2);
+                $("#totalOverHeadCostForFarmer").val(overheadforfarmer);
+
+            }
+            else {
+                overheadforfarmer = (parseFloat(ocostforfarmer * l)).toFixed(2);
+                $("#totalOverHeadCostForFarmer").val(overheadforfarmer);
+            }
+
+            //------------Feed and Medicine-----------------------------------------------------
+            var valueDes = $("#AdditionalMedicineDescription").val();
+
+            $("#FeedConTotal").val(conquan);
+            $("#MedConTotal").val(medquan);
+            $("#FeedConsumed").val(conquan);
+            $("#FeedRecieved").val(recquan);
+            $("#FeedReturned").val(recquan - conquan);
+            $("#KhabarKhoroch").val(feedexpn);
+            $("#MedicineKhoroch").val(Medexpact);
+            $("#AMC").val(AdditionalMedicineCost);
+            $("#AMCF").val(AdditionalMedicineCost);
+            $("#AMD").val(valueDes);
+            $("#AMDF").val(valueDes);
+
+            var tpc = parseFloat(h) + parseFloat(feedexpn) + parseFloat(Medexpact) + parseFloat(overheadforfarmer) + parseFloat(AdditionalMedicineCost);
+            $("#TotalProductionCost").val(tpc.toFixed(2));
+
+            var gh = (parseFloat(tpc / murgirozon)).toFixed(2);
+
+
+            $("#ProductionCostPerKG").val(gh);
+
+            //------------Calculation for farmer--------------------------------------
+            var chickforfarmer = 0;
+            var feedforfarmer = 0;
+            var medicineforfarmer = 0;
+            var overheadforfarmer = 0;
+            var totalproductionCostforfarmer = 0;
+            var ratebonuscal = 0;
+
+            //-----------Chick Cost for farmer---------------------------------------
+
+            var chicktype = $(".ChickRateType").text();
+            var chickcost = $("#ChikRateCost").val();
+            $("#MurgirRateForFarmer").val(chickcost);
+
+            //   chickforfarmer = (parseFloat(fdcost * murgirozon)).toFixed(2);
+            if (chicktype == 'KG') {
+                chickforfarmer = (parseFloat(chickcost * murgirozon)).toFixed(2);
+                $("#MurgirDamForFarmer").val(chickforfarmer);
+
+            }
+            else {
+                chickforfarmer = (parseFloat(chickcost * l)).toFixed(2);
+                $("#MurgirDamForFarmer").val(chickforfarmer);
+
+            }
+
+
+            //---------------Feed Cost for farmer---------------
+            $("#TotalFeedConFarmer").val(conquan);
+
+
+            var fdtype = $(".FeedRateType").text();
+            var fdcost = $("#FeedRateCost").val();
+            $("#FeedRateForFarmer").val(fdcost);
+
+
+            if (fdtype == 'KG') {
+                feedforfarmer = (parseFloat(fdcost * conquan)).toFixed(2);
+                $("#KhabarKhorochForFarmer").val(feedforfarmer);
+
+            }
+            else {
+                feedforfarmer = (parseFloat(fdcost * conquan)).toFixed(2);
+
+                $("#KhabarKhorochForFarmer").val(feedforfarmer);
+            }
+
+            //-----------Medicine Cost for farmer---------------
+
+            $("#AMCF").val(AdditionalMedicineCost);
+
+
+
+            $("#TotalMedConFarmer").val(medquan);
+
+            var mdtype = $(".MedicineType").text();
+
+            var mdcost = $("#MedicineCost").val();
+
+
+            if ($("#BranchId").val() == 15) {
+
+                medicineforfarmer = 0;
+                $("#MedicineKhorochForFarmer").val(medicineforfarmer);
+            }
+            else {
+
+                if (mdcost == 0) {
+
+                    $("#MedicineRateForFarmer").val(mdcost);
+
+                    if (mdtype == 'KG') {
+
+                        $(".MedTotalExpenditure").each(function () {
+
+                            medicineforfarmer += +parseFloat($(this).text());
+
+                        });
+
+                        $("#MedicineKhorochForFarmer").val(medicineforfarmer);
+
+                    }
+                    else {
+
+                        medicineforfarmer = (parseFloat(mdcost * medquan)).toFixed(2);
+                        $("#MedicineKhorochForFarmer").val(medicineforfarmer);
+                    }
+                }
+
+                else {
+
+                    if (mdtype == 'KG') {
+
+
+                        medicineforfarmer = (parseFloat(mdcost * medquan)).toFixed(2);
+                        $("#MedicineKhorochForFarmer").val(medicineforfarmer);
+
+
+                    }
+
+                    else {
+                        medicineforfarmer = parseFloat(mdcost * $("#NoOfChicks").val()).toFixed();
+
+                        $("#MedicineKhorochForFarmer").val(medicineforfarmer);
+                    }
+
+                }
+
+
+
+
+            }
+
+
+            //----------OverHead Cost Calculation----------------
+
+            var otype = $(".OverHeadType").text();
+            var ocost = $("#OverHeadCost").val(); // Over head cost given to farmers
+            $("#OverHeadRate").val(ocost); // Over Head Rate in the modal pop up
+
+            if (otype == 'KG') {
+
+                overheadforfarmer = (parseFloat(ocost * murgirozon)).toFixed(2);
+                $("#totalOverHeadCost").val(overheadforfarmer);
+
+            }
+            else {
+
+                overheadforfarmer = (parseFloat(ocost * l)).toFixed(2);
+                $("#totalOverHeadCost").val(overheadforfarmer);
+            }
+
+
+
+
+            totalproductionCostforfarmer = (parseFloat(chickforfarmer) + parseFloat(feedforfarmer) + parseFloat(medicineforfarmer) + parseFloat(overheadforfarmer) + parseFloat(AdditionalMedicineCost)).toFixed(2);
+
+            $("#TotalProductionCostForFarmer").val(totalproductionCostforfarmer);
+
+
+            var prcostfrm = (parseFloat(totalproductionCostforfarmer / murgirozon)).toFixed(2);
+            $("#ProductionCostForFarmer").val(prcostfrm);
+            var pc =0 ;
+
+
+            $(".ProductionCost").each(function () {
+                if (prcostfrm <= $(this).val()) {
+                    var UM = $(this).val();
+                    var ctd = $(this).closest('td');
+                    var ctr = ctd.closest('tr');
+
+                    var vgh = ctr.find(".RateBonusPercentage").val();
+                    pc = vgh;
+                    $("#RB").val(pc);
+                    return false;
+
+                }
+
+
+            });
+
+            //------------Growing Charge Calculation---------------------
+
+            var growingchargefoefarmer = 0;
+            var totalgrowingcharge = 0;
+            var totalgrowingchargefixed = 0;
+            var gcrt = 0;
+
+            var kjj = $("#StandarCost").val();
+            var psdiff = 0;
+            var frmla = $("#GrowingChargeFormula").val();
+
+            if (prcostfrm > kjj)
+            {
+                psdiff = prcostfrm - kjj;
+            }
+            else
+            {
+                psdiff = kjj - prcostfrm;
+            }
+
+
+            $.get("/FarmerReport/CreateFormula", { formula: frmla, prodstanddiff: psdiff }, function (data) {
+
+
+                if (prcostfrm > kjj)
+                {
+
+                    gcrt = - parseFloat(data).toFixed(2);
+                    alert(gcrt);
+
+                }
+                else {
+
+                    gcrt = parseFloat(data).toFixed(2);
+                    alert(gcrt);
+                }
+
+
+                $("#GrowingChargeRate").val(gcrt);
+
+                totalgrowingcharge = parseFloat(gcrt * murgirozon) || 0;
+
+                var tgcrate = totalgrowingcharge.toFixed(2);
+
+                $("#TotalGrowingCharge").val(tgcrate);
+
+
+
+                //-----------Normal Growing Charge Calculation---------------
+
+                var gcrg = $("#GrowingCharge").val();
+                var gcrgtype = $(".GrowingChargeType").text();
+
+
+
+                //---------------Fixed Growing Charge Calculation--------------------
+
+                var growcost = $("#GrowingChargefixed").val();
+                var growfixtype = $(".GrowingChargefixedType").text();
+
+                $("#GrowingChargeFixedRate").val(growcost);
+
+                if (growfixtype == 'KG') {
+
+                    totalgrowingchargefixed = (parseFloat(growcost * murgirozon)).toFixed(2);
+                    $("#TotalGrowingChargeFixed").val(totalgrowingchargefixed);
+
+                }
+                else {
+                    totalgrowingchargefixed = (parseFloat(growcost * l)).toFixed(2);
+                    $("#TotalGrowingChargeFixed").val(totalgrowingchargefixed);
+                }
+
+                //---------Rate Bonus Calculation--------------------------
+                var ratebonus = $("#RateBonus").val();
+                var ratebonustype = $(".RateBonusType").text();
+                //   var ratebonuspercentage = $("#RateBonusPercentage").val();
+
+
+                $(".TotalAmount").each(function () {
+                    totalamount += +parseFloat($(this).text()).toFixed(2);
+                });
+
+                var salerate = totalamount / murgirozon;
+                $("#AvgSaleRate").val(salerate.toFixed(2));
+
+
+                //  $("#RB").val(ratebonuspercentage);
+
+                $("#ratebonusrate").text(ratebonus);
+
+                if (ratebonustype == 'KG') {
+                    if (salerate - ratebonus > 0) {
+                        ratebonuscal = (parseFloat((salerate - ratebonus) * pc * murgirozon / 100)).toFixed(2);
+                    }
+                    $("#TotalRateBonus").val(ratebonuscal);
+
+                }
+
+                else {
+                    if (salerate - ratebonus > 0) {
+
+                        ratebonuscal = (parseFloat((salerate - ratebonus) * pc * NoOfMurgiSold / 100)).toFixed(2);
+                    }
+                    $("#TotalRateBonus").val(ratebonuscal);
+
+                }
+                //-------------------------Shortage Of Birds Calculation-------------------------------------
+
+                var AvgWtOfChicks = parseFloat(murgirozon / NoOfMurgiSold).toFixed(2);
+
+
+                var sob = $("#ShortageOfBirds").val();
+                var sobWt = sob * AvgWtOfChicks;
+
+                var sobd = parseFloat(sobWt * salerate) || 0;
+
+                $("#SofBirdra").val(salerate.toFixed(2));
+                $("#ShortageOfBirdsDeduction").val(sobd.toFixed(2));
+
+
+
+                //-------------------------Excess Birds Calculation-------------------------------------
+                var eb = $("#ExcessBirds").val();
+
+
+                var advded = $("#AdvanceDeduction").val();
+                var TakenMurgiAmount = $("#AmountDueForReadyBirdPurchase").val();
+
+                //-------------------------Net Growing Charge---------------------------------------------------
+
+
+
+                var netgrow = (parseFloat(tgcrate) + parseFloat(totalgrowingchargefixed) + parseFloat(ratebonuscal) - parseFloat(sobd)).toFixed(2);
+                var tdstodedfrom = parseFloat(tgcrate) + parseFloat(totalgrowingchargefixed) + parseFloat(ratebonuscal) - parseFloat(sobd);
+
+
+                var frm = $("#FarmId").val();
+
+                //---------------------TDS Pending JSON-------------------------------
+
+
+
+                $.get("/FarmerReport/FarmerTDSPendingJSON", { data: frm }, function (data) {
+
+                    alert(data);
+                    $("#TDSPending").val(data);
+
+
+                });
+
+
+
+
+
+
+
+
+                $("#NetGrowingCharge").val(netgrow);
+
+                var fid=@Session["fid"];
+              
+
+                if (fid==5)
+
+                {
+                    var tdsded = parseFloat(tdstodedfrom / 100).toFixed(0);
+                    $("#TDSDeduction").val(tdsded);
+                }
+                else
+                {
+                    if (tdstodedfrom >= 30000) {
+
+                        var tdsded = parseFloat(tdstodedfrom / 100).toFixed(0);
+                        $("#TDSDeduction").val(tdsded);
+
+
+
+                    }
+                    else {
+                        $("#TDSDeduction").val(0);
+
+                    }
+                }
+
+
+
+
+
+            });
+
+
+
+
+
+
+            //if ($("#BranchId").val() != 15) {
+            //     gcrt = (parseFloat((kjj - prcostfrm) / 2)).toFixed(2);
+            //}
+            //else {
+
+            //    if (kjj - prcostfrm < 4 && kjj - prcostfrm>-4) {
+
+            //        gcrt = (parseFloat((kjj - prcostfrm) / 2)).toFixed(2);
+            //    }
+            //    else {
+
+            //        if (kjj - prcostfrm < -3) {
+
+            //            gcrt = ((parseFloat(kjj) + parseFloat(3) - parseFloat(prcostfrm)) * .75 - parseFloat(1.5)).toFixed(2);
+
+
+            //        }
+            //        else if (kjj - prcostfrm > 3) {
+
+            //            gcrt = ((parseFloat(kjj) - parseFloat(3) - parseFloat(prcostfrm)) * .75 + parseFloat(1.5)).toFixed(2);
+
+
+            //        }
+
+            //    }
+            //}
+
+
+
+
+        })
+
+    });
+
+</script>
+
+
+
+@using (Html.BeginForm("CreateFarmerReport", "FarmerReport"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+
+
+        <section class="content-header">
+            <h1> Farmer Report<small>Master</small></h1>
+
+            <ol class="breadcrumb">
+
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+
+            </ol>
+        </section>
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.BranchId)
+
+
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FarmerName, new { @class = "form-control", @placeholder = "Enter Farmer Name", @maxlength = "100" })
+                            @Html.HiddenFor(model => model.FarmId)
+                            @Html.ValidationMessageFor(model => model.FarmerName)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010"> Flock Code :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.FlockId, Enumerable.Empty<SelectListItem>(), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                            @Html.HiddenFor(model => model.FlockCode)
+                            @Html.ValidationMessageFor(model => model.FlockId)
+
+                        </div>
+                        <input type="button" value="Show Flock Details" id="ShowFlockDetails" />
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+
+
+
+
+
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Lot No :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.LotNo, new { @class = "form-control", @placeholder = "Enter Address Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Address)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Address :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @placeholder = "Enter Address Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Address)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> SuperVisor Name :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.SupervisorName, new { @class = "form-control", @placeholder = "Enter Address Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.SupervisorName)
+                    </div>
+
+                    @*<div class="form-group">
+                            <label class="black_txt_010"> Flock Code:<span style="color:Red;">*</span> </label>
+
+                            @Html.DropDownListFor(model => model.FlockCode, new SelectList(ViewBag.FlockCode, "FlockId", "FlockCode"), "----Select----", new { @class = "form-control", @placeholder = "Enter Flock Code" })
+                            @Html.ValidationMessageFor(model => model.FlockCode)
+
+                        </div>*@
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock Start:<span style="color:Red;">*</span> </label>
+                        <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateOfPlacementString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                        @Html.ValidationMessageFor(model => model.DateOfPlacementString)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock End:<span style="color:Red;">*</span> </label>
+                        <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.FlockEndDateString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                        @Html.ValidationMessageFor(model => model.FlockEndDateString)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Age Of Chicks:</label>
+                        @Html.TextBoxFor(model => model.AgeOfChicks, new { @class = "form-control", @placeholder = "Enter No of Chicks", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.AgeOfChicks)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">NoOfchicksSend:</label>
+                        @Html.TextBoxFor(model => model.NoOfChicks, new { @class = "form-control", @placeholder = "Enter No of Chicks", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.NoOfChicks)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">NoOfchicksLeft:</label>
+                        @Html.TextBoxFor(model => model.NoOfChicksLeft, new { @class = "form-control", @placeholder = "Enter No of Chicks", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.NoOfChicksLeft)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Mortality Of Birds:</label>
+                        @Html.TextBoxFor(model => model.MortalityOfBirds, new { @class = "form-control", @placeholder = "EnterMortality of Birds", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.MortalityOfBirds)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Shortage Of Birds :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.ShortageOfBirds, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ShortageOfBirds)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Excess Birds :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.ExcessBirds, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ExcessBirds)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Total Closing Weight:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.TotalWeightOfChicksClosing, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.TotalWeightOfChicksClosing)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Average Weight:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.AverageWeightOfChicks, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.AverageWeightOfChicks)
+                    </div>
+                    .
+                    <div class="form-group">
+                        <label class="black_txt_010">FCR Actual:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.FCRActual, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FCRActual)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Price/Chick:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.ChicksCost, new { @class = "form-control", @placeholder = " Chicks Cost", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ChicksCost)
+                        @Html.Hidden("Avchhd")
+                    </div>
+
+
+                    @*
+                        <div class="form-group">
+                            <label class="black_txt_010"> OverHead Cost/Bird:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.OverHeadCost, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.OverHeadCost)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Standard Cost/KG:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.StandarCost, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.StandarCost)
+                        </div>                 *@
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> CHICK  COST (Farmer): /</label><span style="color:Red;">@Html.LabelFor(model => model.ChickRateType, new { @class = "ChickRateType" })</span>
+                        @Html.TextBoxFor(model => model.ChikRateCost, new { @class = "form-control", @placeholder = "Enter Chick Rate Cost", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ChikRateCost)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> STANDARD  COST (Farmer): /</label><span style="color:Red;">@Html.LabelFor(model => model.StandarCostType, new { @class = "StandardCostType" })</span>
+                        @Html.TextBoxFor(model => model.StandarCost, new { @class = "form-control", @placeholder = "Enter Standard Cost", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.StandarCost)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">TOTAL FEED RECEIVED(Kg) :</label>
+                        @Html.TextBoxFor(model => model.FeedRecieved, new { @class = "form-control", @placeholder = "Enter Feed Rate Here ", })
+                        @Html.ValidationMessageFor(model => model.FeedRecieved)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">TOTAL FEED CONSUMED (Kg) :</label>
+                        @Html.TextBoxFor(model => model.FeedConsumed, new { @class = "form-control", @placeholder = "Enter Feed Rate Here ", })
+                        @Html.ValidationMessageFor(model => model.FeedConsumed)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">TOTAL FEED RETURNED(Kg) :</label>
+                        @Html.TextBoxFor(model => model.FeedReturned, new { @class = "form-control", @placeholder = "Enter Feed Rate Here ", })
+                        @Html.ValidationMessageFor(model => model.FeedReturned)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> FEED COST (Farmer) : /</label><span style="color:Red;">@Html.LabelFor(model => model.FeedRateType, new { @class = "FeedRateType" })</span>
+                        @Html.TextBoxFor(model => model.FeedRateCost, new { @class = "form-control", @placeholder = "Enter Feed Rate Here ", })
+                        @Html.ValidationMessageFor(model => model.FeedRateCost)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010"> MEDICINE COST (Farmer) : / <span style="color:Red;">@Html.LabelFor(model => model.MedicineType, new { @class = "MedicineType" })</span></label>
+                        @Html.TextBoxFor(model => model.MedicineCost, new { @class = "form-control", @placeholder = "Enter  Medicine Detail ", @onkeypress = "return Numeric(event)" })
+                        @Html.ValidationMessageFor(model => model.MedicineCost)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">ADDITIONAL MEDICINE COST (Farmer) :</label>
+                        @Html.TextBoxFor(model => model.AdditionalMedicineCost, new { @class = "form-control", @placeholder = "Enter Additional Medicine Detail ", @onkeypress = "return Numeric(event)" })
+                        @Html.ValidationMessageFor(model => model.AdditionalMedicineCost)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010">ADDITIONAL MEDICINE DESCRIPTION:</label>
+                        @Html.TextAreaFor(model => model.AdditionalMedicineDescription, new { @class = "form-control", @placeholder = "Enter Additional Medicine Description " })
+                        @Html.ValidationMessageFor(model => model.AdditionalMedicineDescription)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> OVERHEAD COST (Farmer): /<span style="color:Red;"> @Html.LabelFor(model => model.OverHeadType, new { @class = "OverHeadType" }) </span></label>
+                        @Html.TextBoxFor(model => model.OverHeadCost, new { @class = "form-control", @placeholder = "Enter  Overhead Cost", @maxlength = "20", @onkeypress = "return Numeric(event)" })
+                        @Html.ValidationMessageFor(model => model.OverHeadCost)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010">GROWING CHARGE FORMULA : </label>
+                        @Html.TextBoxFor(model => model.GrowingChargeFormula, new { @class = "form-control", @placeholder = "Enter  Growing Charge", @onkeypress = "return Numeric(event)" })
+                        @Html.ValidationMessageFor(model => model.GrowingChargeFormula)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">GROWING CHARGE FIXED (Farmer) : /<span style="color:Red;"> @Html.LabelFor(model => model.GrowingChargefixedType, new { @class = "GrowingChargefixedType" })</span> </label>
+                        @Html.TextBoxFor(model => model.GrowingChargefixed, new { @class = "form-control", @placeholder = "Enter  Growing Charge", @maxlength = "20", @onkeypress = "return Numeric(event)" })
+                        @Html.ValidationMessageFor(model => model.GrowingChargefixed)
+                    </div>
+
+                    @*<div class="form-group">
+                            <label class="black_txt_010"> GROWING CHARGE (Farmer) : / <span style="color:Red;"> @Html.LabelFor(model => model.GrowingChargeType, new { @class = "GrowingChargeType" })</span> </label>
+                            @Html.TextBoxFor(model => model.GrowingCharge, new { @class = "form-control", @placeholder = "Enter  Total Growing Charge", @maxlength = "20", @onkeypress = "return Numeric(event)" })
+                            @Html.ValidationMessageFor(model => model.GrowingCharge)
+                        </div>*@
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> RATE BONUS (Farmer): / <span style="color:Red;">@Html.LabelFor(model => model.RateBonusType, new { @class = "RateBonusType" })</span> </label>
+                        @Html.TextBoxFor(model => model.RateBonus, new { @class = "form-control", @placeholder = "Enter Rate Bonus", @maxlength = "20", @onkeypress = "return Numeric(event)" })
+                        @Html.ValidationMessageFor(model => model.RateBonus)
+                    </div>
+
+
+
+
+                    <div class="form-group">
+
+
+                        <div class="form-group">
+                            <h3>Rate Bonus Details</h3>
+                        </div>
+                        <div class="form-group">
+                            <div class="table-responsive">
+                                <table class="my-table-style table" id="dataTableRateBonus">
+                                    <tr class="my-table-header">
+
+                                        <td class="my-table-header" style="text-align:center;">
+                                            <label class="black_txt_010">Production Cost</label>
+                                        </td>
+
+
+                                        <td class="my-table-header" style="text-align:center;">
+                                            <label class="black_txt_010">Rate Bonus Percentage</label>
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <input type="submit" id="btnsave" value="save" class="btn btn-primary" />
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12" id="print2">
+
+            <div class="form-group">
+                <h3>Feed Details</h3>
+
+                <div class="form-group">
+                    <div class="table-responsive">
+                        <table class="my-table-style table chompa" id="dataTable">
+                            <tr class="my-table-header">
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Category Name</label>
+                                </td>
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Product Name</label>
+                                </td>
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Unit</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Unit Formula</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Starting Quantity</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Left Quantity</label>
+                                </td>
+
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Description</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Consumed Quantity</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Price/Unit</label>
+                                </td>
+
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Total Expenditure</label>
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+
+
+                        <div class="table-responsive pull-right" style="width:200">
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-12" id="print3">
+
+            <div class="form-group">
+                <h3>Medicine Details</h3>
+
+                <div class="form-group">
+                    <div class="table-responsive">
+                        <table class="my-table-style table chompa" id="dataTableMed">
+                            <tr class="my-table-header">
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Category Name</label>
+                                </td>
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Product Name</label>
+                                </td>
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Unit</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Unit Formula</label>
+                                </td>
+
+
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Consumed Quantity</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Price/Unit(Actual)</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Price/Unit(Unit)</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Total Expenditure(Unit)</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Total Expenditure(Actual)</label>
+                                </td>
+
+                            </tr>
+                        </table>
+                        <br />
+                        <div class="table-responsive pull-right" style="width:200">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+        <div class="col-md-12" id="print4">
+
+            <div class="form-group">
+                <h3>Chick Selling Details</h3>
+            </div>
+            <div class="form-group">
+                <div class="table-responsive">
+                    <table class="my-table-style table chompa" id="murgisell">
+                        <tr class="my-table-header">
+                            <td class="my-table-header" style="text-align:center;">
+                                <label class="black_txt_010">Party Name</label>
+                            </td>
+
+
+                            <td class="my-table-header" style="text-align:center;">
+                                <label class="black_txt_010">Item Name</label>
+                            </td>
+
+                            <td class="my-table-header" style="text-align:center;">
+                                <label class="black_txt_010">Quantity(KG)</label>
+                            </td>
+
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Price Rate</label>
+                            </td>
+
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">No Of Birds </label>
+                            </td>
+
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Total Amount</label>
+                            </td>
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">No</label>
+                            </td>
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Date</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <br />
+                </div>
+                <input type="button" value="Calculate Total Production Cost" id="CalculateCost" />
+            </div>
+        </div>
+
+    </aside>
+
+
+
+    <div id="myModal" class="modal fade">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Farmer Calculation Details:</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <label class="heading">Summary</label>
+
+
+                    <table class="heading">
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> <label>Total Chicks Sold:</label></td>
+
+                                <td>
+                                    @Html.TextBoxFor(model => model.NoOfBirdsSold)
+                                </td>
+                                <td> <label>Weight:</label></td>
+
+                                <td>
+                                    @Html.TextBoxFor(model => model.NoOfBirdsSoldWt)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> <label>Average SaleRate:</label></td>
+
+                                <td>
+                                    @Html.TextBoxFor(model => model.AvgSaleRate)
+                                </td>
+                            </tr>
+
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+
+                    <label class="heading">Production Cost(Actual)</label>
+
+
+                    <table class="heading">
+                        <thead>
+                            <tr>
+                                <td> <label>Name</label>   </td>
+                                <td><label>Rate</label></td>
+                                <td><label>Consumed</label></td>
+                                <td><label>Total</label></td>
+
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> <label>Total Chick Cost:</label></td>
+                                <td> <input id="MurgirRate" name="MurgirRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td></td>
+                                <td>
+                                    <input id="MurgirDam" name="MurgirDam" type="text" readonly="readonly" style="width:100px" />
+                                    <input id="DailyId" type="hidden" name="DailyId" style="width:100px" />
+                                    <input id="FlockIdToShow" type="hidden" name="FlockIdToShow" style="width:100px" />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td> <label>Total feed Cost:</label></td>
+                                <td> <input id="FeedRate" name="FeedRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td> <input id="FeedConTotal" name="FeedConTotal" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td><input name="KhabarKhoroch" id="KhabarKhoroch" type="text" readonly="readonly" style="width:100px" /></td>
+                            </tr>
+
+
+                            <tr>
+                                <td> <label>Total Medicine Cost:</label></td>
+                                <td> <input id="MedRate" name="MedRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td> <input id="MedConTotal" name="MedConTotal" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td><input name="MedicineKhoroch" id="MedicineKhoroch" type="text" readonly="readonly" style="width:100px" /></td>
+                            </tr>
+
+
+                            <tr>
+                                <td> <label>Additional Medicine Cost:</label></td>
+                                <td colspan="2">​<textarea name="AMD" id="AMD" rows="5" style="width:150px"></textarea></td>
+                                <td><input name="AMC" id="AMC" type="text" style="width:150px" /></td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td> <label>Total OverHead Cost:</label></td>
+                                <td> <input id="OverHeadRateForFarmer" name="OverHeadRateForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td></td>
+                                <td><input name="totalOverHeadCostForFarmer" id="totalOverHeadCostForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td> <label>Total Production Cost:</label></td>
+                                <td> </td>
+                                <td> </td>
+                                <td>
+
+                                    @Html.TextBoxFor(model => model.TotalProductionCost)
+
+                                    @*<label  id="totalProductionCost"  style="width:150px"/>*@
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>Production Cost/KG:</label></td>
+                                <td> </td>
+                                <td> </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.ProductionCostPerKG)
+
+                                    @*<label  id="ProductionCost"  style="width:150px"/>*@
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+
+                    <label class="heading">Production Cost(Farmer)</label>
+
+                    <table class="heading">
+                        <thead>
+                            <tr>
+                                <td> <label>Name</label>   </td>
+                                <td><label>Rate</label></td>
+                                <td><label>Consumed</label></td>
+                                <td><label>Total</label></td>
+
+
+                            </tr>
+
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> <label>Total Chick Cost:</label></td>
+                                <td>
+                                    <input id="MurgirRateForFarmer" name="MurgirRateForFarmer" type="text" readonly="readonly" style="width:100px" />
+
+                                </td>
+                                <td></td>
+                                <td>
+                                    <input id="MurgirDamForFarmer" name="MurgirDamForFarmer" type="text" readonly="readonly" style="width:100px" />
+
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td> <label>Total feed Cost:</label></td>
+                                <td>
+                                    <input id="FeedRateForFarmer" name="FeedRateForFarmer" type="text" readonly="readonly" style="width:100px" />
+                                </td>
+                                <td>
+                                    <input id="TotalFeedConFarmer" name="TotalFeedConFarmer" type="text" readonly="readonly" style="width:100px" />
+                                </td>
+                                <td>
+                                    <input name="KhabarKhorochForFarmer" id="KhabarKhorochForFarmer" type="text" readonly="readonly" style="width:100px" />
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>Total Medicine Cost:</label></td>
+                                <td> <input id="MedicineRateForFarmer" name="MedicineRateForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td> <input id="TotalMedConFarmer" name="TotalMedConFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td><input name="MedicineKhorochForFarmer" id="MedicineKhorochForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>Additional Medicine Cost:</label></td>
+                                <td colspan="2">​<textarea name="AMDF" id="AMDF" rows="5" style="width:150px"></textarea></td>
+                                <td><input name="AMCF" id="AMCF" type="text" style="width:150px" /></td>
+                            </tr>
+
+
+
+                            <tr>
+                                <td> <label>Total OverHead Cost:</label></td>
+                                <td> <input id="OverHeadRate" name="OverHeadRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                <td></td>
+                                <td><input name="totalOverHeadCost" id="totalOverHeadCost" type="text" readonly="readonly" style="width:100px" /></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td> <label>Total Production Cost(Farmer) :</label></td>
+                                <td> </td>
+                                <td> </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.TotalProductionCostForFarmer)
+
+                                    @*<label  id="totalProductionCostForFarmer"  style="width:150px"/>*@
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>Production Cost/KG(Farmer) :</label></td>
+                                <td> </td>
+                                <td> </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.ProductionCostForFarmer)
+
+                                    @*<label  id="ProductionCostForFarmer"  style="width:150px"/>*@
+
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+
+                    <label class="heading">Computation Of Growing Charges(Farmer)</label>
+
+                    <table class="heading">
+                        <thead>
+                            <tr>
+
+                                <td> <label>Name</label>   </td>
+                                <td><label>Rate</label></td>
+                                <td><label>Total</label></td>
+
+                            </tr>
+
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> <label>Growing Charge/Kg(Fixed):</label></td>
+                                <td><input id="GrowingChargeFixedRate" name="GrowingChargeFixedRate" type="text" readonly="readonly" style="width:150px" /> </td>
+                                <td>
+                                    <input id="TotalGrowingChargeFixed" name="TotalGrowingChargeFixed" type="text" readonly="readonly" style="width:150px" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>Growing Charge/Kg:</label></td>
+                                <td> <input name="GrowingChargeRate" id="GrowingChargeRate" type="text" readonly="readonly" style="width:150px" /></td>
+                                <td><input name="TotalGrowingCharge" id="TotalGrowingCharge" type="text" readonly="readonly" style="width:150px" /></td>
+                            </tr>
+
+
+                            <tr>
+                                <td> <label>Rate Bonus More Than <label id="ratebonusrate"></label>:</label></td>
+                                <td><input name="RB" id="RB" type="text" readonly="readonly" style="width:150px" /> </td>
+                                <td><input name="TotalRateBonus" id="TotalRateBonus" type="text" readonly="readonly" style="width:150px" /></td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>Shortage Of Birds Deduction:</label></td>
+                                <td><input name="SofBirdra" id="SofBirdra" type="text" readonly="readonly" style="width:150px" /> </td>
+                                <td><input name="ShortageOfBirdsDeduction" id="ShortageOfBirdsDeduction" type="text" readonly="readonly" style="width:150px" /></td>
+                            </tr>
+
+                            @*<tr>
+                                    <td> <label>Excess Birds Deduction:</label></td>
+                                    <td><input name="ExBirdra" id="ExBirdra" type="text" readonly="readonly" style="width:150px" /> </td>
+                                    <td><input name="ExcessBirdsDeduction" id="ExcessBirdsDeduction" type="text" readonly="readonly" style="width:150px" /></td>
+                                </tr>*@
+
+
+
+                            <tr>
+                                <td> <label>Birds Bought Deduction:</label></td>
+                                <td><input name="AverageSaleRateForReadyBirdPurchase" id="AverageSaleRateForReadyBirdPurchase" type="text" readonly="readonly" style="width:150px" /> </td>
+                                <td><input name="AmountDueForReadyBirdPurchase" id="AmountDueForReadyBirdPurchase" type="text" readonly="readonly" style="width:150px" /></td>
+                            </tr>
+                            <tr>
+                                <td> <label>Due Amount Paid for Ready Bird Purchase:</label></td>
+                                <td> </td>
+                                <td><input name="DueAmountPaidForReadyBirdPurchase" id="DueAmountPaidForReadyBirdPurchase" type="text" style="width:150px" /></td>
+                            </tr>
+                            <tr>
+                                <td> <label>Advance Deduction:</label></td>
+                                <td> </td>
+                                <td><input name="AdvanceDeduction" id="AdvanceDeduction" type="text" readonly="readonly" style="width:150px" /></td>
+                            </tr>
+
+
+                            <tr>
+                                <td> <label>AdjustMent:</label></td>
+                                <td> </td>
+                                <td><input name="Adjustment" id="Adjustment" type="text" style="width:150px" /></td>
+                            </tr>
+                            <tr>
+                                <td> <label>Reason For AdjustMent:</label></td>
+                                <td> </td>
+                                <td>​<textarea name="ResonOfAdjustment" id="ResonOfAdjustment" rows="5" style="width:150px"></textarea></td>
+                            </tr>
+
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td> <label>Net Growing Charge:</label></td>
+                                <td> </td>
+                                <td>
+
+                                    @Html.TextBoxFor(model => model.NetGrowingCharge)
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> <label>TDS Deduction 1%:</label></td>
+                                <td> </td>
+                                <td>
+
+                                    @Html.TextBoxFor(model => model.TDSDeduction)
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td> <label>TDS Pending 1%:</label></td>
+                                <td> </td>
+                                <td>
+
+                                    @Html.TextBoxFor(model => model.TDSPending)
+
+                                </td>
+                            </tr>
+
+
+
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    @*<div id="myModalAyan" class="modal fade">
+
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Farmer Calculation Details:</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <label class="heading">Summary</label>
+
+
+                        <table class="heading">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> <label>Unit:</label></td>
+
+                                    <td>
+                                        @Html.TextBoxFor(model => model.BranchName)
+                                        @*<input id="totalChicksSold" name="totalChicksSold" type="text" readonly="readonly" style="width:150px" />
+                                    </td>
+                                    <td><label>LinesMan:</label></td>
+                                    <td>@Html.TextBoxFor(model => model.LinesManName)</td>
+                                </tr>
+                                <tr>
+                                    <td> <label>FarmerName:</label></td>
+
+                                    <td>
+                                        @Html.TextBoxFor(model => model.FarmerName)
+                                        @*<input id="totalChicksSold" name="totalChicksSold" type="text" readonly="readonly" style="width:150px" />
+                                    </td>
+                                    <td><label>FlockName:</label></td>
+                                    <td>@Html.TextBoxFor(model => model.FlockCode)</td>
+                                </tr>
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                        <label class="heading">Production Cost</label>
+
+
+                        <table class="heading">
+                            <thead>
+                                <tr>
+                                    <td><label>Item:</label></td>
+                                    <td><label>Qty</label></td>
+                                    <td><label>Farmer Rate</label></td>
+                                    <td><label>Value</label></td>
+                                    <td><label>Hari Rate</label></td>
+                                    <td><label>Value</label></td>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    @*<td> <label>Chicks :</label></td>
+                                    <td> <input id="MurgirQuantity" name="MurgirQuantity" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input id="MurgiRate" name="MurgiRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input id="MurgiAmount" name="MurgiAmount" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input id="HariRate" name="HariRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input id="HariAmount" name="HariAmount" type="text" readonly="readonly" style="width:100px" /></td>
+
+
+
+                                </tr>
+                            </tbody>
+                            <thead>
+                                <tr>
+                                    <td><label>Item:</label></td>
+                                    <td><label>Qty</label></td>
+                                    <td><label>Farmer Rate</label></td>
+                                    <td><label>Value</label></td>
+                                    <td><label>Hari Rate</label></td>
+                                    <td><label>Value</label></td>
+                                </tr>
+
+                            </thead>
+
+                                <tr>
+                                    <td> <label>Total feed Cost:</label></td>
+                                    <td> <input id="FeedRate" name="FeedRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td> <input id="FeedConTotal" name="FeedConTotal" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input name="KhabarKhoroch" id="KhabarKhoroch" type="text" readonly="readonly" style="width:100px" /></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td> <label>Total Medicine Cost:</label></td>
+                                    <td> <input id="MedRate" name="MedRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td> <input id="MedConTotal" name="MedConTotal" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input name="MedicineKhoroch" id="MedicineKhoroch" type="text" readonly="readonly" style="width:100px" /></td>
+                                </tr>
+                                <tr>
+                                    <td> <label>Total OverHead Cost:</label></td>
+                                    <td> <input id="OverHeadRateForFarmer" name="OverHeadRateForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td></td>
+                                    <td><input name="totalOverHeadCostForFarmer" id="totalOverHeadCostForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td> <label>Total Production Cost:</label></td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+
+                                        @Html.TextBoxFor(model => model.TotalProductionCost)
+
+                                        @*<label  id="totalProductionCost"  style="width:150px"/>
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> <label>Production Cost/KG:</label></td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.ProductionCostPerKG)
+
+                                        @*<label  id="ProductionCost"  style="width:150px"/>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                        <label class="heading">Production Cost(Farmer)</label>
+
+                        <table class="heading">
+                            <thead>
+                                <tr>
+                                    <td> <label>Name</label>   </td>
+                                    <td><label>Rate</label></td>
+                                    <td><label>Consumed</label></td>
+                                    <td><label>Total</label></td>
+
+
+                                </tr>
+
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> <label>Total Chick Cost:</label></td>
+                                    <td>
+                                        <input id="MurgirRateForFarmer" name="MurgirRateForFarmer" type="text" readonly="readonly" style="width:100px" />
+
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <input id="MurgirDamForFarmer" name="MurgirDamForFarmer" type="text" readonly="readonly" style="width:100px" />
+
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+                                    <td> <label>Total feed Cost:</label></td>
+                                    <td>
+                                        <input id="FeedRateForFarmer" name="FeedRateForFarmer" type="text" readonly="readonly" style="width:100px" />
+                                    </td>
+                                    <td>
+                                        <input id="TotalFeedConFarmer" name="TotalFeedConFarmer" type="text" readonly="readonly" style="width:100px" />
+                                    </td>
+                                    <td>
+                                        <input name="KhabarKhorochForFarmer" id="KhabarKhorochForFarmer" type="text" readonly="readonly" style="width:100px" />
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> <label>Total Medicine Cost:</label></td>
+                                    <td> <input id="MedicineRateForFarmer" name="MedicineRateForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td> <input id="TotalMedConFarmer" name="TotalMedConFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td><input name="MedicineKhorochForFarmer" id="MedicineKhorochForFarmer" type="text" readonly="readonly" style="width:100px" /></td>
+                                </tr>
+                                <tr>
+                                    <td> <label>Total OverHead Cost:</label></td>
+                                    <td> <input id="OverHeadRate" name="OverHeadRate" type="text" readonly="readonly" style="width:100px" /></td>
+                                    <td></td>
+                                    <td><input name="totalOverHeadCost" id="totalOverHeadCost" type="text" readonly="readonly" style="width:100px" /></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td> <label>Total Production Cost(Farmer) :</label></td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.TotalProductionCostForFarmer)
+
+                                        @*<label  id="totalProductionCostForFarmer"  style="width:150px"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> <label>Production Cost/KG(Farmer) :</label></td>
+                                    <td> </td>
+                                    <td> </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.ProductionCostForFarmer)
+
+                                        @*<label  id="ProductionCostForFarmer"  style="width:150px"/>
+
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                        <label class="heading">Computation Of Growing Charges(Farmer)</label>
+
+                        <table class="heading">
+                            <thead>
+                                <tr>
+
+                                    <td> <label>Name</label>   </td>
+                                    <td><label>Rate</label></td>
+                                    <td><label>Total</label></td>
+
+                                </tr>
+
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> <label>Growing Charge/Kg(Fixed):</label></td>
+                                    <td><input id="GrowingChargeFixedRate" name="GrowingChargeFixedRate" type="text" readonly="readonly" style="width:150px" /> </td>
+                                    <td>
+                                        <input id="TotalGrowingChargeFixed" name="TotalGrowingChargeFixed" type="text" readonly="readonly" style="width:150px" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td> <label>Growing Charge/Kg:</label></td>
+                                    <td> <input name="GrowingChargeRate" id="GrowingChargeRate" type="text" readonly="readonly" style="width:150px" /></td>
+                                    <td><input name="TotalGrowingCharge" id="TotalGrowingCharge" type="text" readonly="readonly" style="width:150px" /></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td> <label>Rate Bonus More Than <label id="ratebonusrate"></label>:</label></td>
+                                    <td><input name="RB" id="RB" type="text" readonly="readonly" style="width:150px" /> </td>
+                                    <td><input name="TotalRateBonus" id="TotalRateBonus" type="text" readonly="readonly" style="width:150px" /></td>
+                                </tr>
+
+                                <tr>
+                                    <td> <label>Shortage Of Birds Deduction:</label></td>
+                                    <td><input name="SofBirdra" id="SofBirdra" type="text" readonly="readonly" style="width:150px" /> </td>
+                                    <td><input name="ShortageOfBirdsDeduction" id="ShortageOfBirdsDeduction" type="text" readonly="readonly" style="width:150px" /></td>
+                                </tr>
+                                <tr>
+                                    <td> <label>Birds Bought Deduction:</label></td>
+                                    <td><input name="RateOfBuying" id="RateOfBuying" type="text" readonly="readonly" style="width:150px" /> </td>
+                                    <td><input name="BirdsBoughtDeduction" id="BirdsBoughtDeduction" type="text" readonly="readonly" style="width:150px" /></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td> <label>Net Growing Charge:</label></td>
+                                    <td> </td>
+                                    <td>
+
+                                        @*<label id="netgrowingcharge"></label>
+
+                                        @Html.TextBoxFor(model => model.NetGrowingCharge)
+
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>*@
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

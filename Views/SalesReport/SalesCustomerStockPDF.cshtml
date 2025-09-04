@@ -1,0 +1,206 @@
+﻿@model IEnumerable<XenERP.Models.SalesInvoiceDetail>
+@{
+
+    var SlNo = 0;
+    decimal Total = 0;
+    decimal Bags = 0;
+    decimal? Kgs = 0;
+    decimal TotalBags = 0;
+    decimal? TotalKgs = 0;
+}
+
+<!--for graph   -->
+<!--for graph   -->
+
+
+<aside class="right-side">
+
+    <center>
+        <table>
+            <tr>
+                <td>
+
+                    @if (ViewBag.Customer != null)
+                    {
+                        <b>@ViewBag.Customer  </b>
+                    }
+                    else
+                    {
+                        @ViewBag.Customer
+                    }
+                </td>
+            </tr>
+
+
+
+            <tr>
+                <td>
+                    <b>Customer Sales Stock</b>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    @try
+                    {
+
+                        if (ViewBag.from != null)
+                        {
+                            @Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to);
+
+                        }
+                    }
+                    catch
+                    {
+                    }
+                                
+                            </td>
+                        </tr>
+
+
+
+
+
+
+
+                    </table>
+                </center>
+
+                <div class="box box-primary">
+
+
+                    <div class="box-body table-responsive divContent">
+
+                        <table id="example1" class="table table-bordered  dataTable" aria-describedby="example1_info">
+                            <thead>
+                                <tr>
+
+                                    <th>
+                                        Sl.
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                    @*<th>
+                                        Customer Name
+                                    </th>*@
+                                    <th>
+                                        Invoice No.
+                                    </th>
+                                    <th>
+                                        Item
+                                    </th>
+                                    <th>
+                                        Bags
+                                    </th>
+                                    <th>
+                                        KGs/Bag
+                                    </th>
+
+                                    <th>
+                                        Amount
+                                    </th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+
+                                    SlNo = SlNo + 1;
+
+                                    Total = Total + item.TotalAmount;
+                                    if (item.UnitIdSecondary == 1)
+                                    {
+                                        Bags = item.UnitFormula;
+                                        Kgs = item.Quantity;
+                                    }
+                                    else
+                                    {
+                                        Bags = item.Quantity;
+                                        Kgs = item.SecUnitFormula;
+                                    }
+
+                                    TotalBags += Bags;
+                                    TotalKgs += Kgs;
+
+
+
+                                    <tr>
+
+                                        <td style="padding:2px;">
+                                            @SlNo
+                                        </td>
+                                        <td style="padding:2px;">
+                                            @String.Format("{0:dd/MM/yyyy}", item.SalesInvoice.InvoiceDate)
+
+                                          
+
+                                        </td>
+                                        @*<td style="text-align:left;">
+                                            @Html.DisplayFor(modelItem => item.SalesInvoice.Customer.Name)
+
+                                        </td>*@
+
+                                        <td style="padding:2px;">
+
+                                            @Html.DisplayFor(modelItem => item.SalesInvoice.NO)
+                                        </td>
+
+
+
+                                        <td align="right" style="padding:2px;">
+
+                                            @Html.DisplayFor(modelItem => item.Product.Name)
+
+                                        </td>
+                                        <td align="right" style="padding:2px;">
+
+                                            @Bags
+
+                                        </td>
+                                        <td align="right" style="padding:2px;">
+
+                                            @Kgs
+
+                                        </td>
+
+                                        <td align="right" style="padding:2px;">
+
+                                            @Html.DisplayFor(modelItem => item.TotalAmount)
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+
+                                    <td></td>
+
+                                    <td></td>
+
+                                    <td></td>
+                                    @*<td></td>*@
+
+
+                                    <td align="right">
+                                        <b>Grand Total</b>
+                                    </td>
+                                    <td align="right"><b>@TotalBags</b></td>
+                                    <td align="right"><b>@TotalKgs</b></td>
+                                    <td align="right"><b>@Total</b></td>
+
+                                </tr>
+                            </tfoot>
+
+                        </table>
+
+
+
+                    </div>
+
+                </div>
+            </aside>

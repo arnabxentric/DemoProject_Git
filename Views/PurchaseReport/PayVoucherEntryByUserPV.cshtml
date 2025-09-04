@@ -1,0 +1,198 @@
+﻿@model IEnumerable<XenERP.Models.VoucherModelView>
+@{
+
+    int SlNo = 0;
+
+
+    decimal? TotalCashAmt = 0;
+
+    decimal? TotalBankAmt = 0;
+
+    decimal? TotalAmt = 0;
+
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var arrtC11 = '@Html.Raw(Json.Encode(ViewBag.JsonData))';
+        $("#JsonData").val(arrtC11);
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<aside class="right-side">
+ 
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <th>
+                            SlNo.
+                        </th>
+                        <th>
+                            Voucher No.
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Branch
+                        </th>
+                        <th>
+                            Particulars
+                        </th>
+                        <th>
+                            Paid To
+                        </th>
+                        <th>
+                            Mode of Payment
+                        </th>
+                        <th>
+                            Amount
+                        </th>
+
+
+
+                        <th>
+                            Remarks
+                        </th>
+
+                        <th>
+                            Entry Date
+                        </th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+
+                        SlNo = SlNo + 1;
+
+                        //TotalCashAmt = TotalCashAmt + item.RPCashAmount;
+
+                        //TotalBankAmt = TotalBankAmt + item.RPBankAmount;
+
+                        TotalAmt = TotalAmt + item.TotalAmount;
+                        string VoucherNo = "";
+                        if (item.Prefix != null)
+                        {
+                            VoucherNo = item.Prefix + item.VoucherNo;
+                        }
+                        else
+                        {
+                            VoucherNo = "V00" + item.VoucherNo;
+                        }
+
+
+
+                    <tr>
+                        <td align="left">@SlNo</td>
+                        <td nowrap>
+
+
+                            @VoucherNo
+
+
+                        </td>
+                        <td nowrap>
+                            @String.Format("{0:dd/MM/yyyy}", item.RPdate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.branchCode)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GeneralLedger)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MoneyReceiptNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ModeOfPay)
+                        </td>
+                        <td align="right">
+                            @Html.DisplayFor(modelItem => item.TotalAmount)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.remarks)
+                        </td>
+
+
+
+
+                        <td>
+                            @String.Format("{0:dd/MM/yyyy}", item.chqDate)
+                        </td>
+
+                    </tr>
+
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7"></td>
+                        <td align="right">
+                            <strong>  @TotalAmt </strong>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+
+            </table>
+
+        </div>
+  
+</aside>

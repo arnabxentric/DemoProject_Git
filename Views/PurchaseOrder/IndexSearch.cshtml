@@ -1,0 +1,224 @@
+﻿@model IEnumerable<XenERP.Models.PurchaseOrder>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int SlNo = 0;
+}
+
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<aside class="right-side">
+    <section class="content-header">
+        <h1>
+            Purchase Order<small>List</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+    <div class="box">
+        <div class="col-xs-12"><a href="@Url.Action("Create", "PurchaseOrder")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Purchase Order</a></div><br /><br />
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <th>
+                            Sl. No.
+                        </th>
+                        <th>
+                            Order No.
+                        </th>
+                        <th>
+                            Order Date
+                        </th>
+                        <th>
+                            Delivery Date
+                        </th>
+                        <th>
+                            Supplier
+                        </th>
+                        <th>
+                            Supplier Ref
+                        </th>
+
+                        <th>
+                            Warehouse
+                        </th>
+                        <th>
+                            Currency
+                        </th>
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Total(@ViewBag.BaseCurrency)
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                        </th>
+
+
+
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+                        //totalpurchaserate = totalpurchaserate + item.PurchaseRate;
+
+                        SlNo = SlNo + 1;
+                        //totalsellrate = totalsellrate + item.SellRate;
+
+
+                        <tr>
+                            <td>@SlNo</td>
+                            <td nowrap>
+
+
+
+
+                                @Html.DisplayFor(modelItem => item.NO)
+
+                            </td>
+                            <td nowrap>
+                                @String.Format(Session["DateFormatUpper"].ToString(), item.Date)
+
+                            </td>
+
+                            <td>
+
+                                @String.Format(Session["DateFormatUpper"].ToString(), item.DueDate)
+                            </td>
+
+
+
+                            <td>
+
+
+                                @Html.DisplayFor(modelItem => item.Supplier.Name) ( @Html.DisplayFor(modelItem => item.Supplier.Code))
+                            </td>
+
+
+
+
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.Reference)
+                            </td>
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.Warehouse.Name) (@Html.DisplayFor(modelItem => item.Warehouse.Code))
+                            </td>
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.Currency1.ISO_4217)
+                            </td>
+
+                            <td style="text-align:right;">
+                                @Html.DisplayFor(modelItem => item.GrandTotal)
+                            </td>
+
+                            <td style="text-align:right;">
+                                @Html.DisplayFor(modelItem => item.BCGrandTotal)
+                            </td>
+                            @if (item.ApproveStatus == null)
+                            {
+                                <td>
+                                    Pending Approval
+                                </td>
+                            }
+                            else if (item.ApproveStatus == 1 && item.Status == "Saved")
+                            {
+                                <td>
+                                    Approved
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+
+                                    @Html.DisplayFor(modelItem => item.Status)
+                                </td>
+                            }
+                            <td class="dxgv">
+                                <img src="../../Images/image_elements.png" />
+                                <div class="pop">
+                                    <ul>
+                                        <li> @Html.ActionLink("Edit", "Create", new { id = item.Id }) </li>
+                                        <li>@Html.ActionLink("Print", "PrintPurchaseOrderPDF", new { id = item.Id })</li>
+                                    </ul>
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</aside>
+

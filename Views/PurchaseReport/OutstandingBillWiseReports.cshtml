@@ -1,0 +1,560 @@
+﻿@model IEnumerable<XenERP.Models.OutstandingInvoice>
+@{
+
+    var SlNo = 0;
+    var SlNo1 = 0;
+    decimal openDueTotal = 0;
+    decimal openAdvanceTotal = 0;
+    decimal adjustShortTotal = 0;
+    decimal adjustExtraTotal = 0;
+    decimal SalesTotal = 0;
+    decimal SalesreuturnTotal = 0;
+    decimal CreditNoteTotal = 0;
+    decimal receiptTotal = 0;
+    decimal paymentTotal = 0;
+    decimal Due = 0;
+    decimal Advance = 0;
+    decimal DueTotal = 0;
+    decimal AdvanceTotal = 0;
+}
+
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function ($) {
+
+        $('#export').click(function () {
+
+
+            location.href = '@Url.Action("OutstandingBillWiseDetailsExcel", "PurchaseReport")';
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+
+
+    });
+    $(document).ready(function () {
+        $('#outstanding tbody tr').on('click','.lname', function (e) {
+            e.preventDefault();
+            var trObj = $(this).closest('tr');
+            var lid = parseInt(trObj.find('#item_LID').val(),10);
+            var lname = $.trim(trObj.find('.lname').text());
+            var odue = parseFloat($.trim(trObj.find('.odue').text()));
+            var oadvance = parseFloat($.trim(trObj.find('.oadvance').text()));
+            var ashort = parseFloat($.trim(trObj.find('.ashort').text()));
+            var aextra = parseFloat($.trim(trObj.find('.aextra').text()));
+            var sales = parseFloat($.trim(trObj.find('.sales').text()));
+            var sreturn = parseFloat($.trim(trObj.find('.sreturn').text()));
+            var receipt = parseFloat($.trim(trObj.find('.receipt').text()));
+
+            window.location = '@Url.Action("OutstandingBillWiseSupplierPDF", "PurchaseReport")?LID=' + lid + '&lname=' + lname + '&odue=' + odue + '&odue=' + odue + '&oadvance=' + oadvance + '&ashort=' + ashort + '&aextra=' + aextra + '&sales=' + sales + '&preturn=' + sreturn + '&paymentvoucher=' + receipt;
+        }).hover(function () {
+            $(this).toggleClass('hover');
+        });
+
+        $('#outstanding tbody tr').on('click','.lid', function (e) {
+            e.preventDefault();
+           // var $self = $(this);
+           // var url = $self.attr('href'); // get the url of the link
+          //  if (event.which === 2 || event.metaKey || event.shiftKey || navigator.platform.toUpperCase().indexOf('WIN') !== -1 && event.ctrlKey) {
+                // open the link in a new tab ONLY IF I clicked on it with the middle mouse button or with Ctrl/Cmd pressed
+           //     window.open(url, '_blank');
+           // }
+            //else {
+            //    // Else do the animation and open the link in the same tab
+            //    __.out.call(_this, $self, url);
+            //}
+            var trObj = $(this).closest('tr');
+            var lid = parseInt(trObj.find('#item_LID').val(),10);
+            var lname = $.trim(trObj.find('.lname').text());
+            var odue = parseFloat($.trim(trObj.find('.odue').text()));
+            var oadvance = parseFloat($.trim(trObj.find('.oadvance').text()));
+            var ashort = parseFloat($.trim(trObj.find('.ashort').text()));
+            var aextra = parseFloat($.trim(trObj.find('.aextra').text()));
+            var sales = parseFloat($.trim(trObj.find('.sales').text()));
+            var sreturn = parseFloat($.trim(trObj.find('.sreturn').text()));
+            var receipt = parseFloat($.trim(trObj.find('.receipt').text()));
+
+            window.location = '@Url.Action("OutstandingBillWiseSupplier", "PurchaseReport")?LID=' + lid + '&lname=' + lname + '&odue=' + odue + '&odue=' + odue + '&oadvance=' + oadvance + '&ashort=' + ashort + '&aextra=' + aextra + '&sales=' + sales + '&preturn=' + sreturn + '&paymentvoucher=' + receipt;
+        }).hover(function () {
+            $(this).toggleClass('hover');
+        });
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .invoice th,
+    td {
+        padding: 5px 5px 5px 5px;
+        /* text-align: center;*/
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+
+    .grey {
+        background-color: rgba(128,128,128,.25);
+    }
+
+    .red {
+        background-color: rgba(255,0,0,.25);
+    }
+
+    .blue {
+        background-color: rgba(0,0,255,.25);
+    }
+
+    tr.hover {
+        cursor: pointer;
+        /* whatever other hover styles you want */
+    }
+</style>
+<aside class="right-side">
+    <button id="export" class="btn btn-primary" type="button"><i class="fa fa-print"></i>Export </button>
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+            <div class="box-body table-responsive divContent">
+
+                <table id="outstanding" width="100%" class="invoice" aria-describedby="example1_info">
+                    <colgroup>
+                        <col class="blue1" />
+                        <col class="blue1" />
+                        <col class="blue1" />
+                        <col class="blue1" />
+                        <col class="grey" />
+                        <col class="blue1" />
+                        <col class="blue1" />
+                        <col class="blue1" />
+                        <col class="grey" />
+                        <col class="blue" />
+                        <col class="blue1" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+
+                            <th width="5%" style="text-align:center">
+                                SlNo.
+                            </th>
+
+                            <th style="text-align:center">
+                                Party
+                            </th>
+
+                            <th width="10%" style="text-align:center">
+                                Opening Due
+                            </th>
+
+                            <th width="10%" style="text-align:center">
+                                Adjustment Short
+                            </th>
+                            <th width="10%" style="text-align:center">
+                                Purchase
+                            </th>
+                            <th width="10%" style="text-align:center">
+                                Purchase Return
+                            </th>
+                            <th width="10%" style="text-align:center">
+                                Credit Note
+                            </th>
+                            <th width="10%" style="text-align:center">
+                                Opening Advance
+                            </th>
+                            <th width="10%" style="text-align:center">
+                                Adjustment Extra
+                            </th>
+                            <th style="text-align:center">
+                                Payment
+                            </th>
+                            <th style="text-align:center">
+                                Receive
+                            </th>
+                            <th style="text-align:center">
+                                Total Due
+                            </th>
+                            <th style="text-align:center">
+                                Total Advance
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            openDueTotal += item.OpeningDue;
+                            openAdvanceTotal += item.OpeningAdvance;
+                            adjustShortTotal += item.AdjustmentShort ?? 0;
+                            adjustExtraTotal += item.AdjustmentExtra ?? 0;
+                            SalesTotal += item.Sales;
+                            SalesreuturnTotal += item.Salesreturn ?? 0;
+                            CreditNoteTotal += item.Creditnote ?? 0;
+                            paymentTotal += item.Payment ?? 0;
+                            receiptTotal += item.Receipt ?? 0;
+                            decimal net = item.OpeningDue + (item.AdjustmentShort ?? 0) + item.Sales + (item.Creditnote ?? 0) - (item.Salesreturn ?? 0) - item.OpeningAdvance - (item.AdjustmentExtra ?? 0) - (item.Payment ?? 0) + (item.Receipt ?? 0);
+                            if (net < 0)
+                            {
+                                Advance = (-1) * net;
+                                AdvanceTotal += Advance;
+                                Due = 0;
+                            }
+                            else
+                            {
+                                Due = net;
+                                DueTotal += Due;
+                                Advance = 0;
+                            }
+                            if (Due > 0)
+                            {
+                                SlNo = SlNo + 1;
+                        <tr class="red">
+
+
+                            <td class="lid">
+                                <b><a href="#" target="_blank"> @SlNo </a></b>
+                                @Html.HiddenFor(modelItem => item.LID)
+                            </td>
+                            <td class="lname">
+                                <b><a href="#" target="_blank"> @item.LedgerName</a></b>
+                            </td>
+                            <td align="right" class="odue">
+                                <b> @item.OpeningDue</b>
+                            </td>
+
+                            <td align="right" class="ashort">
+                                <b> @item.AdjustmentShort</b>
+                            </td>
+
+                            <td align="right" class="sales">
+                                <b> @item.Sales</b>
+                            </td>
+                            <td align="right" class="sreturn">
+                                <b> @item.Salesreturn</b>
+                            </td>
+                            <td align="right" class="sreturn">
+                                <b> @item.Creditnote</b>
+                            </td>
+                            <td align="right" class="oadvance">
+                                <b> @item.OpeningAdvance</b>
+                            </td>
+                            <td align="right" class="aextra">
+                                <b> @item.AdjustmentExtra</b>
+                            </td>
+                            <td align="right" class="receipt">
+                                <b> @item.Payment</b>
+                            </td>
+                            <td align="right" class="receipt">
+                                <b> @item.Receipt</b>
+                            </td>
+                            <td class="due" align="right">
+                                <b> @Due</b>
+                            </td>
+                            <td align="right">
+                                <b> @Advance</b>
+                            </td>
+                        </tr>
+                            }
+                            else if(Advance > 0)
+                            {
+                                SlNo = SlNo + 1;
+                    <tr>
+
+
+                        <td>
+                            <b> @SlNo </b>
+                        </td>
+                        <td>
+                            <b> @item.LedgerName</b>
+                        </td>
+                        <td align="right">
+                            <b> @item.OpeningDue</b>
+                        </td>
+
+                        <td align="right">
+                            <b> @item.AdjustmentShort</b>
+                        </td>
+
+                        <td align="right">
+                            <b> @item.Sales</b>
+                        </td>
+                        <td align="right">
+                            <b> @item.Salesreturn</b>
+                        </td>
+                        <td align="right">
+                            <b> @item.Creditnote</b>
+                        </td>
+                        <td align="right">
+                            <b> @item.OpeningAdvance</b>
+                        </td>
+                        <td align="right">
+                            <b> @item.AdjustmentExtra</b>
+                        </td>
+                        <td align="right" class="receipt">
+                            <b> @item.Payment</b>
+                        </td>
+                        <td align="right">
+                            <b> @item.Receipt</b>
+                        </td>
+                        <td align="right">
+                            <b> @Due</b>
+                        </td>
+                        <td align="right">
+                            <b> @Advance</b>
+                        </td>
+                    </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+
+                            <td></td>
+                            <td>
+
+                                <b>  Grand Total </b>
+
+
+                            </td>
+
+
+
+
+                            <td align="right">
+                                <b>  @Math.Round(openDueTotal, 2)</b>
+
+                            </td>
+
+                            <td align="right">
+                                <b>  @Math.Round(adjustShortTotal, 2)</b>
+
+                            </td>
+                            <td align="right">
+                                <b>    @Math.Round(SalesTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(SalesreuturnTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(CreditNoteTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(openAdvanceTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(adjustExtraTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(paymentTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(receiptTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b>  @Math.Round(DueTotal, 2)</b>
+                            </td>
+                            <td align="right">
+                                <b> @Math.Round(AdvanceTotal, 2)</b>
+                            </td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</aside>
+@*<div id="printdiv" style="display:none;">
+        <div align="center">
+            <span style="font-size:x-large;font-weight:bolder">@ViewBag.CompanyName</span><br />
+
+            <span style="font-size:medium;font-weight:normal">Despatch Register @ViewBag.DateRange</span>
+
+        </div>
+        <table id="example1" cellspacing="0" cellpadding="0" class="invoice" border="1">
+            <thead>
+                <tr>
+
+                    <th width="5%" style="text-align:center">
+                        SlNo.
+                    </th>
+
+                    <th width="10%" style="text-align:center">
+                        Party
+                    </th>
+
+                    <th width="10%" style="text-align:center">
+                        Opening Due
+                    </th>
+                    <th width="5%" style="text-align:center">
+                        Opening Advance
+                    </th>
+                    <th width="15%" style="text-align:center">
+                        Adjustment Short
+                    </th>
+
+                    <th width="30%" style="text-align:center">
+                        Adjustment Extra
+                    </th>
+
+                    <th colspan="2" width="20%" style="text-align:center">
+                        Sales
+                    </th>
+                    <th colspan="2" width="20%" style="text-align:center">
+                        Sales Return
+                    </th>
+
+                    <th colspan="2" width="20%" style="text-align:center">
+                        Receipt
+                    </th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+                    decimal totalQuantity = 0; // item.Quantity * item.UnitFormula;
+
+
+                    if (item.Product.CategoryId == 1)
+                    {
+                        totalQuantity = item.Quantity * item.UnitFormula;
+                    }
+                    else
+                    {
+                        totalQuantity = item.Quantity / (item.UnitFormula == 0 ? 1 : item.UnitFormula);
+                    }
+
+
+
+                    <tr>
+                        @if (item.SalesDeliveryId != oldinvoice1)
+                        {
+                            SlNo1 = SlNo1 + 1;
+
+                            <td style="text-align:center">
+                                <b> @SlNo1 </b>
+                            </td>
+                            <td style="text-align:center">
+                                <b> @item.le</b>
+                            </td>
+                            <td style="text-align:center">
+                                <b> @Html.DisplayFor(modelItem => item.SalesDelivery.NO)</b>
+                            </td>
+                            <td align="left">
+                                <b> @Html.DisplayFor(modelItem => item.SalesDelivery.Warehouse.Name)</b>
+                            </td>
+                            <td style="text-align:center">
+                                <b>  @Html.DisplayFor(modelItem => item.SalesDelivery.Customer.Name)</b>
+
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                            <td></td>
+                            <td align="left"></td>
+
+                            <td align="left"></td>
+                            <td align="left"></td>
+                        }
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.Product.Description)
+                        </td>
+
+                        <td style="text-align:right">
+                            @Math.Round(item.Quantity, 0) &nbsp; @item.UOM1.Code
+
+                        </td>
+                        <td style="text-align:right">
+                            @Math.Round(totalQuantity, 0) &nbsp; @item.UOM.Code
+                        </td>
+                    </tr>
+
+                    oldinvoice1 = item.SalesDeliveryId;
+                }
+            </tbody>
+
+
+        </table>
+
+    </div>*@

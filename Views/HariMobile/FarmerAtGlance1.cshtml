@@ -1,0 +1,108 @@
+﻿@model IEnumerable<XenERP.Models.MobileReport_ModelView>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <meta charset="UTF-8">
+    <title>AdminLTE | Dashboard</title>
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                All Reports
+                <small>it all starts here</small>
+            </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="nav-tabs-custom">
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+
+
+                                @foreach (var item in Model)
+                                {
+                                    foreach (var item1 in item.FarmerGlanceList)
+                                    {
+                                        <div class="col-md-4">
+                                            <div class="box">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Farmer Reports</h3>
+                                                </div>
+                                                <div class="box-body table-responsive no-padding">
+
+                                                    <table style="height:288px;width:362.13px" class="table-responsive table-bordered">
+                                                        <tr>
+                                                            <td>Farmer Name : @item1.FarmerName</td>
+                                                            <td>Total Farming : @item1.TotalFarming</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Geo Latitude :@item1.GeoLat</td>
+                                                            <td>Geo Longitude :@item1.GeoLong</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Placement Date : @item1.PlacementDate</td>
+                                                            <td>Total Bird Place : @item1.TotalBirdPlaced</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Total Mortality : @item1.TotalMortality</td>
+                                                            <td>Bird Age : @item1.BirdAge</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Last Entry : @item1.LastEntry</td>
+                                                            <td>Entry Gap : @item1.EntryGap</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Mobile Entry : @item1.MobileEntry</td>
+                                                            <td>System Entry : @item1.SystemEntry</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Risk Factor : @item1.RiskFactor</td>
+                                                            <td></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>With Farmer Upload : @item1.LineWidFarmer</td>
+                                                            <td>Bird Mortality Upload : @item1.BirdMortality</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Feed Bag Upload : @item1.FeedBag</td>
+                                                            <td>Post Mortem : @item1.PostMortem</td>
+                                                        </tr>
+                                                    </table>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        }
+
+                                    }
+
+
+                                </div><!-- /.tab-pane -->
+                            <!-- /.tab-pane -->
+                        </div><!-- /.tab-content -->
+                    </div>
+
+
+
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside>
+</body>
+</html>

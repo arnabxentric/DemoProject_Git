@@ -1,0 +1,110 @@
+﻿@{
+    if (ViewBag.set == 0)
+    {
+        Layout = "~/Views/Shared/_Layoutstart.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+
+    }
+}
+
+@{
+    
+    var compid=Session["companyid"];
+    ViewBag.Title="Xpert | Finish";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body class="skin-black">
+    <!-- header logo: style can be found in header.less -->
+    <header class="header">
+            <a href="../../index.html" class="logo">
+                <!-- Add the class icon to your logo image or logo icon to add the margining -->
+                AdminLTE
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+         
+        </header>
+    <div class="wrapper row-offcanvas row-offcanvas-left">
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Setup Guide  
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+            <!-- Right side column. Contains the navbar and content of the page -->
+        
+
+                <!-- Main content -->
+                <section class="content">
+                <!--3-7-2014-->
+                 <div class="container2">
+                 	
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Start", new { id = compid })"><span>Organization Settings</span></a></li>                           
+                        	<li><a href="@Url.Action("CreateFinancial", "Start")"><span>Financial Settings</span></a></li>                      
+                           @* <li><a href="@Url.Action("ShowAllCurrencyrate", "Start")"><span>Currencies</span></a></li>
+                             <li><a href="@Url.Action("TaxDetails", "Start")"><span> Tax Rates</span></a></li>
+                            *@
+                                <li><a href="@Url.Action("TaxDetails", "Start")"><span>Chart of Accounts</span></a></li>
+                             <li class="selected">Done</li>
+                        </ul>
+                    </div>
+
+                    
+                    <form >
+                    	<div class="setup-title">
+                        	Set your conversion date
+                        </div>
+                        <div class="setup-content">
+                        	<div id="Setup">
+                            
+Set up Complete!
+
+You're nearly done. Just click 'Finish' to start using Xpert for your day-to-day business.
+
+Not sure about your numbers? At this stage everything is saved within the setup process but not yet committed into Xpert. If you're at all unsure about anything you've entered you can go back and review it, start again or ask your accountant or bookkeeper to log in and do this for you. If you haven't invited your accountant or bookkeeper yet, you can do so now by returning to the Invite Users step.
+
+What happens next?
+
+    When you click the Finish button, all the information you've entered will be saved into Xero, you'll then be taken to your dashboard.
+    Read the help on the accounting behind Xero to find out about the journals that are happening behind the scenes.
+
+
+                            </div>
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("ShowGroupMaster", "Start")"><span>Back</span></a></span></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("Done", "Start", new { id = compid })"><span>Finish</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+                 </div>
+					<!--3-7-2014 END -->
+                </section><!-- /.content -->
+            </aside>
+        <!-- /.right-side -->
+    </div>
+</body>
+</html>

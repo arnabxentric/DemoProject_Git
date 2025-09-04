@@ -1,0 +1,543 @@
+﻿@model XenERP.Models.FarmMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/JqueryValidation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#FarmUnitId").change(function () {
+            var v = $("#FarmUnitId").val();
+
+            //$.get("/Farm/GetUnitCode", { data: v }, function (data) {
+            //    $("#FarmCode").val(data);
+            //});
+
+
+
+            //$.get("/Farm/GetChallanNo", {BranchId : v}, function (data) {
+
+            //    $("#FarmCode").val(data);
+
+            //});
+
+        });
+    });
+
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#imgdivFarm,#imgdiv").on('mouseover', function () {
+            $(".showImage").empty();
+            var jk = $(this).find('img')
+            var pk = $(jk).clone();
+            $(pk).css({ width: '500px', height: '500px' });
+
+            $(".showImage").append(pk);
+            // $(".showImage").html(b);
+
+            //                  $(this).clone().appendTo($(".showImage"));
+            $("#myModal").modal('show');
+
+        });
+
+
+    });
+
+
+
+</script>
+
+
+
+
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+
+        $(function () {
+            var k = 0;
+            $("#farmerimg").change(function () {
+                if (typeof (FileReader) != "undefined") {
+                    var dvPreview = $("#imgdiv");
+                    $(dvPreview).css({ width: '100px', height: '100px' })
+                    //              dvPreview.html("");
+                    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+                    $($(this)[0].files).each(function () {
+                        var file = $(this);
+                        if (regex.test(file[0].name.toLowerCase())) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                var img = $("<img />");
+                                img.attr("style", "height:100px;width: 100px");
+                                img.attr("src", e.target.result);
+                                img.addClass("Farmersimage");
+                                img.attr("name", "Farmersimage" + k);
+                                img.attr("id", "Farmersimage" + k);
+                                dvPreview.append(img);
+                                k++;
+
+
+
+
+                                //           $("#prodimg").attr("src", e.target.result);
+
+                            }
+                            reader.readAsDataURL(file[0]);
+                        } else {
+                            alert(file[0].name + " is not a valid image file.");
+                            //    dvPreview.html("");
+                            return false;
+                        }
+                    });
+                } else {
+                    alert("This browser does not support HTML5 FileReader.");
+                }
+            });
+        });
+
+    });
+
+</script>
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+
+        $(function () {
+            var k = 0;
+            $("#farmimg").change(function () {
+                if (typeof (FileReader) != "undefined") {
+                    var dvPreview = $("#imgdivFarm");
+                    $(dvPreview).css({ width: '100px', height: '100px' })
+                    //              dvPreview.html("");
+                    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+                    $($(this)[0].files).each(function () {
+                        var file = $(this);
+                        if (regex.test(file[0].name.toLowerCase())) {
+                            var reader = new FileReader();
+                            reader.onload = function (e) {
+                                var img = $("<img />");
+                                img.attr("style", "height:100px;width: 100px");
+                                img.attr("src", e.target.result);
+                                img.addClass("Farmsimage");
+                                img.attr("name", "Farmsimage" + k);
+                                img.attr("id", "Farmsimage" + k);
+                                dvPreview.append(img);
+                                k++;
+
+
+
+
+                                //           $("#prodimg").attr("src", e.target.result);
+
+                            }
+                            reader.readAsDataURL(file[0]);
+                        } else {
+                            alert(file[0].name + " is not a valid image file.");
+                            //    dvPreview.html("");
+                            return false;
+                        }
+                    });
+                } else {
+                    alert("This browser does not support HTML5 FileReader.");
+                }
+            });
+        });
+
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    function readURL(input) {
+
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#frmrImg').attr('src', e.target.result);
+
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function readURL1(input) {
+        if (input.files && input.files[0]) {
+            var reader1 = new FileReader();
+            reader1.onload = function (e) {
+                $('#psImg').attr('src', e.target.result);
+                //$('#adhImg').attr('src', e.target.result);
+                //$('#pnImg').attr('src', e.target.result);
+            }
+            reader1.readAsDataURL(input.files[0]);
+        }
+    }
+    function readURL2(input) {
+        if (input.files && input.files[0]) {
+            var reader2 = new FileReader();
+            reader2.onload = function (e) {
+                $('#adhImg').attr('src', e.target.result);
+                //$('#pnImg').attr('src', e.target.result);
+            }
+            reader2.readAsDataURL(input.files[0]);
+        }
+    }
+    function readURL3(input) {
+        if (input.files && input.files[0]) {
+            var reader3 = new FileReader();
+            reader3.onload = function (e) {
+
+                $('#pnImg').attr('src', e.target.result);
+            }
+            reader3.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+@using (Html.BeginForm("CreateFarm", "Farm", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>Farm<small>Create</small> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>
+        </section>
+
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.BranchId)
+        @Html.HiddenFor(d => d.CompanyId)
+        @Html.HiddenFor(d => d.UserId)
+
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header">Farm Details  </div>
+                <div class="box-body">
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Unit Code :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.FarmUnitId, new SelectList(ViewBag.FarmUnit, "Id", "Code"), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.FarmUnitId)
+
+                        </div>
+                        @*<div class="form-group">
+                                <label class="black_txt_010"> Farm Code :<span style="color:Red;">*</span> </label>
+                                @Html.TextBoxFor(model => model.FarmCode, new { @class = "form-control", @placeholder = "Enter Farm Code", @maxlength = "100",@readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.FarmCode)
+                            </div>*@
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Farm Name :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FarmName, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.FarmName)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Bird Capacity :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.BirdCapacity, new { @class = "form-control", @placeholder = "Enter Bird Capacity" })
+                            @Html.ValidationMessageFor(model => model.BirdCapacity)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Shed Size :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.ShedSize, new { @class = "form-control", @placeholder = "Enter Shed Size" })
+                            @Html.ValidationMessageFor(model => model.ShedSize)
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="black_txt_010">Farm Address :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.Address)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Area :<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Area, new { @class = "form-control", @placeholder = "Enter Area Name", @maxlength = "100" })
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> Location :<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Location, new { @class = "form-control", @placeholder = "Enter Location Name", @maxlength = "100" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header">Farmer Details  </div>
+                <div class="box-body">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="black_txt_010"> Farmer Name  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FarmerName, new { @class = "form-control", @placeholder = "Enter State Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.FarmerName)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Father's Name  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FatherName, new { @class = "form-control", @placeholder = "Enter Father's Name" })
+                            @Html.ValidationMessageFor(model => model.FatherName)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Wife's Name  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.WifeName, new { @class = "form-control", @placeholder = "Enter Wife's Name" })
+                            @Html.ValidationMessageFor(model => model.WifeName)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Children's Name  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.ChildrenName, new { @class = "form-control", @placeholder = "Enter Children's Name" })
+                            @Html.ValidationMessageFor(model => model.ChildrenName)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">  Village  :<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Village, new { @class = "form-control", @placeholder = "Enter Farmer Code", @maxlength = "100" })
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> Dist :<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Dist, new { @class = "form-control", @placeholder = "Enter Dist Name", @maxlength = "100" })
+
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> State  :<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.State, new { @class = "form-control", @placeholder = "Enter Farmer Name", @maxlength = "100" })
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Police Station  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.PoliceStation, new { @class = "form-control", @placeholder = "Enter Police Station" })
+                            @Html.ValidationMessageFor(model => model.PoliceStation)
+                        </div>
+                        @*    <div class="form-group">
+                                <label class="black_txt_010"> Farmer Code  :<span style="color:Red;"></span> </label>
+                                @Html.TextBoxFor(model => model.FarmerCode, new { @class = "form-control", @placeholder = "Enter Village Name", @maxlength = "100" })
+                                @Html.ValidationMessageFor(model => model.FarmerCode)
+                            </div>*@
+                        <div class="form-group">
+                            <label class="black_txt_010">   Farmer Address  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FarmerAddress, new { @class = "form-control", @placeholder = "Enter Address ", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.FarmerAddress)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">  Farmer Contact No :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FarmerContactNo, new { @class = "form-control", @placeholder = "Enter Farmer Contact No", @onkeyPress = "return Decimal(event)", @maxlength = "20" })
+                            @Html.ValidationMessageFor(model => model.FarmerContactNo)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">   Partner/Proprietor Name  :<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.PartnerName, new { @class = "form-control", @placeholder = "Enter Partner Name ", @maxlength = "100" })
+
+                        </div>
+
+
+
+
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Bank Name :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.BankName, new { @class = "form-control", @placeholder = "Enter Bank Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.BankName)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Bank Account Holder Name :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.BankAcHolderNm, new { @class = "form-control", @placeholder = "Enter Bank Account Holder Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.BankAcHolderNm)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Account Number :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.AcNumber, new { @class = "form-control", @placeholder = "Enter Account Number", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.AcNumber)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> IFSC Code :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.IfscCode, new { @class = "form-control", @placeholder = "Enter IFSC Code", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.IfscCode)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> Aadhar No :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.AadharCardNo, new { @class = "form-control", @placeholder = "Enter Aadhar No", @maxlength = "12", @onkeyPress = "return Decimal(event)" })
+                            @Html.ValidationMessageFor(model => model.AadharCardNo)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> PAN No :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.PanNo, new { @class = "form-control", @placeholder = "Enter PAN No", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.PanNo)
+                        </div>
+
+
+
+
+
+
+
+                        <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary">
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <b>Farmer Image</b>
+                </div>
+                <div class="box-body">
+                    <div class="col-md-4">
+                        &nbsp;  &nbsp;  &nbsp;
+                        <img style="width:200px;height:200px;" src="@Url.Action("GetFarmerImage", "Farm", new { UserId = 0 })" id="frmrImg" name="frmrImg" alt="Image not found" />
+                        <input type="file" id="farmerimg" name="farmerimg" onchange="readURL(this);" />
+                        <br />
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <b>Passbook Image</b>
+                </div>
+                <div class="box-body">
+                    <div class="col-md-4">
+                        &nbsp;  &nbsp;  &nbsp;
+                        <img style="width:200px;height:200px;" src="@Url.Action("GetBankImage", "Farm", new { UserId = 0 })" id="psImg" name="psImg" alt="Image not found" />
+                        <input type="file" id="passImg" name="passImg" onchange="readURL1(this);" />
+                        <br />
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <b>Aadhar Card Image</b>
+                </div>
+                <div class="box-body">
+                    <div class="col-md-4">
+                        &nbsp;  &nbsp;  &nbsp;
+                        <img style="width:200px;height:200px;" src="@Url.Action("GetAadharImage", "Farm", new { UserId = 0 })" id="adhImg" name="adhImg" alt="Image not found" />
+                        <input type="file" id="aadharImg" name="aadharImg" onchange="readURL2(this);" />
+                        <br />
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <b>Pan Card Image</b>
+                </div>
+                <div class="box-body">
+                    <div class="col-md-4">
+                        &nbsp;  &nbsp;  &nbsp;
+                        <img style="width:200px;height:200px;" src="@Url.Action("GetPanImage", "Farm", new { UserId = 0 })" id="pnImg" name="pnImg" alt="Image not found" />
+                        <input type="file" id="panImg" name="panImg" onchange="readURL3(this);" />
+                        <br />
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div id="myModal" class="modal fade">
+
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <form>
+
+                            <div class="form-group showImage">
+
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+}

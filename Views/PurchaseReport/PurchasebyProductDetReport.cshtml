@@ -1,0 +1,317 @@
+﻿@model IEnumerable<XenERP.Models.PurchaseInvoiceDetail>
+@{
+
+    var SlNo = 0;
+    decimal SubTotal = 0;
+    decimal TotQuantity = 0;
+    decimal TotSecQuantity = 0;
+ 
+}
+<!--for graph   -->
+<!--for graph   -->
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<script type="text/javascript">
+    $(function () {
+
+
+        var table = $('#example1').dataTable({
+            "responsive": true,
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+       
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+@*@if (Model.Count() > 0)
+    {*@
+<aside class="right-side">
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+            <div class="box-body table-responsive divContent">
+
+                <table id="example1" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                SlNo.
+                            </th>
+                            <th>
+                                Branch
+                            </th>
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Bill No.
+                            </th>
+                            <th>
+                                Reference Bill
+                            </th>
+                            <th>
+                                Party Name
+                            </th>
+                            <th>
+                                Product Description
+                            </th>
+                            <th>
+                                Quantity Primary
+                            </th>
+                            <th>
+                                Primary Unit
+                            </th>
+                            <th>
+                                Quantity Secondary
+                            </th>
+                            <th>
+                                Secondary Unit
+                            </th>
+                            <th>
+                                Rate
+                            </th>
+                            <th>
+                                Taxable Value
+                            </th>
+                            <th>
+                                Tax Percentage
+                            </th>
+                            <th>
+                                IGST
+                            </th>
+                            <th>
+                                SGST
+                            </th>
+                            <th>
+                                CGST
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            decimal sgst = 0;
+                            decimal igst = 0;
+
+                            SlNo = SlNo + 1;
+
+                            SubTotal += item.TotalAmount; ;
+                            TotQuantity += item.Quantity;
+                            TotSecQuantity += item.UnitFormula;
+
+                            if (item.Tax.Name.Substring(0, 1) == "G")
+                            {
+                                //decimal divideVal = (item.TaxPercent / 2);
+                                sgst = item.TaxAmount / 2;
+                            }
+
+                            else if (item.Tax.Name.Substring(0, 1) == "I")
+                            {
+                                igst = item.TaxAmount;
+                            }
+
+
+                        <tr>
+
+                            <td>
+                                @SlNo
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PurchaseInvoice.Warehouse.Name)
+                            </td>
+                            <td>
+
+                                @*                   @String.Format(@Session["DateFormatUpper"].ToString(), item.Date)*@
+
+                                @String.Format("{0:dd/MM/yyyy}", item.PurchaseInvoice.InvoiceDate)
+                            </td>
+
+
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.PurchaseInvoice.NO)
+
+                            </td>
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.PurchaseInvoice.ReferenceInvoice)
+
+                            </td>
+
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.PurchaseInvoice.Supplier.Name)
+
+                            </td>
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.Product.Name)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(item.Quantity, 2)
+
+                            </td>
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.UOM1.Description)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(item.UnitFormula, 2)
+
+                            </td>
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.UOM.Description)
+
+                            </td>
+
+                            <td align="right">
+                                @Math.Round(item.Price, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round((item.Quantity*item.Price), 2)
+
+                            </td>
+
+                            <td align="right">
+                                @Math.Round(item.TaxPercent, 2)
+
+                            </td>
+
+                            <td align="right">
+                                @Math.Round(igst, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(sgst, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(sgst, 2)
+
+                            </td>
+
+
+                            <td align="right">
+                                @Math.Round(item.TotalAmount, 2)
+
+                            </td>
+
+
+
+
+
+                        </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+
+                            <td></td>
+                            <td>
+
+                                Grand Total
+
+
+                            </td>
+
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="right">
+                                @Math.Round(TotQuantity, 2)
+
+                            </td>
+
+
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                                @Math.Round(TotSecQuantity, 2)
+
+                            </td>
+
+
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                            </td>
+                            <td align="right">
+                                @Math.Round(SubTotal, 2)
+
+                            </td>
+
+
+
+
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</aside>

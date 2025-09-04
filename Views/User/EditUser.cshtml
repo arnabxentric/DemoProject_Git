@@ -1,0 +1,319 @@
+﻿@model XenERP.Models.User
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/User/ShowAllUser";
+
+
+        });
+
+
+
+    });
+</script>
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+
+
+
+        $("#CountryId").change(function () {
+
+            $.get("/Home/Showcountrycode", { id: $("#CountryId").val() }, function (data) {
+
+
+                var code = "+" + data.countrycode + "-";
+                $("#PhoneNumber").val(code);
+
+
+            });
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    function check(x) {
+
+
+        var level = 0;
+        var p1 = /[a-z]/;
+        var p2 = /[A-Z]/;
+        var p3 = /[0-9]/;
+        var p4 = /[\!\@@\#\$\%\^\&\*\(\)\-\_\=\+\[\{\]\}\|\\\;\:\'\"\,\<\.\>\/\?\`\~]/;
+        if (x.length >= 8)
+            level++;
+        if (p1.test(x))
+            level++;
+        if (p2.test(x))
+            level++;
+        if (p3.test(x))
+            level++;
+        if (p4.test(x))
+            level++;
+        prog_bar(level, 0, 5, 200, 5, "#0066FF", "#99FFFF");
+    }
+    function prog_bar(cur_val, min_val, max_val, width, height, border, fill) {
+        var str = "", res = 0;
+        if (cur_val >= min_val && cur_val <= max_val) {
+            if (min_val < max_val) {
+                res = ((cur_val - min_val) / (max_val - min_val)) * 100;
+                res = Math.floor(res);
+            }
+            else {
+                res = 0;
+            }
+        }
+        else {
+            res = 0;
+        }
+        if (res <= 40)
+            fill = "#FF0000";
+        else if (res <= 80)
+            fill = "#FFFF00";
+        else
+            fill = "#3F9F3F";
+        str = str + "<div style=\"border:" + border + " solid thin; width:" + width + "px; height:" + height + "px;\">";
+        str = str + "<div style=\"background-color:" + fill + "; width:" + res + "%; height:" + height + "px;\">";
+        str = str + "</div></div>";
+        if (res <= 40)
+            str = str + "Weak";
+        else if (res <= 60)
+            str = str + "Good";
+        else if (res <= 80)
+            str = str + "Strong";
+        else
+            str = str + "Excellent";
+        document.getElementById("prog_bar").innerHTML = str;
+    }
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     User   <small>Edit</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+                  <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"> 
+                                    <input name="" type="submit" id="btnsave" value="Update" class="btn btn-primary" />
+                                     <input name="" type="button" id="btncancel" value="Cancel" class="btn btn-primary" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        @*<div class="col-md-6">*@
+                            <!-- general form elements -->
+                         
+                               
+                                <!-- form start -->
+                           
+                             
+                    
+                    
+                    
+                             <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+                               
+
+                    @Html.HiddenFor(d => d.CompanyId)
+                     @Html.HiddenFor(d => d.Id)
+                       @Html.HiddenFor(d => d.UserId)
+                     @* @Html.HiddenFor(d => d.BranchId)*@
+                      @Html.HiddenFor(d => d.CreatedDate)
+                      @Html.HiddenFor(d => d.CreatedId)
+           
+             
+             
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                     Farm Unit Name :<span style="color:Red;">*</span></label>
+
+                  
+                @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.branch, "Id", "Name"), new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.BranchId)
+                  
+                        </div>
+                                                   
+      
+             
+                                       
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                    Role :<span style="color:Red;">*</span></label>
+
+                  
+                @Html.DropDownListFor(model => model.RoleId, new SelectList(ViewBag.role, "Id", "RoleName"), new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.RoleId)
+                  
+                        </div>
+                                                   
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                                          @Html.HiddenFor(model => model.Id)
+                 First  Name :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", @placeholder = "Enter First Name", @maxlength = "100", @onkeypress = "return Character(event)" })
+            
+                 @Html.ValidationMessageFor(model => model.FirstName)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                 Last  Name :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", @placeholder = "Enter Last Name", @maxlength = "100", @onkeypress = "return Character(event)" })
+
+    
+                 @Html.ValidationMessageFor(model => model.LastName)
+                  
+                                                     
+                                     
+                                    </div>
+
+                                           
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  User ID :<span style="color:Red;">*</span></label>
+
+             
+                   @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", @placeholder = "Enter User ID ", @maxlength = "50",@readonly="readonly" })
+       
+                    @Html.ValidationMessageFor(model => model.UserName)
+                   
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                Password :<span style="color:Red;">*</span></label>
+
+             
+                   @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @placeholder = "Enter Password", @onkeypress = "check(this.value)", @maxlength = "50" })
+
+                                      @Html.ValidationMessageFor(model => model.Password)
+                      
+                                     <div id="prog_bar" class="meter"></div>
+                                    </div>
+
+
+
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>                  
+                                   
+                         <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+                                       
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                     Mobile Phone :<span style="color:Red;">*</span></label>
+                     <div class="clr"></div>
+                  
+            @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", @placeholder = "Enter Mobile Number with Coutry Code ", @onkeypres = "return Numeric(event)" })
+                
+                 @Html.ValidationMessageFor(model => model.PhoneNumber)
+                  
+                                                     
+                                          
+                                    </div>
+
+                                    
+                  
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Email Id:<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.UserEmailAddress, new { @class = "form-control", @placeholder = "Enter Email Id", @type = "email" })
+                              
+                 @Html.ValidationMessageFor(model => model.UserEmailAddress)
+                                       
+                                     
+                                    </div>
+
+                                    
+
+                                
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           IsActive:</label>
+
+                  
+                   @Html.CheckBoxFor(model => model.IsActive, new { @class = "form-control" })
+                              
+   
+                                       
+                                     
+                                    </div>
+
+
+
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>                  
+                                   
+                   
+                </section><!-- /.content -->
+
+        
+      
+        </aside>
+
+
+}

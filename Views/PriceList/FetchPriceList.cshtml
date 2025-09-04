@@ -1,0 +1,204 @@
+﻿@model IEnumerable<XenERP.Models.PriceListModelView>
+@using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#suc').html('');
+        $('#suc').css("display", "none");
+        $('#err').html('');
+        $('#err').css("display", "none");
+        $('.btn').click(function () {
+            $('#suc').html('');
+            $('#suc').css("display", "none");
+            $('#err').html('');
+            $('#err').css("display", "none");
+            var trObj = $(this).closest('tr');
+            var PI = trObj.find('.ProductId').val();
+
+            var sp1 = trObj.find('.SPTier1').val();
+            if (sp1 == '') {
+                sp1 = 0;
+            };
+            var sp2 = trObj.find('.SPTier2').val();
+            if (sp2 == '') {
+                sp2 = 0;
+            };
+
+            var sp3 = trObj.find('.SPTier3').val();
+            if (sp3 == '') {
+                sp3 = 0;
+            };
+            var sp4 = trObj.find('.SPTier4').val();
+            if (sp4 == '') {
+                sp4 = 0;
+            };
+            var sp5 = trObj.find('.SPTier5').val();
+            if (sp5 == '') {
+                sp5 = 0;
+            };
+
+            if (sp1 == 0 && sp2 == 0 && sp3 == 0 && sp4 == 0 && sp5 == 0) {
+                $('#err').html('');
+                $('#err').css("display", "block");
+                $('#err').append('Please Enter The Correct Value<button type="button" id="close1" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><br/>');
+                $('#close1').click(function () {
+                    $('#err').html('');
+                    $('#err').css("display", "none");
+                    //location.reload();
+                });
+            }
+            else {
+
+                $.post('/PriceList/FetchPriceList', { 'sp1': sp1, 'sp2': sp2, 'sp3': sp3, 'sp4': sp4, 'sp5': sp5, 'PI': PI },
+
+           function (data, status) {
+               if (data == "Success") {
+                   $('#suc').html('');
+                   $('#suc').css("display", "block");
+                   $('#suc').append('Price List Saved Successfully<button type="button" id="close" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><br/>');
+                   $('#close').click(function () {
+                       $('#suc').html('');
+                       $('#suc').css("display", "none");
+                     
+                   });
+               }
+
+               if (data == "Error") {
+                   $('#err').html('');
+                   $('#err').css("display", "block");
+                   $('#err').append('Price List Do Not Saved Successfully<button type="button" id="close1" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><br/>');
+                   $('#close1').click(function () {
+                       $('#err').html('');
+                       $('#err').css("display", "none");
+                   });
+               }
+
+           });
+            }
+        });
+
+        $('.SPTier1,.SPTier2,.SPTier3,.SPTier4,.SPTier5').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+    });
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+@using (Html.BeginForm("FetchPriceList", "PriceList", FormMethod.Post))
+{
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>PRICE LIST <small>List</small> </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+       
+            <div id="suc" class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+     
+            <div id="err" class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+             @ViewBag.Error </div>
+      
+       
+      
+
+    <div class="box">
+    <div class="box-body table-responsive">
+    <table id="example1" class="table table-bordered table-striped">
+    
+    <thead>
+            <tr>
+            <th width="5%">SlNo.</th>
+           @*  <th> Product Id</th>*@
+            <th width="10%"> Product Code</th>
+            <th width="10%"> Product Name</th>
+            <th width="10%"> Sales Price 1</th>
+            <th width="10%">Sales Price 2</th>
+            <th width="10%">Sales Price 3</th>
+            <th width="10%">Sales Price 4</th>
+            <th width="10%">Sales Price 5</th>
+            <th width="10%">&nbsp;</th>
+           
+
+            </tr>
+     </thead>
+
+   <tbody>
+      
+               @foreach (var item in Model)
+               {
+
+                   Slno = Slno + 1;
+                  <tr>
+                       <td>@Slno</td>
+                      @* <td> @Html.HiddenFor(modelItem => item.ProductId)</td>*@
+                       <td>@Html.DisplayFor(modelItem => item.Code) <input type='hidden' name='ProductId' class = "ProductId form-control" value='@item.ProductId'/> </td>
+                       <td>@Html.DisplayFor(modelItem => item.Name) </td>
+                       <td><input type='text' name='SPTier1' class = "SPTier1 form-control" value='@item.SPTier1'/> </td>
+                       <td><input type='text' name='SPTier2' class = "SPTier2 form-control" value='@item.SPTier2' /> </td>
+                       <td><input type='text' name='SPTier3' class = "SPTier3 form-control" value='@item.SPTier3'/> </td>
+                       <td><input type='text' name='SPTier4' class = "SPTier4 form-control" value='@item.SPTier4' /> </td>
+                       <td><input type='text' name='SPTier5' class = "SPTier5 form-control" value='@item.SPTier5' /> </td>
+                       <td align="center" valign="middle"> <button type="button" class="btn btn-primary" >Save changes</button> </td>
+                      
+
+                     
+                     
+        </tr>
+               }
+      </tbody>
+    </table>
+ </div><!-- /.box-body -->
+                      </div>
+            </aside>
+}

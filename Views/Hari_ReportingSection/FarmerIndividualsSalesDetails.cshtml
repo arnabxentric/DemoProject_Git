@@ -1,0 +1,219 @@
+﻿@model XenERP.Models.FarmarSalesConjugate
+
+@{
+     Layout = null;
+}
+
+
+@{
+    ViewBag.Title = "GROWING Charge";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+    int Branchid = Convert.ToInt32(Session["BranchId"]);
+}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>GROWING Charge</title>
+    <style>
+        .breakhere {
+            page-break-after: always;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+    </style>
+
+    <style type="text/css" media="print">
+        @Page
+        {
+            size:  auto;   /* auto is the initial value */
+            margin: 0mm;  /* this affects the margin in the printer settings */
+        }
+
+        html
+        {
+            background-color: #FFFFFF;
+            margin: 0px;  /* this affects the margin on the html before sending to printer */
+        }
+
+        body
+        {
+            border: solid 1px blue ;
+            margin: 10mm 15mm 10mm 15mm; /* margin you want for the content */
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $("#print1").hide();
+            $('#btnprnt').click(function () {
+                var id = $("#Id").val();
+                var divElements = document.getElementById("print1").innerHTML;
+
+
+                document.body.innerHTML =
+                    "<html><head><title>Growing Charge</title></head><body>" +
+                    divElements + "</body>";
+
+
+                //Print Page
+                window.print();
+                window.location.href = "/Hari_Gc/PrintGrowingCharge?id=" + id;
+            });
+        });
+    </script>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</head>
+
+<body>
+    @using (Html.BeginForm("CreateGC_Report", "Hari_Gc", FormMethod.Post))
+    {
+
+
+  
+        <aside class="">
+
+            <section class="content-header" style="text-align:center">
+                <h4><b>Farmer Sales Details</b> </h4>
+            </section>
+
+            <div id="loading">
+                <div id="loadingcontent">
+                    <p id="loadingspinner">
+                        <img src="~/Images/newLoad.gif" />
+                    </p>
+                </div>
+            </div>
+            <input name="" type="button" value="Back" class="btn btn-info pull-left" onclick="goBack()" />
+            <div style="text-align:center">
+                <input name="" type="button" id="btnprnt" value="PRINT" class="btn btn-danger" />
+            </div>
+            <br />
+            <br />
+            <div class="col-md-12">
+                <div id="">
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya;font-size:x-large">@Model.BranchName</td>
+                            </tr>
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">From Date</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FromDate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">To Date</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.ToDate</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Avg. Rate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.AvgRate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">Total Bird Weight</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">@Model.TotalBirdsWeight</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Total Sales</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.TotalSalesAmount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">Collection</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">@Model.GcDeductionAmount</td>
+
+                            </tr>
+
+
+
+
+
+
+                        </table>
+
+
+
+
+
+
+                    </div>
+
+
+
+
+                </div>
+
+
+
+
+
+                <div id="print1">
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya;font-size:x-large">@Model.BranchName</td>
+                            </tr>
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">From Date</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FromDate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">To Date</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.ToDate</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Avg. Rate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.AvgRate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">Total Bird Weight</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">@Model.TotalBirdsWeight</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Total Sales</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.TotalSalesAmount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">Collection</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;">@Model.GcDeductionAmount</td>
+
+                            </tr>
+
+                        </table>
+
+
+
+
+
+                    </div>
+
+
+
+
+
+                </div>
+            </div>
+
+
+
+        </aside>
+    }
+</body>
+</html>

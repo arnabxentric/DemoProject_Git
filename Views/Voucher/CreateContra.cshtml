@@ -1,0 +1,321 @@
+﻿@model KerelaGold.Models.Contra
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutMainMaster.cshtml";
+}
+
+<div class="financial-header">
+    <h2>
+        Contra Voucher</h2>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    @*<fieldset>
+        <legend>Contra</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.date)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.date)
+            @Html.ValidationMessageFor(model => model.date)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.fYearId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.fYearId)
+            @Html.ValidationMessageFor(model => model.fYearId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.branchCode)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.branchCode)
+            @Html.ValidationMessageFor(model => model.branchCode)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Type)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Type)
+            @Html.ValidationMessageFor(model => model.Type)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ToId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ToId)
+            @Html.ValidationMessageFor(model => model.ToId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.FromId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.FromId)
+            @Html.ValidationMessageFor(model => model.FromId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.chequeNo)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.chequeNo)
+            @Html.ValidationMessageFor(model => model.chequeNo)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.chequeDate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.chequeDate)
+            @Html.ValidationMessageFor(model => model.chequeDate)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Amount)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Amount)
+            @Html.ValidationMessageFor(model => model.Amount)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.transactionType)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.transactionType)
+            @Html.ValidationMessageFor(model => model.transactionType)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.transactionNo)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.transactionNo)
+            @Html.ValidationMessageFor(model => model.transactionNo)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Remarks)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Remarks)
+            @Html.ValidationMessageFor(model => model.Remarks)
+        </div>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>*@
+    
+    
+      <div class="table-section">
+        @if (ViewBag.msg != null)
+        {
+            <div id="status" >
+                 @ViewBag.msg
+            </div>
+        }
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table-style">
+            <tr>
+                <td width="20.5%">
+                    <span class="color">*</span> Ledger name
+                </td>
+                <td colspan="3">
+                    @Html.RadioButtonFor(model => model.Type, 1, new { @checked = "checked" })@Html.Label("Cash To Bank")
+                    &nbsp; &nbsp;
+                    @Html.RadioButtonFor(model => model.Type, 2)@Html.Label("Bank To Cash")
+                     &nbsp; &nbsp;
+                     @Html.RadioButtonFor(model => model.Type, 3)@Html.Label("Bank To Bank")
+                  
+                </td>               
+                <td width="22.5%">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <div id="CTB">
+                    To Bank : &nbsp;    @(Html.Kendo().DropDownListFor(model => model.ToId)
+                              .Name("toBank")
+                              .DataTextField("ledgerName")
+                              .DataValueField("ledgerID")
+                             .OptionLabel("Choose bank")
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("getBank", "Contra");
+                                              });
+                                          })
+                                    )
+                    </div>
+                    <div id="BTC" style="display:none;">
+                     From Bank : &nbsp;    @(Html.Kendo().DropDownListFor(model => model.FromId)
+                              .Name("FromBank")
+                              .DataTextField("ledgerName")
+                              .DataValueField("ledgerID")
+                             .OptionLabel("Choose bank")
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("getBank", "Contra");
+                                              });
+                                          })
+                                    )
+                                    <br />
+                                    <br />
+                                    Cheque date :   @(Html.Kendo().DatePickerFor(model => model.chequeDate)
+.Name("chequeDate1"))
+<br /><br />
+Cheque number :  @Html.TextBox("chkNo1","", new
+            {
+                @class = "textfield",style="width:120px;"
+            })
+
+
+                    </div>
+                    <div id="BTB" style="display:none;">
+                       From Bank : &nbsp;   @(Html.Kendo().DropDownListFor(model => model.FromId)
+                              .Name("BFromBank")
+                              .DataTextField("ledgerName")
+                              .DataValueField("ledgerID")
+                             .OptionLabel("Choose bank")
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("getBank", "Contra");
+                                              });
+                                          })
+                                    )
+
+                                &nbsp;&nbsp;
+
+                                   To Bank : &nbsp;   @(Html.Kendo().DropDownListFor(model => model.ToId)
+                              .Name("BtoBank")
+                              .DataTextField("ledgerName")
+                              .DataValueField("ledgerID")
+                             .OptionLabel("Choose bank")
+                                          .DataSource(source =>
+                                          {
+                                              source.Read(read =>
+                                              {
+                                                  read.Action("getBank", "Contra");
+                                              });
+                                          })
+                                    )
+                                    <br />
+
+   <br />
+
+                                     Cheque date :   @(Html.Kendo().DatePickerFor(model => model.chequeDate)
+.Name("chequeDate2"))
+<br />   <br />
+Cheque number :  @Html.TextBox("chkNo2", "",new
+            {
+                @class = "textfield",
+                style = "width:120px;"
+            })
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td width="20.5%">
+                    <span class="color">*</span> Amount
+                </td>
+                <td width="22.5%">
+                    @Html.TextBoxFor(model => model.Amount, new
+               {
+                   @class = "textfield",
+                   @onblur = "if(this.value=='')this.value=this.defaultValue;",
+                   @onfocus = "if(this.value==this.defaultValue)this.value='';",
+                   @onkeypress = "return isDecimalNumber(event);",
+                   style = "text-align:right",
+               })
+                    @Html.ValidationMessageFor(model => model.Amount)
+                </td>
+                <td align="center" width="4%">
+                    &nbsp;
+                </td>
+                <td width="20.5%">
+                  
+                </td>
+                <td width="22.5%">
+                   
+                </td>
+            </tr>
+             <tr>
+                <td width="20.5%">
+                Remarks
+                </td>
+                <td  colspan="3">
+                    @Html.TextAreaFor(m => m.Remarks, new { @class = "textarea", style = "width:100%;" })
+                </td>
+                <td width="22.5%" align="left">
+                </td>
+            </tr>
+            <tr>
+                <td width="20.5%">
+                </td>
+                <td width="22.5%">
+                    <input type="submit" value="Create" class="normal-button" />
+                </td>
+                <td align="center" width="4%">
+                    &nbsp;
+                </td>
+                <td width="20.5%" align="left">
+                </td>
+                <td width="22.5%" align="left">
+                </td>
+            </tr>
+        </table>
+    </div>    
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("input:radio[name='Type']").change(function () {
+                var type = $("input:radio[name='Type']:checked").val();
+                if (type == 1) {
+
+                    $('#CTB').show('fast')
+                    $('#BTC').hide('fast')
+                    $('#BTB').hide('fast')
+                }
+                if (type == 2) {
+
+                    $('#CTB').hide('fast')
+                    $('#BTC').show('fast')
+                    $('#BTB').hide('fast')
+                }
+                if (type == 3) {
+
+                    $('#CTB').hide('fast')
+                    $('#BTC').hide('fast')
+                    $('#BTB').show('fast')
+                }
+            });
+        });
+    </script>
+
+
+
+}

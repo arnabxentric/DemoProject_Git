@@ -1,0 +1,1057 @@
+﻿@model XenERP.Models.GC_ModelView
+
+@{
+    // Layout = null;
+}
+
+
+@{
+    ViewBag.Title = "GROWING Charge";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+    int Branchid = Convert.ToInt32(Session["BranchId"]);
+}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>GROWING Charge</title>
+    <style>
+        .breakhere {
+            page-break-after: always;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+    </style>
+
+    <style type="text/css" media="print">
+        @Page
+        {
+            size:  auto;   /* auto is the initial value */
+            margin: 0mm;  /* this affects the margin in the printer settings */
+        }
+
+        html
+        {
+            background-color: #FFFFFF;
+            margin: 0px;  /* this affects the margin on the html before sending to printer */
+        }
+
+        body
+        {
+            border: solid 1px blue ;
+            margin: 10mm 15mm 10mm 15mm; /* margin you want for the content */
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $("#print1").hide();
+            $('#btnprnt').click(function () {
+                var id = $("#Id").val();
+                var divElements = document.getElementById("print1").innerHTML;
+
+
+                document.body.innerHTML =
+                    "<html><head><title>Growing Charge</title></head><body>" +
+                    divElements + "</body>";
+
+
+                //Print Page
+                window.print();
+                window.location.href = "/Hari_Gc/PrintGrowingCharge?id=" + id;
+            });
+        });
+    </script>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</head>
+
+<body>
+    @using (Html.BeginForm("CreateGC_Report", "Hari_Gc", FormMethod.Post))
+    {
+
+
+        @Html.HiddenFor(r => Model.Id)
+        <aside class="right-side">
+
+            <section class="content-header" style="text-align:center">
+                <h4><b>GROWING CHARGE</b> </h4>
+            </section>
+
+            <div id="loading">
+                <div id="loadingcontent">
+                    <p id="loadingspinner">
+                        <img src="~/Images/newLoad.gif" />
+                    </p>
+                </div>
+            </div>
+            <input name="" type="button" value="Back" class="btn btn-info pull-left" onclick="goBack()" />
+            <div style="text-align:center">
+                <input name="" type="button" id="btnprnt" value="PRINT" class="btn btn-danger" />
+            </div>
+            <br />
+            <br />
+            <div class="col-md-12">
+                <div id="">
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="text-align:left;width:10%">
+                                                <img src="~/Images/logo2.png" />
+
+                                            </td>
+                                            <td style="text-align:center ;width:90%">
+                                                <h4 style="margin:5px 0 0 0;font-family:Vijaya"><b>HI BREED AVIAN RESEARCH AND INTEGRATOR </b></h4>
+                                                <b>Unit :- <b>@Model.BranchName</b>  </b>
+                                                <br />
+                                                <b>Farmer Name :- <b>@Model.FarmerName</b>  </b>
+                                                <br />
+                                                <b>Supervisor Name :- <b>@Model.SupervisorName</b>  </b>
+                                                <br /><b><strong>Address :</strong> @Model.Address </b>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="2" style=" border:1px solid black; margin-bottom:5px; text-align:center">
+                                    Bank Account No : <b>@Model.BankAcNo</b>
+                                    <br />
+                                    Bank Name : <b>@Model.BankName</b>
+                                    <br />
+                                    Account Type : <b>@Model.AccountType </b>
+                                </td>
+                                <td style=" border:1px solid black; margin-bottom:5px; text-align:center" colspan="2">
+                                    Account Holder Name : <b>@Model.AcHolder</b>
+                                    <br />
+                                    PAN No : <b>@Model.PanNo</b>
+                                    <br />
+                                    IFSC Code : <b>@Model.IFSC_Code</b>
+                                </td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya;font-size:x-large">LOT DETAIL</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="2" align="center" style=" border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Lot Details</b></td>
+                                <td colspan="2" align="center" style=" border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Performance</b></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px; padding-left:5px;font-size:x-large">Lot No</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"><b>@Model.LotNo</b></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Placement Date</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.DateOfPlacement</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">First fortnight MORTALITY %</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FortnightMortality</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Chicks Housed (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.NoOfChicks</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Total Mortality %</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">@Model.MortalityPercentage</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Mortality (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.MortalityOfBirds</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">F.C.R.</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">@Model.FCR</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Birds Lifted (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.NoOfBirdSold</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">Lifting %</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.LiftingPercentage</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large;">Lifting Completed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FlockEndDate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">Avg. Wt</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.AvgWeight</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Shortage (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.SortageOfBird</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">Birds Age (Days)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.MeanAge</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;padding-left:5px;font-size:x-large">Excess (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large"><b>@Model.ExcessOfBirds</b></td>
+                                <td style=" border:1px solid black; margin-bottom:10px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:10px;"></td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Birds Weight (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.TotalWeight</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Feed Received (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FeedReceived</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Feed Consumption (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FeedConsumed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Feed Returned (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FeedReturned</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                            </tr>
+
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya;font-size:x-large">PRODUCTION COST DETAIL</td>
+                            </tr>
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Particular</b></td>
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Quantity</b></td>
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Rate</b></td>
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Amount</b></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Chicks</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.NoOfChicks</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.ChicksRate</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.ChicksCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Feed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FeedConsumed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FeedRate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FeedCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Medicine</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">0</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">0</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.MedicineCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;padding-left:5px;font-size:x-large">Additional Cost</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">0</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">0</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">@Model.AdditionalMedicineCost</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;padding-left:5px;font-size:x-large">Overhead Cost</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">@Model.NoOfChicks</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">@Model.OverHeadCostRate</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">@Model.OverHeadCostAmount</td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">Total</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.TotalProductionCost</td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Production Cost/ KG</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.TotalProductionCostRate</td>
+                            </tr>
+
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya;font-size:x-large">GROWING CHARGES DETAILS</td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Growing Charges</b></td>
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Amount</b></td>
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Deduction</b></td>
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large"><b>Amount</b></td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Rearing Charge (@Model.FixedGrowingChargeRate)</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.FixedGrowingChargeAmount</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">Shortage</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.ShortageBirdDeductionAmount</td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Performance Incentive</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.GrowingChargeAmount</td>
+                                <td style="border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">Excess</td>
+                                <td style="border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large">@Model.ExcessBirdDeductionAmount</td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Rate Incentive (@Model.RateBonusValue) (@Model.RateBonusPercentage % Bonus)</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.RateBonusMoreThan</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"></td>
+                            </tr>
+
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large">Total Growing Charges</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.TotalGrowingCharge</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">Total Deduction</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@Model.TotalDeduction</td>
+                            </tr>
+
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;"></td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Net Growing Charges</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.NetGrowingCharge</td>
+                            </tr>
+
+                        </table>
+
+
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:35%;padding-left:5px;font-size:x-large">Amount For Ready Bird Purchase  </td>
+                                <td style="text-align:right;width:15%;padding-right:5px;font-size:x-large">@Model.ReadyBirdPurchaseAmount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;width:35%;font-size:x-large">Received From Farmer </td>
+                                <td style="text-align:right;width:15%;padding-right:5px;font-size:x-large">@Model.ReadyBirdPurchaseAmountPaid</td>
+                            </tr>
+                        </table>
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Standard Cost</td>
+                                <td style="text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.StandardCostRate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Production Cost </td>
+                                <td style="text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.TotalProductionCost</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Sale Rate </td>
+                                <td style="text-align:right;padding-right:5px;font-size:x-large;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.AvgSaleRate</td>
+                            </tr>
+                        </table>
+
+                        <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Net Growing Charge</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;width:50%;padding-right:5px;font-size:x-large"><span>&#8377;</span> @Model.NetGrowingCharge</td>
+                            </tr>
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Less TDS 1%</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"><span>&#8377;</span> @Model.TDS_Deduction</td>
+                            </tr>
+                            @*<tr style="border:1px solid black; margin-bottom:5px;">
+                                    <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Less Ready Bird Purchase Due</td>
+                                    <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"><span>&#8377;</span> @Model.ReadyBirdPurchaseAmountDue</td>
+                                </tr>*@
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Less Advance Deduction</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"> <span>&#8377;</span> @Model.AdvanceDeduction</td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Due Amount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"><span>&#8377;</span> @Model.ReadyBirdPurchaseAmountDue</td>
+                            </tr>
+                            <tr style="border:1px solid black; margin-bottom:10px;">
+                                <td style="border:1px solid black; margin-bottom:10px;width:50%;padding-left:5px;font-size:x-large">Adjustment</td>
+                                <td style="border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px;font-size:x-large"><span>&#8377;</span> @Model.Adjustment</td>
+                            </tr>
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Total Amount Payable</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"><span>&#8377;</span> @Model.NetAmountPayment</td>
+                            </tr>
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">Payable Amount R/O</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large"><span>&#8377;</span> <b>@Model.Payment_RO</b></td>
+                            </tr>
+                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px;font-size:x-large">In Words</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-size:x-large">@ViewBag.BCTotalAmount</td>
+                            </tr>
+                        </table>
+
+
+                        @if (Model.ExcessOfBirds > 0)
+                        {
+                            <p style="">
+                                Note:- Excess Birds  @Model.ExcessOfBirds  X  @(Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.TotalWeight) / Model.BirdSalesList.Sum(s => s.NoOfBird)), 2)) (Average Weight) is deducted from Sold Weight @Model.BirdSalesList.Sum(s => s.TotalWeight)
+                                and Calculation is made on that.
+                            </p>
+
+                        }
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="2" style=" border:1px solid black; margin-bottom:5px; text-align:center">
+
+                                    <br />
+                                    Supervisor's Signature
+                                </td>
+                                <td style=" border:1px solid black; margin-bottom:5px; text-align:center" colspan="2">
+                                    <br />
+                                    Farmer's Signature
+                                </td>
+
+                                <td style=" border:1px solid black; margin-bottom:5px; text-align:center" colspan="2">
+                                    <br />
+                                    Branch Manager's Signature
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <p style="page-break-after: always;">&nbsp; </p>
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <div class="box-header" style="text-align:center;font-family:Vijaya;font-size:x-large"><h3><b>Medicine Consumption Details</b></h3></div>
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <thead>
+                                <tr style=" border:1px solid black; margin-bottom:5px;">
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Medicine</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Rate</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Consumption</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Amount</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                @for (int i = 0; i < Model.MedicineConsumptionList.Count(); i++)
+                                {
+                                    <tr style=" border:1px solid black; margin-bottom:5px;">
+                                        <td style=" border:1px solid black; margin-bottom:5px;;font-size:x-large">@Model.MedicineConsumptionList[i].MedicineName @Html.HiddenFor(m => Model.MedicineConsumptionList[i].MedicineName) @Html.HiddenFor(m => Model.MedicineConsumptionList[i].MedicineId) @Html.HiddenFor(m => Model.MedicineConsumptionList[i].MedicineCategoryId)</td>
+                                        <td style=" border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.MedicineConsumptionList[i].Rate / @Model.MedicineConsumptionList[i].UnitUOM @Html.HiddenFor(m => Model.MedicineConsumptionList[i].Rate)</td>
+                                        <td style=" border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.MedicineConsumptionList[i].Consumption (@Model.MedicineConsumptionList[i].FarmerUOM) @Html.HiddenFor(m => Model.MedicineConsumptionList[i].Consumption)</td>
+                                        <td style=" border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.MedicineConsumptionList[i].Amount @Html.HiddenFor(m => Model.MedicineConsumptionList[i].Amount)</td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td style=" border:1px solid black; margin-bottom:5px;font-size:x-large" colspan="3">Total</td>
+                                    <td style=" border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.MedicineConsumptionList.Sum(s => s.Amount)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p style="page-break-after: always;">&nbsp; </p>
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <div class="box-header" style="text-align:center;font-family:Vijaya;font-size:x-large"><h3><b>Sales Details</b></h3></div>
+                        <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+
+                            <thead>
+                                <tr style=" border:1px solid black; margin-bottom:5px;">
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Date</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Invoice</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Party Name</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">No Of Bird</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Total Weight</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Avg Weight</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Rate</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;font-size:x-large;">Amount</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                @if (Model.BirdSalesList != null)
+                                {
+                                    if (Model.BirdSalesList.Count() > 0)
+                                    {
+                                        for (int i = 0; i < Model.BirdSalesList.Count(); i++)
+                                        {
+                                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;">@Model.BirdSalesList[i].SaleDate @Html.HiddenFor(m => Model.BirdSalesList[i].SaleDate)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;">@Model.BirdSalesList[i].InvoiceNo @Html.HiddenFor(m => Model.BirdSalesList[i].InvoiceNo)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;">@Model.BirdSalesList[i].NameOfParty @Html.HiddenFor(m => Model.BirdSalesList[i].NameOfParty)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;text-align:right">@Model.BirdSalesList[i].NoOfBird @Html.HiddenFor(m => Model.BirdSalesList[i].NoOfBird)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;text-align:right">@Model.BirdSalesList[i].TotalWeight @Html.HiddenFor(m => Model.BirdSalesList[i].TotalWeight)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;text-align:right">@Model.BirdSalesList[i].AvgWeight @Html.HiddenFor(m => Model.BirdSalesList[i].AvgWeight)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;text-align:right">@Model.BirdSalesList[i].Rate @Html.HiddenFor(m => Model.BirdSalesList[i].Rate)</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;font-size:x-large;text-align:right">@Model.BirdSalesList[i].Amount @Html.HiddenFor(m => Model.BirdSalesList[i].Amount)</td>
+
+                                            </tr>
+                                        }
+
+                                        <tr>
+                                            <td style="border:1px solid black; margin-bottom:5px;font-size:x-large" colspan="3">Total</td>
+                                            <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.BirdSalesList.Sum(s => s.NoOfBird)</td>
+                                            <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.BirdSalesList.Sum(s => s.TotalWeight)</td>
+                                            <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.TotalWeight) / Model.BirdSalesList.Sum(s => s.NoOfBird)), 2)</td>
+                                            <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.Amount) / Model.BirdSalesList.Sum(s => s.TotalWeight)), 2)</td>
+                                            <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-size:x-large">@Model.BirdSalesList.Sum(s => s.Amount)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+
+
+
+
+
+                <div id="print1">
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4">
+                                    <table width="100%">
+                                        <tr>
+                                            <td style="text-align:left;width:10%">
+                                                <img src="~/Images/logo2.png" />
+
+                                            </td>
+                                            <td style="text-align:center ;width:90%">
+                                                <h4 style="margin:5px 0 0 0;font-family:Vijaya"><b>HI BREED AVIAN RESEARCH AND INTEGRATOR </b></h4>
+                                                <b>Unit :- <b>@Model.BranchName</b>  </b>
+                                                <br />
+                                                <b>Farmer Name :- <b>@Model.FarmerName</b>  </b>
+                                                <br />
+                                                <b>Supervisor Name :- <b>@Model.SupervisorName</b>  </b>
+                                                <br /><b><strong>Address :</strong> @Model.Address </b>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="2" style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                    Bank Account No : <b>@Model.BankAcNo</b>
+                                    <br />
+                                    Bank Name : <b>@Model.BankName</b>
+                                    <br />
+                                    Account Type : <b>@Model.AccountType </b>
+                                </td>
+                                <td style="border:1px solid black; margin-bottom:5px; text-align:center" colspan="2">
+                                    Account Holder Name : <b>@Model.AcHolder</b>
+                                    <br />
+                                    PAN No : <b>@Model.PanNo</b>
+                                    <br />
+                                    IFSC Code : <b>@Model.IFSC_Code</b>
+                                </td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya">LOT DETAIL</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="2" align="center" style="border:1px solid black; margin-bottom:5px; font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Lot Details</td>
+                                <td colspan="2" align="center" style="border:1px solid black; margin-bottom:5px; font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Performance</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px; padding-left:5px">Lot No</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><b>@Model.LotNo</b></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Placement Date</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.DateOfPlacement</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">First fortnight MORTALITY %</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FortnightMortality</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Chicks Housed (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.NoOfChicks</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px; font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Total Mortality %</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">@Model.MortalityPercentage</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Mortality (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.MortalityOfBirds</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">F.C.R.</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">@Model.FCR</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Birds Lifted (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.NoOfBirdSold</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">Lifting %</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.LiftingPercentage</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;">Lifting Completed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FlockEndDate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">Avg. Wt</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.AvgWeight</td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Shortage (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.SortageOfBird</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">Birds Age (Days)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.MeanAge</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;padding-left:5px">Excess (Nos)</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px"><b>@Model.ExcessOfBirds</b></td>
+                                <td style=" border:1px solid black; margin-bottom:10px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:10px;"></td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Birds Weight (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.TotalWeight</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Feed Received (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FeedReceived</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Feed Consumption (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FeedConsumed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Feed Returned (Kg)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FeedReturned</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                            </tr>
+
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya">PRODUCTION COST DETAIL</td>
+                            </tr>
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;"><b>Particular</b></td>
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;"><b>Quantity</b></td>
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;"><b>Rate</b></td>
+                                <td style="text-align:center;border:1px solid black; margin-bottom:5px;"><b>Amount</b></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Chicks</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.NoOfChicks</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.ChicksRate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.ChicksCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Feed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FeedConsumed</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FeedRate</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FeedCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Medicine</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">0</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">0</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.MedicineCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;padding-left:5px">Additional Cost</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">0</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">0</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">@Model.AdditionalMedicineCost</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;padding-left:5px">Overhead Cost</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">@Model.NoOfChicks</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">@Model.OverHeadCostRate</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">@Model.OverHeadCostAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">Total</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.TotalProductionCost</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Production Cost/ KG</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">@Model.TotalProductionCostRate</td>
+                            </tr>
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="4" align="center" style="font-family: Vijaya">GROWING CHARGES DETAILS</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;"><b>Growing Charges</b></td>
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;"><b>Amount</b></td>
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;"><b>Deduction</b></td>
+                                <td style="text-align:center; border:1px solid black; margin-bottom:5px;"><b>Amount</b></td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Rearing Charge (@Model.FixedGrowingChargeRate)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.FixedGrowingChargeAmount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">Shortage</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.ShortageBirdDeductionAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Performance Incentive</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.GrowingChargeAmount</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">Excess</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px">@Model.ExcessBirdDeductionAmount</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Rate Incentive (@Model.RateBonusValue) (@Model.RateBonusPercentage % Bonus)</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.RateBonusMoreThan</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"></td>
+                            </tr>
+
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;padding-left:5px">Total Growing Charges</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.TotalGrowingCharge</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">Total Deduction</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@Model.TotalDeduction</td>
+                            </tr>
+
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;"></td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">Net Growing Charges</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold' , sans-serif">@Model.NetGrowingCharge</td>
+                            </tr>
+
+                        </table>
+
+
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:35%;padding-left:5px">Amount For Ready Bird Purchase  </td>
+                                <td style="text-align:right;width:15%;padding-right:5px">@Model.ReadyBirdPurchaseAmount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;width:35%">Received From Farmer </td>
+                                <td style="text-align:right;width:15%;padding-right:5px">@Model.ReadyBirdPurchaseAmountPaid</td>
+                            </tr>
+                        </table>
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style="border:1px solid black; margin-bottom:5px;padding-left:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Standard Cost</td>
+                                <td style="text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.StandardCostRate</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Production Cost </td>
+                                <td style="text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.TotalProductionCost</td>
+                                <td style="border:1px solid black; margin-bottom:5px;text-align:right;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">Sale Rate</td>
+                                <td style="text-align:right;padding-right:5px;font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">@Model.AvgSaleRate</td>
+                            </tr>
+                        </table>
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Net Growing Charge</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;width:50%;padding-right:5px"><span>&#8377;</span> @Model.NetGrowingCharge</td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Less TDS 1%</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><span>&#8377;₹</span> @Model.TDS_Deduction</td>
+                            </tr>
+                            @*<tr style=" border:1px solid black; margin-bottom:5px;">
+                                    <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Less Ready Bird Purchase Due</td>
+                                    <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><span>&#8377;</span> @Model.ReadyBirdPurchaseAmountDue</td>
+                                </tr>*@
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Less Advance Deduction</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><span>&#8377;</span> @Model.AdvanceDeduction</td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Due Amount</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><span>&#8377;</span> @Model.ReadyBirdPurchaseAmountDue</td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:10px;">
+                                <td style=" border:1px solid black; margin-bottom:10px;width:50%;padding-left:5px">Adjustment</td>
+                                <td style=" border:1px solid black; margin-bottom:10px;text-align:right;padding-right:5px"><span>&#8377;</span> @Model.Adjustment</td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Total Amount Payable</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><span>&#8377;</span> @Model.NetAmountPayment</td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">Payable Amount R/O</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px"><span>&#8377;</span> <b>@Model.Payment_RO</b></td>
+                            </tr>
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td style=" border:1px solid black; margin-bottom:5px;width:50%;padding-left:5px">In Words</td>
+                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right;padding-right:5px">@ViewBag.BCTotalAmount</td>
+                            </tr>
+                        </table>
+
+
+                        @if (Model.ExcessOfBirds > 0)
+                        {
+                            <p style="">
+                                Note:- Excess Birds  @Model.ExcessOfBirds  X  @(Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.TotalWeight) / Model.BirdSalesList.Sum(s => s.NoOfBird)), 2)) (Average Weight) is deducted from Sold Weight @Model.BirdSalesList.Sum(s => s.TotalWeight)
+                                and Calculation is made on that.
+                            </p>
+
+                        }
+
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                <td colspan="2" style=" border:1px solid black; margin-bottom:5px; text-align:center">
+
+                                    <br />
+                                    Supervisor's Signature
+                                </td>
+                                <td style=" border:1px solid black; margin-bottom:5px; text-align:center" colspan="2">
+                                    <br />
+                                    Farmer's Signature
+                                </td>
+
+                                <td style=" border:1px solid black; margin-bottom:5px; text-align:center" colspan="2">
+                                    <br />
+                                    Branch Manager's Signature
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    @*<p style="page-break-after: always;">&nbsp; </p>
+                           <div class="table_outer" style="padding:10px;
+                        border:5px solid gray;
+                        margin:0;">
+                               <div class="box-header" style="text-align:center;font-family:Vijaya"><h3><b>Rate Bonus Details</b></h3></div>
+                               <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                                   <thead>
+                                       <tr style=" border:1px solid black; margin-bottom:5px;">
+                                           <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Production Cost</th>
+                                           <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Rate Bonus Percentage</th>
+                                       </tr>
+
+                                   </thead>
+
+                                   <tbody>
+                                       @for (int i = 0; i < Model.RateBonusDetailsList.Count(); i++)
+                                       {
+                                           <tr style=" border:1px solid black; margin-bottom:5px;">
+                                               <td style=" border:1px solid black; margin-bottom:5px;">@Model.RateBonusDetailsList[i].ProductionCost</td>
+                                               <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.RateBonusDetailsList[i].RateBonusPercent</td>
+
+                                           </tr>
+                                       }
+                                   </tbody>
+                               </table>
+                           </div>*@
+
+                    <p style="page-break-after: always;">&nbsp; </p>
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <div class="box-header" style="text-align:center;font-family:Vijaya"><h3><b>Medicine Consumption Details</b></h3></div>
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <thead>
+                                <tr style=" border:1px solid black; margin-bottom:5px;">
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Medicine</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Rate</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Consumption</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Amount</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                @for (int i = 0; i < Model.MedicineConsumptionList.Count(); i++)
+                                {
+                                    <tr style=" border:1px solid black; margin-bottom:5px;">
+                                        <td style=" border:1px solid black; margin-bottom:5px;">@Model.MedicineConsumptionList[i].MedicineName @Html.HiddenFor(m => Model.MedicineConsumptionList[i].MedicineName) @Html.HiddenFor(m => Model.MedicineConsumptionList[i].MedicineId) @Html.HiddenFor(m => Model.MedicineConsumptionList[i].MedicineCategoryId)</td>
+                                        <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.MedicineConsumptionList[i].Rate / @Model.MedicineConsumptionList[i].UnitUOM @Html.HiddenFor(m => Model.MedicineConsumptionList[i].Rate)</td>
+                                        <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.MedicineConsumptionList[i].Consumption (@Model.MedicineConsumptionList[i].FarmerUOM) @Html.HiddenFor(m => Model.MedicineConsumptionList[i].Consumption)</td>
+                                        <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.MedicineConsumptionList[i].Amount @Html.HiddenFor(m => Model.MedicineConsumptionList[i].Amount)</td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td style=" border:1px solid black; margin-bottom:5px;" colspan="3">Total</td>
+                                    <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.MedicineConsumptionList.Sum(s => s.Amount)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        <br />
+                        <div class="box-header" style="text-align:center;font-family:Vijaya"><h3><b>Rate Bonus Details</b></h3></div>
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                            <thead>
+                                <tr style=" border:1px solid black; margin-bottom:5px;">
+                                    @if (Branchid == 3)
+                                    {
+                                        <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Sales Rate</th>
+                                    }
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Production Cost</th>
+                                    <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Rate Bonus Percentage</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                @for (int i = 0; i < Model.RateBonusDetailsList.Count(); i++)
+                                {
+                                    <tr style=" border:1px solid black; margin-bottom:5px;">
+                                        @if (Branchid == 3)
+                                        {
+                                            <td style="border:1px solid black; margin-bottom:5px;text-align:center">@Model.RateBonusValueShow</td>
+
+                                        }
+                                        <td style="border:1px solid black; margin-bottom:5px;text-align:center">@Model.RateBonusDetailsList[i].ProductionCost</td>
+                                        <td style="border:1px solid black; margin-bottom:5px;text-align:center">@Model.RateBonusDetailsList[i].RateBonusPercent</td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p style="page-break-after: always;">&nbsp; </p>
+                    <div class="table_outer" style="padding:10px;
+                 border:5px solid gray;
+                 margin:0;">
+                        <div class="box-header" style="text-align:center;font-family:Vijaya"><h3><b>Sales Details</b></h3></div>
+                        <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+
+                            <thead>
+                                <tr style=" border:1px solid black; margin-bottom:5px;">
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Date</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Invoice</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Party Name</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">No Of Bird</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Total Weight</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Avg Weight</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Rate</th>
+                                    <th style=" text-align:center; border:1px solid black; margin-bottom:5px;">Amount</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                @if (Model.BirdSalesList != null)
+                                {
+                                    if (Model.BirdSalesList.Count() > 0)
+                                    {
+                                        for (int i = 0; i < Model.BirdSalesList.Count(); i++)
+                                        {
+                                            <tr style=" border:1px solid black; margin-bottom:5px;">
+                                                <td style=" border:1px solid black; margin-bottom:5px;">@Model.BirdSalesList[i].SaleDate @Html.HiddenFor(m => Model.BirdSalesList[i].SaleDate)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;">@Model.BirdSalesList[i].InvoiceNo @Html.HiddenFor(m => Model.BirdSalesList[i].InvoiceNo)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;">@Model.BirdSalesList[i].NameOfParty @Html.HiddenFor(m => Model.BirdSalesList[i].NameOfParty)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList[i].NoOfBird @Html.HiddenFor(m => Model.BirdSalesList[i].NoOfBird)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList[i].TotalWeight @Html.HiddenFor(m => Model.BirdSalesList[i].TotalWeight)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList[i].AvgWeight @Html.HiddenFor(m => Model.BirdSalesList[i].AvgWeight)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList[i].Rate @Html.HiddenFor(m => Model.BirdSalesList[i].Rate)</td>
+                                                <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList[i].Amount @Html.HiddenFor(m => Model.BirdSalesList[i].Amount)</td>
+
+                                            </tr>
+                                        }
+
+                                        <tr>
+                                            <td style=" border:1px solid black; margin-bottom:5px;" colspan="3">Total</td>
+                                            <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList.Sum(s => s.NoOfBird)</td>
+                                            <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList.Sum(s => s.TotalWeight)</td>
+                                            <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.TotalWeight) / Model.BirdSalesList.Sum(s => s.NoOfBird)), 2)</td>
+                                            <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.Amount) / Model.BirdSalesList.Sum(s => s.TotalWeight)), 2)</td>
+                                            <td style=" border:1px solid black; margin-bottom:5px;text-align:right">@Model.BirdSalesList.Sum(s => s.Amount)</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+        </aside>
+    }
+</body>
+</html>

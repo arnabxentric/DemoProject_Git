@@ -1,0 +1,747 @@
+﻿@using XenERP.Models;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string roleName = Convert.ToString(Session["Role"]);
+    long Createdby = Convert.ToInt32(Session["Createdid"]);
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <meta charset="UTF-8">
+    <title>AdminLTE | Dashboard</title>
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                All Reports
+                <small>it all starts here</small>
+            </h1>
+            @*  <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li><a href="#">Examples</a></li>
+                    <li class="active">Blank page</li>
+                </ol>*@
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="row">
+                <div class="col-md-12">
+                    @if (roleName == "SuperAdmin")
+                    {
+                        <div class="nav-tabs-custom">
+                            @* <ul class="nav nav-tabs">
+
+                                    <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                                </ul>*@
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab_1">
+
+                                    <div class="col-md-6">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title">Financial Reports</h3>
+                                            </div>
+                                            <div class="box-body table-responsive no-padding">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="2">So how your business is performing based in revenue</th>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BalanceSheet", "FinancialReport")">Balance Sheet</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("TrialBalance", "FinancialReport")">Trial Balance</a></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("ProfitLoss", "FinancialReport")">Profit & Loss</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Income Report</td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DebtorCollection", "FinancialReport")">Cash & Bank Book</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Payment", "FinancialReport")">Payment Report</a></td>
+
+                                                        </tr>
+                                                        @*<tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Group", "FinancialReport")">Group Report</a></td>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("GroupBranchExpenses", "FinancialReport")">Group Branch Expenses</a></td>
+
+                                                            </tr>*@
+                                                        <tr>
+
+                                                            @*<td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Ledger", "FinancialReport")">Branch Ledger Report</a></td>*@
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminLedger", "FinancialReport")">Admin Ledger Report</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminSubLedger", "FinancialReport")">Admin Sub Ledger Report</a></td>
+                                                        </tr>
+
+                                                        @*<tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("LedgerDateRange", "FinancialReport")">Ledger Report Date Range</a></td>
+
+
+                                                            </tr>*@
+
+                                                        <tr>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminGroup", "FinancialReport")">Admin Group Report</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("GroupBranchExpenses", "FinancialReport")">Head Office Expenses</a></td>
+
+
+                                                        </tr>
+                                                        <tr>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminTB", "FinancialReport")">Admin Trial Balance Report</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminTBDrillDown", "FinancialReport")">Admin Drill Down Trial Balance Report</a></td>
+
+
+
+                                                        </tr>
+                                                        @*<tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchLedger", "FinancialReport")">Branch Ledger Report</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchBS", "FinancialReport")">Branch Profit & Loss Report</a></td>
+
+
+                                                            </tr>*@
+                                                        <tr>
+
+                                                            @* <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchPL", "FinancialReport")">Branch Balance Sheet</a></td>*@
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchTB", "FinancialReport")">Branch Trial Balance</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchTBDrillDown", "FinancialReport")">Branch Drill Down Trial Balance</a></td>
+
+                                                        </tr>
+
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title">Sales Reports</h3>
+                                            </div>
+                                            <div class="box-body table-responsive no-padding">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyDate", "SalesReport")">Sales By Date</a></td>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesCustomer", "SalesReport")">Sales By Customer</a></td>
+
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Despatch", "SalesReport")">Itemwise Summary Despatch</a></td>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Register", "SalesReport")">Itemwise Summary Combined Sales Register</a></td>
+
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesProduct", "SalesReport")">Sales By Product</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesTax", "SalesReport")">Sales By Tax</a></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesProductAdmin", "SalesReport")">Sales By Product Admin</a></td>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i> <a href="@Url.Action("IncomeReport", "SalesReport")">Income By Customer</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("IncomeReportInv", "SalesReport")">Income By Invoice</a></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("CusDCbyDate", "SalesReport")">Customer Debit Credit</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PrintSalesInvoice", "SalesReport")">Print Sales Invoice</a></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbySalesPerson", "SalesReport")">Sales By Sales Person</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesProductBySalesperson", "SalesReport")">Sales Product By Sales Person</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DespatchRegister", "SalesReport")">Despatch Register</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesRegister", "SalesReport")">Sales Analysis Register</a></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyProductDet", "SalesReport")">Sales By Date With Product Details</a></td>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesByDateSummary", "SalesReport")">Sales Summary By Date</a></td>
+
+
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="col-md-6">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title">Purchase Reports</h3>
+                                            </div>
+                                            <div class="box-body table-responsive no-padding">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchasebyDate", "PurchaseReport")">Purchase By Date</a></td>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseSupplier", "PurchaseReport")">Purchase By Supplier</a></td>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseProduct", "PurchaseReport")">Purchase By Product</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseTax", "PurchaseReport")">Purchase By Tax</a></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseProductAdmin", "PurchaseReport")">Purchase By Product Admin</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseVariance", "PurchaseReport")">Purchase Order Status</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseUpVariance", "PurchaseReport")">Purchase Order Over Variance</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseDownVariance", "PurchaseReport")">Purchase Order Under Variance</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchasebyProductDet", "PurchaseReport")">Purchase By Date With Product Details</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseRegister", "PurchaseReport")">Purchase Register</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PayVoucherEntryByUser", "PurchaseReport")">My Payment Voucher Entries</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title">Inventory Reports</h3>
+                                            </div>
+                                            <div class="box-body table-responsive no-padding">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyStockDate", "SalesReport")">Customer Bill Wise Details Sales Stock</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyStockCustomerDate", "SalesReport")">Customer Bill Wise Sales Stock</a></td>
+                                                            @*<td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseSupplierStock", "PurchaseReport")">Supplier Wise Purchase Stock Report</a></td>*@
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesCustomerStock", "SalesReport")">Customer Sales Stock Details</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseSupplierStock", "PurchaseReport")">Supplier Wise Purchase Stock</a></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Inventory Report By Product</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Inventory Report By Group</td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Inventory Low Stock Report</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Stock on Hand</td>
+
+
+
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Item Adjustment</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Stock Transfer</td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Branch Sales Report</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Branch Stock deliveries</td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Branch Stock receipts</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Transaction Enquiry</td>
+
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Quick Count</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Stock Movement</td>
+
+                                                        </tr>
+
+
+
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="box">
+                                            <div class="box-header">
+                                                <h3 class="box-title">Ageing Reports</h3>
+                                            </div>
+                                            <div class="box-body table-responsive no-padding">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Overdue Receivables</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Customer Receivables</td>
+
+                                                        </tr>
+                                                        <tr>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Aging", "PurchaseReport")">Overdue Payables(Aging)</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("OutstandingBillWiseReports", "PurchaseReport")">Purchase Outstanding Bill Wise Reports</a></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Forecast Aging Report</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Past-Due Aging Report</td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Branch Sales Report</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Branch Stock deliveries</td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Branch Stock receipts</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Transaction Enquiry</td>
+
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i>Quick Count</td>
+                                                            <td><i class="fa fa-fw fa-star"></i>Stock Movement</td>
+
+                                                        </tr>
+
+
+
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+
+                                </div><!-- /.tab-pane -->
+                                <!-- /.tab-pane -->
+                            </div><!-- /.tab-content -->
+                        </div>
+
+                    }
+                    else
+                    {
+
+                        XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+                        InventoryEntities db = new InventoryEntities();
+                        var menuheader = db.MenuHeaderMasters.ToList();
+                        int CompId = Convert.ToInt32(Session["companyid"]);
+                        int userid = Convert.ToInt32(Session["AssignId"]);
+
+                        var list = rep.GetMenuheader(userid, CompId);
+
+
+                        <div class="nav-tabs-custom">
+                            @* <ul class="nav nav-tabs">
+
+                                    <li class="pull-right"><a href="#" class="text-muted"><i class="fa fa-gear"></i></a></li>
+                                </ul>*@
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tab_1">
+                                    @{
+                                        var financial = list.Where(l => l.AccessMenuHeaderId == 7 && l.Name == "FinancialReports");
+                                    }
+                                    @if (financial.Count() > 0)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="box">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Financial Reports</h3>
+                                                </div>
+                                                <div class="box-body table-responsive no-padding">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th colspan="2">So how your business is performing based in revenue</th>
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BalanceSheet", "FinancialReport")">Balance Sheet</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("TrialBalance", "FinancialReport")">Trial Balance</a></td>
+
+                                                            </tr>
+                                                            @*  <tr>
+                                                                     <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("ProfitLoss", "FinancialReport")">Profit & Loss</a></td>
+                                                                     <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminTB", "FinancialReport")">Admin Trial Balance Report</a></td>
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminTBDrillDown", "FinancialReport")">Admin Drill Down Trial Balance Report</a></td>
+                                                                </tr>*@
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DebtorCollection", "FinancialReport")">Cash & Bank Book</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Payment", "FinancialReport")">Payment Report</a></td>
+
+                                                            </tr>
+                                                            @if (Createdby == 5)
+                                                            {
+                                                                <tr>
+
+                                                                    @*<td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Ledger", "FinancialReport")">Branch Ledger Report</a></td>*@
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminLedger", "FinancialReport")">Admin Ledger Report</a></td>
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminSubLedger", "FinancialReport")">Admin Sub Ledger Report</a></td>
+                                                                </tr>
+
+                                                                <tr>
+
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminGroup", "FinancialReport")">Admin Group Report</a></td>
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("GroupBranchExpenses", "FinancialReport")">Head Office Expenses</a></td>
+
+
+                                                                </tr>
+                                                                <tr>
+
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminTB", "FinancialReport")">Admin Trial Balance Report</a></td>
+                                                                    <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AdminTBDrillDown", "FinancialReport")">Admin Drill Down Trial Balance Report</a></td>
+
+
+
+                                                                </tr>
+                                                            }
+
+                                                            <tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Ledger", "FinancialReport")">Branch Ledger Report</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SubLedger", "FinancialReport")">Branch Sub Ledger Report</a></td>
+
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Group", "FinancialReport")">Group Report</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("GroupBranchExpenses", "FinancialReport")">Group Branch Expenses</a></td>
+
+                                                            </tr>
+
+                                                            <tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchPL", "FinancialReport")">Branch Balance Sheet</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchBS", "FinancialReport")">Branch Profit & Loss Report</a></td>
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchTB", "FinancialReport")">Branch Trial Balance</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("BranchTBDrillDown", "FinancialReport")">Branch Drill Down Trial Balance</a></td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @{
+                                        var sales = list.Where(l => l.AccessMenuHeaderId == 7 && l.Name == "SalesReports");
+                                    }
+                                    @if (sales.Count() > 0)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="box">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Sales Reports</h3>
+                                                </div>
+                                                <div class="box-body table-responsive no-padding">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyDate", "SalesReport")">Sales By Date</a></td>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesCustomer", "SalesReport")">Sales By Customer</a></td>
+
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesProduct", "SalesReport")">Sales By Product</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesTax", "SalesReport")">Sales By Tax</a></td>
+
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i> <a href="@Url.Action("IncomeReport", "SalesReport")">Income By Customer</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("IncomeReportInv", "SalesReport")">Income By Invoice</a></td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("CusDCbyDate", "SalesReport")">Customer Debit Credit</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PrintSalesInvoice", "SalesReport")">Print Sales Invoice</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbySalesPerson", "SalesReport")">Sales By Sales Person</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesProductBySalesperson", "SalesReport")">Sales Product By Sales Person</a></td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DespatchRegister", "SalesReport")">Despatch Register</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("CreditNoteMonthWise", "SalesReport")">Further Discount Per Bag</a></td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("CreditNoteCustomerWise", "SalesReport")">Generate Credit Note From Further Discount</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesRegister", "SalesReport")">Sales Analysis Register</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyProductDet", "SalesReport")">Sales By Date With Product Details</a></td>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesByDateSummary", "SalesReport")">Sales Summary By Date</a></td>
+
+
+
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="clearfix"></div>
+                                    @{
+                                        var Purchase = list.Where(l => l.AccessMenuHeaderId == 7 && l.Name == "PurchaseReports");
+                                    }
+                                    @if (Purchase.Count() > 0)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="box">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Purchase Reports</h3>
+                                                </div>
+                                                <div class="box-body table-responsive no-padding">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchasebyDate", "PurchaseReport")">Purchase By Date</a></td>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseSupplier", "PurchaseReport")">Purchase By Supplier</a></td>
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseProduct", "PurchaseReport")">Purchase By Product</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseTax", "PurchaseReport")">Purchase By Tax</a></td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseProductAdmin", "PurchaseReport")">Purchase By Product Admin</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseVariance", "PurchaseReport")">Purchase Order Status</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseUpVariance", "PurchaseReport")">Purchase Order Over Variance</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseDownVariance", "PurchaseReport")">Purchase Order Under Variance</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchasebyProductDet", "PurchaseReport")">Purchase By Date With Product Details</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseRegister", "PurchaseReport")">Purchase Register</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PayVoucherEntryByUser", "PurchaseReport")">My Payment Voucher Entries</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="clearfix"></div>
+                                    @{
+                                        var Inventory = list.Where(l => l.AccessMenuHeaderId == 7 && l.Name == "InventoryReports");
+                                    }
+                                    @if (Inventory.Count() > 0)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="box">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Inventory Reports</h3>
+                                                </div>
+                                                <div class="box-body table-responsive no-padding">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyStockDate", "SalesReport")">Customer Bill Wise Details Sales Stock</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesbyStockCustomerDate", "SalesReport")">Customer Bill Wise Sales Stock</a></td>
+                                                                @*<td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseSupplierStock", "PurchaseReport")">Supplier Wise Purchase Stock Report</a></td>*@
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("SalesCustomerStock", "SalesReport")">Customer Sales Stock Details</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("PurchaseSupplierStock", "PurchaseReport")">Supplier Wise Purchase Stock</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Inventory Report By Product</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Inventory Report By Group</td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Inventory Low Stock Report</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Stock on Hand</td>
+
+
+
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Item Adjustment</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Stock Transfer</td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Branch Sales Report</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Branch Stock deliveries</td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Branch Stock receipts</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Transaction Enquiry</td>
+
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Quick Count</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Stock Movement</td>
+
+                                                            </tr>
+
+
+
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="box">
+                                                <div class="box-header">
+                                                    <h3 class="box-title">Ageing Reports</h3>
+                                                </div>
+                                                <div class="box-body table-responsive no-padding">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th colspan="2">So how your business is performing based in revenue and expenses</th>
+
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Overdue Receivables</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Customer Receivables</td>
+
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("Aging", "PurchaseReport")">Overdue Payables(Aging)</a></td>
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("OutstandingBillWiseReports", "PurchaseReport")">Purchase Outstanding Bill Wise Reports</a></td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Forecast Aging Report</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Past-Due Aging Report</td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Branch Sales Report</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Branch Stock deliveries</td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Branch Stock receipts</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Transaction Enquiry</td>
+
+                                                            <tr>
+                                                                <td><i class="fa fa-fw fa-star"></i>Quick Count</td>
+                                                                <td><i class="fa fa-fw fa-star"></i>Stock Movement</td>
+
+                                                            </tr>
+
+
+
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="clearfix"></div>
+
+
+
+                                </div><!-- /.tab-pane -->
+                                <!-- /.tab-pane -->
+                            </div><!-- /.tab-content -->
+                        </div>
+
+                    }
+
+
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside>
+</body>
+</html>

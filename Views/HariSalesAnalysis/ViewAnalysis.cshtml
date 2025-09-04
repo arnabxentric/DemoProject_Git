@@ -1,0 +1,463 @@
+﻿@model XenERP.Models.SalesAnalysisModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+
+
+<style>
+    .my-table-header {
+        background: #55b4b4;
+        color: #0e0505;
+    }
+
+    .HandCursor {
+        cursor: pointer;
+    }
+
+    .display-non-div {
+        display: none !important;
+    }
+
+    .add-component-deletebotton {
+        background: url(../Images/icon-delete.png) no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+        border: medium none;
+        height: 15px;
+        width: 15px;
+    }
+</style>
+
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+        color: red;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1040;
+        display: none;
+        overflow: auto;
+        overflow-y: scroll;
+        color: red;
+    }
+
+    .modal-content {
+        background-color: #ffffff;
+        width: 330px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+
+
+
+    .tblr {
+        overflow-y: auto;
+        overflow-x: inherit;
+    }
+
+    .spWdth {
+        width: 84px;
+    }
+
+    .seWdth {
+        width: 275px;
+    }
+</style>
+
+
+
+@*===========SELECT2 ASSAIGN==============*@
+
+
+
+@using (Html.BeginForm("SalesAnalysisList", "HariSalesAnalysis", FormMethod.Post))
+{
+
+    <aside class="right-side">
+
+        <section class="content-header" style="text-align:center">
+            <h4><b>SALES ANALYSIS</b> </h4>
+
+        </section>
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    <img src="~/Images/newLoad.gif" />
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Data Collection Date:<span style="color:Red;">*</span> </label>
+                            <div class="input-group date" id="dp3" data-date-end-date="0d" data-date-format="@Session["DateFormatLower"]">
+                                @Html.TextBoxFor(model => model.CreationDate, new { @class = "form-control", @readonly = "readonly" })
+                                <span class="input-group-addon" style="width:auto !important">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.CreationDate)
+                            @Html.HiddenFor(model => model.Id)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> Total Sales Amount :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.TotalAsumingAmount, new { @class = "form-control", @readonly = "readonly" })
+
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Cash Sales: </label>
+                            @Html.TextBoxFor(model => model.CashInHand, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010">Total Weight (Current Month): </label>
+                            @Html.TextBoxFor(model => model.MonthlyTotalWeight, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Sales Date:<span style="color:Red;">*</span> </label>
+                            <div class="input-group date" id="dp4" data-date-end-date="0d" data-date-format="@Session["DateFormatLower"]">
+                                @Html.TextBoxFor(model => model.SalesDate, new { @class = "form-control", @readonly = "readonly" })
+                                <span class="input-group-addon" style="width:auto !important">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.SalesDate)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Actual Collection Amount :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.ActualSalesAmount, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Bank Sales: </label>
+                            @Html.TextBoxFor(model => model.BankTransfer, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010">Total Sales Amount (Current Month): </label>
+                            @Html.TextBoxFor(model => model.MonthlyTotalSales, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                        @*<input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary" />*@
+
+                        <input name="" type="button" id="bak" value="Back" class="btn btn-primary" />
+                        @*<input name="" type="button" id="upsal" value="Update Sales" class="btn btn-success" />*@
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+        <div class="col-md-12">
+            <section class="content-header" style="text-align:center">
+                <h4><b>FARMER SALES DETAILS </b></h4>
+            </section>
+            <div class="box-body table-responsive tblr">
+                <table id="SalesListTab" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Trader Name</th>
+                            <th>Farmer Name</th>
+                            <th>Flock Code</th>
+                            <th>Pre Bird(Pc)</th>
+                            <th>Pre Bird(Wt)</th>
+                            <th>Pre Rate</th>
+                            <th>Post Bird(Pc)</th>
+                            <th>Post Bird(Wt)</th>
+                            <th>Post Rate</th>
+                            <th>Actual Bird(pc)</th>
+                            <th>Actual Bird(Wt)</th>
+                            <th>Actual Rate</th>
+                            @*<th></th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.UnitSalesAnalysisList != null)
+                        {
+                            for (int i = 0; i < Model.UnitSalesAnalysisList.Count(); i++)
+                            {
+                                <tr>
+                                    <td class="">
+                                        @Html.DropDownListFor(modelItem => Model.UnitSalesAnalysisList[i].TraderId, new SelectList(ViewBag.Trader, "Value", "Text", Model.UnitSalesAnalysisList[i].TraderId), "----SELECT----", new { @class = "form-control seWdth", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.UnitSalesAnalysisList[i].Index, new { @class = "ind" })
+                                        @Html.HiddenFor(m => m.UnitSalesAnalysisList[i].Id)
+                                    </td>
+
+                                    <td class="">
+                                        @Html.DropDownListFor(modelItem => Model.UnitSalesAnalysisList[i].FarmerId, new SelectList(ViewBag.farmer, "Value", "Text", Model.UnitSalesAnalysisList[i].FarmerId), "----SELECT----", new { @class = "form-control frm_id seWdth", @readonly = "readonly" })
+
+                                    </td>
+                                    <td class="">
+                                        @Html.DropDownListFor(modelItem => Model.UnitSalesAnalysisList[i].FlockId, new SelectList(ViewBag.flock, "value", "text", Model.UnitSalesAnalysisList[i].FlockId), "----Select Product----", new { @class = "form-control flk_id seWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].PreBirdQuantity, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].PreBirdsWeight, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].PreRate, new { @class = "form-control spWdth spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].PostBirdQuantity, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].PostBirdWeight, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].PostRate, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].ActualBirdQuantity, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].ActualBirdWeight, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.UnitSalesAnalysisList[i].ActualRate, new { @class = "form-control spWdth", @readonly = "readonly" })
+                                    </td>
+                                    @*<td class="spWdth">
+                                        <img src="~/Images/icon-add.png" id="imgSalesAdd" class="HandCursor" />
+                                        <img src="~/Images/icon-delete.png" id="imgSalesDel" class="HandCursor" />
+                                    </td>*@
+                                </tr>
+                            }
+
+                            <tr>
+                                <td class=""></td>
+
+                                <td class=""></td>
+                                <td class=""></td>
+                                <td class="">
+                                    @Model.UnitSalesAnalysisList.Sum(s => s.PreBirdQuantity)
+                                </td>
+                                <td class="">
+                                    @Model.UnitSalesAnalysisList.Sum(s => s.PreBirdsWeight)
+                                </td>
+                                <td class=""></td>
+                                <td class="">
+                                    @Model.UnitSalesAnalysisList.Sum(s => s.PostBirdQuantity)
+                                </td>
+                                <td class="">
+                                    @Model.UnitSalesAnalysisList.Sum(s => s.PostBirdWeight)
+                                </td>
+                                <td class=""></td>
+                                <td class="">
+                                    @Model.UnitSalesAnalysisList.Sum(s => s.ActualBirdQuantity)
+                                </td>
+                                <td class="">
+                                    @Model.UnitSalesAnalysisList.Sum(s => s.ActualBirdWeight)
+                                </td>
+                                <td class=""></td>
+                                <td class="spWdth"></td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <br />
+        <br />
+        <div class="col-md-12">
+            <section class="content-header" style="text-align:center">
+                <h4><b>Farmer Sales Analysis </b></h4>
+            </section>
+            <div class="box-body table-responsive tblr">
+                <table id="TraderListTab1" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Farmer Name</th>
+                            <th>Quantity</th>
+                            <th>Weight</th>
+                            <th>Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.FarmersalesAnalysisList != null)
+                        {
+                            for (int i = 0; i < Model.FarmersalesAnalysisList.Count(); i++)
+                            {
+                                <tr>
+                                    <td class="">
+                                        @Html.TextBoxFor(modelItem => Model.FarmersalesAnalysisList[i].SupplierName, new { @class = "form-control  seWdth" })
+
+
+                                        @Html.HiddenFor(m => m.FarmersalesAnalysisList[i].Index, new { @class = "ind" })
+                                        @Html.HiddenFor(m => m.FarmersalesAnalysisList[i].Id)
+                                    </td>
+
+                                    <td class="">
+                                        @Html.TextBoxFor(modelItem => Model.FarmersalesAnalysisList[i].ActualBirdQuantity, new { @class = "form-control  seWdth" })
+
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(modelItem => Model.FarmersalesAnalysisList[i].ActualBirdWeight, new { @class = "form-control  seWdth" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.FarmersalesAnalysisList[i].ActualRate, new { @class = "form-control  seWdth" })
+                                    </td>
+
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+
+        </div>
+        <br />
+        <br />
+        <div class="col-md-12">
+            <section class="content-header" style="text-align:center">
+                <h4><b>TRADER COLLECTION DETAILS </b></h4>
+            </section>
+            <div class="box-body table-responsive tblr">
+                <table id="TraderListTab" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Trader Name</th>
+                            <th>Cash Amount</th>
+                            <th>Bank Deposit Amount</th>
+                            <th>Total Amount</th>
+                            @*<th></th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.TradersalesAnalysisList != null)
+                        {
+                            for (int i = 0; i < Model.TradersalesAnalysisList.Count(); i++)
+                            {
+                                <tr>
+                                    <td class="">
+                                        @Html.TextBoxFor(modelItem => Model.TradersalesAnalysisList[i].traderName,new { @class = "form-control seWdth", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.TradersalesAnalysisList[i].Index, new { @class = "ind" })
+                                        @Html.HiddenFor(m => m.TradersalesAnalysisList[i].Id)
+                                    </td>
+
+                                    <td class="">
+                                        @Html.TextBoxFor(modelItem => Model.TradersalesAnalysisList[i].CashCollection, new { @class = "form-control csh seWdth", @readonly = "readonly" })
+
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(modelItem => Model.TradersalesAnalysisList[i].BankCollection, new { @class = "form-control bnk seWdth", @readonly = "readonly" })
+                                    </td>
+                                    <td class="">
+                                        @Html.TextBoxFor(m => Model.TradersalesAnalysisList[i].TotalCollection, new { @class = "form-control totalAmo seWdth", @readonly = "readonly" })
+                                    </td>
+
+                                    @*<td class="spWdth">
+                                        <img src="~/Images/icon-add.png" id="PicTraderAdd" class="HandCursor" />
+                                        <img src="~/Images/icon-delete.png" id="PicTraderDel" class="HandCursor" />
+                                    </td>*@
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+
+        </div>
+
+        <div class="modal fade ignore" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+            <div class="example-modal ">
+                <div class="modal-warning">
+                    <div class="">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">ALERT !!!</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h4 class="msg1"></h4>
+                                <input type="hidden" id="StoreId" value="" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+            </div>
+
+        </div>
+    </aside>
+}
+

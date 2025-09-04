@@ -1,0 +1,573 @@
+﻿@model XenERP.Models.ReceiptPayment
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+ <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<style type="text/css">
+.ErrorControl {
+    background: none repeat scroll 0 0 #fbe3e4;
+    border: 1px solid ;
+    padding: 4px;
+    width: 96%;
+}
+
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ('@ViewBag.ChildList' != '') {
+            var select = $("#subledgerId");
+            select.empty();
+            var arrayinv = '@Html.Raw(Json.Encode(ViewBag.ChildList))';
+            var arrinv = JSON.parse(arrayinv);
+          
+            for (var i = 0; i < arrinv.length; i++) {
+                select.append($('<option/>', {
+                    value: arrinv[i].Id,
+                    text: arrinv[i].Name
+                }));
+
+                if (i == (arrinv.length - 1)) {
+                    getlastvalue = arrinv[i].Id;
+                }
+            }
+            
+                $("#subledgerId").val('@ViewBag.Child');
+            
+
+        }
+
+    });
+
+    $(document).ready(function () {
+
+
+
+//        $("#ledgerId").change(function () {
+
+//            //            $('#GroupTypename').val($('#GroupType').find('option:selected').text());
+
+//            $.post("/LedgerMaster/GetSubLedger", { type: $("#ledgerId").val() }, function (data) {
+//                var select = $("#subledgerId");
+//                select.empty();
+//                //                select.append($('<option/>', {
+//                //                    value: "",
+//                //                    text: "--Select--"
+//                //                }));
+
+//                $.each(data, function (index, itemData) {
+//                    select.append($('<option/>', {
+//                        value: itemData.Id,
+//                        text: itemData.Name
+//                    }));
+//                });
+//            });
+//        });
+
+        $('#ledgerName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/LedgerMaster/getLedgersByName',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#ledgerName").val("");
+                    $('#ledgerId').val(0);
+                    var select = $("#subledgerId");
+                    select.empty();
+                }
+            },
+            select: function (event, ui) {
+                $('#ledgerName').val(ui.item.label);
+                $('#ledgerId').val(ui.item.value);
+
+                $.post("/LedgerMaster/GetSubLedger", { type: $("#ledgerId").val() }, function (data) {
+                   
+                    var select = $("#subledgerId");
+                    select.empty();
+
+
+                    $.each(data, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Id,
+                            text: itemData.Name
+                        }));
+                    });
+
+                    //                   }
+                });
+                return false;
+            },
+            minLength: 1,
+            autoFocus: true
+        });
+
+    });
+
+</script>
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true }); 
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+        var vt = '@(ViewBag.VoucherType)';
+        if (vt == '') {
+//            $('#RPBankAmount').val(0.00);
+//            $('#RPCashAmount').val(0.00);
+//            $('#TotBalance').val(0.00);
+//            $('#TotalAmount').val(0.00);
+        }
+        else {
+
+            $('#vouchertype').val(vt);
+            $('#TotalAmount').val('@(ViewBag.TotalAmount)');
+
+        }
+
+
+
+        $('#RPBankAmount').keyup(function () {
+            var chAmnt = $('#RPBankAmount').val();
+            var caAmnt = $('#RPCashAmount').val();
+            if (chAmnt == '') {
+                chAmnt = 0;
+            }
+            if (caAmnt == '') {
+                caAmnt = 0;
+            }
+            var amnt = parseFloat(chAmnt) + parseFloat(caAmnt);
+            $('#TotalAmount').val(amnt);
+
+
+
+        });
+
+
+
+        $('#RPCashAmount').keyup(function () {
+            var chAmnt = $('#RPBankAmount').val();
+            var caAmnt = $('#RPCashAmount').val();
+            if (chAmnt == '') {
+                chAmnt = 0;
+            }
+            if (caAmnt == '') {
+                caAmnt = 0;
+            }
+            var amnt = parseFloat(chAmnt) + parseFloat(caAmnt);
+            $('#TotalAmount').val(amnt);
+
+
+        });
+
+
+        $('#btnsubmit').on("click", function () {
+
+            var ld = $('#ledgerId').val();
+            if (ld == "") {
+                $('#ledgerId').addClass('ErrorControl');
+                $('#ledgerId').focus();
+                return false;
+            }
+
+            var newAmnt = $('#vouchertype').val();
+            if (newAmnt == "") {
+                $('#vouchertype').addClass('ErrorControl');
+                $('#vouchertype').focus();
+                return false;
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+        $("#chequeNo").attr("maxlength", "30");
+        $("#RPBankAmount").attr("maxlength", "10");
+        $("#RPCashAmount").attr("maxlength", "10");
+        $("#TotalAmount").attr("maxlength", "10");
+        $("#Remarks").attr("maxlength", "200");
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+
+
+        $("#RPBankId").change(function () {
+            var bankid = $("#RPBankId").val();
+            if (bankid != null) {
+
+                $.get('/Voucher/GetBankClosingAmount',
+                    {
+                        Bankid: bankid
+                    },
+                    function (data, status) {
+                        $('#TotBalance').val(data);
+                    });
+            }
+        });
+
+
+
+
+
+        $("#RPBankAmount,#RPCashAmount,#TotalAmount").on("keypress", function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+    });
+           
+       
+</script>
+
+
+
+@using (Html.BeginForm("EditReceiveVoucher", "Voucher"))
+{
+    @Html.ValidationSummary(true)
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                      Voucher @ViewBag.chequedate   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+             
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    
+
+
+                
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                <!-- Main content -->
+                <section class="content">
+            
+                    <div class="row top-mar">
+                        <!-- left column -->
+                        @*<div class="col-md-6">*@
+                            <!-- general form elements -->
+                         
+                               
+                                <!-- form start -->
+                           
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+
+     
+      
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Ledger Name :<span style="color:Red;">*</span></label>
+
+                 
+                  @Html.HiddenFor(d => d.Id)
+                             @*      @Html.DropDownListFor(model => model.ledgerId, new SelectList(ViewBag.ledger, "Id", "Name"), "-----Select a Ledger----", new { @class = "form-control" })*@
+                  @Html.HiddenFor(model => model.ledgerId)  
+                        <input type="text" class="form-control" id="ledgerName" placeholder="Enter Ledger Name" name="ledgerName" value='@ViewBag.LedgerName' />
+                  @Html.ValidationMessageFor(model => model.ledgerId)
+                                      
+                                     
+                                    </div>
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                  Sub Ledger Name :</label>
+
+               <select id="subledgerId" name="subledgerId" class="form-control">
+               </select>
+                    @*     @Html.DropDownList("subledgerId", new SelectList(ViewBag.ChildList, "Id", "Name", @ViewBag.Child), "-----Select a Ledger----", new { @class = "form-control" })         *@
+                                     
+                                    </div>
+
+
+                                   
+
+@*
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Total Balance:</label>
+
+        <input type="text" class="form-control" id="TotBalance" readonly="readonly" />
+                                    </div>
+
+
+*@
+
+
+                                    
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Voucher Type:<span style="color:Red;">*</span></label>
+
+     @*@Html.DropDownListFor(model=>model.RPType, ViewData["type"] as SelectList, new { @class = "form-control" })*@
+
+                                                    @Html.TextBoxFor(model => model.RPType, new { @class = "form-control",  @readonly = "" })
+      
+                                    </div>
+
+
+<div class="form-group">
+                                          <label class="black_txt_010">
+               Voucher Date :</label>
+
+
+
+              
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">  @Html.TextBoxFor(model => model.CardName, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                               
+                                    </div>
+
+
+            <div class="form-group">
+                                          <label class="black_txt_010">
+                     Remarks:</label>
+     
+                  
+           @*  <textarea id="Remarks" name="Remarks" class="form-control"></textarea>*@
+             @Html.TextAreaFor(model=>model.Remarks, new { @class = "form-control" })
+                                    </div>
+
+
+
+
+
+
+
+
+              
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>           
+                           
+                 
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       @*  <div class="form-group">
+                                          <label class="black_txt_010">
+                  Bank Account Name :<span style="color:Red;">*</span></label>(This Field is mandatory For Cheque Payment or Receive)
+
+                  
+               @Html.DropDownListFor(model => model.RPBankId, new SelectList(ViewBag.Bank, "Id", "Name"), "-----Select a Bank Account----", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.RPBankId)
+                                                     
+                                     
+                                    </div>*@
+                                          <div class="form-group chkbank" >
+                                          <label class="black_txt_010">
+                  Bank Account Name :<span style="color:Red;">*</span></label>(This Field is mandatory For Cheque Payment)
+
+                  
+               @Html.DropDownListFor(model => model.RPBankId, new SelectList(ViewBag.Bank, "Id", "Name"), "-----Select a Bank Account----", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.RPBankId)
+                                                     
+                                     
+                                    </div>
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Cheque No. :</label>
+
+                  
+ @Html.TextBoxFor(model => model.chequeNo, new { @class = "form-control", @placeholder = "Enter cheque No. " })  
+
+                @Html.ValidationMessageFor(model => model.chequeNo)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                             <div class="form-group">
+                                          <label class="black_txt_010">
+               Cheque Details :</label>
+
+                  
+ @Html.TextAreaFor(model => model.chequeDetails, new { @class = "form-control", @placeholder = "Enter cheque Details" })  
+
+                @Html.ValidationMessageFor(model => model.chequeDetails)
+                                                     
+                                     
+                                    </div>
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+              Cheque Amount :</label>
+
+     @if (ViewBag.RType == "Cheque")
+     {
+ @Html.TextBoxFor(model => model.RPBankAmount, new { @class = "form-control", @placeholder = "Enter cheque Amount " })  
+               @Html.ValidationMessageFor(model => model.RPBankAmount)
+
+     }
+     else
+     {
+        @Html.TextBoxFor(model => model.RPBankAmount, new { @class = "form-control", @placeholder = "Enter cheque Amount ", @readonly="" })
+        @Html.ValidationMessageFor(model => model.RPBankAmount)
+     }
+                                    </div>
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Cheque Date :</label>
+
+
+
+              
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">    @Html.TextBoxFor(model => model.ExpirayDate, new { @class = "form-control", @readonly = "" })   <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                             
+                                    </div>
+
+
+                                      <div class="form-group">
+                                          <label class="black_txt_010">
+          Cash Amount :</label>
+
+                       
+            @if (ViewBag.RType == "Cash")
+            {
+               @Html.TextBoxFor(model => model.RPCashAmount, new { @class = "form-control", @placeholder = "Enter Cash Amount " })  
+                     @Html.ValidationMessageFor(model => model.RPCashAmount)
+
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.RPCashAmount, new { @class = "form-control", @placeholder = "Enter Cash Amount ", @readonly = "" })
+                @Html.ValidationMessageFor(model => model.RPCashAmount)
+            }
+                                    </div>
+
+
+
+
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+            Total Amount :</label>
+
+    
+                @Html.TextBoxFor(model => model.TotalAmount, new { @class = "form-control", @placeholder = "Enter Cash Amount ", @readonly = "" })  
+                     @Html.ValidationMessageFor(model => model.TotalAmount)
+                                     
+                                    </div>
+
+                                       
+
+
+
+              
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>           
+                        
+                   
+                </section><!-- /.content -->
+
+        
+      
+
+
+
+
+ </aside>
+}

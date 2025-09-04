@@ -1,0 +1,100 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FarmerNonSupplier>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Farmer who not tagged with Suppiler <small>List</small> </h1>
+      
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+        
+
+
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Farm Id</th>
+                        <th>Farmer Name</th>
+                        <th>Branch Name</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@item.FarmId</td>
+
+                            <td align="center">
+                                @item.FarmerName
+                            </td>
+                            <td> @Html.DisplayFor(modelItem => item.BranchName)</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

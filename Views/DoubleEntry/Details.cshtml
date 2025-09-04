@@ -1,0 +1,493 @@
+﻿@model XenERP.Models.ReceiptPaymentModelView
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+
+
+}
+@*<style type="text/css">
+        body {
+           /* background: #0083B0;*/
+            background: -webkit-linear-gradient(to right, #0083B0, #00B4DB);
+            background: linear-gradient(to right, #0083B0, #00B4DB);
+            min-height: 100vh;
+        }
+
+        .form-control::placeholder {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .w1{
+            width :40%;
+        }
+    </style>*@
+<style type="text/css">
+    .form-control:focus {
+        outline: none !important;
+        border: 1px solid red;
+        box-shadow: 0 0 10px #719ECE;
+    }
+</style>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<script>
+    $(document).ready(function () {
+        var rowIdx = 0;
+
+        for (rowIdx = 0; rowIdx < 2; rowIdx++) {
+
+            $('#tbody').append(`<tr id="R${rowIdx}">
+             <td width="10%" class="row-index text-center">
+             <span class="Row"> Row ${rowIdx}  </span>
+             </td>
+                <td width="5%">
+
+                <select name="DEV[${rowIdx}].Club" id="DEV_${rowIdx}__Club" class="form-control" style='padding:0px;'>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+
+                </td>
+                <td width="35%">
+                    <input type="hidden" class="form-control LID" style='padding:0px;' name="DEV[${rowIdx}].LID" id="DEV_${rowIdx}__LID" value="" required="required" />
+                    <input type="text" class="form-control LName" style='padding:2px;' name="DEV[${rowIdx}].LName" id="DEV_${rowIdx}__LName" value="" required="required" />
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Debit" style='padding:2px;text-align:right;' name="DEV[${rowIdx}].Debit" id="DEV_${rowIdx}__Debit" value="" required="required" />
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Credit" style='padding:2px;text-align:right;' name="DEV[${rowIdx}].Credit" id="DEV_${rowIdx}__Credit" value="" required="required" />
+                </td>
+                <td width="20%">
+                    <input type="text" class="form-control IsBank" style='padding:2px;' name="DEV[${rowIdx}].IsBank" id="DEV_${rowIdx}__IsBank" value="" required="required" readonly/>
+                </td>
+                <td width='2%' align='center' style='background-color:#F9F9F9 !important; box-shadow:none !important'><img src='../../Images/icons-181e6a17.png' src='Delete' class='del_ExpenseRow input-non-active btn btn-danger remove' /></td>
+
+              </tr>`);
+        }
+
+        // Denotes total number of rows
+
+
+        // jQuery button click event to add a row
+        $('#addBtn').on('click', function () {
+            rowIdx = $('#example1 >tbody >tr').length;
+            // Adding a row inside the tbody.
+            $('#tbody').append(`<tr id="R${rowIdx}">
+             <td width="10%" class="row-index text-center">
+            <span class="Row"> Row ${rowIdx}  </span>
+             </td>
+                <td width="5%">
+
+                <select name="DEV[${rowIdx}].Club" id="DEV_${rowIdx}__Club" class="form-control Club" style='padding:0px;'>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+
+                </td>
+                <td width="35%">
+                    <input type="hidden" class="form-control LID" style='padding:0px;' name="DEV[${rowIdx}].LID" id="DEV_${rowIdx}__LID" value="" required="required" />
+                     <input type="text" class="form-control LName" style='padding:2px;' name="DEV[${rowIdx}].LName" id="DEV_${rowIdx}__LName" value="" required="required" />
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Debit" style='padding:2px;text-align:right;' name="DEV[${rowIdx}].Debit" id="DEV_${rowIdx}__Debit" value="" required="required" />
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Credit" style='padding:2px;text-align:right;' name="DEV[${rowIdx}].Credit" id="DEV_${rowIdx}__Credit" value="" required="required" />
+                </td>
+                 <td width="20%">
+                    <input type="text" class="form-control IsBank" style='padding:2px;' name="DEV[${rowIdx}].IsBank" id="DEV_${rowIdx}__IsBank" value="" required="required" readonly/>
+                </td>
+                <td width='2%' align='center' style='background-color:#F9F9F9 !important; box-shadow:none !important'><img src='../../Images/icons-181e6a17.png' src='Delete' class='del_ExpenseRow input-non-active btn btn-danger remove' /></td>
+
+              </tr>`);
+
+            totalDebitCredit();
+        });
+
+        // jQuery button click event to remove a row.
+        //$('#tbody').on('click', '.remove', function () {
+
+        //    // Getting all the rows next to the row
+        //    // containing the clicked button
+        //    var child = $(this).closest('tr').nextAll();
+
+        //    // Iterating across all the rows
+        //    // obtained to change the index
+        //    child.each(function () {
+
+        //        // Getting <tr> id.
+        //        var id = $(this).attr('id');
+
+        //        // Getting the <p> inside the .row-index class.
+        //        var idx = $(this).children('.row-index').children('span');
+
+        //        // Gets the row number from <tr> id.
+        //        var dig = parseInt(id.substring(1));
+
+        //        // Modifying row index.
+        //        idx.html(`Row ${dig - 1}`);
+
+        //        // Modifying row id.
+        //        $(this).attr('id', `R${dig - 1}`);
+        //    });
+
+        //    // Removing the current row.
+        //    $(this).closest('tr').remove();
+
+        //    // Decreasing total number of rows by 1.
+        //    rowIdx--;
+        //});
+
+
+        $("#tbody").on("click", '.remove', function (event) {
+            // $(document).on('click', '.add-component-deletebotton', function () {
+
+            var j = $(this).closest('td').parent()[0].sectionRowIndex;
+            var tLID = $(this).closest('tr').find('.LID').val();
+            var tType = $(this).closest('tr').find('.IsBank').val();
+
+          //  document.getElementById("example1").deleteRow(j);
+            var child = $(this).closest('tr').nextAll();
+           // var MyRows = $('table#example1').find('tr');
+            child.each(function () {
+                //   for (var i = 1; i < MyRows.length; i++) {
+               // var j = parseInt(i) - 1;
+                var row = $(this).find('.Row');
+                var club = $(this).find('.Club');
+                var lid = $(this).find('.LID');
+                var lname = $(this).find('.LName');
+                var debit = $(this).find('.Debit');
+                var credit = $(this).find('.Credit');
+                //var rtgs = $(MyRows[i]).find('.RTGSC');
+                //var linetotal = $(MyRows[i]).find('.LineTotalC');
+                row.text("Row" + j);
+
+                lid.attr("name", "DEV[" + j + "].LID");
+                lid.attr("id", "DEV_" + j + "__LID");
+
+                lname.attr("name", "DEV[" + j + "].LName");
+                lname.attr("id", "DEV_" + j + "__LName");
+
+                debit.attr("name", "DEV[" + j + "].Debit");
+                debit.attr("id", "DEV_" + j + "__Debit");
+
+                credit.attr("name", "DEV[" + j + "].Credit");
+                credit.attr("id", "DEV_" + j + "__Credit");
+
+                club.attr("name", "DEV[" + j + "].Club");
+                club.attr("id", "DEV_" + j + "__Club");
+
+                club.attr("name", "DEV[" + j + "].IsBank");
+                club.attr("id", "DEV_" + j + "__IsBank");
+
+                //linetotal.attr("name", "DEV[" + j + "].LineTotal");
+                //linetotal.attr("id", "DEV_" + j + "__LineTotal");
+                j++;
+            });
+            $(this).closest('tr').remove();
+           // alert(tType);
+            if (tType == "Bank") {
+                var isLIDExist = isLedgerExist(tLID);
+              //  alert(isLIDExist);
+                if (isLIDExist == false) {
+                    removeBankDetails(tLID);
+                }
+            }
+            totalDebitCredit();
+        });
+
+        $("#example1").on("keydown.autocomplete", '.LName', function (event) {
+            var id = $(this).attr('id');
+            var ctd = $('#' + id).closest('td');
+            var ctr = ctd.closest('tr');
+
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/LedgerMaster/getLedgersByNameWithLtype',
+                        data: { query: request.term },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return {
+                                    label: item.Name,
+                                    value: item.Id,
+                                    ltype: item.IsBank
+                                }
+                            }));
+                        }
+                    })
+                },
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $(this).val('');
+                        ctr.find('.LID').val('');
+
+                    }
+                },
+
+
+                select: function (event, ui) {
+                    ctr.find('.LID').val(ui.item.value);
+                    $(this).val(ui.item.label);
+                    ctr.find('.IsBank').val(ui.item.ltype);
+                    //alert(ui.item.ltype);
+                    if (ui.item.ltype == "Bank") {
+                        ctr.find('.IsBank').val("Bank");
+                        var isDup = checkLID(ui.item.value);
+                        if (isDup == false) {
+                            Bank(ui.item.value, ui.item.label);
+                        }
+                    }
+                    return false;
+                },
+                minLength: 1
+            });
+
+
+        });
+        $("#example1").on("change", '.Debit,.Credit', function (event) {
+
+            totalDebitCredit();
+        });
+        function totalDebitCredit() {
+            var tdebit = 0;
+            var tcredit = 0;
+            $(".Debit").each(function () {
+                var value = $(this).val();
+                // add only if the value is number
+                if (!isNaN(value) && value.length != 0) {
+                    tdebit += parseFloat(value);
+                }
+            });
+            $("#DebitTotal").text(tdebit.toFixed(2));
+            $(".Credit").each(function () {
+                var value = $(this).val();
+                if (!isNaN(value) && value.length != 0) {
+                    tcredit += parseFloat(value);
+                }
+            });
+            $("#CreditTotal").text(tcredit.toFixed(2));
+        }
+
+        // function to remove Bank Details Div
+        function removeBankDetails(LID) {
+            $("#Bank .box-header").each(function (i) {
+
+                // alert($(this).find(".ledgerID").val());
+                if (LID == $(this).find(".ledgerID").val()) {
+                    $(this).parents('.col-xs-4').remove();
+                    var i = 0
+                    $("#Bank .col-xs-4").each(function (i) {
+
+                        
+                       // alert(i);
+                        var lID = $(this).find(".LID");
+                        var mode = $(this).find(".Mode");
+                        var chequeNo = $(this).find(".ChequeNo");
+                        var chequeDate = $(this).find(".ChequeDate");
+                        var chequeDetail = $(this).find(".ChequeDetail");
+
+                        lID.attr("name", "DEVBD[" + i + "].LID");
+                        lID.attr("id", "DEVBD_" + i + "__LID");
+
+                        mode.attr("name", "DEVBD[" + i + "].Mode");
+                        mode.attr("id", "DEVBD_" + i + "__Mode");
+
+                        chequeNo.attr("name", "DEVBD[" + i + "].ChequeNo");
+                        chequeNo.attr("id", "DEVBD_" + i + "__ChequeNo");
+
+                        chequeDate.attr("name", "DEVBD[" + i + "].ChequeDate");
+                        chequeDate.attr("id", "DEVBD_" + i + "__ChequeDate");
+
+                        chequeDetail.attr("name", "DEVBD[" + i + "].ChequeDetail");
+                        chequeDetail.attr("id", "DEVBD_" + i + "__ChequeDetail");
+
+                        ++i;
+                    });
+                }
+
+            });
+        }
+
+        // function to check if the ledger which exists in the row to be deleted exist in other row also.
+        function isLedgerExist(LID) {
+            var rval = false;
+            $("#example1 .LID").each(function (i) {
+
+                // alert($(this).find(".ledgerID").val());
+                if (LID == $(this).val()) {
+
+                    rval = true;
+                }
+
+            });
+            return rval;
+        }
+
+        // function to check if the bank ledger already exists in band div or not
+        function checkLID(LID) {
+            var rval = false;
+            $("#Bank .box-header").each(function (i) {
+                
+               // alert($(this).find(".ledgerID").val());
+                if (LID == $(this).find(".ledgerID").val()) {
+                    
+                    rval =true;
+                }
+               
+            });
+            return rval;
+        }
+
+        // function to append bank details div with new bank details
+        function Bank(BankID,BankName) {
+            var divIdx = $(".Bank > div").length;
+            $('.Bank').append(`<div class="col-xs-4"><div class="box">
+                            <div class="box-header">
+                                ${BankName}
+                                <input type="hidden" class="ledgerID" value="${BankID}" />
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">Mode :</label>
+                                <select id="DEV_${divIdx}__Mode" name="DEV[${divIdx}].Mode" class="form-control Mode">
+                                    <option value="">--Select a Mode of Payment--</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Cheque">Cheque</option>
+                                    <option value="NEFT">Neft/Rtgs</option>
+                                </select>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">Cheque No/Neft No :</label>
+                                <input type="hidden" class="LID" name="DEVBD[${divIdx}].LID" id="DEVBD_${divIdx}__LID"" />
+                                <input type="text" class="form-control ChequeNo" style='padding:2px;' name="DEVBD[${divIdx}].ChequeNo" id="DEVBD_${divIdx}__ChequeNo" value="" required="required" />
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">Cheque Date/Neft Date :</label>
+
+                                <div class="input-group date dp3" data-date-format="@Session["DateFormatLower"]" id="dp3"> <input type="text" class="form-control ChequeDate" style='padding:2px;' name="DEVBD[${divIdx}].ChequeDate" id="DEVBD_${divIdx}__ChequeDate" value="" required="required" />  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">Cheque Detail/Neft Detail :</label>
+                                <input type="text" class="form-control ChequeDetail" style='padding:2px;' name="DEVBD[${divIdx}].ChequeDetail" id="DEVBD_${divIdx}__ChequeDetail" value="" required="required" />
+                            </div>
+                        </div></div>
+            `);
+        }
+
+        $(".dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $('body').on('focus', ".dp3", function () {
+            $(this).datepicker({ autoclose: true, todayHighlight: true });
+        });
+    });
+
+
+</script>
+
+
+<body>
+    <aside class="right-side">
+        <section class="content">
+
+
+            <div class="row">
+                @*<div class="col-md-6">
+        <div class="box box-primary">*@
+                <div class="box-header">
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="col-xs-6">
+                            <div class="box">
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Money Receipt No:
+                                    </label>
+                                    @Html.TextBoxFor(model => model.MoneyReceiptNo, new { @class = "form-control", @placeholder = "Enter Money Receipt No." })
+                                </div>
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Voucher Date :
+                                    </label>
+                                    <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">  @Html.TextBoxFor(model => model.CardName, new { @class = "form-control" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="box">
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Remarks:
+                                    </label>
+                                    @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Enter Remarks" })
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <div class="box-body table-responsive">
+
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Row Number</th>
+                                            <th class="text-center">Club</th>
+                                            <th class="text-center">Particular</th>
+                                            <th class="text-center">Debit/From</th>
+                                            <th class="text-center">Credit/To</th>
+                                            <th class="text-center">Ledger Type</th>
+                                            <th class="text-center">Remove Row</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody">
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+
+                                            <td colspan="3" style="text-align:center; padding:5px; font-weight:700;">Total</td>
+                                            <td><span id="DebitTotal" style="float:right; padding:5px; font-weight:700;"></span></td>
+                                            <td><span id="CreditTotal" style="float: right; padding: 5px; font-weight: 700;"></span></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <button class="btn btn-md btn-primary"
+                                    id="addBtn" type="button">
+                                Add new Row
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 Bank" id="Bank">
+
+                    </div>
+                </div>
+
+                @*</div>
+        </div>*@
+</section>
+    </aside>
+</body>
+
+

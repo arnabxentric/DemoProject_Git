@@ -1,0 +1,502 @@
+﻿@model XenERP.Models.Hari_NewReportModelView
+
+
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+    int chk = 0;
+    long? OpenBird = Model.OpeningBird;
+    long? age = 0;
+    long? TotalMortality = 0;
+}
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+
+
+<script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyC3Y1L6bV25qY27RUZuKQwpk1JG3yLzeac&sensor=false&libraries=geometry"></script>
+
+
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<style>
+    .modal-content {
+        /*b2b266*/
+        background-color: #b2b266;
+        width: 600px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .table th {
+        text-align: center;
+    }
+
+    .img-responsive {
+        height: 250px;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+
+
+        var locations = [];
+
+
+
+        //var bId = $("#UnitId").val();
+
+        $.get('/Hari_FarmerEntryLocation/Search', function (data) {
+
+
+
+            $.each(data, function () {
+                var mr = [this.Date, this.Latitude, this.Longitude]
+                //  alert(mr);
+                locations.push(mr);
+
+            });
+
+
+
+            var map = new google.maps.Map(document.getElementById('googleMap'), {
+                zoom: 10,
+                center: new google.maps.LatLng(locations[0][1], locations[0][2]),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            var infowindow = new google.maps.InfoWindow();
+
+            var marker, i;
+
+
+
+            //function pinSymbol(color) {
+            //    return {
+            //        path: 'M31.5,0C14.1,0,0,14,0,31.2C0,53.1,31.5,80,31.5,80S63,52.3,63,31.2C63,14,48.9,0,31.5,0z M31.5,52.3 c-11.8,0-21.4-9.5-21.4-21.2c0-11.7,9.6-21.2,21.4-21.2s21.4,9.5,21.4,21.2C52.9,42.8,43.3,52.3,31.5,52.3z',
+            //        fillColor: color,
+            //        fillOpacity: 1,
+            //        strokeColor: '#000',
+            //        strokeWeight: 0,
+            //        scale: 1,
+            //    };
+            //}
+
+
+            const image =
+                "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(locations[0][1], locations[0][2]),
+                map: map,
+                //icon: pinSymbol("#FFFF00.") //defined marker color
+
+            });
+
+            google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                return function () {
+                    infowindow.setContent(locations[0][0]);
+                    infowindow.open(map, marker);
+                }
+            })(marker, i));
+
+
+
+
+            for (i = 1; i < locations.length; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                    map: map,
+                    icon: image //defined marker color
+
+                });
+
+                google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                    return function () {
+                        infowindow.setContent(locations[i][0]);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+
+             
+            }
+
+
+        });
+
+
+    });
+</script>
+
+
+
+
+<div class="box table-responsive">
+
+    <div class="box-body table-responsive">
+        <div class="box-header"><h3>Daily Entry Analysis Of Farmer @Model.FarmerName Flock Code :-@Model.FlockCode</h3>  </div>
+
+        <table id="datatable-buttons" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @*<th>Farmer Name</th>
+        <th>Flock Code</th>*@
+                    <th>Date</th>
+                    <th>Bird Age</th>
+                    <th>Opening Bird</th>
+                    <th>Avg Wt.</th>
+                    <th>Mortality</th>
+                    <th>Death Reason</th>
+                    <th>Observation</th>
+                    <th>Closing Bird</th>
+                    <th>Total Mortality</th>
+                    <th>Feed Opening</th>
+                    <th>Feed Received</th>
+                    @*<th>Feed Consumed</th>*@
+
+                    @foreach (var item in Model.feedGrpList)
+                    {
+                        <th> @item.FeedName </th>
+                    }
+                    <th>Feed Closing</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item1 in Model.FarmerDailyConsumeList)
+                {
+
+
+                    Slno = Slno + 1;
+                    age = age + 1;
+                    TotalMortality = TotalMortality + item1.Mortality;
+                <tr>
+                    @*<td>@Model.FarmerName</td>
+        <td>@Model.FlockCode</td>*@
+
+                    <td align="center">
+                        @item1.EntryDate
+                    </td>
+                    <td align="right">
+                        @age
+                    </td>
+                    <td align="right">
+                        @OpenBird
+                    </td>
+                    <td align="right">
+                        @item1.AvgWt
+                    </td>
+
+                    <td align="right"> @Html.DisplayFor(modelItem => item1.Mortality)</td>
+                    <td align="right"> @Html.DisplayFor(modelItem => item1.DeathReason)</td>
+                    <td align="right"> @Html.DisplayFor(modelItem => item1.Remarks)</td>
+                    <td align="right"> @(OpenBird - item1.Mortality)</td>
+                    <td align="right"> @TotalMortality</td>
+                    <td align="right"> @Html.DisplayFor(modelItem => item1.FeedOpeningQuantity)</td>
+                    <td align="right"> @Html.DisplayFor(modelItem => item1.FeedReceivedQuantity)</td>
+                    @*<td align="left"> @Html.DisplayFor(modelItem => item1.TotalConsumeQuantity)</td>*@
+
+                    @{
+
+                        //var list = Model.FarmerDailyConsumeList.Where(r => r.EntDt == item1.FirstOrDefault().EntDt).GroupBy(g => g.ProductId).ToList();
+                        OpenBird = (OpenBird - item1.Mortality);
+                    }
+
+                    @foreach (var item2 in Model.feedGrpList)
+                    {
+                        chk = 0;
+                        foreach (var item3 in item1.feedGrpList.GroupBy(g => g.FeedId))
+                        {
+                            if (item3.Key == item2.FeedId)
+                            {
+
+                                <td align="right">@item3.Sum(s => s.ConsumeQuantity)</td>
+
+                                chk++;
+                            }
+
+                        }
+
+                        if (chk == 0)
+                        {
+
+                            <td align="right">&#10005;</td>
+
+                        }
+                    }
+
+                    <td align="right"> @Html.DisplayFor(modelItem => item1.ClosingQuantity)</td>
+                </tr>
+
+
+
+                }
+            </tbody>
+
+
+        </table>
+    </div>
+
+
+    <div class="box-body">
+
+        <ul id="lightgallery" class="list-unstyled row">
+            @foreach (var item in Model.farmerDailyImage.OrderBy(o => o.ImageType))
+            {
+
+                <li class="col-xs-4 col-sm-4 col-md-3">
+                    <a href="">
+                        <img class="img-responsive" src="@item.ImgPath">
+                    </a>
+                    <b style="color:green">Image Type : @item.ImageType</b><br />
+                    <b style="color:green">Taken On : @item.ClickDate</b>
+                </li>
+            }
+
+
+        </ul>
+        @*@foreach (var item in Model.farmerDailyImage)
+            {
+                <div class="col-md-3">
+
+                </div>
+            }*@
+    </div>
+
+    <div class="box-body">
+       
+            <div id="googleMap" style="width:1000px;height:500px;"></div>
+
+      
+    </div>
+
+    <div class="box-body table-responsive">
+        <div class="box-header"> <h3>Medicine Entry Analysis </h3> </div>
+        <table id="datatable-buttons1" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    @*<th>Farmer Name</th>
+                        <th>Flock Code</th>*@
+                    <th>Date</th>
+                    @*<th>Bird Age</th>
+                        <th>Opening Bird</th>
+                        <th>Mortality</th>
+                        <th>Observation</th>
+                        <th>Closing</th>
+                        <th>Total Mortality</th>*@
+                    @foreach (var item in Model.feedGrpMedicineList)
+                    {
+                        <th> @item.FeedName </th>
+                    }
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.FarmerDailyMedicineConsumeList.GroupBy(g => g.EntDt))
+                {
+                    <tr>
+                        @*<td>@Model.FarmerName</td>
+                            <td>@Model.FlockCode</td>*@
+
+                        <td align="center">
+                            @item1.FirstOrDefault().EntryDate
+                        </td>
+
+                        @{
+
+                            var list = Model.FarmerDailyMedicineConsumeList.Where(r => r.EntDt == item1.FirstOrDefault().EntDt).GroupBy(g => g.ProductId).ToList();
+
+                        }
+
+                        @foreach (var item2 in Model.feedGrpMedicineList)
+                        {
+                            chk = 0;
+                            foreach (var item3 in list)
+                            {
+                                if (item3.Key == item2.FeedId)
+                                {
+
+                                    <td align="right">@item3.Sum(s => s.ConsumeQuantity)</td>
+
+                                    chk++;
+                                }
+
+                            }
+
+                            if (chk == 0)
+                            {
+
+                                <td align="right">&#10005;</td>
+
+                            }
+                        }
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="box-body table-responsive">
+        <div class="box-header"><h3>Total Product Recived And Isuued Analysis</h3>  </div>
+        <table id="example1" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Issued Quantity</th>
+                    <th>Received Quantity</th>
+                    <th>Consumed Quantity</th>
+                    <th>Return Quantity</th>
+                    <th>UOM</th>
+
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.FeedConsumeReturnList.OrderBy(o => o.ProductCategory))
+                {
+                    <tr>
+                        <td>@item1.Feed</td>
+                        <td>@item1.IssuedQuantity</td>
+                        <td>@item1.ReceivedQuantity</td>
+                        <td>@item1.ConsumeQuantity</td>
+                        <td>@item1.RetunQuantity</td>
+                        <td>@item1.UOM</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+
+
+
+
+    </div><!-- /.box-body -->
+
+    <div class="box-body table-responsive">
+        <div class="box-header"><h3>Return Quantity Analysis</h3>   </div>
+        <table id="example2" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Return Date</th>
+                    <th>Challan No</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>UOM</th>
+
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.ReturnList)
+                {
+                    <tr>
+                        <td>@item1.ReturnDate</td>
+                        <td>@item1.ChallanNo</td>
+                        <td>@item1.FeedName</td>
+                        <td>@item1.ReturnQuantity</td>
+                        <td>@item1.UOM</td>
+                    </tr>
+
+                }
+
+                @if (Model.ReturnList.Count() > 0)
+                {
+                    <tr>
+                        <td>Total Return</td>
+                        <td></td>
+                        <td></td>
+                        <td>@Model.ReturnList.Sum(s => s.ReturnQuantity)</td>
+                        <td>@Model.ReturnList.FirstOrDefault().UOM</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+
+    </div><!-- /.box-body -->
+
+    <div class="box-body table-responsive">
+        <div class="box-header"><h3>Total Sales Analysis</h3>   </div>
+        <table id="example3" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Sale's Date</th>
+                    <th>Invoice No</th>
+                    <th>Party Name</th>
+                    <th>No Of Bird</th>
+                    <th>Total Weight</th>
+                    <th>Avg Weight</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.BirdSalesList)
+                {
+                    <tr>
+                        <td>@item1.SaleDate</td>
+                        <td>@item1.InvoiceNo</td>
+                        <td>@item1.NameOfParty</td>
+                        <td>@item1.NoOfBird</td>
+                        <td>@item1.TotalWeight</td>
+                        <td>@item1.AvgWeight</td>
+                        <td>@item1.Rate</td>
+                        <td>@item1.Amount</td>
+                    </tr>
+
+                }
+                @if (Model.BirdSalesList.Count() > 0)
+                {
+                    <tr>
+                        <td>Total Sales</td>
+                        <td></td>
+                        <td></td>
+                        <td>@Model.BirdSalesList.Sum(s => s.NoOfBird)</td>
+                        <td>@Model.BirdSalesList.Sum(s => s.TotalWeight)</td>
+                        @*<td></td>
+                            <td></td>*@
+                        <td>@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.TotalWeight) / Model.BirdSalesList.Sum(s => s.NoOfBird)), 2)</td>
+                        <td>@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.Amount) / Model.BirdSalesList.Sum(s => s.TotalWeight)), 2)</td>
+                        <td>@Model.BirdSalesList.Sum(s => s.Amount)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+
+    </div><!-- /.box-body -->
+
+</div>

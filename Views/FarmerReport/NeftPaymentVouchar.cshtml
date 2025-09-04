@@ -1,0 +1,305 @@
+﻿@model XenERP.Models.ModelView.FeedStockModelView
+
+@*@model IEnumerable<XenERP.Models.ModelView.NEFTModelview>*@
+
+using XenERP.Models
+
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/jQuery.print.js" type="text/javascript"></script>
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+
+    /*.dtwidth1 {
+        width: 20px;
+    }
+
+    .dtwidth2 {
+        width: 50px;
+    }
+
+    .dtwidth3 {
+        width: 100px;
+    }*/
+</style>
+
+<script type="text/javascript">
+    $(function () {
+
+
+        //$('#example1').dataTable({
+
+        //    "bPaginate": true,
+        //    "bLengthChange": true,
+        //    "bFilter": true,
+        //    "bSort": true,
+        //    "bInfo": true,
+        //    "bAutoWidth": true
+        //});
+    });
+</script>
+
+<script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+
+        var Culture = "@Session["DateCulture"]";
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true, language: Culture });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true, language: Culture });
+
+     
+
+    });
+
+
+
+</script>
+
+<script type="text/javascript">
+
+
+
+
+</script>
+
+
+
+
+
+<aside class="right-side">
+
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                Loading...
+            </p>
+        </div>
+    </div>
+    @{
+        long Branchid = Convert.ToInt64(Session["BranchId"]);
+
+    }
+
+
+    <section class="content-header">
+        <h1>NEFT Details <small>List</small> </h1>
+       
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+
+       
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+    @using (Html.BeginForm("NeftPaymentVouchar", "FarmerReport", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+       
+
+        <div class="box">
+            <br />
+            <input type="submit" id="btnSubmit" value="Submit" class="btn btn-primary pull-right" />
+            <br />
+            <br />
+            <div class="box-body table-responsive" id="divPrint">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+
+                        <tr>
+                            <th>SL No</th>
+                            <th>Ledger Name</th>
+                            <th>Branch</th>
+                            <th>From Bank</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @for (int i = 0; i < Model.neftList.Count(); i++)
+                        {
+
+                            <tr>
+                                @{ Slno = Slno + 1;
+                                }
+                                <td>
+                                    @Slno
+                                </td>
+                                <td>
+                                @Html.TextBoxFor(modelItem => Model.neftList[i].LedgerName, new { @class = "form-contro",@readonly="readonly" })
+                                    @Html.HiddenFor(m=>m.neftList[i].LedId)
+                                    @Html.HiddenFor(m => m.neftList[i].BranchId)
+                                    @Html.HiddenFor(m => m.neftList[i].OldNew)
+                                    @Html.HiddenFor(m => m.neftList[i].FarmerReportId)
+                                    @Html.HiddenFor(m => m.neftList[i].DoNEFT)
+                                </td>
+                                <td>@Html.TextBoxFor(modelItem => Model.neftList[i].BranchName, new { @class = "form-contro", @readonly = "readonly" })</td>
+                                <td style="text-align:right">@Html.TextBoxFor(modelItem => Model.neftList[i].GCAmount, new { @class = "form-contro", @readonly = "readonly" })</td>
+                                <td style="text-align:center">@Html.TextBoxFor(modelItem => Model.neftList[i].GCAmount, new { @class = "form-contro", @readonly = "readonly" })</td>
+                            </tr>
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+            </div><!-- /.box-body -->
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">
+
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Voucher Date :
+                            </label>
+                            @Html.TextBoxFor(model => model.VoucharDate, new { @class = "form-control", @readonly = "readonly" })
+                            @*<div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">  @Html.TextBoxFor(model => model.VoucharDate, new { @class = "form-control" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                       @Html.ValidationMessageFor(m=>m.VoucharDate)*@
+                         </div>
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Paid To:
+                            </label>
+                            @Html.TextBoxFor(model => model.PaidTo, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.HiddenFor(m => m.NeftId)
+                            @Html.HiddenFor(m => m.BankId)
+                            @Html.HiddenFor(m => m.BankLedId)
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Remarks:
+                            </label>
+                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Enter Remarks" })
+
+                        </div>
+                    </div>
+                </div>   <!-- /.row -->
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">
+
+                    </div>
+                    <div class="box-body">
+
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Mode of Payment:<span style="color:Red;">*</span>
+                            </label>
+                            @Html.TextBoxFor(m => m.PaymentMode, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+
+
+                        <div class="form-group chkbank">
+                            <label class="black_txt_010">
+                                Bank Account Name :<span style="color:Red;">*</span>
+                            </label>(This Field is mandatory For Cheque Payment)
+                            @Html.TextBoxFor(m => m.BankName, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                        <div class="form-group chkno">
+                            <label class="black_txt_010">
+                               NEFT Ref. No :
+                            </label>
+                            @Html.TextBoxFor(model => model.ChequeNo, new { @class = "form-control", @placeholder = "Enter NEFT Ref No. " })
+                         </div>
+
+
+                        @*<div class="form-group chkdet">
+                            <label class="black_txt_010">
+                                Cheque Details :
+                            </label>
+                            @Html.TextAreaFor(model => model.ChequeDetails, new { @class = "form-control", @placeholder = "Enter cheque Details " })
+                        </div>*@
+
+
+                        @*<div class="form-group chkdate">
+                            <label class="black_txt_010">
+                                Cheque Date :
+                            </label>
+                            @Html.TextBoxFor(model => model.ChequeDate, new { @class = "form-control", @readonly = "readonly" })
+                     
+                        </div>*@
+
+
+
+                        <div class="form-group chkbankamt">
+                            <label class="black_txt_010">
+                                 Amount :
+                            </label>
+                            @Html.TextBoxFor(model => model.TotalGCAmount, new { @class = "form-control", @placeholder = "Enter Bank  Amount ", @readonly = "" })
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>   <!-- /.row -->
+            </div>
+
+
+           
+        </div>
+
+
+
+
+
+
+    }
+
+
+</aside>

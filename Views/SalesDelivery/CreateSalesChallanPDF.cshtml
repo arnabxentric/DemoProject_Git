@@ -1,0 +1,230 @@
+﻿@model XenERP.Models.SalesDelivery
+@{
+    Layout = null;
+}
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Sales Delivery";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+    Company company = ViewBag.company;
+    int slno = 0;
+    decimal totalquantity = 0;
+    string unitname = "";
+}
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+
+
+     <!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Untitled Document</title>
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+</head>
+
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="invoice">
+  <tr>
+    <td colspan="4" style="border:2px solid #000;">
+    	@*<div class="logo"><img src="@Url.Content("~/Companyimages/" + @company.CompanyLogo)" /></div>*@
+        <div class="header">
+        	<h3>@company.Name</h3>
+            <br /><span>Factory : 58, Dimond Harbour Road, Joka, Kolkata-700104</span>
+            <br /><span>H.O. : @company.Address</span>
+            <br /><b>Email :@company.EmailId ,&nbsp;Mobile No. : +91-@company.ContactNumber</b>
+     </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4" align="center" style="border-bottom:2px solid #000; border-left:2px solid #000; border-right:2px solid #000;"><h2>Delivery Challan</h2></td>
+  </tr>
+  <tr>
+    <td colspan="2" width="30%" style="border-bottom:2px solid #000; border-left:2px solid #000; border-right:2px solid #000;">
+    	<p><strong>@Model.Customer.Name</strong>
+        <br />Address :@Model.StreetPoBox
+        <br />@Model.City-@Model.PostalCode
+        @if (@Model.Customer.ContactName != null)
+        {
+         <br /><strong>Contact Name :@Model.Customer.ContactName</strong>
+         <br /><strong>Contact No. :@Model.Customer.ContactMobile</strong>
+         <br /><strong>@Model.Customer.ContactDepartment</strong>
+        }
+       </p>
+    </td>
+    <td colspan="2" width="70%" class="date" style="border-bottom:2px solid #000; border-right:2px solid #000; ">
+    	 <p>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	 <tr>
+            	<td width="45%" style="padding:0px 15px;"><strong>Challan No.</strong> :&nbsp;@Model.NO</td>
+                <td width="45%" style="padding:0px 15px;"><strong>Challan Date</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.ReceiptDate)</td>
+            </tr>
+            <tr>
+            	<td width="45%" style="padding:0px 15px;"><strong>Order No.</strong> :&nbsp;@Model.OrderNo</td>
+                <td width="45%" style="padding:0px 15px;"><strong>Order Date</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.Date)</td>
+            </tr>
+            
+           
+        </table>
+        </p>
+    </td>
+  </tr>
+  <tr style=" border:none;">
+  <td colspan="4" align="center" width="100%" style="padding:10px 0;"><strong>Please receive the following items in good condition </strong></td>
+  </tr>
+  <tr>
+    <th align="center" width="10%" style="border-bottom:2px solid #000; border-left:2px solid #000; border-right:2px solid #000; border-top:2px solid #000; padding:5px 0;">Serial No.</th>
+    <th align="center" width="50%" style="border-bottom:2px solid #000; border-right:2px solid #000; border-top:2px solid #000; padding:5px 0;">Description</th>
+    <th align="center" width="20%" style="border-bottom:2px solid #000; border-right:2px solid #000; border-top:2px solid #000; padding:5px 0;">Quantity</th>
+    <th align="center" width="20%" style="border-bottom:2px solid #000; border-right:2px solid #000; border-top:2px solid #000; padding:5px 0;">Unit</th>
+    
+  </tr>
+    @foreach (SalesDeliveryDetailModelView item in ViewBag.podmvList)
+    {
+        ++slno;
+        totalquantity += item.Quantity;
+        unitname = item.UnitName;
+  <tr>
+  <td style="border-bottom:2px solid #000; border-left:2px solid #000; border-right:2px solid #000;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+            	<td align="center"  style="padding:10px;">@slno</td>
+               
+            </tr>
+  </table>
+  </td>
+    <td style="border-bottom:2px solid #000; border-right:2px solid #000; padding:5px 0;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center"  style="padding:10px;">@item.ItemName</td>
+               
+            </tr>
+        </table>
+    </td>
+    <td style="border-bottom:2px solid #000; border-right:2px solid #000; padding:5px 0;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.Quantity</td>
+            </tr>
+        </table>
+    </td>
+    <td style="border-bottom:2px solid #000; border-right:2px solid #000; padding:5px 0;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center" style="padding:10px;">@item.UnitName</td>
+            </tr>
+        </table>
+    </td>
+    
+  </tr>
+  }
+ 
+   
+
+  <tr class="total">
+    <td colspan="2" style="border-bottom:2px solid #000; border-right:2px solid #000; border-left:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center"  style="padding:10px;"><strong>Total Quantity</strong></td>
+                
+            </tr>
+        </table>
+    </td>
+    <td style="border-bottom:2px solid #000; border-right:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;"><strong>@totalquantity</strong></td>
+            </tr>
+        </table>
+    </td>
+   <td style="border-bottom:2px solid #000; border-right:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center" style="padding:10px;"><strong>@unitname</strong></td>
+            </tr>
+        </table>
+    </td>
+  </tr>
+   <tr><td colspan="4" style="padding:10px 0;">&nbsp;</td></tr>
+   <tr>
+  
+    <td width="100%" colspan="2" style="border-bottom:2px solid #000; border-right:2px solid #000; border-left:2px solid #000; border-top:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+         <tr>
+            	<td style="padding:5px 10px;" align="center"><strong>Acknowledgement</strong></td>
+            </tr>
+             </table>
+    </td>
+    <td width="50%" colspan="2" style="border-bottom:2px solid #000; border-right:2px solid #000; border-top:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center" style="padding:5px 10px;"><strong>for Star Enterprise</strong></td>
+            </tr>
+            </table>
+            </td>
+      </tr>
+  <tr>
+
+    <td width="100%" colspan="2" style="border-bottom:2px solid #000; border-right:2px solid #000; border-left:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+         <tr>
+            	<td style="padding:5px 10px;">Received the goods in good condition as per our</td>
+            </tr>
+        	<tr>
+            	<td style="padding:5px 10px;"><span>Purchase Order</span>: </td>
+            </tr>
+            <tr>
+            	<td style="padding:5px 10px;"><span>Date</span>:  </td>
+            </tr>
+             <tr>
+            	<td style="padding:5px 10px;"><span>Sign</span>: </td>
+            </tr>
+            <tr>
+            	<td style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+          
+        </table>
+    </td>
+    <td width="50%" colspan="2" style="border-bottom:2px solid #000; border-right:2px solid #000;">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+            <tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+            <tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+            <tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+            <tr>
+            	<td align="center" style="padding:5px 10px;"><strong>Authorised Signatory</strong></td>
+            </tr>
+            
+        </table>
+    </td>
+  </tr>
+</table>
+
+
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+﻿@model IEnumerable<XenERP.Models.ReceiptPayment>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@{
+
+    int SlNo = 0;
+
+
+    decimal? TotalCashAmt = 0;
+
+    decimal? TotalBankAmt = 0;
+
+    decimal? TotalAmt = 0;
+}
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+        $("#btnsubmit").on('click', function () {
+            var frmDt = $("#FromDate").val();
+            var topDt = $("#ToDate").val();
+            if (frmDt == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please enter from date');
+                return false;
+            }
+            if (topDt == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please enter to date');
+                return false;
+            }
+            window.location.href = "/Contra/ShowAllContraVoucherSearch?DateFrom=" + frmDt + "&&DateTo=" + topDt;
+        });
+
+    });
+</script>
+
+<aside class="right-side">
+    <section class="content-header">
+        <h1>
+            Contra Voucher<small>List</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+
+    <div class="box">
+
+        <div class="col-xs-12"><a href="@Url.Action("Createcontra", "Contra")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Contra</a></div><br /><br />
+
+        <div class="box-body table-responsive">
+
+            <div class="box">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header">  </div>
+                        <div class="box-body">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;From Date:</span>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">
+                                            <input type="text" readonly="readonly" class="form-control" id="FromDate" />
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <span class="r-txt"> &nbsp; &nbsp; &nbsp; &nbsp;To Date:</span>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">
+                                            <input readonly="readonly" type="text" class="form-control" id="ToDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+
+                                    <td>
+                                        <div>
+                                            <div id="btnshow">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnsubmit" class="btn btn-primary" value="Show" /></div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <th>
+                            SlNo.
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Transaction type
+                        </th>
+                        <th>
+                            Transaction No.
+                        </th>
+                        <th>
+                            Amount
+                        </th>
+                        <th>
+                            Cheque No.
+                        </th>
+
+                        <th>
+                            Cheque Date
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                        <th>
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+
+                        SlNo = SlNo + 1;
+
+                        //TotalCashAmt = TotalCashAmt+item.RPCashAmount;
+
+                        //TotalBankAmt = TotalBankAmt + item.RPBankAmount;
+
+                        //TotalAmt = TotalAmt + item.TotalAmount;
+
+
+
+
+                        <tr>
+
+                            <td align="left">@SlNo</td>
+
+                            <td>
+
+                                @String.Format(@Session["DateFormatUpper"].ToString(), item.RPdate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.transactionType)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.transactionNo)
+                            </td>
+                            <td align="right">
+                                @Html.DisplayFor(modelItem => item.TotalAmount)
+                            </td>
+                            <td align="right">
+                                @Html.DisplayFor(modelItem => item.chequeNo)
+                            </td>
+                            <td>
+
+                                @String.Format(@Session["DateFormatUpper"].ToString(), item.chequeDate)
+
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Remarks)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "EditContra", new { id = item.Id })
+                            </td>
+                            <td>
+                                @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+                <tfoot>
+
+                    <tr>
+                       
+                        <td align="right" colspan="4">    
+                        <b>Grand Total</b></td>
+
+                        <td align="right">
+                            <b>
+                                @Model.Sum(s=>s.TotalAmount)
+                            </b>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        
+                    </tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+</aside>

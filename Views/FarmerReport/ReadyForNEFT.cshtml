@@ -1,0 +1,264 @@
+﻿@model XenERP.Models.ModelView.FeedStockModelView
+
+@*@model IEnumerable<XenERP.Models.ModelView.NEFTModelview>*@
+
+using XenERP.Models
+
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+
+    /*.dtwidth1 {
+        width: 20px;
+    }
+
+    .dtwidth2 {
+        width: 50px;
+    }
+
+    .dtwidth3 {
+        width: 100px;
+    }*/
+</style>
+
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": false,
+            "bAutoWidth": false
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+
+        //$('input[type="checkbox"]').click(function () {
+        //    if ($(this).is(":checked")) {
+        //        console.log("Checkbox is checked.");
+        //    }
+        //    else if ($(this).is(":not(:checked)")) {
+        //        console.log("Checkbox is unchecked.");
+        //    }
+        //});
+
+
+        $("#example1").on('ifChecked', '.icheckbox_minimal', function () {
+        //$(".iCheck-helper").on("ifChecked", function () {
+
+            var totalamount = 0;
+            $("#example1 tr:gt(0)").each(function (index, item) {
+
+                var p = $(item).find('input[type="checkbox"]:checked');
+
+                if (p.val() == 'true') {
+                    var amount = $(item).find('.amo').val();
+                    totalamount = parseFloat(totalamount) + parseFloat(amount);
+                }
+            });
+
+            $("#TotalGCAmount").val(totalamount);
+        });
+
+        $("#example1").on('ifUnchecked', '.icheckbox_minimal', function () {
+            //$(".iCheck-helper").on("ifChecked", function () {
+
+            var totalamount = 0;
+            $("#example1 tr:gt(0)").each(function (index, item) {
+
+                var p = $(item).find('input[type="checkbox"]:checked');
+
+                if (p.val() == 'true') {
+                    var amount = $(item).find('.amo').val();
+                    totalamount = parseFloat(totalamount) + parseFloat(amount);
+                }
+            });
+
+            $("#TotalGCAmount").val(totalamount);
+        });
+
+        $('#print').click(function () {
+
+            $("#example1 tr:gt(0)").each(function (index, item) {
+
+                var p = $(item).find('input[type="checkbox"]:checked');
+
+                if (p.val() != 'true') {
+                    $(item).find('input[type="checkbox"]').closest('td').closest('tr').hide();
+
+                }
+
+            });
+
+
+            $(".Status").hide();
+            $(".DoNeft").hide();
+            $("#divPrint").print();
+
+        });
+
+
+        $("#btnSubmit").on('click', function () {
+            $("#loading").fadeIn();
+        });
+
+    });
+
+
+
+</script>
+
+<script type="text/javascript">
+
+
+
+
+</script>
+
+
+<aside class="right-side"></aside>
+
+
+<aside class="right-side">
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                <img src="~/Images/newLoad.gif" />
+            </p>
+        </div>
+    </div>
+    @{
+        long Branchid = Convert.ToInt64(Session["BranchId"]);
+
+    }
+
+
+    <section class="content-header">
+        <h1>NEFT Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+    @using (Html.BeginForm("ReadyForNEFT", "FarmerReport", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+
+
+        <div class="box">
+            <div class="col-md-6">
+                <label>TOTAL AMOUNT</label>
+                @Html.TextBoxFor(m => m.TotalGCAmount, new { @class = "form-control",@readonly="readonly" })
+            </div>
+          
+            <input type="submit" id="btnSubmit" value="Submit" class="btn btn-primary pull-right" />
+            <br />
+            <br />
+
+            <div class="box-body table-responsive" id="divPrint">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+
+                        <tr>
+                            <th>SL No</th>
+                            <th class="DoNeft"> DO NEFT?</th>
+                            <th>Farmer Name</th>
+                            <th>Branch</th>
+                            <th style="text-align:right">GC Amount</th>
+                            <th>Lot No</th>
+                            <th>End Date</th>
+                            <th style="text-align:right">A/C No</th>
+                            <th style="text-align:right">IFSC Code</th>
+                            <th style="text-align:right">PAN No</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @for (int i = 0; i < Model.neftList.Count(); i++)
+                        {
+
+                        <tr>
+                            @{ Slno = Slno + 1;
+                            }
+                            <td>
+                                @Slno
+                                @Html.HiddenFor(m => m.neftList[i].Id)
+                            </td>
+                            <td style="text-align:center">@Html.CheckBoxFor(modelItem => Model.neftList[i].DoNEFT, new { @class = "DoNeft" })</td>
+                            <td>@Html.DisplayFor(modelItem => Model.neftList[i].FarmerName)</td>
+                            <td>@Html.DisplayFor(modelItem => Model.neftList[i].BranchName)</td>
+                            <td style="text-align:right">
+                                @Html.DisplayFor(modelItem => Model.neftList[i].GCAmount)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].GCAmount, new { @class = "amo" })
+
+                            </td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => Model.neftList[i].LotNo)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => Model.neftList[i].EndDate)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].FarmerAcNo)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].IfscCode)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].PANNO)</td>
+
+                        </tr>
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+            </div><!-- /.box-body -->
+
+
+        </div>
+
+    }
+
+
+</aside>

@@ -1,0 +1,309 @@
+﻿@model XenERP.Models.GroupMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#groupID").attr("maxlength", 2);
+
+        $("#groupName").attr("maxlength", 100);
+
+
+        $("#groupID").change(function () {
+
+            if ($("#groupID").val() <= 100) {
+
+                alert("Please enter Group code between 101 to 999");
+                $("#groupID").val('');
+                $("#groupID").focus();
+                return false;
+
+            }
+
+            else {
+
+
+
+                $.get("/GroupMaster/CheckgroupId", { id: $("#groupID").val(), parentid: $("#GroupType").val() }, function (data) {
+
+                    if (data == true) {
+                        alert("Group Id already exists");
+                        $("#groupID").val('')
+                        $("#groupID").focus()
+                        return false;
+                    }
+                    else {
+
+                    }
+                });
+            }
+
+        });
+    });
+
+</script>
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#groupName").change(function () {
+
+
+            $.get("/GroupMaster/Checkgroupname", { name: $("#groupName").val(), parentid: $("#GroupType").val() }, function (data) {
+
+
+
+                if (data == true) {
+                    alert("Group Name already exists");
+                    $("#groupName").val('')
+                    $("#groupName").focus()
+                    return false;
+                }
+                else {
+
+                }
+            });
+
+        });
+    });
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+
+
+
+        $("#groupID").attr("maxlength", 3);
+
+        $("#groupName").attr("maxlength", 100);
+
+
+        $.get("/GroupMaster/GetGrouptype", { id: $("#GrouptypeId").val() }, function (data) {
+
+
+            $("#Grouptypename").val(data);
+        });
+
+        $("#GrouptypeId").change(function () {
+
+
+            $.get("/GroupMaster/GetGrouptype", { id: $("#GrouptypeId").val() }, function (data) {
+
+
+                $("#Grouptypename").val(data);
+            });
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btncancel").on("click", function () {
+            location.href = "/GroupMaster/ShowGroupMaster";
+        });
+     });
+</script>
+@using (Html.BeginForm("EditGroupMaster", "GroupMaster"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                  Account Group   <small>Edit</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Update" />
+                                       <input name="" type="button" id="btncancel" value="Cancel" class="btn btn-primary" />
+                                    </li>
+                                   
+                                    
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                   
+                                           
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Type :<span style="color:Red;">*</span></label>
+                    <input type="hidden" id="Grouptypename" name="Grouptypename" />
+
+                    @Html.HiddenFor(d => d.groupID)
+                    @Html.HiddenFor(d => d.UserId)
+                    @Html.HiddenFor(d => d.CompanyId)
+                    @Html.HiddenFor(d => d.BranchId)
+               @*     @Html.HiddenFor(d => d.groupID)*@
+                    @Html.HiddenFor(d => d.fYearID)
+                    @Html.HiddenFor(d => d.SortOrder)                        
+                    @Html.HiddenFor(d => d.GrouptypeId)
+                    @Html.HiddenFor(d => d.ParentGroupId)
+           
+
+                 @*  @Html.DropDownList("GrouptypeId", (SelectList)(ViewBag.Grouptype), new { @class = "form-control" })*@
+                 @*  @Html.TextBoxFor(model => model.gID, new { @class = "form-control",@readonly="readonly"})
+                 @Html.ValidationMessageFor(model => model.GroupType)*@
+
+                                      <input type="text" class="form-control" readonly="readonly" value='@ViewBag.Grouptype' />
+                                     
+                                    </div>
+
+                                    
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Code :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.gID, new { @class = "form-control", @placeholder = "Enter Group Code", @maxlength = "8" })
+                 @Html.ValidationMessageFor(model => model.groupID)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Head :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.groupName, new { @class = "form-control", @placeholder = "Enter Group Name", @maxlength = "58" })
+                 @Html.ValidationMessageFor(model => model.groupName)
+
+                                      
+                                     
+                                    </div>
+
+                                
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+                                      <div class="tab-pane" id="tab_4">
+                                                <div class="row">         
+                          <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                        </div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                  
+                        
+                                          </div>
+                                         </div>
+
+
+
+                                         </div>
+                                         </div>
+                                         </div>
+                                         
+
+                              
+                        </section>
+                        </aside>
+}

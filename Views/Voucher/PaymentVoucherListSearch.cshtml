@@ -1,0 +1,224 @@
+﻿@model IEnumerable<XenERP.Models.VoucherModelView>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int SlNo = 0;
+
+
+    decimal? TotalCashAmt = 0;
+
+    decimal? TotalBankAmt = 0;
+
+    decimal? TotalAmt = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>
+            Payment Voucher<small>  List</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+
+    <div class="box">
+        <div class="col-xs-12"><a href="@Url.Action("CreatePaymentVoucher", "Voucher")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Payment Voucher</a></div><br /><br />
+
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <th>
+                            SlNo.
+                        </th>
+                        <th>
+                            Voucher No.
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Transaction type
+                        </th>
+                        <th>
+                            Particulars
+                        </th>
+                        <th>
+                            Mode of Payment
+                        </th>
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Cheque /NEFT /RTGS No
+                        </th>
+                        <th>Paid To</th>
+                        @*<th>
+                                Cheque Date
+                            </th>*@
+
+                        <th>
+                            Branch
+                        </th>
+                        <th>
+                            Created By
+                        </th>
+                        <th>
+                            Remarks
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+
+                        SlNo = SlNo + 1;
+
+                        TotalCashAmt = TotalCashAmt + item.RPCashAmount;
+
+                        TotalBankAmt = TotalBankAmt + item.RPBankAmount;
+
+                        TotalAmt = TotalAmt + item.TotalAmount;
+                        string VoucherNo = "";
+                        if (item.Prefix != null)
+                        {
+                            VoucherNo = item.Prefix + item.VoucherNo;
+                        }
+                        else
+                        {
+                            VoucherNo = "V00" + item.VoucherNo;
+                        }
+
+
+
+                        <tr>
+                            <td align="left">@SlNo</td>
+                            <td nowrap>
+
+
+                                @VoucherNo
+
+
+                            </td>
+                            <td nowrap>
+                                @String.Format("{0:dd/MM/yyyy}", item.RPdate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.transactionType)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GeneralLedger)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ModeOfPay)
+                            </td>
+                            <td align="right">
+                                @Html.DisplayFor(modelItem => item.RPCashAmount)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.chequeNo)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PaidTo)
+                            </td>
+                            @*<td>
+                                    @if (item.chqDate == Convert.ToDateTime("1/01/0001 12:00:00 AM"))
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+
+                                        @String.Format("{0:dd/MM/yyyy}", item.chqDate)
+
+                                    }
+                                </td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.branchCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.remarks)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "EditPaymentVoucher", new { id = item.Id })
+                                @Html.ActionLink("Print", "PrintPaymentVoucherPDF", new { id = item.Id })
+                                @if (ViewBag.BranchId == 0)
+                                {
+                                    @Html.ActionLink("Delete", "DeletePayment", new { transactionNo = item.transactionNo }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })
+                                }
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,426 @@
+﻿@model XenERP.Models.UnitIssueModelView
+@{
+    ViewBag.Title = "PrintChallan";
+    var slno = 0;
+    var slno1 = 0;
+
+}
+
+<h2>PrintChallan</h2>
+<head>
+    <style type="text/css" media="print">
+        @Page
+        {
+            size:  auto;   /* auto is the initial value */
+            margin: 0mm;  /* this affects the margin in the printer settings */
+        }
+
+        html
+        {
+            background-color: #FFFFFF;
+            margin: 0px;  /* this affects the margin on the html before sending to printer */
+        }
+
+        body
+        {
+            border: solid 1px blue ;
+            margin: 10mm 15mm 10mm 15mm; /* margin you want for the content */
+        }
+    </style>
+
+    <style type="text/css">
+        #scissors {
+            height: 43px; /* image height */
+            width: 90%;
+            margin: auto auto;
+            background-image: url('../../Images/scissor.png');
+            background-repeat: no-repeat;
+            background-position: right;
+            position: relative;
+        }
+
+            #scissors div {
+                position: relative;
+                top: 50%;
+                border-top: 3px dashed black;
+                margin-top: -3px;
+            }
+
+        u {
+            border-bottom: 1px dotted #000;
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+
+            $('#btnprnt').click(function () {
+                var divElements = document.getElementById("print1").innerHTML;
+
+
+                document.body.innerHTML =
+                    "<html><head><title>Challan</title></head><body>" +
+                    divElements + "</body>";
+
+
+                //Print Page
+                window.print();
+                window.location.href = "/HariUnitIssue/ItemIssuedToUnitList";
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.nxt').click(function () {
+                window.location.href = "/HariUnitIssue/ItemIssuedToUnitList";
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <aside class="right-side">
+        <div id="content">
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="widget-box">
+
+                        <input name="" type="button" value="Next Issue" class="btn nxt btn-info pull-left" />
+                        <div style="text-align:center">
+                            <input name="" type="button" id="btnprnt" value="PRINT" class="btn btn-danger" />
+                        </div>
+
+                        <br />
+
+
+                        <div class="col-md-12" id="print1" style="padding:10px;border:5px solid gray;margin:0;">
+                            <br />
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                    <tr style="border:1px solid black; margin-bottom:5px;">
+
+                                        <td colspan="1">
+                                            <table width="100%">
+                                                <tr>
+
+                                                    <td style="text-align:center ;width:90%">
+                                                        <img src="~/Images/prolog.png" />
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td colspan="1">
+                                            <table width="100%">
+                                                <tr>
+
+                                                    <td style="text-align:center ;width:90%">
+                                                        <h4 style="margin:5px 0 0 0;font-family:Arial"><b>HI-BREED AVIAN RESEARCH & INTEGRATOR </b></h4>
+                                                        <br /><b>22,R.N. Mukherjee Road,5th Floor,Kolkata-700001</b>
+                                                        <br /><b>Ph.:(033)4007-0525,9051040404 </b>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                <tr>
+                                    <td colspan="4" align="center"><span style="font-size:xx-large;font-weight:bolder;">Challan</span></td>
+                                </tr>
+
+                            </table>
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                    <tr style="border:1px solid black; margin-bottom:5px;">
+                                        <td colspan="2" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+                                            From,
+                                            <p>
+                                                <strong>HI-BREED AVIAN RESEARCH & INTEGRATOR</strong>
+                                                <br />Factory-58, D.H. Road Joka, Kolkata700104
+                                                <br />Landline No:(033)2453-3300, Mobile:7980706411
+                                            </p>
+                                          
+                                            To,
+                                            <p>
+
+                                                <strong>@ViewBag.branch</strong>
+                                                <br />Address :@ViewBag.address
+
+                                            </p>
+                                        </td>
+                                        <td colspan="1" class="date">
+                                            <p>
+                                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td width="45%" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Challan No.</strong>&nbsp;&nbsp;&nbsp;:&nbsp;@Model.DeliveryChallanNo</td>
+                                                    </tr>
+                                                  
+                                                    <tr>
+                                                        <td width="45%" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Challan Date</strong>&nbsp;:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.IssueDateString)</td>
+                                                    </tr>
+                                                   
+                                                    <tr>
+                                                        <td width="45%" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Truck No</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;@Model.DeliveryTruckNo</td>
+                                                    </tr>
+                                                   
+                                                    <tr>
+                                                        <td width="45%" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Delivery Man</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp; @Model.DeliveryManName</td>
+                                                    </tr>
+                                                   
+                                                    <tr>
+                                                        <td width="45%" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Delivery Man Ph. No.</strong>:&nbsp;@Model.DeliveryManPhNo</td>
+
+                                                    </tr>
+
+                                                   
+                                                    <tr>
+                                                        <td width="45%" style="padding:0px 5px;border:1px solid black; margin-bottom:5px;"><strong>Reference No</strong>:&nbsp;@Model.HandChallanNo</td>
+
+                                                    </tr>
+
+                                                </table>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+
+                                    <thead>
+                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                            <th style="text-align:center; border:1px solid black; margin-bottom:5px;">SL.No.</th>
+                                            <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Description</th>
+                                            <th style=" text-align:center; border:1px solid black; margin-bottom:5px;padding:8px;" colspan="2" width="40%">Quantity</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.issDet.Where(r => r.ItemCategoryId == 4))
+                                        {
+                                            ++slno;
+                                            <tr>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@slno</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.Item</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(item.IssuedQuantityPrimary, 0)</td>
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.ItemUnitPrimary</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(item.ItemIssuedQuantity, 0) </td>
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.ItemUnitType</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+
+                                            </tr>
+                                        }
+
+                                        @if (Model.issDet.Where(r => r.ItemCategoryId == 4).ToList().Count() > 0)
+                                        {
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">TOTAL</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(Model.issDet.Where(r => r.ItemCategoryId == 4).Sum(s => s.IssuedQuantityPrimary), 0)</td>
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Model.issDet.Where(r => r.ItemCategoryId == 4).FirstOrDefault().ItemUnitPrimary</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(Model.issDet.Where(r => r.ItemCategoryId == 4).Sum(s => s.ItemIssuedQuantity), 0)</td>
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Model.issDet.Where(r => r.ItemCategoryId == 4).FirstOrDefault().ItemUnitType</td>
+
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+
+                                            </tr>
+                                        }
+
+                                        @foreach (var item in Model.issDet.Where(r => r.ItemCategoryId != 4))
+                                        {
+                                            ++slno1;
+                                            <tr>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@slno1</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.Item</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                                                        @*<tr style="border:1px solid black; margin-bottom:5px;">
+            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(item.IssuedQuantityPrimary, 0)</td>
+            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.ItemUnitPrimary</td>
+        </tr>*@
+                                                        @*<tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">NA</td>
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">NA</td>
+                                                        </tr>*@
+
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr style="border:1px solid black; margin-bottom:5px;">
+                                                            <td align="right" style="padding:8px;border:1px solid black; margin-bottom:5px;">@Math.Round(item.ItemIssuedQuantity, 0) </td>
+                                                            <td align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">@item.ItemUnitType</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                                    <tr style=" border:1px solid black; margin-bottom:5px;">
+
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                            <br />
+                                            Driver's Signature
+                                        </td>
+
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                            <br />
+                                            Customer Signature
+                                        </td>
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                            <br />
+                                            Supervisor Signature
+                                        </td>
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                            <br />
+                                            For HI-BREED AVIAN RESEARCH & INTEGRATOR
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div id="scissors">
+                                <div></div>
+                            </div>
+                            <br />
+
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                <table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+
+
+                                    <tr border:1px solid black; margin-bottom:5px;>
+                                        <td colspan="4" align="center" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+                                            <u><strong><span style="font-size:xx-large">GATE PASS</span></strong></u>
+                                            <br /><span style="font-size:large">HI-BREED AVIAN RESEARCH & INTEGRATOR</span>
+
+                                        </td>
+
+                                    </tr>
+                                    <tr border:1px solid black; margin-bottom:5px;>
+                                        <td colspan="2" width="50%" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+
+                                            <span style="font-size:medium"><strong>Challan No.</strong>:&nbsp;@Model.DeliveryChallanNo</span>
+
+
+                                        </td>
+                                        <td colspan="2" width="50%" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+
+                                            <strong>Date</strong>:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.IssueDateString)
+
+
+                                        </td>
+                                    </tr>
+
+                                    <tr border:1px solid black; margin-bottom:5px;>
+
+                                        <td colspan="2" align="left" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+
+                                            <span>
+                                                <strong>Name</strong>:&nbsp;@ViewBag.branch
+                                            </span>
+
+                                        </td>
+                                        <td colspan="2" width="50%" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+                                            <strong>Lorry No.</strong>:&nbsp;@Model.DeliveryTruckNo
+                                        </td>
+                                    </tr>
+
+
+                                    <tr border:1px solid black; margin-bottom:5px;>
+                                        <td colspan="2" width="50%" style="padding:8px;border:1px solid black; margin-bottom:5px;">
+
+                                            <strong>Address</strong>:&nbsp;@ViewBag.address
+
+
+                                        </td>
+                                        <td colspan="2" width="50%" style="padding:8px;border:1px solid black; margin-bottom:5px;"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </aside>
+</body>

@@ -1,0 +1,261 @@
+﻿@model IEnumerable<XenERP.Models.PurchasebyTax_Result>
+@{
+   
+    var SlNo = 0;
+    decimal Total = 0;
+    decimal TotAmt = 0;
+
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+    var items = "ss";
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading
+    {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+    .marginleft10
+    {
+        margin-left: 10px !important;
+    }
+    .screenlet-title-bar
+    {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+    .ErrorControl
+    {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+    
+    .pad svg
+    {
+        width: 100% !important;
+    }
+</style>
+<aside class="right-side">
+
+<center>
+<table>
+<tr>
+<td>
+
+@if (ViewBag.branchname != null)
+{
+<b>@ViewBag.Name (@ViewBag.branchname) </b>
+}
+else
+{
+    @ViewBag.Name 
+}
+</td>
+</tr>
+
+
+
+<tr>
+<td>
+<b>Sales By Date</b>
+</td>
+</tr>
+
+<tr>
+<td>
+@try
+{
+
+    if (ViewBag.from != null)
+    {
+  @Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to);
+
+    }
+}
+catch
+{
+}
+</td>
+</tr>
+
+
+
+
+
+
+
+</table>
+</center>
+
+<div class="box box-primary">
+                                 <div class="box-header">
+                
+                                        </div>
+                                   <div class="box-body">
+                                 
+   <div class="box-body table-responsive divContent">
+
+
+             
+                       
+                       
+                         <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                            
+
+                </thead>
+                <tbody>
+                
+      
+
+
+                   @foreach (var item in Model)
+                   {
+
+
+                    if (item.Item == "Header")
+                       {
+                           SlNo = 0;
+
+                          
+                          <tr>
+                       
+                           <th colspan="5">
+                          <h3>
+                          
+                          <b> @Html.DisplayFor(modelItem => item.Taxname)</b> ( @Html.DisplayFor(modelItem => item.Rate) @Html.Raw("%"))</h3>
+                           
+                           </th>
+                               
+                   </tr>
+                         
+                          
+                       <tr>
+                    
+                        <th>
+                     SlNo.
+                        </th>
+
+                        <th>Date</th>
+
+                    
+                        <th>
+                  Invoice No
+                        </th>
+
+                        <th>
+                     Item Name
+                        </th>
+                        <th>
+                        Tax Amount
+                        </th>
+                      
+
+
+
+
+                    </tr>
+
+                       }
+
+                       else
+                       {
+                           SlNo = SlNo + 1;
+
+                           if (item.InvoiceNo != "Grand Total:")
+                           {
+                                     <tr>
+
+                       <td>
+                       @SlNo
+                       </td>
+                           
+                            <td style="text-align:left;">
+                            
+                          @String.Format(@Session["DateFormatUpper"].ToString(), item.Date)
+                       
+                            </td>
+                              
+                          
+
+                            <td>
+                         
+                             @Html.DisplayFor(modelItem => item.InvoiceNo)
+                         
+                    
+                            </td>
+                           
+                            <td align="right">   
+                                                    
+                   @Html.DisplayFor(modelItem => item.Item)
+   
+      </td>
+
+          
+                            <td align="right">   
+                                                    
+                   @Html.DisplayFor(modelItem => item.TaxAmount)
+   
+      </td>
+                        </tr>
+                           }
+
+                           else
+                           { 
+                             
+                                    
+                    <tr>
+                    
+                       <td></td>
+                    
+                     <td></td>
+                        <td></td>
+
+                    
+                       
+                          <td align="left">  <b> Grand Total:</b> </td>
+                       
+
+     <td align="right">      <b> @Html.DisplayFor(modelItem => item.TaxAmount)</b> </td>
+                       
+                        
+                         </tr>           
+                  
+                    
+                           }
+                       }
+
+
+                   }
+                       
+                        
+          
+                    
+                  
+                </tbody>
+                
+   
+            </table>
+                       
+            </div>
+</div>
+</div>
+
+
+
+
+</aside>

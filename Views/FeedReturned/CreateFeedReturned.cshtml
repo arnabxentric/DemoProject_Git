@@ -1,0 +1,522 @@
+﻿@model XenERP.Models.ModelView.FeedReturnedModelview
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+
+
+<style>
+.table-responsive {
+    min-height: 0.01%;
+    overflow-x: auto;
+}
+</style>
+<script src="~/Scripts/JqueryValidation.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var iCnt = 0;
+        $('#btnAdd').click(function () {
+            iCnt = iCnt + 1;
+
+            $('#divAdd').append('<div id="dv' + iCnt + '"><input type=text class="input" id=tb' + iCnt + ' ' +
+                            'placeholder="Text Element ' + iCnt + '" name="tbName' + iCnt + '"/>  <br /><br />  </div>')
+
+        });
+
+
+        $('#btnRemove').click(function () {
+            if (iCnt != 0) {
+                $('#dv' + iCnt).remove();
+                iCnt = iCnt - 1;
+            }
+
+        });
+
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $(".select2").select2();
+
+    });
+</script>
+
+
+@*<script type="text/javascript">
+    $(document).ready(function () {
+
+        var v = $("#BranchId").val();
+
+        $.get("/FeedReturned/GetFarmName", { data: v }, function (data) {
+
+            $("#FarmId").empty();
+            var options = $("#FarmId");
+            options.append(new Option("---Select Farm Code-----", "-1"));
+            $.each(data, function () {
+                options.append(new Option(this.FarmCode, this.Id));
+
+
+            });
+
+        });
+    });
+
+  
+</script>*@
+
+ 
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+
+
+    });
+
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#FarmId").change(function () {
+            var v = $("#FarmId").val();
+
+            $.get("/FeedReturned/GetFlockCode", { data: v }, function (data) {
+                $("#FlockId").empty();
+                var options = $("#FlockId");
+                options.append(new Option("---Select Farm Code-----", "-1"));
+                $.each(data, function () {
+                    options.append(new Option(this.FlockCode, this.Id));
+                });
+
+            });
+
+        });
+    });
+
+</script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#FlockId").change(function () {
+            var v = $("#FlockId").val();
+
+            var rowadd = 0;
+
+            $.get("/FeedReturned/GetFeedLeft", { data: v }, function (data) {
+
+                $.each(data, function (index, item) {
+
+
+                    var table = document.getElementById('dataTable');
+
+                    var rowCount = table.rows.length;
+                    var row = table.insertRow(rowCount);
+
+                    //-----Code By Ayan---------------
+
+
+                    var elementH = document.createElement("input");
+                    elementH.type = "hidden";
+                    elementH.name = "IdToHoldInEdit" + index;
+                    elementH.id = "IdToHoldInEdit" + index;
+                    elementH.value = rowadd;
+                    elementH.className = "IdToHoldInEdit";
+
+                    var elementHDaily = document.createElement("input");
+                    elementHDaily.type = "hidden";
+                    elementHDaily.name = "PoultryDailyEntryId" + index;
+                    elementHDaily.id = "PoultryDailyEntryId" + index;
+                    elementHDaily.value = item.PoultryDailyEntryId;
+                    elementHDaily.className = "PoultryDailyEntryId";
+
+
+
+
+                    var cell0 = row.insertCell(0);
+
+
+                    var elementH0 = document.createElement("input");
+                    elementH0.type = "hidden";
+                    elementH0.name = "CategoryId" + index;
+                    elementH0.id = "CategoryId" + index;
+                    elementH0.value = item.CategoryId;
+                    elementH0.className = "CategoryId";
+
+
+
+
+                    var element0 = document.createElement("input");
+                    element0.type = "text";
+                    element0.className = "CategoryName";
+                    element0.id = "Category" + index;
+                    element0.name = "CategoryName" + index;
+                    element0.value = item.CategoryName;
+
+
+                    cell0.appendChild(element0);
+                    cell0.appendChild(elementH0);
+                    cell0.appendChild(elementHDaily);
+
+
+
+                    var cell1 = row.insertCell(1);
+
+                    var elementH1 = document.createElement("input");
+                    elementH1.type = "hidden";
+                    elementH1.name = "FeedId" + index;
+                    elementH1.id = "FeedId" + index;
+                    elementH1.value = item.FeedId;
+                    elementH1.className = "FeedId";             
+
+
+
+
+
+                    var element1 = document.createElement("input");
+                    element1.type = "text";
+                    element1.className = "FeedName";
+                    element1.id = "FeedName" + index;
+                    element1.name = "FeedName" + index;
+                    element1.value = item.FeedName;
+                    cell1.appendChild(elementH1);
+                    cell1.appendChild(element1);
+
+
+                    var cell2 = row.insertCell(2);
+                    var element2 = document.createElement("input");
+                    element2.type = "text";
+                    element2.name = "FeedDesc" + index;
+                    element2.id = "FeedDesc" + index;
+                    element2.className = "FeedDesc";
+                    element2.value = item.FeedName;
+                    cell2.appendChild(element2);
+
+
+
+                    var cell3 = row.insertCell(3);
+                    var element3 = document.createElement("input");
+                    element3.type = "text";
+                    element3.name = "FeedQuantity" + index;
+                    element3.className = "FeedQuantity";
+                    element3.id = "FeedQuantity" + index;
+                    element3.value = item.FeedQuantity;
+                    cell3.appendChild(element3);
+
+
+                    var cell4 = row.insertCell(4);
+
+
+                    var elementH4 = document.createElement("input");
+                    elementH4.type = "hidden";
+                    elementH4.name = "UOMId" + index;
+                    elementH4.id = "UOMId" + index;
+                    elementH4.value = item.UOMId;
+                    elementH4.className = "UOMId";     
+
+
+                    var element4 = document.createElement("input");
+                    element4.type = "text";
+                    element4.className = "UOMName";
+                    element4.id = "UOM" + index;
+                    element4.name = "UOM" + index;
+                    element4.value = item.UOMName;
+                    cell4.appendChild(elementH4);
+                    cell4.appendChild(element4);
+
+
+                    var cell5 = row.insertCell(5);
+                    var element5 = document.createElement("input");
+                    element5.type = "text";
+                    element5.name = "PrimaryUnit" + index;
+                    element5.className = "PrimaryUnit";
+                    element5.id = "PrimaryUnit" + index;
+                    element5.value = item.UnitFormula;
+                    element5.readOnly = true;
+                    cell5.appendChild(element5);
+
+                    var cell6 = row.insertCell(6);
+                    var element6 = document.createElement("input");
+                    element6.type = "hidden";
+                    element6.name = "PriceRate" + index;
+                    element6.className = "PriceRate";
+                    element6.id = "PriceRate" + index;
+                    element6.value = item.PriceRate;
+                    cell6.appendChild(element6);
+
+                    var cell7 = row.insertCell(7);
+                    var element7 = document.createElement("input");
+                    element7.type = "text";
+                    element7.name = "TotalQuantity" + index;
+                    element7.className = "TotalQuantity";
+                    element7.id = "TotalQuantity" + index;
+                    element7.value = item.FeedQuantity;
+                    cell7.appendChild(element7);
+
+                    var cell8 = row.insertCell(8);
+                    var element8 = document.createElement("input");
+                    element8.type = "text";
+                    element8.name = "Shortage" + index;
+                    element8.className = "Shortage";
+                    element8.id = "Shortage" + index;
+                    cell8.appendChild(element8);
+
+                    var cell9 = row.insertCell(9);
+                    var element9 = document.createElement("input");
+                    element9.type = "button";
+                    element9.id = "btndelete";
+                    element9.name = "button[]";
+                    element9.title = "Delete this row";
+                    element9.className = "add-component-deletebotton";
+                    cell9.appendChild(element9);
+
+                    rowadd++;
+                });
+
+            });
+
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+
+        $("#dataTable").on('keyup', '.TotalQuantity', function () {
+
+            var UM = $(this).val();
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');           
+
+            var vgh = parseFloat(ctr.find(".TotalQuantity").val()) || 0;
+            var vgg = parseFloat(ctr.find(".FeedQuantity").val()) || 0;
+            ctr.find(".Shortage").val(vgg - vgh);
+          
+
+        });
+
+
+    });
+
+
+
+</script>
+
+@using (Html.BeginForm("CreateFeedReturned", "FeedReturned"))
+{
+    @Html.ValidationSummary(true)
+
+       @Html.HiddenFor(model=>model.Id)
+         @Html.HiddenFor(model => model.BranchId)
+          @Html.HiddenFor(model => model.UnitId)
+          @Html.HiddenFor(model => model.UserId)
+            @Html.HiddenFor(model => model.CompanyId)
+    
+    
+    
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>Feed Returned from Farm<small>Create</small> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>
+        </section>
+       
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+         @Html.HiddenFor(d => d.BranchId)
+          @Html.HiddenFor(d => d.UnitId)
+          @Html.HiddenFor(d => d.UserId)
+            @Html.HiddenFor(d => d.CompanyId)
+
+         <div class="col-md-12">
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+                   @* <div class="form-group">
+                        <label class="black_txt_010"> Unit Code :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.UnitId, new SelectList(ViewBag.FarmUnit, "Id", "Code"), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.UnitId)
+
+                    </div>
+                  *@
+
+                     <div class="form-group">
+                        <label class="black_txt_010"> Farm Code :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.FarmId, new SelectList(ViewBag.FarmName, "Id", "FarmerName"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Farm  Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FarmId)
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock Code :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.FlockId, Enumerable.Empty<SelectListItem>(), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm  Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FlockId)
+
+                    </div>
+
+
+                     <div class="form-group">
+                        <label class="black_txt_010"> Challan No:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.ChallanNo, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "5", @type = "number" })
+                        @Html.ValidationMessageFor(model => model.ChallanNo)
+                    </div>                   
+          
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">                  
+                   
+
+
+                     <div class="form-group">
+                        <label class="black_txt_010">DeliveryMan Name:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.DeliveryManName, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.DeliveryManName)
+                    </div>
+
+                       <div class="form-group">
+                        <label class="black_txt_010">DeliveryMan Code:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.DeliveryManCode, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.DeliveryManCode)
+                    </div>
+
+                   @*  <div class="form-group">
+                        <label class="black_txt_010">Tagno:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.Tagno, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Tagno)
+                    </div>
+*@
+                 
+
+                      <div class="form-group">
+                        <label class="black_txt_010"> Date Of Despatch:<span style="color:Red;">*</span> </label>
+                         <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateOfReceiptString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>                       
+                        @Html.ValidationMessageFor(model => model.DateOfReceiptString)
+                    </div>
+
+
+
+                    <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary"/>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        <div class="col-md-12">
+
+        <div class="form-group">
+                          <h3>Feed/Medicine Details</h3>
+                          </div>
+                         <div class="form-group">
+                         <div class="table-responsive">
+                          <table class="my-table-style table" id="dataTable">
+                          <tr class="my-table-header">
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Feed/Medicine Category</label>
+                          </td>
+
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Feed/Medicine Name</label>
+                          </td>
+
+                           <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Description</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Feed Quantity</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Unit Type</label>
+                          </td>
+
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Unit Of</label>
+                          </td>
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Price Rate</label>
+                          </td>
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Returning Quantity</label>
+                          </td>
+
+                           <td style="text-align:center;">
+                          <label class="black_txt_010">Shortage</label>
+                          </td>
+
+                          <td style="text-align: center;">
+                          <label class="black_txt_010">Action</label>
+                          </td>
+
+                           </tr>
+                           </table>
+                           </div>
+                          @*  <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('dataTable')" />*@
+                           </div>
+
+                          
+
+</div>
+
+</aside>
+}

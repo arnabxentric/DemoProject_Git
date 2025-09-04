@@ -1,0 +1,259 @@
+﻿@model XenERP.Models.PurchaseInvoice
+
+@{
+    Layout = null;
+}
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Sales Invoice";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+    Company company = ViewBag.company;
+
+}
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Untitled Document</title>
+    <!--[if IE]>
+    <script src="js/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 9]>
+        <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <!--[if gte IE 9]>
+      <style type="text/css">
+        .gradient {
+           filter: none;
+        }
+      </style>
+    <![endif]-->
+</head>
+
+<body>
+    <table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+        <tr>
+            <td colspan="7">
+                @*<div class="logo"><img src="@Url.Content("~/Companyimages/" + @company.CompanyLogo)" /></div>*@
+                <div class="header">
+                    <strong>Supplier :@Model.Supplier.Name</strong>
+                    <br /><span>@Model.Supplier.PoStreetPoBox</span>
+                    <br /><span>@Model.Supplier.PoCity</span>
+                    <br /><span>@Model.Supplier.PoStateRegion</span>
+                    <br /><span>@Model.Supplier.PoPostalCode</span>
+                    <br /><b>Contact No. :@Model.Supplier.ContactMobile</b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" align="center"><h2>Invoice</h2></td>
+        </tr>
+        <tr>
+            <td colspan="3" width="30%">
+                <p>
+                    <strong>Warehouse :@Model.Warehouse.Name</strong>
+                    <br />Address :@Model.StreetPoBox
+
+                    <br />@Model.City
+                    <br />@Model.StateRegion
+                    <br />PIN :@Model.PostalCode
+                    <br /><strong>Contact No. :@Model.DeliveryName</strong>
+                </p>
+
+            </td>
+            <td colspan="4" width="70%" class="date">
+                <p>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="80%" style="padding:0px 15px;"><strong>Invoice No.  :</strong> :&nbsp;@Model.ReferenceInvoice</td>
+
+                        </tr>
+                        <tr>
+
+                            <td width="80%" style="padding:0px 15px;"><strong>Invoice Date  :</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.InvoiceDate)</td>
+                        </tr>
+
+                        <tr>
+                            <td width="80%" style="padding:0px 15px;"><strong>Order No.     :</strong> :&nbsp;@ViewBag.pos</td>
+
+                        </tr>
+                        <tr>
+
+                            <td width="80%" style="padding:0px 15px;"><strong>Order Date    :</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.Date)</td>
+                        </tr>
+
+                        <tr>
+                            <td width="80%" style="padding:0px 15px;"><strong>Through       :</strong> :&nbsp;@Model.DespatchThrough</td>
+
+                        </tr>
+                        <tr>
+
+                            <td width="80%" style="padding:0px 15px;"><strong>Destination   :</strong> :&nbsp;@Model.DespatchDestination</td>
+                        </tr>
+
+                        <tr>
+                            <td width="80%" style="padding:0px 15px;"><strong>Receipt No.   :</strong> :&nbsp;@ViewBag.receipts</td>
+
+                        </tr>
+                        <tr>
+
+                            <td width="80%" style="padding:0px 15px;"><strong>Receipt Date   :</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.DespatchDate)</td>
+                        </tr>
+
+
+                    </table>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <th align="center" colspan="2" width="40%">Item Name</th>
+            @*<th align="center" width="25%">Description</th>*@
+            <th align="center" width="10%">Quantity</th>
+            <th align="center" width="10%">Unit</th>
+            <th align="center" width="10%">Unit Price</th>
+
+            <th align="center" width="15%">Tax</th>
+            <th align="center" width="15%">Amount</th>
+        </tr>
+        @foreach (PurchaseInvoiceDetailModelView item in ViewBag.podmvList)
+        {
+            <tr>
+                <td colspan="2">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="left" style="padding:10px;">@item.ItemName</td>
+                            <td align="right" style="padding:10px;">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+                @* <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="left"  style="padding:10px;">@item.Description</td>
+                                <td align="right"  style="padding:10px;">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>*@
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px;">@item.Quantity</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px;">@item.UnitName</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px;">@item.Price</td>
+                        </tr>
+
+                    </table>
+                </td>
+
+
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px;">@item.TaxName</td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px;">@Math.Round(@item.TotalAmount, 2)</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        }
+        @foreach (InvoiceTotal item in ViewBag.InvoiceTotalList)
+        {
+            <tr class="total">
+                <td colspan="6" style="padding:10px;"><strong>@item.Name</strong></td>
+                <td align="right" style="padding:10px;"><strong>@item.Amount</strong> </td>
+            </tr>
+        }
+
+
+        <tr class="total">
+            <td colspan="7" style="padding:10px;"><strong><span>Rupees</span>: @ViewBag.BCTotalAmount</strong></td>
+
+        </tr>
+        <tr>
+            <td width="50%" colspan="3">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+
+
+                    <tr>
+                        <td style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 10px;"><strong>Payment Term :@ViewBag.PaymentTerm</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+            <td width="50%" colspan="4">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                    <tr>
+                        <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div class="bottom">
+
+        @company.Address ,&nbsp;Email : @company.EmailId ,&nbsp;Website: @company.Website
+    </div>
+    <div class="clr"></div>
+    <div class="ads">
+        <ul>
+            @foreach (string item in ViewBag.Logo)
+            {
+                var logoimage = "/productimg/" + @item;
+                <li><img src='@logoimage' alt="ads" /></li>
+                @*<li><img src="../../Images/dealer11.png" alt="ads" /></li>
+                    <li><img src="../../Images/dealer12.png" alt="ads" /></li>
+                    <li><img src="../../Images/dealer13.png" alt="ads" /></li>
+                    <li><img src="../../Images/dealer13.png" alt="ads" /></li>*@
+            }
+
+        </ul>
+    </div>
+
+</body>
+</html>
+
+

@@ -1,0 +1,281 @@
+﻿@model IEnumerable<XenERP.Models.GC_ModelView>
+
+@using XenERP.Models
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1040;
+        display: none;
+        overflow: auto;
+        overflow-y: scroll;
+    }
+
+    .modal-content {
+        background-color: #ffffff;
+        width: 330px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+
+@*<script type="text/javascript">
+
+        $(function () {
+            $('#example1').dataTable({
+                "bPaginate": true,
+                "bLengthChange": true,
+                "bFilter": true,
+                "bSort": false,
+                "bInfo": true,
+                "bAutoWidth": true,
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+
+                    if (aData[6] == "Already Received") {
+                        $('td', nRow).css('border-color', 'Red');
+                    }
+                    else {
+                        $('td', nRow).css('border-color', 'Green');
+                    }
+                }
+            });
+        });
+    </script>*@
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var Culture = "@Session["DateCulture"]";
+        $(".select2").select2();
+
+        $('.date').datepicker({
+            autoclose: true, todayHighlight: true,
+            language: Culture
+        }).on('changeDate', function (ev) {
+            var minDate = new Date(ev.date.valueOf());
+            //alert(minDate);
+            $(this).closest('td').find('.FlockEndDateString').val(minDate);
+
+        });
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+        $("#example1").on('click', '.prnt', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+
+            window.location.href = "/Hari_Gc/GcDetails?FlockId=" + id;
+
+  
+
+        });
+
+      
+        //$.post("/ProgramActivity/VisitDetails", { id: id }, function (data) {
+        //    alert("Na");
+        //    alert(data);
+        //    $("#Visit_Details").css("display", "block");
+        //    $("#Visit_Details").html(data);
+        //});
+
+        //$("#btnsubmit").on('click', function () {
+        //    var frmDt = $("#FromDate").val();
+        //    var topDt = $("#ToDate").val();
+        //    if (frmDt == '') {
+        //        $("#myModal").modal('show');
+        //        $('.msg1').html('Please enter from date');
+        //        return false;
+        //    }
+        //    if (topDt == '') {
+        //        $("#myModal").modal('show');
+        //        $('.msg1').html('Please enter to date');
+        //        return false;
+        //    }
+        //    $("#loading").fadeIn();
+        //    window.location.href = "/HariUnitIssue/FarmerIssueListSearch?DateFrom=" + frmDt + "&&DateTo=" + topDt;
+        //});
+    });
+</script>
+
+
+
+
+
+
+
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                <img src="~/Images/newLoad.gif" />
+            </p>
+        </div>
+    </div>
+
+    @{
+
+        XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+        InventoryEntities db = new InventoryEntities();
+        var menuheader = db.MenuHeaderMasters.ToList();
+        int CompId = Convert.ToInt32(Session["companyid"]);
+        int userid = Convert.ToInt32(Session["AssignId"]);
+
+        var list = rep.GetMenuheader(userid, CompId);
+        var gcpay = list.Where(l => l.AccessMenuHeaderId == 18 && l.Name == "GCPaymentToFarmer");
+
+    }
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+
+
+            <table id="example1" class="table table-bordered table-striped table-responsive">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Flock Code</th>
+                        <th>Farmer Name</th>
+                        <th>Supervisor</th>
+                        <th>Lot No</th>
+                        <th>Placement Date</th>
+                        <th>No Of Birds</th>
+                        <th>End Date</th>
+                        <th>Net Growing Charge</th>
+                        <th>TDS Deduction</th>
+                        <th>Payable Amount</th>
+                        <th>Mortality</th>
+                        <th>FCR</th>
+                        <th>Cost/KG</th>
+                        <th>Status</th>
+                        @*<th></th>*@
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+
+                        <tr>
+
+                            <td>
+                                @Slno
+
+                            </td>
+
+
+                            <td align="center">
+                                @item.FlockCode
+                                @Html.HiddenFor(m => item.Id, new { @class = "id" })
+                            </td>
+                            <td> @Html.DisplayFor(modelItem => item.FarmerName)</td>
+                            <td> @Html.DisplayFor(modelItem => item.SupervisorName)</td>
+                            <td> @Html.DisplayFor(modelItem => item.LotNo)</td>
+                            <td> @Html.DisplayFor(modelItem => item.DateOfPlacement)</td>
+                            <td> @Html.DisplayFor(modelItem => item.NoOfChicks)</td>
+                            <td> @Html.DisplayFor(modelItem => item.FlockEndDate)</td>
+                            <td> @Html.DisplayFor(modelItem => item.NetGrowingCharge)</td>
+                            <td> @Html.DisplayFor(modelItem => item.TDS_Deduction)</td>
+                            <td> @Html.DisplayFor(modelItem => item.NetAmountPayment)</td>
+                            <td> @Html.DisplayFor(modelItem => item.MortalityOfBirds)</td>
+                            <td> @Html.DisplayFor(modelItem => item.FCR)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TotalProductionCostRate)
+                                @Html.HiddenFor(modelItem => item.FlockEndDate, new { @class = "FlockEndDateString" })
+                            </td>
+
+                            @if (item.Status == true)
+                            {
+                                <td>Already Paid </td>
+                                @*<td></td>*@
+                                <td style="text-align:center"><button type="button" class="btn btn-success btn-sm prnt">Print</button></td>
+
+                            }
+                            else
+                            {
+                                if (gcpay.Count() > 0)
+                                {
+                                    <td>Neft Date : @item.NeftDate</td>
+                                    @*<td width="150px">
+                                            <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3 + @Slno">
+                                                @Html.TextBoxFor(modelItem => item.FlockEndDate, new { @class = "form-control FlockEndDateString" })
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                            </div>
+                                        </td>*@
+                                }
+                                else
+                                {
+                                    <td></td>
+                                    @*<td></td>*@
+                                }
+
+
+                                <td style="text-align:center"><button type="button" class="btn btn-success btn-sm prnt">Print</button></td>
+                            }
+
+
+
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+
+   
+

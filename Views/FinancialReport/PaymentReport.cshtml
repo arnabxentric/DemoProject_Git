@@ -1,0 +1,198 @@
+﻿@model IEnumerable<XenERP.Models.VoucherModelView>
+@{
+
+    var SlNo = 0;
+
+    decimal cashTotal = 0;
+    decimal bankTotal = 0;
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+@*@if (Model.Count() > 0)
+    {*@
+<aside class="right-side">
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+            <div class="box-body table-responsive divContent">
+
+                <table id="example1" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                SlNo.
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Voucher No.
+                            </th>
+
+                            <th>
+                                Particulars
+                            </th>
+
+                            <th>
+                                Cash
+                            </th>
+
+                            <th>
+                                Bank
+                            </th>
+                            <th>
+                                Chq/Dft No.
+                            </th>
+                            <th>
+                                Chq Date
+                            </th>
+                            <th>
+                                NEFT/RTGS No.
+                            </th>
+                            <th>
+                                Drawn On
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            SlNo = SlNo + 1;
+
+                            cashTotal += item.RPCashAmount;
+                            bankTotal += item.RPBankAmount;
+
+                            <tr>
+                                <td>
+                                    @SlNo
+                                </td>
+                                <td>
+                                    @String.Format("{0:dd/MM/yyyy}", item.chqDate)
+                                </td>
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.Prefix)
+                                </td>
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.GeneralLedger)
+                                </td>
+                                @if (item.RPCashAmount > 0)
+                                {
+                                    <td align="right">
+                                        @Math.Round(item.RPCashAmount, 2)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td align="right"></td>
+                                }
+                                @if (item.RPBankAmount > 0)
+                                {
+                                    <td align="right">
+                                        @Math.Round(item.RPBankAmount, 2)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td align="right"></td>
+                                }
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.chequeNo)
+                                </td>
+                                <td align="left">
+                                    @String.Format("{0:dd/MM/yyyy}", item.RPdate)
+                                </td>
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.NeftRtgsNo)
+                                </td>
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.RPBankName)
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td align="center"></td>
+                            <td align="center"> Grand Total</td>
+                            <td align="right">
+                                @Math.Round(cashTotal, 2)
+                            </td>
+                            <td align="right">
+                                @Math.Round(bankTotal, 2)
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</aside>

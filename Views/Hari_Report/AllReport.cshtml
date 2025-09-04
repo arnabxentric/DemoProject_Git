@@ -1,0 +1,417 @@
+﻿@using XenERP.Models;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <meta charset="UTF-8">
+    <title>AdminLTE | Dashboard</title>
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                All Reports
+                <small>it all starts here</small>
+            </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="nav-tabs-custom">
+
+
+                        <div class="tab-pane active" id="tab_1">
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Farmer Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                   
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("UnitProductReceive", "Hari_Report")">Date Wise Farmer Issue </a></td>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerDailyEntry", "HariAdminReport")">Farmer Daily Entry</a></td>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerStatistics", "Hari_Report")">Farmer Statistics</a></td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerUpdate", "Hari_Report")">Farmer Update Report</a>
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("TdsReport", "Hari_Report")">Farmer Wise TDS</a></td>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerIndex", "Hari_Gc")">Farmer Category</a></td>
+                                                    </tr>
+
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerWiseIssue", "Hari_Report")">Farmer Wise Issue</a>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerLatLong", "App")">FarmerLocation</a>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerFeedStock", "Hari_Report")">Farmer Feed Stock</a></td>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerwiseSalesStatistics", "Hari_Gc")">Farmer Sales Analysis</a></td>
+                                                    </tr>
+                                                    <tr>
+
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("StatementFarmerwise", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Farmer Wise Statement</a>
+                                                        </td>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("AllLinesManReport", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Linesman Wise Farmer Entry</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 18 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Flock Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+
+
+                                                    @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                    {
+                                                        <tr>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FlockDespatch", "Hari_Report")">Flock Issue Report</a></td>
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FlockWiseFeed", "Hari_Report")">Flock Wise Feed</a></td>
+
+
+
+                                                        </tr>
+                                                    }
+                                                    @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 18 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                    {
+                                                        <tr>
+                                                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                            {
+                                                                <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FlockWiseMedicine", "Hari_Report")">Flock Wise Medicine</a></td>
+                                                            }
+                                                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 18 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                            {
+                                                                <td>
+                                                                    <i class="fa fa-fw fa-star"></i>
+                                                                    <a href="@Url.Action("ChicksPlacement", "HariAdminReport")"><i class="fa fa-angle-double-right"></i>Chicks Placement Report</a>
+                                                                </td>
+                                                            }
+                                                        </tr>
+
+
+                                                    }
+                                                    @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                    {
+                                                        <tr>
+
+                                                            <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("LiveFarmCost", "Hari_Report")">Live Farm Costing</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                            <div class="clearfix"></div>
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Stock Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                   
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DateWiseStock", "Hari_Report")">Date Wise Unit Stock</a></td>
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("ProductWiseLedger", "Hari_Report")">Date Wise Product Stock</a></td>
+
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DateWiseStockPrice", "Hari_Report")">Unit Stock Valuation</a></td>
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FeedIssueFarmerReport", "Hari_Report")">Daily Stock</a></td>
+
+                                                    </tr>
+
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Misc Report</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("ProductIssueToUnit", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Unit Issue Report</a>
+                                                        </td>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("ReceiveIssue", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Issue To Unit Report</a>
+                                                        </td>
+                                                        @*<td>
+                <i class="fa fa-fw fa-star"></i>
+                <a href="@Url.Action("UnitWiseFeed", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Old System Feed Consumed</a>
+            </td>*@
+
+                                                    </tr>
+
+
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("GetEntryStatictics", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Linesman Statistics</a>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("DailyLogIn", "MobileUsesReport")"><i class="fa fa-angle-double-right"></i>Mobile Login</a>
+                                                        </td>
+
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("LinesmanDailyStatics", "Hari_LinesmanReport")"><i class="fa fa-angle-double-right"></i>Linesman Daily Entry Efficiency</a>
+                                                        </td>
+                                                       
+
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+
+
+                            <div class="clearfix"></div>
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Mortality Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                  
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AllMortalityCheck", "Hari_ReportingSection")">Daily Mortality</a></td>
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("MortalityCheck", "Hari_ReportingSection")">All Mortality</a></td>
+
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("HundredMortality", "Hari_Gc")">100 % Mortality</a></td>
+
+
+
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Analytical Report</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("ComparativeStatement", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Comparative Statement</a>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("RateAnalysis", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Rate Ananlysis</a>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("WklyReadyBirdDetails", "HariAdminReport")"><i class="fa fa-angle-double-right"></i>Ready Bird Weekly</a>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("BirdAnalysis", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Bird Analysis Weekly</a>
+                                                        </td>
+
+                                                    </tr>
+
+
+
+                                                    <tr>
+
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("FinYearWiseProductionCost", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Branchwise Monthly Production Cost</a>
+                                                        </td>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("MinusGc", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Minus Gc Analysis</a>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("AnalysisList", "HariSalesAnalysis")"><i class="fa fa-angle-double-right"></i>Sales Analysis</a>
+                                                        </td>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("LiveFarmCost", "Hari_Report")"><i class="fa fa-angle-double-right"></i>Live Farm Costing</a>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 18 || Convert.ToInt32(Session["RoleId"]) == 7)
+                            {
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">GC Report</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                    @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                    {
+
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fa fa-fw fa-star"></i>
+                                                                <a href="@Url.Action("DateWiseGc", "HariAdminReport")"><i class="fa fa-angle-double-right"></i>Date Wise GC</a>
+                                                            </td>
+                                                            <td>
+                                                                <i class="fa fa-fw fa-star"></i>
+                                                                <a href="@Url.Action("FarmerWiseGc", "HariAdminReport")"><i class="fa fa-angle-double-right"></i>Farmer Wise GC</a>
+                                                            </td>
+
+                                                        </tr>
+                                                    }
+
+                                                    @if (Convert.ToInt32(Session["RoleId"]) == 1 || Convert.ToInt32(Session["RoleId"]) == 18 || Convert.ToInt32(Session["RoleId"]) == 7)
+                                                    {
+
+                                                        <tr>
+                                                            <td>
+                                                                <i class="fa fa-fw fa-star"></i>
+                                                                <a href="@Url.Action("GcSummary", "Hari_Report")"><i class="fa fa-angle-double-right"></i>GC Summary</a>
+                                                            </td>
+
+                                                        </tr>
+                                                    }
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </div><!-- /.tab-pane -->
+                        <!-- /.tab-pane -->
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside>
+</body>
+</html>

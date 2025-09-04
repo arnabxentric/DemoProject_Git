@@ -1,0 +1,189 @@
+﻿@model XenERP.Models.PurchaseReceipt
+@{
+    Layout = null;
+}
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Sales Invoice";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+    Company company = ViewBag.company;
+
+    decimal totalquantity = 0;
+   
+}
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+
+
+     <!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Untitled Document</title>
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+</head>
+
+<body>
+<table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+  <tr>
+    <td colspan="7">
+    	@*<div class="logo"><img src="@Url.Content("~/Companyimages/" + @company.CompanyLogo)" /></div>*@
+        <div class="header">
+        	<h3>@Model.Supplier.Name</h3>
+            <br /><span>@Model.Supplier.PoStreetPoBox</span>
+             <br /><span>@Model.Supplier.PoCity</span>
+              <br /><span>@Model.Supplier.PoStateRegion</span>
+               <br /><span>@Model.Supplier.PoPostalCode</span>
+            <br /><b>Contact No. :@Model.Supplier.ContactMobile</b>
+        </div>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><h2>Purchase Challan</h2></td>
+  </tr>
+  <tr>
+    <td colspan="3" width="50%">
+    	<p><strong>Warehouse :@Model.Warehouse.Name</strong>
+         <br />Contact Person :@Model.DeliveryName
+        <br />Address :@Model.StreetPoBox
+       
+        <br />@Model.City
+        <br />@Model.StateRegion 
+        <br />PIN :@Model.PostalCode
+       <br /><strong>Contact No. :@Model.DeliveryName</strong>
+     </p>
+      
+    <td colspan="3" width="50%" class="date">
+    <p>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            	<td width="80%" style="padding:0px 15px;"><strong>Purchase Receipt No.  :</strong> :&nbsp;@Model.ReferenceChallan</td>
+               
+            </tr>
+            <tr>
+            	
+                <td width="80%" style="padding:0px 15px;"><strong>Purchase Receipt Date  :</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.ReceiptDate)</td>
+            </tr>
+             <tr>
+            	<td width="80%" style="padding:0px 15px;">&nbsp;</td>
+             
+            </tr>
+        	<tr>
+            	<td width="80%" style="padding:0px 15px;"><strong>Order No.  :</strong> :&nbsp;@Model.OrderNo</td>
+               
+            </tr>
+            <tr>
+            	
+                <td width="80%" style="padding:0px 15px;"><strong>Order Date  :</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.Date)</td>
+            </tr>
+             <tr>
+            	<td width="80%" style="padding:0px 15px;">&nbsp;</td>
+             
+            </tr>
+           
+            <tr>
+            	<td width="80%"  style="padding:0px 15px;"><strong>Payment Terms :</strong> :&nbsp;@ViewBag.PaymentTerm</td>
+                
+            </tr>
+        </table>
+        </p>
+    </td>
+  </tr>
+  <tr>
+    <th align="center" colspan="3" width="50%" >Item Name</th>
+    <th align="center" width="20%">Description</th>
+    <th align="center" width="15%">Quantity</th>
+    <th align="center" width="15%">Unit</th>
+ 
+  </tr>
+    @foreach (PurchaseReceiptDetailModelView item in ViewBag.podmvList)
+    {
+        totalquantity += item.Quantity;
+  <tr>
+  <td colspan="3">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+            	<td align="left"  style="padding:10px;">@item.ItemName</td>
+                <td align="right"  style="padding:10px;">&nbsp;</td>
+            </tr>
+  </table>
+  </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="left"  style="padding:10px;">@item.Description</td>
+                <td align="right"  style="padding:10px;">&nbsp;</td>
+            </tr>
+        </table>
+    </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.Quantity</td>
+            </tr>
+        </table>
+    </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;">@item.UnitName</td>
+            </tr>
+        </table>
+    </td>
+    
+  </tr>
+    }
+ 
+   <tr class="total">
+    <td colspan="4" style="padding:10px;"><strong>Total Quantity</strong></td>
+    <td align="right" style="padding:10px;"><strong>@Math.Round(@totalquantity, 2)</strong> </td>
+    <td align="right" style="padding:10px;"> </td>
+  </tr>
+  
+   
+
+
+
+    <tr>
+    <td width="100%" colspan="6">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	 <tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+             <tr>
+            	<td align="left" style="padding:5px 10px;"><strong>Signature</strong></td>
+            </tr>
+             <tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+             <tr>
+            	<td align="left" style="padding:5px 10px;">&nbsp;</td>
+            </tr>
+        </table>
+    </td>
+   
+  </tr>
+</table>
+<div class="bottom">
+
+	@company.Address ,&nbsp;Email : @company.EmailId ,&nbsp;Website: @company.Website
+</div>
+<div class="clr"></div>
+
+
+</body>
+</html>

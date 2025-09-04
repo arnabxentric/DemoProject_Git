@@ -1,0 +1,307 @@
+﻿@model IEnumerable<XenERP.Models.ReceiptPayment>
+
+
+@{
+    
+    ViewBag.Title = "Bank List";
+    int SlNo = 0;
+    
+    decimal Totalopening = 0;
+    int id = ViewBag.bankid;
+    decimal? totalsellrate = 0;
+}
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+    
+         var Culture="@Session["DateCulture"]";
+
+        $(".recondateclass").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnreconcile").on("click", function () {
+
+
+            var Bankid = "";
+
+
+            $("input:checkbox[class=Bankreconcile]:checked").each(function () {
+
+
+                if (Bankid == "") {
+
+                    Bankid = $(this).val();
+                }
+
+                else {
+
+                    Bankid = Bankid + "," + $(this).val();
+                }
+
+
+
+            });
+
+
+            var Cldate = "";
+
+            $(".clearance").each(function () {
+
+
+                if (Cldate == "") {
+                    Cldate = $(this).val();
+                }
+                else {
+                    Cldate = Cldate + "," + $(this).val();
+                }
+
+            });
+
+
+            if (Cldate == "" || Bankid == "") {
+
+                alert("Please select");
+                return false;
+
+
+            }
+
+            else {
+
+                $.post("/Bank/ReconcilationCreate", { id: Bankid, date: Cldate }, function (data) {
+
+
+
+                    if (data == "insert") {
+
+
+                        alert("Reconciliation data saved successfully..");
+                        window.location.href = "/Bank/Reconcilation";
+                    }
+                    else {
+
+                        alert("Error:Please Try Agian..");
+
+                    }
+
+                });
+            }
+
+
+
+        });
+
+    });
+
+
+</script>
+@if (Model.Count() > 0)
+{
+    
+    <aside class="right-side">
+              <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    
+                        <th>
+                  
+                        </th>
+                        
+                        <th>
+                  Clearance Date
+                        </th>
+                        <th>
+                  Date
+                        </th>
+                      
+
+                        <th>
+          Transaction Type
+                        </th>
+                      
+
+
+                      
+                        <th>
+          Transaction No.
+                        </th>
+                      
+
+                        <th>
+                  Debit</th>
+
+                      <th>
+                  Credit
+                        </th>
+                   
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+
+                        SlNo = SlNo + 1;
+                      
+                        
+                        <tr>
+
+                        <td align="right">
+                      <input type="checkbox" id="reconcile" class="Bankreconcile" value="@item.Id" name="reconcile" />
+                     
+                        </td>
+                        
+                            <td>
+                          
+                 <div class="input-group date recondateclass" data-date-format="@Session["DateFormatLower"]" id="@String.Concat("Recon", @SlNo)">  <input type="text" readonly="readonly" class = "form-control clearance" id="ReconDate" name="ReconDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+                        </td>
+                                 
+
+                            <td align="left">   
+                         @String.Format(Session["DateFormatUpper"].ToString(),item.RPDatetime)
+                     
+                            </td>
+                              <td align="left">   
+                                 @Html.DisplayFor(modelItem => item.transactionType)
+                     
+                            </td>
+                          
+
+                          
+                            <td align="left">   
+                                 @Html.DisplayFor(modelItem => item.transactionNo)
+                     
+                            </td>
+                         
+                               
+                        @if (item.RPType == "Receive")
+                        {
+                            if (id == item.RPBankId)
+                            {
+                             
+                            <td align="right"> 
+                          @Html.DisplayFor(modelItem => item.TotalAmount)
+                     
+
+                          </td>
+                            }
+                            
+                              if (id == item.ledgerId)
+                            {
+                            
+                                   
+                        <td align="right"> 
+                         @Html.DisplayFor(modelItem => item.TotalAmount)
+                     
+
+                        </td>
+                            
+                            
+                            }                           
+                            
+                               else
+                            {
+                                  
+                               <td>
+
+                               </td> 
+                            }
+
+
+                        }
+                        
+                                
+                               
+                               
+                        @if (item.RPType == "Payment")
+                        {
+                            if (id == item.RPBankId)
+                            {
+                               <td>  
+                               </td> 
+                         
+                            }
+
+                           
+                            if (id == item.ledgerId)
+                            {
+                             
+                                  <td align="right"> 
+                                 @Html.DisplayFor(modelItem => item.TotalAmount)
+                     
+                             </td> 
+                            }
+                            
+                             else
+                            {
+                                 <td align="right"> 
+                               @Html.DisplayFor(modelItem => item.TotalAmount)
+                               
+                               </td> 
+                            }
+
+
+
+
+                        } 
+
+                        
+                       
+                                   
+                                   
+  
+                        </tr>
+                        
+                        <tr>
+                        
+                        
+                        </tr>
+                    }
+                </tbody>
+     
+   
+            </table>
+
+            <br />
+            <br />
+
+
+            <table>
+            <tr>
+              <td>
+                            <input type="button" id="btnreconcile"class="btn btn-primary" value="Reconciled" />
+                            </td>
+                                      
+            </tr>
+            </table>
+
+            </div>
+            </div>
+            </aside>
+}
+else
+{
+    <aside class="right-side">
+              <div class="box">
+        <div class="box-body table-responsive">
+           @Html.Raw("Sorry...Data Not Found")
+    </div>
+    </div>
+    </aside>
+}

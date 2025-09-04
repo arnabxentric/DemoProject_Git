@@ -1,0 +1,459 @@
+﻿@model XenERP.Models.LedgerMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ledgerid").keydown(function (e) {
+            // Allow: backspace, delete, tab, escape, enter and .
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+                // Allow: Ctrl+A, Command+A
+                (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                // Allow: home, end, left, right, down, up
+                (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    });
+    $(document).ready(function () {
+
+
+        $("#OpeningBalance").val('0.0');
+
+        $("#OpeningBalance").keypress(function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0 || event.which == 45) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#ledgerid").attr("maxlength", 4);
+
+
+        $("#ledgerid").change(function () {
+
+            if ($("#groupID").val() != "") {
+                $.get("/LedgerMaster/CheckgroupType", { groupID: $("#groupID").val(), ledgerid: $("#ledgerid").val() }, function (data) {
+
+                    if (data != "ok") {
+
+                        alert(data);
+                        $("#ledgerid").val('');
+                        $("#ledgerid").focus();
+                        return false;
+
+                    }
+
+                    else {
+
+
+
+                        $.get("/LedgerMaster/CheckLedgerId", { id: $("#ledgerid").val() }, function (data) {
+
+                            if (data == true) {
+                                alert("Ledger Code already exists");
+                                $("#ledgerid").val('')
+                                $("#ledgerid").focus()
+                                return false;
+                            }
+                            else {
+
+                            }
+                        });
+                    }
+                });
+            } else {
+
+                alert("Please select a group.");
+            }
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#ledgerName").change(function () {
+
+
+            $.get("/LedgerMaster/CheckLedgerName", { name: $("#ledgerName").val() }, function (data) {
+
+
+
+                if (data == true) {
+                    alert("Ledger Name already exists");
+                    $("#ledgerName").val('')
+                    $("#ledgerName").focus()
+                    return false;
+                }
+                else {
+
+                }
+            });
+
+        });
+    });
+
+</script>
+<style type="text/css">
+    .ErrorControl {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnsubmit').click(function () {
+
+            //        $('#OpeningBalance').
+            var ledger = $('#ledgerName').val();
+
+
+
+            var bal = $('#OpeningBalance').val();
+
+
+            if (ledger == '') {
+                $('#ledgerName').addClass('ErrorControl');
+                $('#ledgerName').focus();
+                return false;
+            }
+
+
+
+
+            if (bal == '') {
+                $('#OpeningBalance').addClass('ErrorControl');
+                $('#OpeningBalance').focus();
+                return false;
+            }
+
+
+        });
+
+    });
+
+
+</script>
+
+
+
+
+
+@*<script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+
+
+            $("#groupID").change(function () {
+
+    //            $('#GroupTypename').val($('#GroupType').find('option:selected').text());
+
+                $.post("/LedgerMaster/GetSubGroupName", { type: $("#groupID").val() }, function (data) {
+                    var select = $("#subgrp");
+                    select.empty();
+    //                select.append($('<option/>', {
+    //                    value: "",
+    //                    text: "--Select--"
+    //                }));
+
+                    $.each(data, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Id,
+                            text: itemData.Name
+                        }));
+                    });
+                });
+            });
+
+
+
+        });
+
+    </script>*@
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#groupID").change(function () {
+
+
+
+            $.post("/LedgerMaster/GetLedgerId", { gid: $("#groupID").val() }, function (data) {
+
+
+                if (data != null) {
+
+
+                    $("#LedgerText").html(data);
+                }
+
+            });
+        });
+
+
+
+    });
+
+</script>
+
+
+
+
+
+
+
+
+@using (Html.BeginForm("CreateLedgerMaster", "LedgerMaster"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                Ledger Master  <small>Master Entry</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+
+
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success alert-dismissable">
+                        <i class="fa fa-check"></i>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        @ViewBag.Message
+                    </div>
+                }
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger alert-dismissable">
+                        <i class="fa fa-ban"></i>
+                        <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                        <b>Error!</b>
+                        @ViewBag.Error
+                    </div>
+                }
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+
+                        <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" /></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Group Name :<span style="color:Red;">*</span>
+                                                </label>
+
+                                                @Html.DropDownListFor(model => model.groupID, new SelectList(ViewBag.Group, "groupID", "groupName"), "----Select a Group Name---", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.groupID)
+
+
+
+                                            </div>
+
+
+
+                                            @*   <div class="form-group">
+                                                                           <label class="black_txt_010">
+                                                   Sub-group :<span style="color:Red;">*</span></label>
+
+                                                <select id="subgrp" name="subgrp" class="form-control">
+                                                </select>
+
+
+                                                                     </div>*@
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Ledger Code:
+                                                </label><span id="LedgerText"></span>
+
+                                                <input type="text" id="ledgerid" name="ledgerid" class="form-control" />
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Ledger Name :<span style="color:Red;">*</span>
+                                                </label>
+
+                                                @Html.TextBoxFor(model => model.ledgerName, new { @class = "form-control", @placeholder = "Enter Ledger Name", @maxlength = "50" })
+                                                @Html.ValidationMessageFor(model => model.ledgerName)
+
+
+
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Opening Balance :<span style="color:Red;">*</span>
+                                                </label>
+
+                                                <input type="text" id="OpeningBalance" maxlength="10" placeholder="Enter Opening balance" class="form-control" name="OpeningBalance" />
+
+
+                                            </div>
+
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="tab-pane" id="tab_4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+        </section>
+    </aside>
+}

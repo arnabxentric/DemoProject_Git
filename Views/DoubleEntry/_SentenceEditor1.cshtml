@@ -1,0 +1,11 @@
+﻿@model XenERP.Models.Sentence
+<div class="editorRow">
+
+    <span>Name: </span> @Html.EditorFor(m => m.SentenceText)
+
+    <span>Audio: </span> @Html.EditorFor(m => m.Audio.AudioSelected)
+
+    <span>Image: </span> @Html.EditorFor(m => m.Image.ImageSelected)
+
+    <a href="#" class="deleteRow">delete</a>
+</div>

@@ -1,0 +1,181 @@
+﻿@model IEnumerable<XenERP.Models.SalesInvoice>
+@{
+
+    var SlNo = 0;
+    decimal SubTotal = 0;
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+@*@if (Model.Count() > 0)
+    {*@
+<aside class="right-side">
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+            <div class="box-body table-responsive divContent">
+
+                <table id="example1" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                SlNo.
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Bill No.
+                            </th>
+
+                            <th>
+                                Party Name
+                            </th>
+
+                            <th>
+                                Credit Note On
+                            </th>
+
+                          
+                            <th>
+                                 Amount
+                            </th>
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            
+
+                            SlNo = SlNo + 1;
+
+                            SubTotal += item.GrandTotal;
+                           
+
+                            <tr>
+
+                                <td>
+                                    @SlNo
+                                </td>
+                                <td>
+
+                                    @String.Format("{0:dd/MM/yyyy}", item.InvoiceDate)
+                                </td>
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.NO)
+
+                                </td>
+
+
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.DespatchThrough)
+
+                                </td>
+
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.DespatchNo)
+
+                                </td>
+
+                                
+                                <td align="right">
+                                    @Math.Round(item.GrandTotal, 2)
+
+                                </td>
+
+
+
+
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+
+                            <td></td>
+                            <td>Grand Total</td>
+
+                            <td align="center"></td>
+
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="right">
+                                @Math.Round(SubTotal, 2)
+
+                            </td>
+
+                          
+
+
+
+
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</aside>

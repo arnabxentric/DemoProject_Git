@@ -1,0 +1,194 @@
+﻿@model IEnumerable<XenERP.Models.VoucherModelView>
+@{
+
+    var SlNo = 0;
+
+    decimal cashTotal = 0;
+    decimal bankTotal = 0;
+
+}
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .invoice th,
+    td {
+        padding: 3px 2px 3px 2px;
+        text-align: center;
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+</style>
+
+
+
+<div align="center">
+    <span style="font-size:x-large;font-weight:bolder">@ViewBag.CompanyName</span><br />
+    <span style="font-size:medium;font-weight:normal"> 22, R.N. Mukherjee Road, 5th Floor, Kolkata-700 001</span><br />
+    <span style="font-size:medium;font-weight:normal">GST NO - 19AAACU4031E1ZO</span>
+    <br />
+    @*@if (ViewBag.from != null)
+        {
+            <span style="font-size:medium;font-weight:normal">
+
+                @Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to)
+
+            </span>
+        }*@
+    <br />
+    <br />
+    <div style="font-size:medium;font-weight:normal;text-align:left;padding-left:10px">
+        <b>Payment Register @Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to)</b>
+
+    </div>
+</div>
+<br />
+
+
+<table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+    <thead>
+        <tr>
+
+            <th>
+                SlNo.
+            </th>
+
+            <th>
+                Date
+            </th>
+
+            <th>
+                Voucher No.
+            </th>
+
+            <th>
+                Particulars
+            </th>
+
+            <th>
+                Cash
+            </th>
+
+            <th>
+                Bank
+            </th>
+            <th>
+                Chq/Dft No.
+            </th>
+            <th>
+                Chq Date
+            </th>
+            <th>
+                NEFT/RTGS No.
+            </th>
+            <th>
+                Drawn On
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            SlNo = SlNo + 1;
+            cashTotal += item.RPCashAmount;
+            bankTotal += item.RPBankAmount;
+
+
+            <tr>
+                <td>
+                    @SlNo
+                </td>
+                <td>
+                    @String.Format("{0:dd/MM/yyyy}", item.chqDate)
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(modelItem => item.Prefix)
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(modelItem => item.GeneralLedger)
+                </td>
+                @if (item.RPCashAmount > 0)
+                {
+                    <td align="right">
+                        @Math.Round(item.RPCashAmount, 2)
+                    </td>
+                }
+                else
+                {
+                    <td align="right"></td>
+                }
+                @if (item.RPBankAmount > 0)
+                {
+                    <td align="right">
+                        @Math.Round(item.RPBankAmount, 2)
+                    </td>
+                }
+                else
+                {
+                    <td align="right"></td>
+                }
+                <td align="left">
+                    @Html.DisplayFor(modelItem => item.chequeNo)
+                </td>
+                <td align="left">
+                    @String.Format("{0:dd/MM/yyyy}", item.RPdate)
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(modelItem => item.NeftRtgsNo)
+                </td>
+                <td align="left">
+                    @Html.DisplayFor(modelItem => item.RPBankName)
+                </td>
+
+            </tr>
+        }
+    </tbody>
+    @*<tfoot>*@
+    <tr>
+        <td></td>
+        <td></td>
+        <td align="center"></td>
+        <td align="center"> Grand Total</td>
+        <td align="right">
+            @Math.Round(cashTotal, 2)
+        </td>
+        <td align="right">
+            @Math.Round(bankTotal, 2)
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    @*</tfoot>*@
+
+</table>
+
+
+
+

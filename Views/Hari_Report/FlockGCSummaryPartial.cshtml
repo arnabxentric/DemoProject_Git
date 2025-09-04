@@ -1,0 +1,530 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FarmerReportModelView>
+@{
+    Layout = null;
+    var SlNo = 0;
+    int TotalChick = 0;
+    int TotalMortality = 0;
+    decimal TotalNoOfBirdsSold = 0;
+    decimal TotalChickWt = 0;
+    decimal TotalSale = 0;
+    decimal TotalChickCost = 0;
+    decimal TotalFeedConsumed = 0;
+    decimal TotalFeedCost = 0;
+    decimal TotalMedicineCost = 0;
+    decimal TotalOverHeadCostActual = 0;
+    decimal TotalNetGrowingCharge = 0;
+    decimal TotalProductionCostActual = 0;
+    decimal TotalProfitOrLoss = 0;
+    decimal TotalFeedCostFarmer = 0;
+    decimal TotalMedicineCostFarmer = 0;
+    decimal TotalOverheadCostFarmer = 0;
+    decimal AvgMort = 0;
+    decimal AvgBodyWt = 0;
+    decimal AvgSaleRate = 0;
+    decimal FCRTot = 0;
+    decimal CFCRTot = 0;
+    decimal CostPerKg = 0;
+    decimal v = 0;
+}
+
+<style type="text/css">
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        position: relative;
+        background-color: #fefefe;
+        margin: auto;
+        padding: 0;
+        border: 1px solid #888;
+        width: 80%;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+        -webkit-animation-name: animatetop;
+        -webkit-animation-duration: 0.4s;
+        animation-name: animatetop;
+        animation-duration: 0.4s;
+    }
+
+    /* Add Animation */
+
+    @@-webkit-keyframes animatetop {
+        from {
+            top: -300px;
+            opacity: 0;
+        }
+
+        to {
+            top: 0;
+            opacity: 1;
+        }
+    }
+
+    @@keyframes animatetop {
+        from {
+            top: -300px;
+            opacity: 0;
+        }
+
+        to {
+            top: 0;
+            opacity: 1;
+        }
+    }
+
+    /* The Close Button */
+    .close {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .modal-header {
+        padding: 2px 16px;
+        background-color: #5cb85c;
+        color: white;
+    }
+
+    .modal-body {
+        padding: 2px 16px;
+    }
+
+    .modal-footer {
+        padding: 2px 16px;
+        background-color: #5cb85c;
+        color: white;
+    }
+</style>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var count = 0;
+        $('#example1 tr').each(function () {
+            count++;
+        });
+
+        if (count <= 3) {
+
+            $("#myModal").css("display", "block");
+            $(".close").click(function () {
+                $("#myModal").css("display", "none");
+
+            })
+
+        }
+
+
+    })
+
+
+</script>
+
+
+
+
+
+@if (Model.Count() > 0)
+{
+
+
+
+
+
+
+        <div class="box box-primary">
+            <div class="box-header">
+
+                <h5>
+                    BranchName: @Model.FirstOrDefault().BranchName <span>&nbsp;&nbsp;&nbsp;</span> Placement Date: @Model.FirstOrDefault().DateOfPlacementString
+                    <span>&nbsp;&nbsp;</span> Breed No: @Model.FirstOrDefault().BreedName
+                    <span>&nbsp;&nbsp;</span> Lot No:@foreach (var item in Model)
+                    {   @Html.DisplayFor(modelItem => item.LotNo)<span>&nbsp;,</span> }
+                </h5>
+
+            </div>
+            <div class="box-body">
+
+
+                <div class="table-responsive">
+                    <table id="example1" width="100%" style="font-size:10px;text-align:center">
+                        @*<table id="example1" width="100%" class="table table-bordered table-striped dataTable chompa " aria-describedby="example1_info">*@
+                        <tbody>
+
+
+                            <tr>
+                                <th style="border:1px solid black">
+                                    FarmerName (A)
+                                </th>
+
+                                <th style="border:1px solid black">
+                                    Growing Stage Days(B)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Chicks Placed (C)
+                                </th>
+
+                                <th style="border:1px solid black">
+                                    Mortality (D)
+                                </th>
+                                <th style="border:1px solid black">
+                                    % OF Mortality (E=D*100/c)
+                                </th>
+
+                                <th style="border:1px solid black">
+                                    Birds Sold(Pcs) (F)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Birds Sold(Kgs) (G)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Avg Body Wt (H)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Total Sales Value (I)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Avg Sale Rate (J=I/G)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Feed Consumed (K)
+                                </th>
+                                <th style="border:1px solid black">
+                                    FCR(L)
+                                </th>
+                                <th style="border:1px solid black">
+                                    CFCR(M)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Net Growing Charge (N)
+                                </th>
+
+                                <th style="border:1px solid black">
+                                    Total Production Cost (O)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Cost Per Kg (P=O/G)
+                                </th>
+                                <th style="border:1px solid black">
+                                    Profit-Loss (G=I-O)
+                                </th>
+                                @*<th>
+                                        Profit-Loss/Kg (T=S/G)
+                                    </th>*@
+
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+
+                            @foreach (var item in Model)
+                            {
+
+                                SlNo = SlNo + 1;
+                                TotalChick += Convert.ToInt32(item.NoOfChicks);
+                                TotalMortality += Convert.ToInt32(item.MortalityOfBirds);
+                                TotalNoOfBirdsSold += Convert.ToInt32(item.NoOfBirdsSold);
+                                TotalChickWt += Convert.ToDecimal(item.NoOfBirdsSoldWt);
+                                TotalSale += Convert.ToDecimal(item.TotalSoldAmount);
+                                TotalChickCost += Convert.ToDecimal(item.TotalChickCost);
+                                TotalFeedConsumed += Convert.ToDecimal(item.FeedConsumed);
+                                TotalFeedCost += Convert.ToDecimal(item.KhabarKhoroch);
+                                TotalMedicineCost += Convert.ToDecimal(item.MedicineCostActual);
+                                TotalOverHeadCostActual += Convert.ToDecimal(item.TotalOverHeadCost);
+                                if (item.NetGrowingCharge >= 0)
+                                {
+                                    TotalNetGrowingCharge += Convert.ToDecimal(item.NetGrowingCharge);
+
+                                }
+
+                                TotalProfitOrLoss += Convert.ToDecimal(item.TotalProfit);
+                                TotalProductionCostActual += Convert.ToDecimal(item.TotalProductionCost);
+                                TotalFeedCostFarmer += Convert.ToDecimal(item.KhabarKhorochForFarmer);
+                                TotalMedicineCostFarmer += Convert.ToDecimal(item.MedicineKhorochForFarmer);
+                                TotalOverheadCostFarmer += Convert.ToDecimal(item.TotalOverHeadCostForFarmer);
+                                var percentageOfMortality = Math.Round(Convert.ToDecimal(item.MortalityOfBirds * 100 / item.NoOfChicks), 2);
+
+                                <tr style="border:1px solid black">
+
+                                    @*<td>
+                                            @SlNo
+                                        </td>*@
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.FarmerName)
+                                    </td>
+
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.AgeOfChicks)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.NoOfChicks)
+                                    </td>
+
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.MortalityOfBirds)
+
+                                    </td>
+
+                                    <td style="border:1px solid black">
+                                        @percentageOfMortality
+
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.NoOfBirdsSold)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.NoOfBirdsSoldWt)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.AverageWeightOfChicks)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.TotalSoldAmount)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.AvgSaleRate)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.FeedConsumed)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.FCRActual)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.CFCR)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @if (item.NetGrowingCharge >= 0)
+                                        {
+                                            @Html.DisplayFor(modelItem => item.NetGrowingCharge)
+                                        }
+                                        else
+                                        {
+                                            @v
+                                        }
+                                    </td>
+
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.TotalProductionCost)
+                                    </td>
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.ProductionCostPerKG)
+                                    </td>
+
+                                    <td style="border:1px solid black">
+                                        @Html.DisplayFor(modelItem => item.TotalProfit)
+
+                                    </td>
+
+
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tbody>
+                            <tr style="border:1px solid black">
+                                <td style="border:1px solid black"><b>Grand Total</b></td>
+                                <td style="border:1px solid black"></td>
+                                @{
+                            if (TotalNoOfBirdsSold != 0)
+                            {
+                                AvgMort = Math.Round((TotalMortality * 100 / Convert.ToDecimal(TotalChick)), 2);
+                                AvgBodyWt = Math.Round((TotalChickWt / TotalNoOfBirdsSold), 2);
+                                AvgSaleRate = TotalSale == 0 ? 0 : Math.Round((TotalSale / TotalChickWt), 2);
+                            }
+                            if (TotalChickWt != 0)
+                            {
+                                FCRTot = Math.Round((TotalFeedConsumed / TotalChickWt), 2);
+                                CFCRTot = Math.Round((2 - AvgBodyWt) * Convert.ToDecimal(0.25) + FCRTot, 2);
+                                CostPerKg = Math.Round((TotalProductionCostActual / TotalChickWt), 2);
+                            }
+                                }
+                                <td align="center" style="border:1px solid black"><b>@TotalChick</b></td>
+                                <td align="center" style="border:1px solid black"><b>@TotalMortality</b></td>
+                                <td align="center" style="border:1px solid black"><b>@AvgMort</b></td>
+                                <td align="center" style="border:1px solid black"><b>@TotalNoOfBirdsSold</b></td>
+                                <td align="center" style="border:1px solid black"><b>@TotalChickWt</b></td>
+                                <td align="center" style="border:1px solid black"><b>@AvgBodyWt</b></td>
+                                <td align="center" style="border:1px solid black"><b>@TotalSale</b></td>
+                                <td align="center" style="border:1px solid black"><b>@AvgSaleRate</b></td>
+                                <td align="center" style="border:1px solid black"><b>@TotalFeedConsumed</b></td>
+                                <td align="center" style="border:1px solid black"><b>@FCRTot</b></td>
+                                <td align="center" style="border:1px solid black"><b>@CFCRTot</b></td>
+                                <td align="center" style="border:1px solid black"><b>@TotalNetGrowingCharge</b></td>
+                                <td align="center" style="border:1px solid black"><b>@Math.Round(TotalProductionCostActual, 2)</b></td>
+                                <td align="center" style="border:1px solid black"><b>@CostPerKg</b></td>
+                                <td align="center" style="border:1px solid black"><b>@Math.Round(TotalProfitOrLoss, 2)</b></td>
+
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </div>
+   
+}
+else
+{
+ 
+
+        <div class="box box-primary">
+            <div class="box-header">
+
+            </div>
+            <div class="table-responsive">
+                <table id="example1" width="100%" style="font-size:10px;text-align:center">
+                    <thead>
+
+                        <tr>
+                            <th style="border:1px solid black">
+                                FarmerName (A)
+                            </th>
+
+                            <th style="border:1px solid black">
+                                Growing Stage Days(B)
+                            </th>
+                            <th style="border:1px solid black">
+                                Chicks Placed (C)
+                            </th>
+
+                            <th style="border:1px solid black">
+                                Mortality (D)
+                            </th>
+                            <th style="border:1px solid black">
+                                % OF Mortality (E=D*100/c)
+                            </th>
+
+                            <th style="border:1px solid black">
+                                Birds Sold(Pcs) (F)
+                            </th>
+                            <th style="border:1px solid black">
+                                Birds Sold(Kgs) (G)
+                            </th>
+                            <th style="border:1px solid black">
+                                Avg Body Wt (H)
+                            </th>
+                            <th style="border:1px solid black">
+                                Total Sales Value (I)
+                            </th>
+                            <th style="border:1px solid black">
+                                Avg Sale Rate (J=I/G)
+                            </th>
+                            <th style="border:1px solid black">
+                                Feed Consumed (K)
+                            </th>
+                            <th style="border:1px solid black">
+                                FCR(L)
+                            </th>
+                            <th style="border:1px solid black">
+                                CFCR(M)
+                            </th>
+                            <th style="border:1px solid black">
+                                Net Growing Charge (N)
+                            </th>
+
+                            <th style="border:1px solid black">
+                                Total Production Cost (O)
+                            </th>
+                            <th style="border:1px solid black">
+                                Cost Per Kg (P=O/G)
+                            </th>
+                            <th style="border:1px solid black">
+                                Profit-Loss (G=I-O)
+                            </th>
+                            @*<th>
+                                    Profit-Loss/Kg (T=S/G)
+                                </th>*@
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="odd">
+                            <td class="dataTables_empty" valign="top" colspan="17">No matching records found</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Notice</h2>
+        </div>
+        <div class="modal-body">
+            <p>Data not found for this range of placement date</p>
+        </div>
+        <div class="modal-footer">
+            <h3></h3>
+        </div>
+    </div>
+
+</div>
+
+

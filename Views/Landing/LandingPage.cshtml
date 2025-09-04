@@ -1,0 +1,239 @@
+﻿@{
+    Layout =null;
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Home</title>
+        <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+        <!-- bootstrap 3.0.2 -->
+      
+        <!-- font Awesome -->
+        <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="../../css/font-awesome.css" rel="stylesheet" type="text/css" />
+
+        <link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <!-- Ionicons -->
+        <link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+        <!-- Theme style -->
+      @*  <link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />*@
+         <link href="../../css/dashboard.css" rel="stylesheet" type="text/css" />
+
+         <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+	<script>
+	    $(function () {
+	        var pull = $('#pull');
+	        menu = $('nav ul');
+	        menuHeight = menu.height();
+
+	        $(pull).on('click', function (e) {
+	            e.preventDefault();
+	            menu.slideToggle();
+	        });
+
+	        $(window).resize(function () {
+	            var w = $(window).width();
+	            if (w > 320 && menu.is(':hidden')) {
+	                menu.removeAttr('style');
+	            }
+	        });
+	    });
+	</script>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+    <main class="page page--primary category-css" role="main">
+    	<div class="content">
+        	<div class="logo">
+    		<a href="#"><img src="../../Images/xepert_inventory.png" alt="xepertinventory" title="xepertinventory"></a>
+    		</div>
+            <div class="right">
+            <nav class="clearfix">
+		<ul class="clearfix">
+                                              
+			<li><a href="#">Overview</a></li>
+			<li><a href="#">Features</a></li>
+			<li><a href="#">Pricing</a></li>
+			<li><a href="#">How it Works</a></li>
+			<li><a href="#">Tech Specs</a></li>
+			<li><a href="#">FAQ</a></li>	
+            
+            <li><a class="" href="@Url.Action("Register","Home")">Sign Up </a></li>	
+            <li><a class="free-trail" href="@Url.Action("Login","Home")">Sign In </a></li>	
+		</ul>
+		<a href="#" id="pull">Menu</a>
+	</nav>
+            
+            <!--<nav class="top-bar" role="navigation">
+            	<ul>
+            	<li>Overview</li>
+            	<li>Features</li>
+                <li>Pricing</li>
+                <li>How it Works</li>
+                <li>Tech Specs</li>
+                <li>FAQ</li>
+                                                    
+            	</ul>
+            </nav>-->
+            </div>
+            <div class="clearfix"></div>
+    	</div>
+    </main>   
+     <div class="clearfix"></div>
+    <div class="banner">
+    <div class="banner-txt">
+    <div class="offer"><span class="offer1">Save up 50% off </span><span class="offer2">xeninventory</span> *</div>
+    <div class="save-button">Save up 50% off</div>
+     <div class="clearfix"></div>
+     
+     <div class="banner-main-txt">
+     <div class="banner-heading">
+		<h2>The all new</h2>
+		<h1><span class="yellow">XEN</span>inventory is here.</h1>
+        <p>
+        Reimagine the way you run your whole business.
+        </p>
+        <a  href="@Url.Action("Register","Home")">Free Trial</a>
+    </div>
+    </div>
+     
+     
+    </div>
+   
+    
+    </div> 
+    <div class="clearfix"></div>
+    <div class="content">
+    	<div class="middlepart">
+    		<h1>Managing Accounts & Inventory Will Not Be Frustrating Anymore</h1>
+             <div class="clearfix"></div>
+             <div class="guaranteed">
+             	<div class="box-round box-round1">Loaded with features & functionalities</div>
+                <div class="clr"></div>
+                We have integrated several useful and efficient features and functionalities to streamline the management of your accounts & inventory 
+                <div class="clr"></div>
+                <div class="button-more">
+                	<a href="#">Learn More</a>
+                </div>
+             </div>
+             <div class="guaranteed">
+             	<div class="box-round box-round2">Simple & Interactive User Interface</div>
+                <div class="clr"></div>
+                The user interface and icons of Xpert are highly interactive and Retina-Ready to make it simple to use even for the non-savvy users
+                <div class="clr"></div>
+                <div class="button-more">
+                	<a href="#">Learn More</a>
+                </div>
+             </div>
+             <div class="guaranteed">
+             	<div class="box-round box-round3">Flexible Scalable & Secure </div>
+                <div class="clr"></div>
+                Developed using ASP.net, MVC & C# with world class coding structure to make it highly flexible, scalable and secure 
+                <div class="clr"></div>
+                <div class="button-more">
+                	<a href="#">Learn More</a>
+                </div>
+             </div>
+             Xpert Accounts and Inventory management system in an unparalleled web application designed and developed in ASP.net technology with wide range of features and functionalities to facilitate managing the accounts and inventory of literally any type of business. We have integrated several highly useful modules like Accounts, Inventory, HR, Payroll, Point of Sale (PoS) and so forth that have made it one of the top inventory management software in the market.
+        </div>
+        
+    </div>
+    <div class="clr"></div>
+    <div class="full-bg">
+    	<div class="content">
+        	<div class="right-site ">
+            	<h1>Outstanding 24/7 After-Sale-Support</h1>
+                Get answer to any issue regarding Xpert 
+round-the-clock via email, chat and phone
+
+            </div>
+        </div>
+    </div>
+    <div class="clr"></div>
+    <div class="content">
+   	  <div class="products-services">
+   		<h1>A Highlight of The Modules</h1>
+        <div class="clr"></div>
+          <ul>
+           	  <li>
+           	  	<img src="../../Images/img1.jpg" width="148" height="136" alt="img">
+                <div class="text-box">
+                	<h2>Inventory</h2>
+                    Being an inventory management software we have designed this module with vast features and functionalities and vast customization option as well as unit creation, multiple warehouse management and so on. 
+                    <div class="clr"></div>
+                    <div class="buttom-2">
+                    	<a href="#">Downl9oad</a>
+                    </div>
+                </div>
+              </li>
+              <li>
+           	  	<img src="../../Images/img2.jpg"  alt="img">
+                <div class="text-box">
+                	<h2>Accounts</h2>
+                   Xpert inventory has highly advanced accounting module that has made Xpert an all-in-one software. You will get every important functionality under this menu to manage your accounts with least effort.
+                    <div class="clr"></div>
+                    <div class="buttom-2">
+                    	<a href="#">Downl9oad</a>
+                    </div>
+                </div>
+              </li>
+              <li>
+           	  	<img src="../../Images/img3.jpg" alt="img">
+                <div class="text-box">
+                	<h2>HR & Payroll</h2>
+                    Now you can maximize the efficiency of your manpower through the advanced HR and payroll management module. We have integrated several new features in this module to make it more powerful and useful. 
+                    <div class="clr"></div>
+                    <div class="buttom-2">
+                    	<a href="#">Downl9oad</a>
+                    </div>
+                </div>
+              </li>
+              <li>
+           	  	<img src="../../Images/img4.jpg"  alt="img">
+                <div class="text-box">
+                	<h2>Point of Sale</h2>
+                    Make your point of sale simple and organized with wide range of intuitive features like calculating tax, discount, extra charges etc. very easily while manage your inventory and accounts simultaneously without any extra effort. 
+                    <div class="clr"></div>
+                    <div class="buttom-2">
+                    	<a href="#">Downl9oad</a>
+                    </div>
+                </div>
+              </li>
+          </ul>
+          <div class="clr"></div>
+          <div class="query">Have any query? Just give us a call at +91-0000000000</div>
+    	</div>
+    </div>
+    <div class="clr"></div>
+    	<div class="footer">
+        	<div class="content">
+                <ul class="nav-menu">
+                    <li><a href="#">Overview</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">How it Works</a></li>
+                    <li><a href="#">Tech Specs</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+                <ul class="nav-menu2">
+                    <li><a href="#">Overview</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+                <div class="clr"></div>
+                <div class="copy-wright">Copyright © 2014 XENinventory.com. All Rights Reserved.</div>
+             </div>
+        </div>
+    </body>
+</html>
+

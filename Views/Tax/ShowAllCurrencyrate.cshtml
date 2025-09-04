@@ -1,0 +1,217 @@
+﻿@model IEnumerable<XenERP.Models.CurrencyRate>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    
+    decimal? totalpurchaserate = 0;
+
+    int SlNo = 0;
+    decimal? totalsellrate = 0;
+ }
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Currency Rate <small>List</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="@Url.Action("UserDashBoard","DashBoard")"><i class="fa fa-dashboard"></i> Home</a></li>
+
+                        <li class="active">Settings</li>
+                        <li class="active">Currency Rate</li>
+                    </ol>
+                </section>
+
+
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+
+
+
+    <div class="box">
+
+                      <div class="col-xs-12"><a href="@Url.Action("Createcurrencyrate", "Tax")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Currencyrate</a></div><br /><br />          
+
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    <th>
+                    
+                    SlNo.
+                    </th>
+                        <th>
+                            Base Currency
+                        </th>
+                        <th>
+                           Foreign Currency
+                        </th>
+                        <th>
+                          Purchase Rate
+                        </th>
+                           <th>
+                          Sell Rate
+                        </th>
+                             <th>
+                          Created Date
+                        </th>
+
+                          <th>
+                          Last Modified Date
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        SlNo = SlNo + 1;
+
+                        totalpurchaserate = totalpurchaserate + item.PurchaseRate;
+
+
+                        totalsellrate = totalsellrate + item.SellRate;
+                        
+                        
+                        <tr>
+                        <td>@SlNo</td>
+
+                        <td>
+                          @{
+                                
+                                
+                    @ViewBag.Basecurrency
+                                }
+
+                        
+                        </td>
+                            <td>
+
+                            @{
+                                
+                                
+                        XenERP.Models.Repository.TaxRepository cur = new XenERP.Models.Repository.TaxRepository();
+
+                        var currency = cur.GetCurency(Convert.ToInt32(item.CurrencyId));
+                        
+                    @currency.ISO_4217   @Html.Raw(",")@currency.Country  @Html.Raw(",")@currency.Currency1
+                       
+                        
+                                }
+
+                     
+                            </td>
+                            <td style="text-align:right;">
+                                @Html.DisplayFor(modelItem => item.PurchaseRate)
+                            </td>
+                               <td style="text-align:right;">
+                                @Html.DisplayFor(modelItem => item.SellRate)
+                            </td>
+
+                              <td style="text-align:right;">
+                            
+                             @String.Format(Session["DateFormatUpper"].ToString(), item.CreatedDate)
+                            
+                            </td>
+
+                            <td style="text-align:right;">
+                             @String.Format(Session["DateFormatUpper"].ToString(), item.ModifiedOn)
+                            
+                            </td>
+
+                            <td>
+                            @Html.ActionLink("Edit","EditCurrencyRate",new{id=item.Id})
+                            </td>
+                           
+                           
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                <tr>
+                
+                <td>
+                
+                </td>
+                <td>
+                
+                </td>
+
+              <td style="text-align:right;">
+                <b>Net Total:</b>
+                </td>
+                  <td style="text-align:right;">
+               
+
+                  <b>@String.Format("{0:F}", @totalpurchaserate)</b>
+                </td>
+
+                <td style="text-align:right;">
+             <b>  @String.Format("{0:F}", @totalsellrate) </b>
+                
+                </td>
+
+                </tr>
+                
+                </tfoot>
+
+            </table>
+
+            </div>
+            </div>
+
+
+
+                  
+
+                    
+
+            </aside>

@@ -1,0 +1,458 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+
+@{
+    
+    var compid=Session["companyid"];
+    ViewBag.Title = "Xpert | New Tax";
+}
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<title>Add Tax Rate</title>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+        $("#dataTable").on("keypress", '.taxpercent', function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+    });
+           
+       
+</script>
+
+
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        var table = document.getElementById('dataTable');
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell3 = row.insertCell(0);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtcomponent[]";
+        element2.className = "taxname";
+        cell3.appendChild(element2);
+
+
+
+        var cell4 = row.insertCell(1);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtpercentage[]";
+        element3.className = "taxpercent";
+        cell4.appendChild(element3);
+
+
+
+
+
+        var cell1 = row.insertCell(2);
+        var element1 = document.createElement("input");
+        element1.type = "button";
+        element1.id = "btndelete";
+        element1.name = "button[]";
+        element1.title = "Delete this row";
+        element1.className = "add-component-deletebotton";
+
+
+        cell1.appendChild(element1);
+
+
+        $("#name").attr("maxlength", "100");
+        $(".taxname").attr("maxlength", "100");
+        $(".taxpercent").attr("maxlength", "8");
+
+
+
+
+
+
+        $("#name").keyup(function () {
+
+            if ($(this).val().match(/[^A-Za-z ]/g)) {
+
+
+                $(this).val($(this).val().replace(/[^A-Za-z ]/g, ''));
+
+            }
+        });
+
+
+
+
+        $("#dataTable").on("keyup", '.taxname', function (event) {
+
+
+
+
+            if ($(this).val().match(/[^A-Za-z ]/g)) {
+
+
+                $(this).val($(this).val().replace(/[^A-Za-z ]/g, ''));
+
+            }
+        });
+
+
+        $("#btnsubmit").on("click", function () {
+
+            var test = true;
+            if ($("#name").val() == "") {
+                test = false;
+                alert("Please enter Tax name");
+                return false;
+            }
+
+
+
+
+
+
+            $(".taxname").each(function (i) {
+                if ($(this).val() == "") {
+                    test = false;
+                    alert("Tax component name cannot be blank");
+                    return false;
+                    $(".taxname").focus();
+
+                }
+
+            });
+
+
+            $(".taxpercent").each(function (i) {
+                if ($(this).val() == "") {
+                    test = false;
+                    alert("Percentage cannot be blank");
+                    return false;
+                    $(".taxpercent").focus();
+
+                }
+
+            });
+
+
+            if (test == false) {
+
+                return false;
+
+            }
+
+
+        });
+
+
+
+    });
+</script>
+<script language="javascript" type="text/javascript">
+
+
+    //        $(document).ready(function () {
+
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+
+    });
+
+
+
+
+    function addRow(tableID) {
+
+        var table = document.getElementById(tableID);
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell3 = row.insertCell(0);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtcomponent[]";
+        element2.className = "taxname";
+        cell3.appendChild(element2);
+
+
+
+        var cell4 = row.insertCell(1);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtpercentage[]";
+        element3.className = "taxpercent";
+        cell4.appendChild(element3);
+
+
+
+
+
+        var cell1 = row.insertCell(2);
+        var element1 = document.createElement("input");
+        element1.type = "button";
+        element1.id = "btndelete";
+        element1.name = "button[]";
+        element1.title = "Delete this row";
+        element1.className = "add-component-deletebotton";
+
+
+        cell1.appendChild(element1);
+
+
+    }
+
+
+
+
+</script>
+
+
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Tax   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        <li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Start")"><span>Organization Settings</span></a></li>                           
+                        	<li><a href="@Url.Action("CreateFinancial", "Start")"><span>Financial Settings</span></a></li>                      
+                            <li><a href="@Url.Action("ShowAllCurrencyrate", "Start")"><span>Currencies</span></a></li>
+                             <li class="selected"> Tax Rates</li>
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+    
+                <section class="content">
+
+
+                 
+           
+
+
+
+
+
+                    <div class="row">
+         
+                                  
+                <!-- Main content -->
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                                   <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                    
+                
+                                           
+                           
+                                   <div class="box-body">
+                                       
+                                  
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                      Tax Name<span style="color:Red;">*</span></label>
+                <input   class="form-control" name="name" id="name" placeholder="TaxName" type="text" />
+                                      
+
+
+
+                                        </div>
+
+
+                                         <div class="form-group">
+                                          <label class="black_txt_010">
+                   Category<span style="color:Red;">*</span></label>
+                   
+
+                     <select id="Category" name="Category" class="form-control">
+                     <option value="">---Select--</option>
+                      <option value="VAT">VAT</option>
+                       <option value="CST">CST</option>
+                       <option value="SERVICE">SERVICE</option>                       
+                       <option value="OTHERS">OTHERS</option>
+                     </select>
+
+                        </div>
+
+
+
+
+
+                                           <div class="form-group">
+                                          <label class="black_txt_010">
+                   Status<span style="color:Red;">*</span></label>
+                  
+                     <select id="Status" name="Status" class="form-control">
+              
+                      <option value="Active">Active</option>
+                       <option value="InActive">InActive</option>
+                     
+                     </select>
+                 
+                             
+                                         </div>
+
+
+
+
+                                         
+                                           <div class="form-group">
+                                          <label class="black_txt_010">
+                   Group<span style="color:Red;">*</span></label>
+                  
+                 
+                     <select id="group" name="group" class="form-control">
+              
+                       <option value="Current Liabilities/Duties and Taxes">Current Liabilities/Duties and Taxes</option>
+                     
+                     </select>
+                 
+                                      
+                                         </div>
+
+
+
+
+
+                                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                 Sub-Group<span style="color:Red;">*</span></label>
+                 
+                 @Html.DropDownList("groupID", (SelectList)ViewBag.subgroup, new {@class="form-control" })
+                 
+                                      
+                                         </div>
+
+
+
+
+
+
+
+
+                                        </div>
+                                        </div>
+                                       </div> 
+
+                                        
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                        <div class="form-group">
+                                        <h2>
+                                    Tax Component</h2>
+                            
+                                            
+                                        </div>
+                                        <div class="form-group">
+                                           <table class="my-table-style" id="dataTable" width="100%" border="0">
+                                    <tr class="my-table-header">
+                                        <td class="my-table-header">
+                                            <label class="black_txt_010">
+                      Tax Name</label>
+                                        </td>
+                                        <td >
+                                             <label class="black_txt_010">
+                     Percentage</label>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                                <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                             
+                      
+                                        </div>
+                                     </div>
+                                     </div>
+                                     </div>
+                                
+                                    
+
+                         
+                    </div>   
+                 
+                
+
+              </section>
+        
+        
+        </aside>
+        
+        
+        
+        
+}

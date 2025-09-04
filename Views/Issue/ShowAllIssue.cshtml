@@ -1,0 +1,101 @@
+﻿@model IEnumerable< XenERP.Models.IssueModelView>
+@using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>Issue <small>List</small> </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+                
+               
+                           
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+        
+        @if (ViewBag.Error != null)
+        { 
+            <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+             @ViewBag.Error </div>
+        }
+       
+      
+
+    <div class="box">
+    <div class="col-xs-12"><a href="@Url.Action("CreateIssue", "Issue")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Issue</a></div><br /><br />    
+    <div class="box-body table-responsive">
+    <table id="example1" class="table table-bordered table-striped">
+    <thead>
+            <tr>
+            <th>SlNo.</th>
+            <th> Supplier Code</th>
+            <th> Supplier Name</th>
+            <th> Order Date</th>
+            <th></th>
+            <th></th>
+            </tr>
+     </thead>
+
+   <tbody>
+               @foreach (var item in Model)
+               {
+                   Slno = Slno + 1;
+                   //var orderaDate = @item.IssueDate.ToShortDateString();
+                  <tr>
+                       <td>@Slno</td>
+                       <td> @Html.DisplayFor(modelItem => item.SupplierCode)</td>
+                       <td>  @Html.DisplayFor(modelItem => item.SupplierName) </td>
+                       <td > @item.IssueDate</td>
+                       <td>  @Html.ActionLink("Edit", "EditIssue", new { id = item.Id })  </td>
+                       <td>  @Html.ActionLink("Delete", "DeleteIssue", new { id = item.Id, @class = "DeleteLink" }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                     @*  <td> @Html.ActionLink("Details", "PlantDetails", new { id = item.Id }) </td>*@
+        </tr>
+               }
+      </tbody>
+    </table>
+ </div><!-- /.box-body -->
+                      </div>
+            </aside>

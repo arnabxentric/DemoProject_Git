@@ -1,0 +1,1178 @@
+﻿@model XenERP.Models.ModelView.FeedIssuedFromUnitMasterModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+
+
+<style>
+.table-responsive {
+    min-height: 0.01%;
+    overflow-x: auto;
+}
+
+.select2{
+    width:200px;
+}
+</style>
+@*<script src="~/Scripts/JqueryValidation.js" type="text/javascript"></script>*@
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var iCnt = 0;
+        $('#btnAdd').click(function () {
+            iCnt = iCnt + 1;
+
+            $('#divAdd').append('<div id="dv' + iCnt + '"><input type=text class="input" id=tb' + iCnt + ' ' +
+                            'placeholder="Text Element ' + iCnt + '" name="tbName' + iCnt + '"/>  <br /><br />  </div>')
+
+        });
+
+
+        $('#btnRemove').click(function () {
+            if (iCnt != 0) {
+                $('#dv' + iCnt).remove();
+                iCnt = iCnt - 1;
+            }
+
+        });
+
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".select2").select2();
+
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {      
+            var v = $("#BranchId").val();
+
+            $('#FarmerName').autocomplete({
+
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/FeedIssuedFromUnit/getFarmer',
+                        data: { query: request.term },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                           // console.log(data);
+
+                            response($.map(data, function (item) {
+
+                                return {
+                                    label: item.Name,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $("#FarmerName").val("");
+                        $('#FarmId').val(0);
+                    }
+                    else {
+
+                      //  $('#FarmerName').val(ui.item.label);
+                        $('#FarmerName').val(ui.item.label);
+                        $('#FarmId').val(ui.item.value);
+                    }
+                },
+                select: function (event, ui) {
+                    event.preventDefault();
+                    // $('#FarmerName').val(ui.item.label);
+                    $('#FarmerName').val(ui.item.label);                  
+                    $('#FarmId').val(ui.item.value);                 
+
+                    var v = $("#FarmId").val();
+                    //alert(ui.item.value);
+                    $.get("/FeedIssuedFromUnit/GetFlockCode", { data: v }, function (data) {
+
+                        $("#FlockId").empty();
+                        var options = $("#FlockId");
+                        options.append(new Option("---Select Flock Code-----", "-1"));
+                        $.each(data, function () {
+                            options.append(new Option(this.FlockCode, this.Id));
+                        });
+                    });
+
+                    return false;
+                },
+
+                minLength: 1
+            });
+
+
+
+            $("#FlockId").change(function () {
+                var k = $("#FlockId option:selected").val();
+               // alert(k);
+                $.get("/FeedIssuedFromUnit/GetSupervisorName", { flockId: k }, function (data) {
+
+                    $("#DeliveryManId").val(data.LineSupervisorId);
+                    $("#DeliveryManName").val(data.LineSupervisorName);
+
+                });
+            });
+
+
+            $("#btnSave").on("click keypress", function (event) {
+
+                if (event.which == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+
+         //   $("form").on("submit", function (event) {
+
+                var isValid = $(this).valid();
+
+                if (isValid) {
+
+                    //var result = checkproductcount();
+
+                    //if (result == false) {
+                    //    $('#errordiv').css("display", "block");
+                    //    $('#errordiv').append('You must add atleast one line item');
+                    //    return false;
+                    //}
+
+
+                    var brnc = $("#BranchId").val();
+                    var chNo = $("#ChallanNo").val();
+
+                    $.get('/FeedIssuedFromUnit/CheckChallan', { Branchid: brnc, ChallanNo: chNo }, function (data) {
+                        if (data != null) {
+                            $.each(data, function () {
+                                alert("This ChallanNo Already Issued to " + this.FarmerName + " On " + this.DateOfIssueString + ".Please Issue Another Challan");
+                                return false;
+
+                            });
+                        }
+                        else {
+
+
+
+                    $("#loading").fadeIn();
+                    var opts = {
+                        lines: 12, // The number of lines to draw
+                        length: 7, // The length of each line
+                        width: 4, // The line thickness
+                        radius: 10, // The radius of the inner circle
+                        color: '#000', // #rgb or #rrggbb
+                        speed: 2.0, // Rounds per second
+                        trail: 60, // Afterglow percentage
+                        shadow: false, // Whether to render a shadow
+                        hwaccel: false // Whether to use hardware acceleration
+                    };
+                    var target = document.getElementById('loading');
+                    var spinner = new Spinner(opts).spin(target);
+                    $("form").submit();
+
+                        }
+
+                    });
+
+                }
+
+                else {
+
+                    //                $("#btnsave").show();
+                }
+
+
+            });
+
+
+
+
+
+    });
+
+  
+</script>
+
+ <script language="javascript" type="text/javascript">
+     var rowadd = 0;
+
+     $(document).on('click', '.add-component-deletebotton', function () {
+
+         var id = $(this).closest('td').parent()[0].sectionRowIndex;
+         document.getElementById("dataTable").deleteRow(id);
+     });
+
+
+     function addRow(tableID) {
+
+         rowadd++;
+         var table = document.getElementById(tableID);
+         var rowCount = table.rows.length;
+         var row = table.insertRow(rowCount);
+
+
+         //------------Code By Ayan--------------------
+
+         var elementH = document.createElement("input");
+         elementH.type = "hidden";
+         elementH.name = "IdToHoldInEdit" + rowadd;
+         elementH.id = "IdToHoldInEdit" + rowadd;
+         elementH.value = rowadd;
+         elementH.className = "IdToHoldInEdit";
+
+
+
+         var cell0 = row.insertCell(0);
+         var element0 = document.createElement("select");
+         element0.className = "CategoryName";
+         element0.id = "Category" + rowadd;
+         element0.name = "CategoryName" + rowadd;
+         var option0 = document.createElement("option");
+         option0.innerHTML = "Select";
+         option0.value = "";
+         element0.add(option0, null);
+         cell0.appendChild(element0);
+         cell0.appendChild(elementH);
+
+
+         $.get('/FeedIssued/GetCategoryType', null, function (data) {
+
+             $.each(data, function () {
+                 $("#Category" + rowadd).append($("<option />").val(this.Id).text(this.Name));
+             });
+
+         });
+
+
+
+         var cell1 = row.insertCell(1);
+         var element1 = document.createElement("select");
+         element1.className = "FeedName select2";
+
+         element1.id = "Feed" + rowadd;
+         element1.name = "FeedName" + rowadd;
+         var option1 = document.createElement("option");
+         option1.innerHTML = "Select";
+         option1.value = "";
+         element1.add(option1, null);
+         cell1.appendChild(element1);
+     
+             $(".select2").select2();
+
+       
+
+         $("#dataTable").on('change', '.CategoryName', function () {
+             var v = $("#Category" + rowadd).val();
+             var p = v.toString();
+          
+             $.get('/FeedIssued/GetFeedTypeWithCatId', { CatId: p }, function (data) {
+                 $("#Feed" + rowadd).empty();
+                 $("#Feed" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                 $.each(data, function () {
+                     $("#Feed" + rowadd).append($("<option />").val(this.Id).text(this.Name));
+                 });
+
+             });
+         });
+         //--------------------------
+
+         var cell2 = row.insertCell(2);
+         var element2 = document.createElement("input");
+         element2.type = "text";
+         element2.name = "UnitToDisplay" + rowadd;
+         element2.className = "UnitToDisplay";
+         element2.id = "UnitToDisplay" + rowadd;
+         element2.readOnly = true;
+
+
+         var elementH2 = document.createElement("input");
+         elementH2.type = "hidden";
+         elementH2.name = "UOM" + rowadd;
+         elementH2.className = "UOMName"
+         elementH2.id = "UOM" + rowadd;
+         elementH2.readOnly = true;
+         cell2.appendChild(elementH2);
+         cell2.appendChild(element2);
+
+
+
+
+         var cell3 = row.insertCell(3);
+         var element3 = document.createElement("input");
+         element3.type = "text";
+         element3.name = "PrimaryUnit" + rowadd;
+         element3.className = "PrimaryUnit";
+         element3.id = "PrimaryUnit" + rowadd;
+         element3.readOnly = true;
+         cell3.appendChild(element3);
+
+
+
+         var cell4 = row.insertCell(4);
+         var element4 = document.createElement("select");
+         element4.className = "ReceivedDate select2";
+         element4.id = "ReceivedDate" + rowadd;
+         element4.name = "ReceivedDate" + rowadd;
+         var option4 = document.createElement("option");
+         option4.innerHTML = "select";
+         option4.value = "";
+         element4.add(option4, null);
+         cell4.appendChild(element4);
+
+         $(".select2").select2();
+
+         $("#dataTable").on('change', '.FeedName', function () {
+             var v = $("#Feed" + rowadd).val();
+             var p = v.toString();
+
+             $.get('/FeedIssued/GetUnitTypeWithProductId', { CatId: p }, function (data) {
+                 // $("#UOM" + rowadd).empty();
+                 // $("#UOM" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                 $.each(data, function () {
+                     $("#UOM" + rowadd).val(this.UnitId);
+                     $("#UnitToDisplay" + rowadd).val(this.UnitName);
+
+                     // $("#UOM" + rowadd).append($("<option />").val(this.UnitId).text(this.UnitName));
+                     //  $("#UOM" + rowadd).append($("<option />").val(this.UnitIdSecondary).text(this.UnitNameSecondary));
+                 });
+
+             });
+         });
+
+         var cell5 = row.insertCell(5);
+
+         var element5 = document.createElement("select");
+         element5.type = "text";
+         element5.name = "PurchaseChallanNo" + rowadd;
+         element5.id = "PurchaseChallanNo" + rowadd;
+         element5.className = "PurchaseChallanNo select2";
+         var option5 = document.createElement("option");
+         option5.innerHTML = "select";
+         option5.value = "";
+         element5.add(option5, null);
+         cell5.appendChild(element5);
+
+         $(".select2").select2();
+
+         //var element5H = document.createElement("input");
+         //element5H.type = "hidden";
+         //element5H.name = "PuchaseChallanDetailsId" + rowadd;
+         //element5H.id = "PuchaseChallanDetailsId" + rowadd;
+         //element5H.className = "PuchaseChallanDetailsId";
+
+         //var element5HH = document.createElement("input");
+         //element5HH.type = "hidden";
+         //element5HH.name = "PurchaseChallanId" + rowadd;
+         //element5HH.id = "PurchaseChallanId" + rowadd;
+         //element5HH.className = "PurchaseChallanId";
+
+
+         var element5HHH = document.createElement("input");
+         element5HHH.type = "hidden";
+         element5HHH.name = "FeedIssueDetailsId" + rowadd;
+         element5HHH.id = "FeedIssueDetailsId" + rowadd;
+         element5HHH.className = "FeedIssueDetailsId";
+
+
+
+         //cell5.appendChild(element5);
+         //cell5.appendChild(element5H);
+         //cell5.appendChild(element5HH);
+         cell5.appendChild(element5HHH);
+
+
+         var cell6 = row.insertCell(6);
+         var element6 = document.createElement("input");
+         element6.type = "text";
+         element6.name = "AvailableStock" + rowadd;
+         element6.className = "AvailableStock";
+         element6.id = "AvailableStock" + rowadd;
+         element6.readOnly = true;
+
+         var elementAH = document.createElement("input");
+         elementAH.type = "hidden";
+         elementAH.name = "AvailableStockHidden" + rowadd;
+         elementAH.id = "AvailableStockHidden" + rowadd;
+         elementAH.className = "AvailableStockHidden";
+
+         var elementIsH = document.createElement("input");
+         elementIsH.type = "hidden";
+         elementIsH.name = "IssuedHidden" + rowadd;
+         elementIsH.id = "IssuedHidden" + rowadd;
+         elementIsH.className = "IssuedHidden";
+
+
+         var elementRH = document.createElement("input");
+         elementRH.type = "hidden";
+         elementRH.name = "FeedReceivedIdHidden" + rowadd;
+         elementRH.id = "FeedReceivedIdHidden" + rowadd;
+         elementRH.className = "FeedReceivedIdHidden";
+
+
+         cell6.appendChild(element6);
+         cell6.appendChild(elementAH);
+         cell6.appendChild(elementIsH);
+         cell6.appendChild(elementRH);
+
+
+
+         var cell7 = row.insertCell(7);
+         var element7 = document.createElement("input");
+         element7.type = "hidden";
+         element7.name = "PriceRate" + rowadd;
+         element7.className = "PriceRate";
+         element7.id = "PriceRate" + rowadd;
+
+
+         var element7H = document.createElement("input");
+         element7H.type = "hidden";
+         element7H.name = "UnitPrice" + rowadd;
+         element7H.className = "UnitPrice";
+         element7H.id = "UnitPrice" + rowadd;
+
+         cell7.appendChild(element7H);
+         cell7.appendChild(element7);
+
+  
+         var cell8 = row.insertCell(8);
+         var element8 = document.createElement("input");
+         element8.type = "text";
+         element8.name = "FeedQuantity" + rowadd;
+         element8.className = "FeedQuantity";
+         element8.id = "FeedQuantity" + rowadd;
+       
+         cell8.appendChild(element8);
+
+
+         var cell9 = row.insertCell(9);
+         var element9 = document.createElement("input");
+         element9.type = "text";
+         element9.name = "FeedDesc" + rowadd;
+         element9.id = "FeedDesc" + rowadd;
+         element9.className = "FeedDesc";
+         cell9.appendChild(element9);
+
+
+
+         var cell10 = row.insertCell(10);
+         var element10 = document.createElement("input");
+         element10.type = "button";
+         element10.id = "btndelete";
+         element10.name = "button[]";
+         element10.title = "Delete this row";
+         element10.className = "add-component-deletebotton";
+         cell10.appendChild(element10);
+
+
+     };
+
+</script>
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+
+        $("#dataTable").on('change', '.UOMName', function () {
+            var UM = $(this).val();
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            $.getJSON('/FeedIssued/GetUnitFormula', { data: UM }, function (data) {
+
+                ctr.find(".PrimaryUnit").val(data.Formula);
+                var vgh = parseFloat(ctr.find(".FeedQuantity").val()) || 0;
+                var hhh = parseFloat(data.Formula) || 0;
+
+
+                ctr.find(".TotalQuantity").val(hhh * vgh);               
+               
+                $(".FeedQuantity").on('keyup', function () {
+                    var vkk = parseFloat(ctr.find(".AvailableStockHidden").val()) || 0;                 
+                    var vgg = parseFloat(ctr.find(".FeedQuantity").val()) || 0;
+                    ctr.find(".AvailableStock").val((vkk - vgg).toFixed(2));
+                    ctr.find(".TotalQuantity").val((hhh * vgg).toFixed(2));
+
+
+                })
+            });
+        });
+
+    });
+
+</script>
+
+
+<script language="javascript" type="text/javascript">
+    var rowadd = 1;
+
+    $(document).ready(function () {
+
+        var table = document.getElementById('dataTable');
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        //-----Code By Ayan---------------
+
+
+        var elementH = document.createElement("input");
+        elementH.type = "hidden";
+        elementH.name = "IdToHoldInEdit" + rowadd;
+        elementH.id = "IdToHoldInEdit" + rowadd;
+        elementH.value = rowadd;
+        elementH.className = "IdToHoldInEdit";
+
+
+        var cell0 = row.insertCell(0);
+        var element0 = document.createElement("select");
+        element0.className = "CategoryName";
+        element0.id = "Category" + rowadd;
+        element0.name = "CategoryName" + rowadd;
+        var option0 = document.createElement("option");
+        option0.innerHTML = "Select";
+        option0.value = "";
+        element0.add(option0, null);
+        cell0.appendChild(element0);
+        cell0.appendChild(elementH);
+
+        $.get('/FeedIssued/GetCategoryType', null, function (data) {
+
+            $.each(data, function () {
+                $("#Category" + rowadd).append($("<option />").val(this.Id).text(this.Name));
+            });
+        });
+
+
+
+        var cell1 = row.insertCell(1);
+        var element1 = document.createElement("select");
+        element1.className = "FeedName select2";
+        element1.id = "Feed" + rowadd;
+        element1.name = "FeedName" + rowadd;
+        var option1 = document.createElement("option");
+        option1.innerHTML = "Select";
+        option1.value = "";
+        element1.add(option1, null);
+        cell1.appendChild(element1);
+
+        $(".select2").select2();
+
+        var cell2 = row.insertCell(2);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "UnitToDisplay" + rowadd;
+        element2.className = "UnitToDisplay";
+        element2.id = "UnitToDisplay" + rowadd;
+        element2.readOnly = true;
+
+
+        var elementH2 = document.createElement("input");
+        elementH2.type = "hidden";
+        elementH2.name = "UOM" + rowadd;
+        elementH2.className = "UOMName"
+        elementH2.id = "UOM" + rowadd;
+        elementH2.readOnly = true;
+
+        cell2.appendChild(elementH2);
+        cell2.appendChild(element2);
+
+
+        var cell3 = row.insertCell(3);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "PrimaryUnit" + rowadd;
+        element3.className = "PrimaryUnit";
+        element3.id = "PrimaryUnit" + rowadd;
+        element3.readOnly = true;
+        cell3.appendChild(element3);
+
+
+
+        var cell4 = row.insertCell(4);
+        var element4 = document.createElement("select");
+        element4.className = "ReceivedDate select2";
+        element4.id = "ReceivedDate" + rowadd;
+        element4.name = "ReceivedDate" + rowadd;
+        var option4 = document.createElement("option");
+        option4.innerHTML = "select";
+        option4.value = "";
+        element4.add(option4, null);
+        cell4.appendChild(element4);
+
+        $(".select2").select2();
+
+        var cell5 = row.insertCell(5);
+
+        var element5 = document.createElement("select");     
+        element5.name = "PurchaseChallanNo" + rowadd;
+        element5.id = "PurchaseChallanNo" + rowadd;
+        element5.className = "PurchaseChallanNo select2";
+        var option5 = document.createElement("option");
+        option5.innerHTML = "select";
+        option5.value = "";
+        element5.add(option5, null);
+        cell5.appendChild(element5);
+
+        $(".select2").select2();
+
+
+
+
+
+
+        //var element5H = document.createElement("input");
+        //element5H.type = "hidden";
+        //element5H.name = "PuchaseChallanDetailsId" + rowadd;
+        //element5H.id = "PuchaseChallanDetailsId" + rowadd;
+        //element5H.className = "PuchaseChallanDetailsId";
+
+        //var element5HH = document.createElement("input");
+        //element5HH.type = "hidden";
+        //element5HH.name = "PurchaseChallanId" + rowadd;
+        //element5HH.id = "PurchaseChallanId" + rowadd;
+        //element5HH.className = "PurchaseChallanId";
+
+
+        var element5HHH = document.createElement("input");
+        element5HHH.type = "hidden";
+        element5HHH.name = "FeedIssueDetailsId" + rowadd;
+        element5HHH.id = "FeedIssueDetailsId" + rowadd;
+        element5HHH.className = "FeedIssueDetailsId";
+
+
+
+        //cell5.appendChild(element5);
+        //cell5.appendChild(element5H);
+        //cell5.appendChild(element5HH);
+        cell5.appendChild(element5HHH);
+
+
+        var cell6 = row.insertCell(6);
+        var element6 = document.createElement("input");
+        element6.type = "text";
+        element6.name = "AvailableStock" + rowadd;
+        element6.className = "AvailableStock";
+        element6.id = "AvailableStock" + rowadd;
+        element6.readOnly = true;
+
+        var elementAH = document.createElement("input");
+        elementAH.type = "hidden";
+        elementAH.name = "AvailableStockHidden" + rowadd;
+        elementAH.id = "AvailableStockHidden" + rowadd;
+        elementAH.className = "AvailableStockHidden";
+
+        var elementIsH = document.createElement("input");
+        elementIsH.type = "hidden";
+        elementIsH.name = "IssuedHidden" + rowadd;
+        elementIsH.id = "IssuedHidden" + rowadd;
+        elementIsH.className = "IssuedHidden";
+
+
+        var elementRH = document.createElement("input");
+        elementRH.type = "hidden";
+        elementRH.name = "FeedReceivedIdHidden" + rowadd;
+        elementRH.id = "FeedReceivedIdHidden" + rowadd;
+        elementRH.className = "FeedReceivedIdHidden";
+
+
+        cell6.appendChild(element6);
+        cell6.appendChild(elementAH);
+        cell6.appendChild(elementIsH);
+        cell6.appendChild(elementRH);
+
+
+
+        var cell7 = row.insertCell(7);
+        var element7 = document.createElement("input");
+        element7.type = "hidden";
+        element7.name = "PriceRate" + rowadd;
+        element7.className = "PriceRate";
+        element7.id = "PriceRate" + rowadd;
+
+
+        var element7H = document.createElement("input");
+        element7H.type = "hidden";
+        element7H.name = "UnitPrice" + rowadd;
+        element7H.className = "UnitPrice";
+        element7H.id = "UnitPrice" + rowadd;
+
+        cell7.appendChild(element7H);
+        cell7.appendChild(element7);
+
+
+        var cell8 = row.insertCell(8);
+        var element8 = document.createElement("input");
+        element8.type = "text";
+        element8.name = "FeedQuantity" + rowadd;
+        element8.className = "FeedQuantity";
+        element8.id = "FeedQuantity" + rowadd;
+
+        cell8.appendChild(element8);
+
+
+        var cell9 = row.insertCell(9);
+        var element9 = document.createElement("input");
+        element9.type = "text";
+        element9.name = "FeedDesc" + rowadd;
+        element9.id = "FeedDesc" + rowadd;
+        element9.className = "FeedDesc";
+        cell9.appendChild(element9);
+
+
+
+        var cell10 = row.insertCell(10);
+        var element10 = document.createElement("input");
+        element10.type = "button";
+        element10.id = "btndelete";
+        element10.name = "button[]";
+        element10.title = "Delete this row";
+        element10.className = "add-component-deletebotton";
+        cell10.appendChild(element10);
+
+    });
+</script>
+
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#dataTable").on('change', '.CategoryName', function () {
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var nmn = ctr.find('.IdToHoldInEdit');
+            var ppp = nmn.val();
+            var rowadd = parseInt(ppp);
+            var v = $("#Category" + rowadd).val();
+            var p = v.toString();
+            $.get('/FeedIssued/GetFeedTypeWithCatId', { CatId: p }, function (data) {
+                $("#Feed" + rowadd).empty();
+                $("#Feed" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                $.each(data, function () {
+                    $("#Feed" + rowadd).append($("<option />").val(this.Id).text(this.Name));
+                });
+
+            });
+        });
+
+
+        $("#dataTable").on('change', '.FeedName', function () {
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var nmn = ctr.find('.IdToHoldInEdit');
+            var ppp = nmn.val();
+            var rowadd = parseInt(ppp);
+
+            var v = $("#Feed" + rowadd).val();
+            var y = $("#Feed" + rowadd +" :selected").text();
+            var k = $("#Category" + rowadd).val();
+            var p = v.toString();
+
+            $.get('/FeedIssuedFromUnit/GetUnitTypeWithProductId', { CatId: p }, function (data) {
+                //  $("#UOM" + rowadd).empty();
+
+                $("#FeedQuantity" + rowadd).val(0);
+                $("#PrimaryUnit" + rowadd).val(0);
+                $("#TotalQuantity" + rowadd).val(0);
+
+
+                $.each(data, function () {
+                    $("#UOM" + rowadd).val(this.UnitId);
+                    $("#UnitToDisplay" + rowadd).val(this.UnitName);
+                    $("#PrimaryUnit" + rowadd).val(1);
+
+                });
+            });
+
+            
+            $.get('/FeedIssuedFromUnit/CheckMedUnitPrice', { CatId: k, FeedId: v }, function (data, status) {
+                //alert(status);
+                //alert(data);
+                //alert(y);
+                if (data == -500)
+                {
+                    return false;
+                }
+                else if (data == 0 || data == null)
+                {
+                    alert("Please Enter Unit Price for " + y);
+                }
+                else
+                {
+                    alert("Unit Price for " + y + " is " + data);
+                }
+
+            });
+
+
+            $.get('/FeedIssuedFromUnit/GetFeedDate', {CatId:k, FeedId: v }, function (data) {
+
+              
+              
+                $("#ReceivedDate" + rowadd).empty();
+                $("#ReceivedDate" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                $.each(data, function () {
+                    $("#ReceivedDate" + rowadd).append($("<option />").val(this.FeedReceivedId).text(this.FeedReceivedChallanNo));
+                });
+
+            });
+
+
+
+
+            $("#dataTable").on('change', '.ReceivedDate', function () {
+
+              
+
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+                ctr.find(".AvailableStock").val(0);
+                ctr.find(".AvailableStockHidden").val(0);
+                ctr.find(".IssuedHidden").val(0);
+                ctr.find(".PriceRate").val(0);
+                ctr.find(".UnitPrice").val(0);
+                ctr.find(".FeedReceivedIdHidden").val(0);
+                ctr.find(".FeedIssueDetailsId").val(0);
+
+
+
+
+
+
+
+
+                var m = ctr.find(".CategoryName").val();
+
+                var v = ctr.find(".FeedName").val();
+              
+                var ooo =  ctr.find(".ReceivedDate").val();
+
+                var p = v.toString();
+            
+                var poo = ooo.toString();
+
+         
+
+                $.get('/FeedIssuedFromUnit/GetPurchaseChallan', { CatId: m, FeedId: p, FeedReceivedId: poo }, function (data) {
+
+                    ctr.find(".PurchaseChallanNo").empty();
+                    ctr.find(".PurchaseChallanNo").append($("<option />").val(-1).text("--Select--"));
+                    //$("#PurchaseChallanNo" + rowadd).empty();
+                    //$("#PurchaseChallanNo" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                    $.each(data, function () {
+                        //$("#PurchaseChallanNo" + rowadd).append($("<option />").val(this.PurchaseChallanDetailsId).text(this.PurchaseChallanNo));
+                        ctr.find(".PurchaseChallanNo").append($("<option />").val(this.PurchaseChallanDetailsId).text(this.PurchaseChallanNo));
+                    });
+
+
+
+                });
+            });
+
+            $("#dataTable").on('change', '.PurchaseChallanNo', function () {
+
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+
+                ctr.find(".AvailableStock").val(0);
+                ctr.find(".AvailableStockHidden").val(0);
+                ctr.find(".IssuedHidden").val(0);
+                ctr.find(".PriceRate").val(0);
+                ctr.find(".UnitPrice").val(0);
+                ctr.find(".FeedReceivedIdHidden").val(0);
+                ctr.find(".FeedIssueDetailsId").val(0);
+
+
+
+                var m = ctr.find(".CategoryName").val();           
+                var v = ctr.find(".FeedName").val();
+
+                var ooo = ctr.find(".ReceivedDate").val();
+              
+
+                var purchasedetailsId = ctr.find(".PurchaseChallanNo option:selected").val()||0;
+                var purchasedetailsNo = ctr.find(".PurchaseChallanNo option:selected").text();
+
+
+                var p = v.toString();         
+                var poo = ooo.toString();
+            
+                $.get('/FeedIssuedFromUnit/GetFeedStock', { CatId: m, FeedId: p, FeedReceivedId: poo, purchaseChallanDetailsId: purchasedetailsId, purchasedetailsNo: purchasedetailsNo }, function (data) {
+                    var avl = (parseFloat(data.Quantity) - parseFloat(data.IssudQuantity)).toFixed(2);
+               
+
+                    ctr.find(".AvailableStock").val(avl);
+                    ctr.find(".AvailableStockHidden").val(avl);
+                    ctr.find(".IssuedHidden").val(data.IssudQuantity);
+                    ctr.find(".PriceRate").val(data.PriceRate);
+                    ctr.find(".UnitPrice").val(data.UnitPrice);
+                    ctr.find(".FeedReceivedIdHidden").val(data.FeedReceivedId);
+                    ctr.find(".FeedIssueDetailsId").val(data.FeedIssueDetailsId);
+                 
+               
+            
+
+                });
+            });
+
+
+
+
+
+            $("#dataTable").on('keyup', '.FeedQuantity ', function () {
+
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+                var astock = parseFloat(ctr.find('.AvailableStock').val());
+                var feedquan = parseFloat(ctr.find('.FeedQuantity').val());
+                var unit = ctr.find('.UnitToDisplay').val();
+
+                if (feedquan > astock) {
+                    alert('Quantity Not Available.Send less than or equal to ' + astock + ' ' + unit);
+                    ctr.find('.FeedQuantity').val(0);
+                    $("#btnsave").attr("disabled", true);
+                }
+                else {
+
+                    $("#btnsave").attr("disabled", false);
+                }
+                               
+
+            });
+
+
+
+        });
+    });
+</script>
+
+
+
+
+
+
+@using (Html.BeginForm("CreateFeedIssuedFromUnit", "FeedIssuedFromUnit"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>Feed/Med Issue to Farm<small>Create</small> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>
+        </section>
+
+       
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+         @Html.HiddenFor(d => d.BranchId)
+          @Html.HiddenFor(d => d.UnitId)
+          @Html.HiddenFor(d=> d.UserId)
+            @Html.HiddenFor(d=> d.CompanyId)
+
+
+
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+
+
+
+
+         <div class="col-md-12">
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+                 
+
+                     @*<div class="form-group">
+                        <label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.FarmId, new SelectList(ViewBag.FarmName, "Id", "FarmCode"), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm  Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FarmId)
+
+                    </div>*@
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.FarmerName, new { @class = "form-control", @placeholder = "Enter Farmer Name" })
+                        @Html.HiddenFor(model => model.FarmId)
+                        @Html.ValidationMessageFor(model => model.FarmId)
+
+                    </div>           
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock Code :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.FlockId, Enumerable.Empty<SelectListItem>() , "------None-----", new { @class = "form-control", @placeholder = "Enter Farm  Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FlockId)
+
+                    </div>
+
+
+                     <div class="form-group">
+                        <label class="black_txt_010"> Challan No:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.ChallanNo, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "5",@type ="number" })
+                        @Html.ValidationMessageFor(model => model.ChallanNo)
+                    </div>                   
+          
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">                  
+                   
+
+
+                     <div class="form-group">
+                        <label class="black_txt_010">LineSupervisor Name:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.DeliveryManName, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                         @Html.HiddenFor(model => model.DeliveryManId, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.DeliveryManName)
+                    </div>
+
+                       @*<div class="form-group">
+                        <label class="black_txt_010">DeliveryMan Code:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.DeliveryManCode, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.DeliveryManCode)
+                    </div>*@
+
+                   @*  <div class="form-group">
+                        <label class="black_txt_010">Tagno:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.Tagno, new { @class = "form-control", @placeholder = "Enter Supervisor Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Tagno)
+                    </div>
+                   *@
+                 
+
+                      <div class="form-group">
+                        <label class="black_txt_010"> Date Of Despatch:<span style="color:Red;">*</span> </label>
+                         <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateOfIssueString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>                       
+                        @Html.ValidationMessageFor(model => model.DateOfIssue)
+                    </div>
+
+
+
+                    <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary"/>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        <div class="col-md-12">
+
+        <div class="form-group">
+                          <h3>Feed/Medicine Details</h3>
+                          </div>
+                         <div class="form-group">
+                         <div class="table-responsive">
+                          <table class="my-table-style table" id="dataTable">
+                          <tr class="my-table-header">
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Feed/Medicine Category</label>
+                          </td>
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Feed/Medicine Name</label>
+                          </td>                   
+                            <td  style="text-align:center;">
+                          <label class="black_txt_010">Unit Type</label>
+                          </td>
+
+                            <td style="text-align:center;">
+                          <label class="black_txt_010">Unit Of</label>
+                          </td>
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Challan No</label>
+                          </td>
+                          <td style="text-align:center;">
+                           <label class="black_txt_010">Purchase Challan No</label>
+                           </td>
+                           <td style="text-align:center;">
+                          <label class="black_txt_010">Available Quantity</label>
+                          </td>
+
+
+                           <td style="text-align:center;">
+                          @*<label class="black_txt_010">Price Rate</label>*@
+                          </td>
+
+                         <td  style="text-align:center;">
+                          <label class="black_txt_010">Issuing Quantity</label>
+                          </td>                      
+
+                            <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Description</label>
+                          </td>
+
+
+                          <td style="text-align: center;">
+                          <label class="black_txt_010">Action</label>
+                          </td>
+
+                           </tr>
+                           </table>
+                           </div>
+                            <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('dataTable')" />
+                           </div>
+
+                          
+
+</div>
+
+</aside>
+}
+

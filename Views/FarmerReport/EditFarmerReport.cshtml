@@ -1,0 +1,268 @@
+﻿@model XenERP.Models.FarmerReport
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true })
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+
+    });
+
+
+</script>
+
+
+
+@using (Html.BeginForm("EditFarmerReport", "FarmerReport"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+    <aside class="right-side">
+
+        {
+
+        <section class="content-header">
+            <h1> Farmer Report<small>Master</small></h1>
+
+            <ol class="breadcrumb">
+
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+
+            </ol>
+        </section>
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d=>d.BranchId)
+
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.FarmerName, new { @class = "form-control", @placeholder = "Enter Farmer Name", @maxlength = "100"})
+                        @Html.ValidationMessageFor(model => model.FarmerName)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Address :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @placeholder = "Enter Address Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Address)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> SuperVisor Name :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.SupervisorName, new { @class = "form-control", @placeholder = "Enter Address Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.SupervisorName)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock Start:<span style="color:Red;">*</span> </label>
+                        <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateOfPlacementString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                        @Html.ValidationMessageFor(model => model.DateOfPlacementString)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">NoOfchicks:</label>
+                        @Html.TextBoxFor(model => model.NoOfChicks, new { @class = "form-control", @placeholder = "Enter No of Chicks", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.NoOfChicks)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010"> Mortality Of Birds:</label>
+                        @Html.TextBoxFor(model => model.MortalityOfBirds, new { @class = "form-control", @placeholder = "EnterMortality of Birds", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.MortalityOfBirds)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Shortage Of Birds :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.ShortageOfBirds, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ShortageOfBirds)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Feed Recieved /KG:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.FeedRecieved, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FeedRecieved)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010"> Feed Return :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.FeedReturned, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FeedReturned)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class="black_txt_010">  Chicks Cost/Chick:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.ChicksCost, new { @class = "form-control", @placeholder = " Chicks Cost", @maxlength = "100", })
+                        @Html.ValidationMessageFor(model => model.ChicksCost)
+                        @Html.Hidden("Avchhd")
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Feed Cost/Kg:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.FeedCost, new { @class = "form-control", @placeholder = "Enter No of Chicken Placed", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FeedCost)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Feed Cost:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.MedicineCostActual, new { @class = "form-control", @placeholder = "Enter No of Chicken Placed", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.MedicineCostActual)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock End:<span style="color:Red;">*</span> </label>
+                        <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.FlockEndDateString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                        @Html.ValidationMessageFor(model => model.FlockEndDateString)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010"> OverHead Cost:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.OverHeadCost, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.OverHeadCost)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Standard Cost:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.StandarCost, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.StandarCost)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Production Cost:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.ProductionCostForFarmer, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ProductionCostForFarmer)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Avg SaleRate:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.AvgSaleRate, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.AvgSaleRate)
+                    </div>
+
+
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Growingcharge/kg(fixed):<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.GrowingChargefixed, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.GrowingChargefixed)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Growingcharge:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.GrowingChargefixed, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.GrowingChargefixed)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">TotalGrowingcharge:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.TotalGrowingCharge, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.TotalGrowingCharge)
+                    </div>
+
+
+
+                    <input type="submit" id="btnsave" value="save" class="btn btn-primary">
+                </div>
+            </div>
+        </div>
+        
+
+
+
+
+
+    </aside>
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   

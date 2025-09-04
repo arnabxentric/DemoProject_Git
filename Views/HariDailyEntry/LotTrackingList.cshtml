@@ -1,0 +1,132 @@
+﻿@model IEnumerable<XenERP.Models.LotTrack>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    long roleId = Convert.ToInt64(Session["RoleId"]);
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#example1").on('click', '.edit', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+            window.location.href = "/HariDailyEntry/UpdateLotTrack?Id=" + id;
+
+        });
+
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Lot Tracking <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+            @if (roleId == 4)
+            {
+                <div class="col-xs-12" style="text-align:center">
+                    <a href="@Url.Action("CreateLotTracking", "HariDailyEntry")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Lot Tracking</a>
+                </div>
+            }
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Branch Name</th>
+                        <th>Book Quantity</th>
+                        <th>Sending Date</th>
+                        <th>Received Date</th>
+                        <th>Payment Date</th>
+                        @if (roleId == 1)
+                        {
+                            <th></th>
+                        }
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+                            <td>@item.BranchName  @Html.HiddenFor(m => item.Id, new { @class = "id" })</td>
+                            <td> @Html.DisplayFor(modelItem => item.TotalBooks)</td>
+                            <td> @Html.DisplayFor(modelItem => item.SendDate)</td>
+                            <td> @Html.DisplayFor(modelItem => item.ReceivedDate)</td>
+                            <td> @Html.DisplayFor(modelItem => item.PaymentDate)</td>
+                            @if (roleId == 1)
+                            {
+                                <td style="text-align:center"><button class="btn btn-primary btn-sm edit ">Update</button></td>
+                            }
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

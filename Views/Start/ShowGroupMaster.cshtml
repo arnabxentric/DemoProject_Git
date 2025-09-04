@@ -1,0 +1,224 @@
+﻿
+@model IEnumerable<XenERP.Models.GroupMaster>
+
+
+@{
+    if (ViewBag.set == 0)
+    {
+        Layout = "~/Views/Shared/_Layoutstart.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+
+    }
+}
+
+@{
+    
+ 
+    ViewBag.Title = "Xpert | Group Master List";
+}
+
+
+@{
+    
+    int SlNo = 0;
+    var compid = Session["companyid"];
+
+    decimal? totalsellrate = 0;
+}
+<script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+<script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                  Group<small>List</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+             
+                
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Start", new { id = compid })"><span>Organization Settings</span></a></li>                           
+                        	<li><a href="@Url.Action("CreateFinancial", "Start")"><span>Financial Settings</span></a></li>                      
+                            @*<li><a href="@Url.Action("ShowAllCurrencyrate", "Start")"><span>Currencies</span></a></li>
+                             <li><a href="@Url.Action("TaxDetails", "Start")"><span> Tax Rates</span></a></li>*@
+                               <li class="selected">Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+
+
+                    
+                        <div class="butom-new"><a href="@Url.Action("CreateGroupMaster", "Start")"><img src="../../Images/symbol-Add.png" />Add Currency</a> </div>
+
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+
+
+
+    <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    
+                        <th>
+                     SlNo.
+                        </th>
+                        <th>
+                    Group Name
+                        </th>
+                        <th>
+                     Group Type
+                        </th>
+                       
+
+                    @*  <th>
+                    Edit
+                        </th>
+                         *@
+                       
+                          
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+                        //totalpurchaserate = totalpurchaserate + item.PurchaseRate;
+
+                        SlNo = SlNo + 1;
+                        //totalsellrate = totalsellrate + item.SellRate;
+                        
+                        
+                        <tr>
+                       <td>@SlNo</td>
+                            <td>
+                             @Html.DisplayFor(modelItem => item.groupName)
+                     
+
+
+                     
+                            </td>
+                            <td>
+                         
+
+                     
+                            @{
+                         
+                               try
+                               {
+
+                                   XenERP.Models.Repository.TaxRepository pr = new XenERP.Models.Repository.TaxRepository();
+
+                                   var name = pr.GetGroupType(Convert.ToInt32(item.ParentGroupId));
+                             @name.groupName
+                               }
+                               catch { }
+                             
+
+                       }
+
+
+
+
+
+
+
+
+                            </td>
+                              
+                          
+                           @* <td>
+                                  <i class="fa fa-fw fa-edit"></i>
+                             @Html.ActionLink("Edit", "EditGroupMaster", new { id = item.gID }) 
+                            </td>*@
+
+
+                            
+
+                        </tr>
+                    }
+                </tbody>
+   
+            </table>
+
+            </div>
+            </div>
+                <form>
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("TaxDetails", "Start")"><span>Back </span></a></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("Finish", "Start")"><span>Next</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+            </aside>
+                     
+                      
+                  

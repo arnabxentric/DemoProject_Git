@@ -1,0 +1,295 @@
+﻿@model IEnumerable<XenERP.Models.SalesBySalesPerson>
+@{
+
+    var SlNo = 0;
+    decimal SubTotal = 0;
+    decimal returnqnty = 0;
+    decimal TotAmt = 0;
+    decimal totalqnty = 0;
+    decimal freeqnty = 0;
+    decimal soldqnty = 0;
+    decimal DiscountTotal = 0;
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+@*@if (Model.Count() > 0)
+    {*@
+<aside class="right-side">
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+            <div class="box-body table-responsive divContent">
+
+                <table id="example1" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                SlNo.
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Bill No.
+                            </th>
+
+                            <th>
+                                Party Name
+                            </th>
+                            <th>
+                                Sold Qnty
+                            </th>
+                            <th>
+                                Free Qnty
+                            </th>
+                            <th>
+                                Return Qnty
+                            </th>
+                            <th>
+                                Total Qnty
+                            </th>
+                            <th>
+                                Sub Total
+                            </th>
+
+                            <th>
+                                Discount(Rs.)
+                            </th>
+                            <th>
+                                Net Amount
+                            </th>
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            SlNo++;
+                            returnqnty += item.ReturnQuantity;
+                            DiscountTotal += item.Discount;
+                            SubTotal += item.NetAmount;
+                            totalqnty += item.TotalQuantity;
+                            freeqnty += item.FreeQuantity;
+                            soldqnty += item.SoldQuantity;
+                            TotAmt += item.NetAmount - item.Discount;
+                            var gtotal= item.NetAmount - item.Discount;
+
+                            <tr>
+
+                                <td>
+                                    @SlNo
+                                </td>
+                                <td>
+
+                                    @*                   @String.Format(@Session["DateFormatUpper"].ToString(), item.Date)*@
+
+                                    @String.Format("{0:dd/MM/yyyy}", item.Date)
+                                </td>
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.NO)
+
+                                </td>
+
+
+                                <td align="left">
+                                    @Html.DisplayFor(modelItem => item.Party)
+
+                                </td>
+                                <td align="right">
+                                    @item.SoldQuantity
+
+                                </td>
+                                <td align="right">
+                                    @item.FreeQuantity
+
+                                </td>
+                                <td align="right">
+                                    @item.ReturnQuantity
+
+                                </td>
+                                <td align="right">
+                                    @item.TotalQuantity
+
+                                </td>
+                                <td align="right">
+                                    @Math.Round(item.NetAmount, 2)
+
+                                </td>
+
+                                <td align="right">
+                                    @item.Discount
+
+                                </td>
+                                <td align="right">
+                                    @Math.Round(gtotal, 2)
+
+                                </td>
+
+
+
+
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+
+                            <td></td>
+                            <td>
+
+                                Grand Total
+
+
+                            </td>
+
+
+
+                            <td align="center"></td>
+                            <td align="center"></td>
+                            <td align="right">
+                                @Math.Round(soldqnty, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(freeqnty, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(returnqnty, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(totalqnty, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(SubTotal, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(DiscountTotal, 2)
+
+                            </td>
+                            <td align="right">
+                                @Math.Round(TotAmt, 2)
+
+                            </td>
+
+
+
+
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</aside>
+@*}
+
+    else
+    {
+        <aside class="right-side">
+
+    <div class="box box-primary">
+                                     <div class="box-header">
+
+                                            </div>
+                                 <div class="box-body table-responsive divContent">
+                <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+            <thead>
+                <tr>
+                    <th>
+                        SlNo.
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Customer Name
+                    </th>
+                    <th>
+                        Invoice No.
+                    </th>
+                    <th>
+                        Amount
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="odd">
+    <td class="dataTables_empty" valign="top" colspan="5">No matching records found</td>
+    </tr>
+
+            </tbody>
+        </table>
+               </div>
+               </div>
+
+
+        </aside>
+
+    }*@ 

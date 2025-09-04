@@ -1,0 +1,301 @@
+﻿@model XenERP.Models.SalesInvoice
+
+@{
+    Layout = null;
+}
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Sales Invoice";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+    Company company = ViewBag.company;
+
+}
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Untitled Document</title>
+    <!--[if IE]>
+    <script src="js/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 9]>
+        <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+    <![endif]-->
+    <!--[if gte IE 9]>
+      <style type="text/css">
+        .gradient {
+           filter: none;
+        }
+      </style>
+    <![endif]-->
+
+    <style type="text/css">
+        .lrgor img {
+            float: left;
+        }
+        /*.strentr {
+            margin-left: 178px;
+            width: 734px;
+            display: block;
+            position: relative;
+            float: left;
+            text-align: center;
+        }
+                .lrgor span {
+            float: left;
+            width: 1070px;
+            text-align: center;
+        }*/
+
+    </style>
+</head>
+
+<body>
+    <div class="padding_top" style="padding:150px 0 0 0;">
+        <table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+            <tr>
+                <td colspan="7" align="center"><h2>Invoice</h2></td>
+            </tr>
+            <tr>
+                <td class="lrgor" colspan="7" style="text-align:center; color:#000; padding:5px 0; font-size:14px; font-weight:bold; line-height:25px; border-top:2px solid #474747;">
+                    <img src="../../Images/gimme-sm.png" style="" /> <div class="strentr">Star Enterprise&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div> <br />
+                    <span style="font-size:14px; font-weight:400; line-height:20px;">
+                        58, Diamond Harbour Road, P.O. Joka, Kolkata-700 104
+                        Phone: 1-8008-33-22-11
+                    </span>
+                </td>
+
+            </tr>
+            <tr>
+                <td colspan="3" width="30%">
+                    <p>
+                        <strong>@Model.Customer.Name</strong>
+                        <br />Address :@Model.StreetPoBox
+
+                        <br />@Model.City
+                        <br />@Model.StateRegion
+                        <br />PIN :@Model.PostalCode
+                        <br /><strong>Contact Person :@Model.Customer.ContactName</strong>
+
+                    </p>
+                </td>
+                <td colspan="5" width="70%" class="date">
+                    <p>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td width="45%" style="padding:0px 15px;"><strong>Invoice No. </strong> :&nbsp;@Model.NO</td>
+                                <td width="45%" style="padding:0px 15px;"><strong>Date</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.InvoiceDate)</td>
+                            </tr>
+                            <tr>
+                                <td width="45%" style="padding:0px 15px;"><strong>Order No.</strong> :&nbsp;@Model.SalesOrderNo</td>
+                                <td width="45%" style="padding:0px 15px;"><strong>Date</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.Date)</td>
+                            </tr>
+                            <tr>
+                                <td width="45%" style="padding:0px 15px;"><strong>Challan No.</strong> :&nbsp;@Model.OrderNo</td>
+                                <td width="45%" style="padding:0px 15px;"><strong>Delivery Date</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.DespatchDate)</td>
+                            </tr>
+                            <tr>
+                                <td width="45%" style="padding:0px 15px;"><strong>Vat No.</strong> :&nbsp;@Model.Customer.GstVatNumber</td>
+
+                            </tr>
+                            @*<tr>
+                                    <td width="45%" style="padding:0px 15px;"><strong>Through</strong> :&nbsp;@Model.DespatchThrough</td>
+                                    <td width="45%" style="padding:0px 15px;"><strong>Destination</strong> :&nbsp;@Model.DespatchDestination</td>
+                                </tr>
+                                <tr>
+                                    <td width="45%" style="padding:0px 15px;"><strong>Despatch No.</strong> :&nbsp;@Model.DespatchNo</td>
+                                    <td width="45%" style="padding:0px 15px;"><strong>Dated</strong> :&nbsp; @String.Format("{0:dd/MM/yyyy}", @Model.DespatchDate)</td>
+                                </tr>
+                                <tr>
+                                    <td width="45%" colspan="2" style="padding:0px 15px;"><strong>Payment Terms</strong> :&nbsp;@ViewBag.PaymentTerm</td>
+
+                                </tr>*@
+                        </table>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                @*<th align="center" width="15%" >Item Name</th>*@
+                <th align="center" width="15%">Item Name</th>
+                <th align="center" width="35%">Description</th>
+                <th align="center" width="10%">Quantity</th>
+                <th align="center" width="5%">Unit</th>
+                <th align="center" width="10%">Unit Price</th>
+                <th align="center" width="10%">Discount</th>
+                @* <th align="center" width="15%">Tax</th>*@
+                <th align="center" width="15%">Amount</th>
+            </tr>
+            @foreach (SalesInvoiceDetailModelView item in ViewBag.podmvList)
+            {
+                <tr>
+                    @*<td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                                      <td align="left"  style="padding:10px;">@item.ItemName</td>
+                                      <td align="right"  style="padding:10px;">&nbsp;</td>
+                                  </tr>
+                        </table>
+                        </td>*@
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="center" style="padding:10px;">@item.ItemName</td>
+                                <td align="right" style="padding:10px;">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="center" style="padding:10px;">@item.Description</td>
+                                <td align="right" style="padding:10px;">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="right" style="padding:10px;">@item.Quantity</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="right" style="padding:10px;">@item.UnitName</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="right" style="padding:10px;">@item.Price</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="right" style="padding:10px;">@item.Discount</td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="right" style="padding:10px;">@item.TaxName</td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="right" style="padding:10px;">@Math.Round(@item.SubTotal, 2)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            }
+            @foreach (InvoiceTotal item in ViewBag.InvoiceTotalList)
+            {
+                <tr class="total">
+                    <td colspan="6" style="padding:10px;"><strong>@item.Name</strong></td>
+                    <td align="right" style="padding:10px;"><strong>@item.Amount </strong> </td>
+                </tr>
+            }
+
+
+            <tr class="total">
+                <td colspan="7" style="padding:10px;"><strong><span>Rupees</span>: @ViewBag.BCTotalAmount Only</strong></td>
+
+            </tr>
+            <tr>
+                <td width="100%" colspan="7">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                        <tr>
+                            <td style="padding:5px 10px;"><strong>Payment Details:</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 10px;"><span>Company Name</span>: @company.Name</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 10px;"><span>Bank</span>: HDFC Bank Ltd. </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 10px;"><span>Account No.</span> : 50200013230351​</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 10px;"><span>IFSC Code</span>: HDFC0000008​</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 10px;"><span>Payment Mode-</span>: By A/C payee check/DD/NEFT/RTGS</td>
+                        </tr>
+                    </table>
+                </td>
+                @*<td width="50%" colspan="5">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="left" style="padding:5px 10px;"><strong>Terms & Conditions:</strong></td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">1. Our responsibility ceases as soon as the goods are delivered from our premises</td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">2. Goods once sold will not be taken back.</td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">3. Interest 24% p.a will be charged for payment after due date.</td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">4. Terms & conditions overleaf.</td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">5. We are not responsible for any shortage.</td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">6. We declare that this invoice shows the actual price of the goods describe and that all particular are true & correct.</td>
+                            </tr>
+                            <tr>
+                                <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                            </tr>
+                             <tr>
+                                <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                            </tr>
+                             <tr>
+                                <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                            </tr>
+                             <tr>
+                                <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td align="right" style="padding:5px 10px;">For <strong>@ViewBag.companyName</strong></td>
+                            </tr>
+                        </table>
+                    </td>*@
+            </tr>
+        </table>
+    </div>
+    @*<div class="clr"></div>
+        <div class="ads">
+            <ul>
+            @foreach (string item in ViewBag.Logo)
+            {
+                var logoimage = "/productimg/" + @item;
+                <li><img src='@logoimage' alt="ads"/></li>
+
+            }
+
+            </ul>
+        </div>*@
+
+</body>
+</html>

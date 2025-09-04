@@ -1,0 +1,958 @@
+﻿@model XenERP.Models.PurchaseReceiptModelView
+@using XenERP.Models
+@{
+    ViewBag.Title = "Purchase Order";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+@*
+<script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>*@
+
+<script src="../../Scripts/PurchaseReceipt.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+ <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#WarehouseId').change(function () {
+            var wid = $('#WarehouseId').val();
+            $.get('/Warehouse/getWarehouse', { 'id': wid }, function (data, status) {
+
+                $('#DeliveryName').val(data.AdressName);
+                $('#StreetPoBox').val(data.Address);
+                $('#Suburb').val(data.Suburb);
+                $('#City').val(data.Town);
+                $('#StateRegion').val(data.State);
+                $('#Country').val(data.Country);
+                $('#PostalCode').val(data.PIN);
+            });
+        });
+
+        $('#SupplierCode').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Supplier/getSupplier',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Code,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#SupplierCode').val(ui.item.label);
+                $('#SupplierId').val(ui.item.value);
+
+                $.get('/Supplier/getSelectedSupplier', { 'id': ui.item.value }, function (data, status) {
+                    $('#SupplierName').val(data.Name);
+                    $('#TaxId').val(data.TaxId);
+                });
+                return false;
+            },
+            minLength: 1
+        });
+        $('#SupplierName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Supplier/getSupplierN',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#SupplierName').val(ui.item.label);
+                $('#SupplierId').val(ui.item.value);
+
+                $.get('/Supplier/getSelectedSupplier', { 'id': ui.item.value }, function (data, status) {
+                    $('#SupplierCode').val(data.Code);
+                    $('#TaxId').val(data.TaxId);
+                });
+                return false;
+            },
+            minLength: 1
+        });
+        if ('@ViewBag.Id' != '') {
+
+            var dw = parseInt('@ViewBag.Id');
+
+            $('#WarehouseId').val(dw);
+            $('#DeliveryName').val('@ViewBag.AdressName');
+            $('#StreetPoBox').val('@ViewBag.Address');
+            $('#Suburb').val('@ViewBag.Suburb');
+            $('#City').val('@ViewBag.Town');
+            $('#StateRegion').val('@ViewBag.State');
+            $('#Country').val('@ViewBag.Country');
+            $('#PostalCode').val('@ViewBag.PIN');
+
+        }
+
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnInvoice").on("click", function (event) {
+            window.location.href = 'PurchaseInvoice/Create';
+            return false;
+        });
+
+        $("#btnDraft").on("click", function (event) {
+            $("#Status").val("Saved As Draft");
+
+        });
+
+        $("#btnSave").on("click", function (event) {
+            $("#Status").val("Saved");
+
+        });
+
+
+
+        $("form").on("submit", function (event) {
+
+            var isValid = $(this).valid();
+
+            if (isValid) {
+                var result = checkproductcount();
+
+                if (result == false) {
+                    $('#errordiv').css("display", "block");
+                    $('#errordiv').append('You must add atleast one line item');
+                    return false;
+                }
+                //  event.preventDefault();
+
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+            }
+
+            else {
+
+                //                $("#btnsave").show();
+            }
+
+
+        });
+
+
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+        if ('@ViewBag.podmvList' != '') {
+            //   alert('@ViewBag.podmvList');
+            var array = '@Html.Raw(Json.Encode(ViewBag.podmvList))';
+            var arr = JSON.parse(array);
+            //  alert(arr.length);
+            for (var i = 0; i < arr.length; i++) {
+                //                if (arr[i].ItemId == 0 && arr[i].Description == '' && arr[i].Quantity == 0 && arr[i].Price == 0 && arr[i].Discount == 0 && arr[i].TaxId == 0) {
+                //                    $add_rowEdit(arr[i].ItemId, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].Price, arr[i].Discount, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                //                }
+                //                else {
+                $add_rowEdit(arr[i].ItemId, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].Price, arr[i].Discount, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                //             }
+            }
+
+            var cntr = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(1)');
+                var quantity = $(MyRows[i]).find('td:eq(2)');
+                var unitprice = $(MyRows[i]).find('td:eq(5)');
+                var tax = $(MyRows[i]).find('td:eq(6)');
+                var discount = $(MyRows[i]).find('td:eq(7)');
+
+                var descriptionval = description.find('.descriptionhide');
+                var productval = product.find('.producthide');
+                var quantityval = quantity.find('.quantityhide');
+                var unitpriceval = unitprice.find('.unitpricehide');
+                var taxval = tax.find('.taxhide');
+                var discountval = discount.find('.discounthide');
+                if ('@ViewBag.Supply' != '') {
+                    if (cntr == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   ' + '@ViewBag.Supply' + '<br/>');
+                    }
+                }
+
+                if (!(productval.val() == '' && descriptionval.val() == '' && quantityval.val() == 0 && unitpriceval.val() == 0)) {
+                    if (productval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        productval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Product not selected <br/>');
+                    }
+
+                    if (quantityval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        quantityval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Quantity cannot be empty<br/>');
+                    }
+
+
+                    if (unitpriceval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   Unit Price cannot be empty<br/>');
+                        unitpriceval.addClass('input-red-shadow');
+                    }
+
+                }
+            }
+        }
+        else {
+            for (var i = 0; i < 2; i++) {
+                $add_row();
+            }
+
+        }
+
+    });
+
+    var tid = '';
+    $(document).ready(function () {
+        $('#example1').on('click', 'tr', function (e) {
+
+            var counter = 0;
+            var totalamount = 0;
+            var totaltax = 0;
+            var totaldiscount = 0;
+            var subtotal = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(1)');
+                var quantity = $(MyRows[i]).find('td:eq(2)');
+                var unitprice = $(MyRows[i]).find('td:eq(5)');
+                var tax = $(MyRows[i]).find('td:eq(6)');
+                var discount = $(MyRows[i]).find('td:eq(7)');
+                var amount = $(MyRows[i]).find('td:eq(8)');
+                var producthide = $(MyRows[i]).find('td:eq(9)');
+                var taxhide = $(MyRows[i]).find('td:eq(10)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var discountval = discount.find('#discount').val();
+
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '') {
+                        product.find('.producthide').val('')
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+                if (discountval != null) {
+                    discount.html('');
+                    discount.html("<input type='text' value=''  class='discounthide input-non-active' style='text-align:right;' name='discounthide' readonly /> ");
+                    discount.find('.discounthide').val(discountval);
+
+                }
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if (checkproduct.val() != null && checkproduct.val() != '') {
+                    var qty = 0;
+                    var up = 0;
+                    var tx = 0;
+                    var dis = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+                    var caldiscount = discount.find('.discounthide').val();
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    if (caltax != '') {
+                        var arr = caltax.split('-');
+                        tx = parseFloat(arr[arr.length - 1]);
+                    }
+                    else {
+                        tx = 0;
+                    }
+                    if (caldiscount != '') {
+                        dis = parseFloat(caldiscount);
+                    }
+                    else {
+                        dis = 0;
+                    }
+                    var np = qty * up;
+                    var currentdis = np * dis / 100;
+                    var currentsub = np - currentdis;
+                    subtotal += currentsub;
+                    totaldiscount += currentdis;
+                    totaltax += tx * currentsub / 100;
+
+                    amount.find('.amounthide').val(currentsub.toFixed(2));
+                    //alert(currentsub);
+                }
+            }
+            totalamount = subtotal + totaltax;
+            $('#subtotal').text(subtotal.toFixed(2));
+            $('#ttotal').text(totaltax.toFixed(2));
+            $('#totalpo').text(totalamount.toFixed(2));
+            $('#TotalAmount').val(subtotal.toFixed(2));
+            $('#TaxTotal').val(totaltax.toFixed(2));
+            $('#GrandTotal').val(totalamount.toFixed(2));
+
+            if ((tid == this.id && counter != 1) || (tid != this.id)) {
+
+                tid = this.id;
+
+
+
+                var product = $(this).find('td.products_0');
+                var productval = $(this).find('.product').val();
+
+                var description = $(this).find('td.description_0');
+                var descriptiontext = description.find('.descriptionhide').val();
+                var quantity = $(this).find('td.quantity_0');
+                var quantitytext = quantity.find('.quantityhide').val();
+                var unitprice = $(this).find('td.unitprice_0');
+                var unitpricetext = unitprice.find('.unitpricehide').val();
+                var tax = $(this).find('td.taxes_0');
+                var taxval = $(this).find('.tax').val();
+                var discount = $(this).find('td.discount_0');
+                var discounttext = discount.find('.discounthide').val();
+
+
+                //   alert(productval);
+
+                product.html('');
+                product.html(dropDownProduct);
+                description.html('');
+                description.html("<div class='textarea-panel'><textarea id='description' class ='form-control '  style='width: 100%; height: 200%;'  value=''/> </div>");
+                quantity.html('');
+                quantity.html("<input id='quantity' style='text-align:right;' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                unitprice.html('');
+                unitprice.html("<input id='unitprice' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                tax.html('');
+                tax.html(dropDownTax);
+                discount.html('');
+                discount.html("<input id='discount' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                //   if (productval != 'null') {
+                product.find('#drpProduct').val(productval);
+                //  }
+                description.find('#description').val(descriptiontext);
+                quantity.find('#quantity').val(quantitytext);
+                unitprice.find('#unitprice').val(unitpricetext);
+                // if (taxval != 'null') {
+                tax.find('#drpTax').val(taxval);
+                //   }
+                discount.find('#discount').val(discounttext);
+
+            }
+
+            e.stopPropagation();
+
+
+
+        })
+        .on('click', '#description,#drpProduct,#quantity,#unitprice,#drpTax,#taxhide,#discount,#amounthide', function (e) {
+
+            e.stopPropagation();
+        })
+
+         .on('change', '#drpProduct', function (e) {
+             var pid = $('#drpProduct').val();
+             var trObj = $(this).closest('tr');
+             if (pid != '') {
+                 $.get('/Product/getSelectedProduct', { 'id': pid }, function (data, status) {
+                     var qty = trObj.find('#quantity').val(1);
+                     var up = trObj.find('#unitprice').val(data.PurchasePrice);
+                     var as = trObj.find('.availabilityhide').val(data.Availability);
+                     var dc = trObj.find('#discount').val(0.00);
+                     trObj.find('.uom').val(data.UnitId);
+                     trObj.find('.uomhide').val(data.UnitName);
+                     var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                     var am = trObj.find('.amounthide').val(parseFloat(amount));
+                 });
+             }
+             else {
+                 var qty = trObj.find('#quantity').val('');
+                 var up = trObj.find('#unitprice').val('');
+                 var as = trObj.find('.availabilityhide').val('');
+                 var dc = trObj.find('#discount').val('');
+                 var am = trObj.find('.amounthide').val('');
+                 trObj.find('#uom').val('');
+                 trObj.find('.uomhide').val('');
+             }
+
+             e.stopPropagation();
+         })
+          .on('keypress', '#quantity, #unitprice, #discount', function (event) {
+
+              if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                  return true;
+              }
+
+              if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                  event.preventDefault();
+                  return false;
+
+              }
+              if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                  event.preventDefault();
+              }
+              event.stopPropagation();
+
+          })
+          .on('click', '.del_ExpenseRow', function (e) {
+              $(this).closest('tr').remove();
+
+              //  e.stopPropagation();
+
+          });
+
+
+        $(document).click(function () {
+
+            var totalamount = 0;
+            var totaltax = 0;
+            var totaldiscount = 0;
+            var subtotal = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(1)');
+                var quantity = $(MyRows[i]).find('td:eq(2)');
+                var unitprice = $(MyRows[i]).find('td:eq(5)');
+                var tax = $(MyRows[i]).find('td:eq(6)');
+                var discount = $(MyRows[i]).find('td:eq(7)');
+                var amount = $(MyRows[i]).find('td:eq(8)');
+                var producthide = $(MyRows[i]).find('td:eq(9)');
+                var taxhide = $(MyRows[i]).find('td:eq(10)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var discountval = discount.find('#discount').val();
+
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '') {
+                        product.find('.producthide').val('')
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+                if (discountval != null) {
+                    discount.html('');
+                    discount.html("<input type='text' value=''  class='discounthide input-non-active' style='text-align:right;' name='discounthide' readonly /> ");
+                    discount.find('.discounthide').val(discountval);
+
+                }
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if (checkproduct.val() != null && checkproduct.val() != '') {
+                    var qty = 0;
+                    var up = 0;
+                    var tx = 0;
+                    var dis = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+                    var caldiscount = discount.find('.discounthide').val();
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    if (caltax != '') {
+                        var arr = caltax.split('-');
+                        tx = parseFloat(arr[arr.length - 1]);
+                    }
+                    else {
+                        tx = 0;
+                    }
+                    if (caldiscount != '') {
+                        dis = parseFloat(caldiscount);
+                    }
+                    else {
+                        dis = 0;
+                    }
+                    var np = qty * up;
+                    var currentdis = np * dis / 100;
+                    var currentsub = np - currentdis;
+                    subtotal += currentsub;
+                    totaldiscount += currentdis;
+                    totaltax += tx * currentsub / 100;
+
+                    amount.find('.amounthide').val(currentsub.toFixed(2));
+                    //alert(currentsub);
+                }
+            }
+            totalamount = subtotal + totaltax;
+            $('#subtotal').text(subtotal.toFixed(2));
+            $('#ttotal').text(totaltax.toFixed(2));
+            $('#totalpo').text(totalamount.toFixed(2));
+            $('#TotalAmount').val(subtotal.toFixed(2));
+            $('#TaxTotal').val(totaltax.toFixed(2));
+            $('#GrandTotal').val(totalamount.toFixed(2));
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        dropDownProduct = '<select id="drpProduct" class="form-control">';
+        dropDownProduct += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        $.get('/Product/getProducts', function (data, status) {
+
+            for (var count = 0; count <= data.length; count++) {
+
+                dropDownProduct += '<option value="' + data[count].Id + '">' + data[count].Code + '</option>';
+            };
+            dropDownProduct += '</select>';
+        });
+
+
+        dropDownTax = '<select id="drpTax" class="form-control">';
+        dropDownTax += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        $.get('/Tax/getTaxes', function (data, status) {
+
+            for (var count = 0; count <= data.length; count++) {
+
+                dropDownTax += '<option value="' + data[count].TaxId + '">' + data[count].Name + '-' + data[count].Rate + '</option>';
+            };
+            dropDownTax += '</select>';
+        });
+
+        checkproductcount = function () {
+            var result = false;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+
+                var producthide = $(MyRows[i]).find('td:eq(9)');
+                var product = producthide.find('.product');
+                if (parseInt(product.val()) > 0) {
+                    result = true;
+                    return result;
+                }
+
+            }
+            return result;
+        };
+    });
+
+</script>
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+ @using (Html.BeginForm())
+  {
+<aside class="right-side">
+ <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>
+                       Purchase Receipt
+                        <small>Entry Form</small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#"></a></li>
+                        <li class="active"> </li>
+                    </ol>
+                </section>
+                   <div class="nav-tabs-custom">
+
+           
+                                <ul class="nav nav-tabs">
+                                @if(Model.Id != 0){
+                                   <li class="pull-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Purchase Receipt @Model.NO (@Model.Status)    </li>
+                                    if(Model.Status =="Saved As Draft")
+                                    {
+                                        
+                                        <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                                        <li class="pull-right"><input type="submit" id="btnDraft" class="btn btn-primary" value="Save As Draft" /></li>   
+                                    }
+                                    else
+                                    {
+                                    <li class="pull-right"><input type="button" id="btnInvoice" class="btn btn-primary" value="Invoice" /></li>
+                                    }
+                                }
+                                else
+                                {   
+                                    <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                                    if (Model.Status != "Saved")
+                                    {
+                                     <li class="pull-right"><input type="submit" id="btnDraft" class="btn btn-primary" value="Save As Draft" /></li>   
+                                    
+                                    }
+
+                                }
+                                </ul>
+                         
+                                         </div>   
+                                       @if (ViewBag.Message != null)
+                                       {
+                                          <div class="alert alert-success alert-dismissable" >
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <b>Purchase Receipt</b><br />
+                                     @ViewBag.Message. <a href='/PurchaseReceipt/Create'> Enter a new Purchase Receipt?</a> 
+                                    </div> 
+                                       }
+                <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b><br />
+ </div>
+  <div id="loading">
+                                    <div id="loadingcontent">
+                                         <p id="loadingspinner">
+                                          Loading...
+                                      </p>
+                                     </div>
+                                    </div>
+                <!-- Main content -->
+                <section class="content">
+                 @* <div class="form-group row"> <div class="col-xs-8"> <label class="control-label">Effective Date</label> <div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="mm-dd-yyyy"> <input class="form-control" type="text" readonly="" value="12-02-2012"> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div> </div> </div>*@
+                
+                      @* <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    *@
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                               
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table2">
+                                     @Html.HiddenFor(model => model.Id)
+                                     @Html.HiddenFor(model => model.NO)
+                                       @Html.HiddenFor(model => model.SupplierId)
+                                       @Html.HiddenFor(model => model.Status)
+                                        <tbody>
+                                            <tr>
+                                            <td> @Html.Label("Purchase Order")</td>
+                                                <td>    @Html.DropDownList("PurchaseOrder", new SelectList(ViewBag.ddlPurchaseOrder, "Id", "NO"), new { @class = "form-control" })</td>
+                                                <td></td>
+                                                <td> @Html.Label("Supplier Code")<span style="font-weight:bold;color:Red;">*</span></td>
+                                        
+                                                 <td> @Html.TextBoxFor(model => model.SupplierCode, new { @class = "form-control", @placeholder = "Enter Supplier Code" })
+                                                @Html.ValidationMessageFor(model => model.SupplierCode)
+                                                </td>
+                                              
+                                            </tr>
+                                            <tr>
+                                             <td> @Html.Label("Supplier Reference")</td>
+                                                <td>  @Html.TextBoxFor(model => model.Reference, new { @class = "form-control", @placeholder = "Enter Supplier Refence" })</td>
+                                                <td></td>
+                                                <td> @Html.Label("Supplier Name")<span style="font-weight:bold;color:Red;">*</span></td>
+                                                
+                                                  <td> @Html.TextBoxFor(model => model.SupplierName, new { @class = "form-control", @placeholder = "Enter Supplier Name" })
+                                                  @Html.ValidationMessageFor(model => model.SupplierName)
+                                                 </td>
+                                              
+                                            </tr>
+                                            <tr>
+                                                
+                                                <td> @Html.Label("Receipt Date")</td>
+                                                <td> <div class="input-group date" id="dp3"  data-date-format="dd/mm/yyyy">@Html.TextBoxFor(model => model.Date, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                 @Html.ValidationMessageFor(model => model.Date)
+                                                 </td>
+                                                 
+                                                <td></td>
+                                                 <td>@Html.Label("Supplier Currency Code")</td>
+                                                <td> @Html.TextBoxFor(model => model.CurrencyId, new { @class = "form-control", @placeholder = "Enter City" })</td>
+                                            </tr>
+                                            <tr>
+                                                <td> @Html.Label("Order Date")</td>
+                                                <td> <div class="input-group date" id="dp3"  data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.Date, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                 @Html.ValidationMessageFor(model => model.Date)
+                                                 </td>
+                                                 
+                                                <td></td>
+                                                <td>@Html.Label("Currency Rate")</td>
+                                                <td> @Html.TextBoxFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })</td>
+                                            </tr>
+                                            <tr>
+                                             <td> @Html.Label("Delivery Date")</td>
+                                                <td>  <div class="input-group date" id="dp4"  data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DueDate, new { @class = "form-control", @readonly = "" })<span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                 @Html.ValidationMessageFor(model => model.DueDate)
+                                                </td>
+                                                <td></td>
+                                                 <td> @Html.Label("Warehouse")</td>
+                                                <td>   @Html.DropDownListFor(model => model.WarehouseId, new SelectList(ViewBag.ddlWarehouses, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                                 @Html.ValidationMessageFor(model => model.WarehouseId)
+                                                </td>
+                                               
+                                                
+                                            </tr>
+                                           
+                                         </tbody> 
+                                          
+                                    </table>
+                                  
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                            
+                            <div class="box">
+                               
+                                <div class="box-body table-responsive">
+                                    <table id="example1" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                              
+						<th width='15%'>Product</th>
+						<th  width='15%'>Description</th>
+						<th  width='5%'>Qty</th>
+						<th width='5%'>UOM</th>
+                       
+						<th width='10%'>Unit Price</th>
+						
+                        <th width='5%'>Discount</th>
+                        <th width='10%'>Amount</th>
+                        <th class='display-non-div'></th>
+                        <th class='display-non-div'></th>
+                       @* <th style='display:none;padding:0px;'></th>*@
+						<th width='2%' align='center'>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                           @* <tr>
+                                                <td>Trident</td>
+                                                <td>Internet
+                                                    Explorer 4.0</td>
+                                                <td>Win 95+</td>
+                                                <td> 4</td>
+                                                <td>X</td>
+                                            </tr>*@
+                                        </tbody>
+                                    </table>
+                                   
+                                  @*  <input type="button" value="Add Row" id="add_ExpenseRow" />*@
+                                    @*<button type="button" class="btn btn-primary btn-sm" id="add_ExpenseRow">Add New Line</button>*@
+                                  
+                                    <img src="../../Images/add-a-new-line.jpg" id="add_ExpenseRow" style="margin-top:10px !important;" />
+                                    <input type='hidden' id="TotalAmount" name="TotalAmount" />
+                                    <input type='hidden' id="TaxTotal" name="TaxTotal"  />
+                                    <input type='hidden' id="GrandTotal" name="GrandTotal"  />
+                                       <table width="100%">
+                                    <tr>
+                                    <td colspan="4" style="width:81%;">
+                                    &nbsp;
+                                    </td>
+
+                                    <td style="font-weight:bold; width:10%">
+                                    Sub Total
+                                    </td>
+                                    <td style="font-weight:bold;text-align:left; width:9%" id="subtotal">@Model.TotalAmount</td>
+                                    </tr>
+                                    <tr>
+                                    <td colspan="4">
+                                    </td>
+                                    <td style="font-weight:bold;">
+                                    Tax Total
+                                    </td>
+                                    <td style="font-weight:bold;text-align:left; width:9%"  id="ttotal" >@Model.TaxTotal</td>
+                                    </tr>
+                                    <tr>
+                                    <td colspan="4">
+                                    </td>
+                                    <td style="font-weight:bold;">
+                                     Total
+                                    </td>
+                                    <td style="font-weight:bold;text-align:left; width:9%;" id="totalpo">@Model.GrandTotal</td>
+                                    </tr>
+                                    </table>
+                                </div><!-- /.box-body -->
+                               
+                               <!-- Button trigger modal -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+     
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+                            </div><!-- /.box -->
+                        </div>
+                    </div>
+                  
+              
+                </section><!-- /.content -->
+           </aside>     
+     
+                 }

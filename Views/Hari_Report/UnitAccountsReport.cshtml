@@ -1,0 +1,300 @@
+﻿@using XenERP.Models;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <meta charset="UTF-8">
+    <title>AdminLTE | Dashboard</title>
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                All Reports
+                <small>it all starts here</small>
+            </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="nav-tabs-custom">
+
+
+                        <div class="col-md-12">
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 4)
+                            {
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Farmer Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("UnitProductReceive", "Hari_Report")">Date Wise Farmer Issue </a>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerDailyEntry", "Hari_Report")">Farmer Daily Entry</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerWiseIssue", "Hari_Report")">Farmer Wise Issue</a>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerLatLong", "App")">FarmerLocation</a>
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("TdsReport", "Hari_Report")">Farmer Wise TDS</a></td>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i> <a href="@Url.Action("FarmerStatistics", "Hari_Report")">Farmer Statistics</a>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FarmerIndex", "Hari_Gc")">Farmer Category</a></td>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("LiveFarmCost", "Hari_Report")">Live Farm Costing</a></td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Convert.ToInt32(Session["RoleId"]) == 4 || Convert.ToInt32(Session["RoleId"]) == 6)
+                            {
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Stock Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DateWiseStock", "Hari_Report")">Date Wise Unit Stock</a></td>
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("ProductWiseLedger", "Hari_Report")">Date Wise Product Stock</a></td>
+
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("DateWiseStockPrice", "Hari_Report")">Unit Stock Valuation</a></td>
+
+
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("FeedIssueFarmerReport", "Hari_Report")">Daily Stock</a></td>
+
+
+
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (Convert.ToInt32(Session["RoleId"]) == 4)
+                        {
+
+                            <div class="col-md-12">
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Flock Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("FlockDespatch", "Hari_Report")">Flock Issue Report</a>
+                                                        </td>
+
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>
+                                                            <a href="@Url.Action("ChicksPlacement", "HariAdminReport")"><i class="fa fa-angle-double-right"></i>Chicks Placement Report</a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Linesman Report</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("GetEntryStatictics", "Hari_Report")">Linesman Statictics</a>
+                                                        </td>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i><a href="@Url.Action("LinesmanDailyStatics", "Hari_LinesmanReport")">Linesman Entry Efficiency</a>
+                                                        </td>
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+
+                        @if (Convert.ToInt32(Session["RoleId"]) == 4)
+                        {
+
+                            <div class="col-md-12">
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Monthwise Report</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i> <a href="@Url.Action("PlacementSalesStatShow", "Hari_Report")">Monthwise Statement</a>
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i> <a href="@Url.Action("ComparativeStatement", "Hari_Report")">Comparative Statement</a>
+                                                        </td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">GC Report</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i> <a href="@Url.Action("DateWiseGc", "Hari_Gc")">Placement Wise GC</a>
+                                                        </td>
+
+                                                        <td>
+                                                            <i class="fa fa-fw fa-star"></i>  <a href="@Url.Action("FarmerWiseGc", "Hari_Gc")">Farmer Wise GC</a>
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr>
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("ShowAllFarmerReport", "FarmerReport")">Old GC Reports </a></td>
+
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+
+                        @if (Convert.ToInt32(Session["RoleId"]) == 4)
+                        {
+
+                            <div class="col-md-12">
+
+
+                                <div class="col-md-6">
+                                    <div class="box">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Mortality Reports</h3>
+                                        </div>
+                                        <div class="box-body table-responsive no-padding">
+                                            <table class="table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+
+                                                            <i class="fa fa-fw fa-star"></i> <a href="@Url.Action("AllMortalityCheck", "Hari_ReportingSection")">Farmer's Bird Mortality</a>
+                                                        </td>
+
+
+                                                    </tr>
+                                                    <tr>
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("AllMortalityCheck", "Hari_ReportingSection")">Daily Mortality</a></td>
+
+                                                        <td><i class="fa fa-fw fa-star"></i><a href="@Url.Action("MortalityCheck", "Hari_ReportingSection")">All Mortality</a></td>
+
+
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+
+
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside>
+</body>
+</html>

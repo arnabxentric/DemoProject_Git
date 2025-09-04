@@ -1,0 +1,121 @@
+﻿@model XenERP.Models.CheckMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#btnsave').hide();
+        var iCnt = 0;
+        $('#btnAdd').click(function () {
+            iCnt = iCnt + 1;
+            $('#btnsave').show();
+            $('#divAdd').append('<div id="dv' + iCnt + '"><input type=text class="input" id=tb' + iCnt + ' ' +
+                            'placeholder="Text Element ' + iCnt + '" name="tbName' + iCnt + '"/>  <br /><br />  </div>')
+
+        });
+
+
+        $('#btnRemove').click(function () {
+            if (iCnt != 0) {
+                $('#dv' + iCnt).remove();
+                iCnt = iCnt - 1;
+            }
+
+        });
+
+    });
+
+</script>
+
+
+
+
+
+
+
+@using (Html.BeginForm("CreateCheck", "Check"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Check<small>Add</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"> </li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        @*<section class="content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                        </div>
+                        <div class="box-body">*@
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+      
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header"></div>
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Check Name :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.CheckName, new { @class = "form-control", @placeholder = "Enter Check Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.CheckName)
+                    </div>
+                      <input name="" type="button" id="btnAdd" value="Add Check Description" class="btn btn-primary"/>
+                      <span></span>
+                       <input name="" type="button" id="btnRemove" value="Remove Check Description" class="btn btn-primary"/>
+                      <br />
+                      <br />
+                      
+                    <div class="form-group" id="divAdd">
+                        
+                    </div>
+
+
+                    <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+               
+       
+</aside>
+}

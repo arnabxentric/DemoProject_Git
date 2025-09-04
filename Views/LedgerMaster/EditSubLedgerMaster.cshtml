@@ -1,0 +1,356 @@
+﻿@model XenERP.Models.LedgerMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    .ErrorControl {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#OpeningBalance").keypress(function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0 || event.which == 45) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+
+        $("#groupID").on('change', function () {
+
+            //            $('#GroupTypename').val($('#GroupType').find('option:selected').text());
+
+            $.post("/LedgerMaster/GetLedger", { type: $("#groupID").val() }, function (data) {
+                var select = $("#parentID");
+                select.empty();
+                //                select.append($('<option/>', {
+                //                    value: "",
+                //                    text: "--Select--"
+                //                }));
+
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Id,
+                        text: itemData.Name
+                    }));
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#ledgerid").attr("maxlength", 4);
+
+
+        $("#ledgerid").change(function () {
+
+            if ($("#ledgerid").val() != "") {
+
+                $.get("/LedgerMaster/CheckLedgerId", { id: $("#ledgerid").val() }, function (data) {
+
+                    if (data == true) {
+                        alert("Sub Ledger Code already exists");
+                        $("#ledgerid").val('')
+                        $("#ledgerid").focus()
+                        return false;
+                    }
+                    else {
+
+                    }
+                });
+            }
+
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnsubmit').click(function () {
+
+
+
+            //$('#OpeningBalance').attr('Maxlength', "10");
+
+            $('#ledgerName').attr('Maxlength', "100");
+
+            var group = $("#groupID").val();
+            var bal = $('#OpeningBalance').val();
+            var led = $('#ledgerName').val();
+
+            if (group == '') {
+                $('#groupID').addClass('ErrorControl');
+                $('#groupID').focus();
+                return false;
+            }
+
+            if (led == '') {
+                $('#ledgerName').addClass('ErrorControl');
+                $('#ledgerName').focus();
+                return false;
+            }
+
+
+
+
+
+            if (bal == '') {
+                $('#OpeningBalance').addClass('ErrorControl');
+                $('#OpeningBalance').focus();
+                return false;
+            }
+
+
+        });
+
+    });
+
+
+</script>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#ledgerName").change(function () {
+
+
+            $.get("/LedgerMaster/CheckLedgerName", { name: $("#ledgerName").val() }, function (data) {
+
+
+
+                if (data == true) {
+                    alert("Ledger Name already exists");
+                    $("#ledgerName").val('')
+                    $("#ledgerName").focus()
+                    return false;
+                }
+                else {
+
+                }
+            });
+
+        });
+    });
+
+</script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+            location.href = "/LedgerMaster/ShowLedgerMaster";
+        });
+
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+@using (Html.BeginForm("EditSubLedgerMaster", "LedgerMaster"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                Sub  Ledger Master  <small>Edit</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+
+
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success alert-dismissable">
+                        <i class="fa fa-check"></i>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        @ViewBag.Message
+                    </div>
+                }
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger alert-dismissable">
+                        <i class="fa fa-ban"></i>
+                        <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                        <b>Error!</b>
+                        @ViewBag.Error
+                    </div>
+                }
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+
+                        <li class="pull-right">
+
+                            <input type="submit" id="btnsubmit" class="btn btn-primary" value="Update" />
+
+
+                            <input type="button" id="btncancel" class="btn btn-primary" value="Cancel" />
+
+
+
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+                                            <div class="form-group">
+                                                @Html.HiddenFor(model => model.LID)
+
+                                                @Html.HiddenFor(model => model.BranchId)
+
+                                                @Html.HiddenFor(model => model.CompanyId)
+
+                                                @Html.HiddenFor(model => model.UserId)
+                                                <label class="black_txt_010">
+                                                    Sub Ledger Group Name :<span style="color:Red;">*</span>
+                                                </label>
+
+
+                                                @Html.DropDownListFor(model => model.groupID, new SelectList(ViewBag.Group, "groupID", "groupName"), "----Select a Group Name---", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.groupID)
+
+
+                                            </div>
+
+                                            <div class="form-group">
+
+                                                <label class="black_txt_010">
+                                                    Parent Ledger Name :<span style="color:Red;">*</span>
+                                                </label>
+
+
+                                                @Html.DropDownListFor(model => model.parentID, new SelectList(ViewBag.Ledger, "Value", "Text"), "----Select a Parent Ledger Name---", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.parentID)
+
+
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Sub Ledger Code:
+                                                </label>
+
+                                                @Html.TextBoxFor(model => model.ledgerID, new { @class = "form-control", @readonly = "readonly" })
+
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Sub  Ledger Name :<span style="color:Red;">*</span>
+                                                </label>
+
+                                                @Html.TextBoxFor(model => model.ledgerName, new { @class = "form-control", @placeholder = "Enter Ledger Name", @maxlength = "50" })
+                                                @Html.ValidationMessageFor(model => model.ledgerName)
+
+
+
+                                            </div>
+
+                                 
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Opening Balance(@ViewBag.Branch) :<span style="color:Red;">*</span>
+                                                </label>
+
+                                                <input type="text" id="OpeningBalance" value="@ViewBag.Balance" class="form-control" name="OpeningBalance" />
+
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="black_txt_010">
+                                                    Aggregate Opening Balance(All Units) :<span style="color:Red;">*</span>
+                                                </label>
+
+                                                <input type="text" id="TotalOpeningBalance" value="@ViewBag.TotalBalance" class="form-control" name="TotalOpeningBalance" readonly="readonly" />
+
+                                            </div>
+
+
+
+
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </aside>
+}

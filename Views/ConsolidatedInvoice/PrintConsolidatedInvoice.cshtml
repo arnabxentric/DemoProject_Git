@@ -1,0 +1,717 @@
+﻿@model XenERP.Models.ConsolidatedInvoiceModelView
+
+@{
+    Layout = null;
+    Company company = ViewBag.company;
+    BranchMaster branch = ViewBag.branch;
+}
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Sales Invoice";
+    
+   
+}
+<style>
+@@page {
+  size: A4;
+  margin: 0;
+}
+body
+{
+    font-size:15px;
+}
+</style>
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+<script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/jQuery.print.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    jQuery(document).ready(function ($) {
+
+
+
+
+        $('#print').click(function () {
+
+
+          
+                $("#ProductDetailsprint").print();
+
+
+
+            });
+
+       
+    });
+
+
+</script>
+
+   
+<html>
+@*<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Sales Invoice</title>
+   
+</head>*@
+
+<body>
+ @*<button id="print" class="btn btn-primary" type="button"><i class="fa fa-print"></i>Print </button>*@
+    <div id="ProductDetailsprint">
+        @*<div class="padding_top" style="padding:120px 0 0 0;">*@
+        <table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+          
+            <tr>
+                <td colspan="9" style="padding:0px 10px;" align="left">
+                    <div class="logo1">
+                        <img style="width:200px;height:100px;float:left;display:inline" src="~/Images/Picture1.png" />
+                    </div>
+                    <div class="header1" style="float:right;text-align:left;vertical-align:top;display:inline">
+                        <span style="font-size:x-large;font-weight:bolder">@company.Name</span>
+
+                        <br />H.O.-@company.Address
+                        <br /><b>Phone: (033) 4007 0525,90510 40404 </b>
+                        <br /><strong>GSTIN:&nbsp;@company.GST_VATNumber&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CIN:&nbsp;@company.TANNO</strong>
+                    </div>
+                  
+                  
+                </td>
+            </tr>
+            <tr>
+                <td colspan="9" align="center"><span style="font-size:x-large;font-weight:bolder;">CONSOLIDATED INVOICE</span></td>
+            </tr>
+            <tr>
+    <td colspan="5" width="50%">
+        <br />
+        From,
+        <p>
+            <strong>@company.Name</strong>
+            <br /><strong>Unit : </strong>@branch.Address
+            <br />Landline No:@branch.Fax, Mobile: @branch.ContactNumber
+        </p>
+        <hr />
+
+        To,
+        <p>
+            
+                <strong>@Model.CustomerName</strong>
+           
+            <br />Address: @Model.Address
+
+            <br />@Model.City
+          
+            <br />PIN: @Model.Pin
+            <br /><strong>Contact No. :@Model.ContactPerson</strong>
+            @*<br /><strong>Customer GSTIN:@Model.Customer.GstVatNumber</strong>
+                <br /><strong>Customer PAN No. :@Model.Customer.PanNo</strong>
+                <br /><strong>Customer AADHAR No. :@Model.Customer.TinNo</strong>*@
+        </p>
+    </td>
+    <td colspan="4" width="50%" class="date">
+        <p>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="padding:0px 5px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="padding:0px 5px;"></td>
+                </tr>
+                <tr>
+                    <td style="padding:0px 5px;"><strong>Invoice No.</strong>&nbsp;&nbsp;&nbsp;:&nbsp;@Model.InvoiceNo</td>
+                </tr>
+                <tr>
+                    <td style="padding:0px 5px;">&nbsp;</td>
+                </tr>
+               
+                <tr>
+                    <td style="padding:0px 5px;"><strong>Invoice Date</strong>&nbsp;:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.InvoiceDate)</td>
+                </tr>
+               
+                <tr>
+                    <td style="padding:0px 5px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td style="padding:0px 5px;"></td>
+                </tr>
+               
+               
+            </table>
+        </p>
+    </td>
+</tr>
+
+            <tr>
+                <th align="center" width="5%">SL. No.</th>
+                <th align="center" width="10%">Invoice No.</th>
+                <th align="center" width="10%">Inv. Date</th>
+                <th align="center" width="10%">Del. Date</th>
+                <th align="center" width="40%">Description</th>
+                <th align="center" width="5%">Qty In KGS</th>
+                <th align="center" width="5%">QTY In PCS</th>
+                @*<th align="center" width="5%">Unit</th>*@
+                <th align="center" width="5%">Rate/KG</th>
+                <th align="center" width="10%">Amount</th>
+            </tr>
+            @foreach (var item in Model.Details)
+            {
+                if (item.Serial <= 6)
+                {
+
+                    if (item.OrderDateStr != "")
+                    {
+        <tr>
+
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.Serial</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.OrderNo</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.OrderDateStr</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.DeliveryDateStr</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.Description</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.Quantity</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.UnitFormula</td>
+                    </tr>
+                </table>
+            </td>
+            @*<td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="right" style="padding:10px 3px;">@item.Unit</td>
+                </tr>
+            </table>
+        </td>*@
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.Rate</td>
+                    </tr>
+
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.Amount</td>
+                    </tr>
+                </table>
+            </td>
+
+
+        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">@item.Serial</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td colspan="3">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="left" style="padding:3px;">Sales Return for Inv. No:@item.OrderNo, Dated:@item.DeliveryDateStr</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">@item.Description</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.Quantity</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.UnitFormula</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">@item.Rate</td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.Amount</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+
+                        </tr>
+                    }
+                }
+                else if (item.Serial == 7)
+                {
+                    <tr style="page-break-before:always; height:190px;"></tr>
+
+                    <tr>
+                        <th align="center" width="5%">SL. No.</th>
+                        <th align="center" width="10%">Inv. No.</th>
+                        <th align="center" width="10%">Inv. Date</th>
+                        <th align="center" width="10%">Del. Date</th>
+                        <th align="center" width="40%">Description</th>
+                        <th align="center" width="5%">Qty In KGS</th>
+                        <th align="center" width="5%">QTY In PCS</th>
+                        <th align="center" width="5%">Rate</th>
+                        <th align="center" width="10%">Amount</th>
+                    </tr>
+                    if (item.OrderDateStr != "")
+                    {
+        <tr>
+
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.Serial</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.OrderNo</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.OrderDateStr</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.DeliveryDateStr</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="center" style="padding:10px 3px;">@item.Description</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.Quantity</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.UnitFormula</td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.Rate</td>
+                    </tr>
+
+                </table>
+            </td>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" style="padding:10px 3px;">@item.Amount</td>
+                    </tr>
+                </table>
+            </td>
+
+
+        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">@item.Serial</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td colspan="3">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">Sales Return for Invoice No.:@item.OrderNo, Dated:@item.DeliveryDateStr</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">@item.Description</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.Quantity</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.UnitFormula</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">@item.Rate</td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.Amount</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+
+                        </tr>
+                    }
+
+                }
+                else
+                {
+                    if (item.OrderDateStr != "")
+                    {
+                        <tr>
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px 3px;">@item.Serial</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px 3px;">@item.OrderNo</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px 3px;">@item.OrderDateStr</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px 3px;">@item.DeliveryDateStr</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px 3px;">@item.Description</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px 3px;">@item.Quantity</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px 3px;">@item.UnitFormula</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px 3px;">@item.Rate</td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px 3px;">@item.Amount</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">@item.Serial</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td colspan="3">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">Sales Return for Invoice No.:@item.OrderNo, Dated:@item.DeliveryDateStr</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="center" style="padding:10px;">@item.Description</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.Quantity</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.UnitFormula</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">@item.Rate</td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <td>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td align="right" style="padding:10px;">-@item.Amount</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+
+                        </tr>
+                    }
+                }
+            }
+            <tr class="total">
+
+                <td colspan="5">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="center" style="padding:10px;">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px 3px;"><strong>@Model.TotalQuantity</strong></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px 3px;"><strong>@Model.TotalQuantityInPieces</strong></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px 3px;"><strong>@Model.AverageRate</strong></td>
+                        </tr>
+
+                    </table>
+                </td>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td align="right" style="padding:10px 3px;"><strong>@Model.TotalAmount</strong></td>
+                        </tr>
+                    </table>
+                </td>
+
+
+            </tr>
+            @if (Model.TotalAmount != Model.TotalAmountAfterRoundOff)
+            {
+                <tr class="total">
+                    <td colspan="8" style="padding:10px;"><strong>Round Amount</strong></td>
+                    <td align="right" style="padding:10px;"><strong>@Model.TotalAmountAfterRoundOff </strong> </td>
+                </tr>
+            }
+
+
+            <tr class="total">
+                <td colspan="9" style="padding:10px;"><strong><span>Rupees</span>: @Model.TotalInWords Only</strong></td>
+
+            </tr>
+            @*<tr>
+                    <td width="100%" colspan="9">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                            <tr>
+                                <td style="padding:1px 1px; "><strong>Payment Details:</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:1px 1px;"><span style="font-size:smaller">Company Name: Gimme Foods Pvt. Ltd.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:1px 1px;"><span style="font-size:smaller">Bank: HDFC Bank Ltd. </span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:1px 1px;"><span style="font-size:smaller">Account No. : 50200030049081</span>​</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:1px 1px;"><span style="font-size:smaller">IFSC Code: HDFC0000008</span>​</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:1px 1px;"><span style="font-size:smaller">Payment Mode-: By A/C payee check/DD/NEFT/RTGS</span></td>
+                            </tr>
+                        </table>
+                    </td>
+
+                </tr>*@
+        </table>
+    @*</div>*@
+
+     <div>
+         <table width="100%" border="1" cellspacing="0" cellpadding="0" bottom="0px">
+             <tbody>
+                 <tr>
+                     <td width="50%" colspan="5"></td>
+                     <td width="50%" colspan="4">
+                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                             <tr>
+                                 <td align="center" style="padding:5px 10px;"><strong>E. & O. E.</strong></td>
+                             </tr>
+                             <tr>
+                                 <td align="center" style="padding:5px 10px;"><strong>For @company.Name</strong></td>
+                             </tr>
+                             <tr>
+                                 <td align="center" style="padding:5px 10px;">&nbsp;</td>
+                             </tr>
+                             <tr>
+                                 <td align="center" style="padding:5px 10px;">&nbsp;</td>
+                             </tr>
+                             <tr>
+                                 <td align="center" style="padding:5px 10px;"><strong>Authorised Signatory</strong></td>
+                             </tr>
+                             <tr>
+                                 <td align="left" style="padding:5px 10px;"></td>
+                             </tr>
+                             <tr>
+                                 <td align="right" style="padding:5px 10px;"></td>
+                             </tr>
+
+                             <tr>
+                                 <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                             </tr>
+                             <tr>
+                                 <td align="left" style="padding:5px 10px;">&nbsp;</td>
+                             </tr>
+
+                         </table>
+                     </td>
+                 </tr>
+
+         </table>
+     </div>
+                 @*<div class="bottom">
+
+                        22, R.N.Mukerjee Road, 5th Floor, Dalhousie, Above ICICI Bank,&nbsp;Email : shilpa_star@senindia.co.in ,&nbsp;Mobile No. : +91-9836468228
+                    </div>*@
+</div>
+</body>
+</html>

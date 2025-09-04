@@ -1,0 +1,89 @@
+﻿@model XenERP.Models.EmployeeType
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditEmployeeType", "EmployeeType"))
+{
+    
+     @Html.ValidationSummary(true)
+   
+
+      <aside class="right-side"> 
+
+           <section class="content-header">
+                    <h1>Employee Type<small>Add</small> </h1>
+                    <ol class="breadcrumb">
+                       <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                       <li><a href="#">Forms</a></li>
+                       <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+             <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+                                </ul>
+             </div>
+
+                <!-- Main content -->
+                <section class="content">  
+                    <div class="row">
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                     </div>
+                                <div class="box-body">
+                     
+            @if (ViewBag.Message != null)
+      {
+            <div class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          @ViewBag.Message
+             </div>
+      }
+      
+            @if (ViewBag.Error != null)
+      { 
+               <div class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+      }
+        
+      
+      
+         @Html.HiddenFor(d => d.Id)
+          @Html.HiddenFor(d => d.CreatedOn)
+            
+                                     
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Employee Type :<span style="color:Red;">*</span> </label>
+                                          @Html.TextBoxFor(model => model.TypeName, new { @class = "form-control", @placeholder = "Enter Employee Type", @maxlength = "100" })
+                                          @Html.ValidationMessageFor(model => model.TypeName)
+                                    </div>
+
+                                      <div class="form-group">
+                                          <label class="black_txt_010"> Descrition :</label>
+                                          @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Enter Description", @maxlength = "100" })
+                                          @Html.ValidationMessageFor(model => model.Description)
+                                    </div>
+
+                                      <div class="form-group">
+                                          <label class="black_txt_010"> Status :<span style="color:Red;">*</span> </label>
+                                          @Html.CheckBoxFor(model => model.Status, new { @class = "form-control" })
+                                         
+                                    </div>
+
+                    </div>
+                    </div>   <!-- /.row -->
+                    </div>
+                    </div>
+                               
+                </section><!-- /.content -->
+        </aside>
+    
+}

@@ -1,0 +1,269 @@
+﻿@model IEnumerable<XenERP.Models.CustomerModelView>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CustomerExport</title>
+</head>
+<body>
+ 
+    <table>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShortName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CustomerType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PoultryDiscount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PoultryDiscountFur)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CattleDiscount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CattleDiscountFur)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishDiscount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FishDiscountFur)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OtherDiscount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OtherDiscountFur)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PerBagDiscount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PerBagDiscountFur)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GstVatNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PanNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TinNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTaxNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Website)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AddressName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StreetPoBox)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Suburb)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Country)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StateRegion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactOfficePhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactWebsite)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactPhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactFaxNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactMobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactDDINumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ContactTollFreeNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BranchName)
+            </th>
+          
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShortName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PoultryDiscount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PoultryDiscountFur)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CattleDiscount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CattleDiscountFur)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FishDiscount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FishDiscountFur)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OtherDiscount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OtherDiscountFur)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PerBagDiscount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PerBagDiscountFur)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GstVatNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PanNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TinNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceTaxNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Website)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AddressName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StreetPoBox)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Suburb)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StateRegion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostalCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactOfficePhone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactWebsite)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactPhone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactFaxNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactMobile)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactDDINumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactTollFreeNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BranchName)
+            </td>
+           
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>

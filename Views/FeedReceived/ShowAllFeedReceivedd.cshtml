@@ -1,0 +1,132 @@
+﻿@model IEnumerable<XenERP.Models.FeedReceivedDetail>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Feed Receipt Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+       @* <div class="col-xs-12"><a href="@Url.Action("CreateFeedReceived", "FeedReceived")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Create New Feed Receipt</a></div><br /><br />*@
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>  
+                          <th>Challan No</th>                
+                       
+                         <th>Date Of Issue</th>
+                        <th>Unit</th>
+                        <th width="300px">Received Detail</th>
+                     
+                         <th></th>
+                         <th></th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.GroupBy(d=>new {d.FeedReceivedMasterId, d.FeedReceivedMaster.ChallanNo, d.FeedReceivedMaster.DateOfReceiptString, d.FeedReceivedMaster.BranchMaster.Name}))
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td> 
+                             <td align="center"><a href='@Url.Action("FeedReceivedInformationDetails", "FeedReceived", new { id = item.Key.FeedReceivedMasterId })' class="AccoDet">@item.Key.ChallanNo</a> @Html.HiddenFor(m => item.Key.FeedReceivedMasterId, new { @class = "AcId" })</td>                       
+
+                          
+                              <td> @Html.DisplayFor(modelItem => item.Key.DateOfReceiptString)</td>
+                             <td> @Html.DisplayFor(modelItem => item.Key.Name)</td>
+                          
+                            <td width="300px">
+                                @foreach (var fl in Model.Where(r=>r.FeedReceivedMasterId==item.Key.FeedReceivedMasterId))
+                                {
+                                    <table id="#example5" class="chompa table-bordered">
+                                       
+
+                                            <tr>
+                                                <td width="200px">
+                                                    @Html.DisplayFor(modelItem => fl.ProductName)
+                                                </td>
+                                                <td width="100px" align="right">
+                                                    @Html.DisplayFor(modelItem => fl.Quantity)
+                                                </td>
+                                            </tr>
+                                        
+                                    </table>
+                                }
+                            </td>
+
+                           
+
+                         @*@if (Session["PoultryEditId"] != null)
+                         {*@
+                            <td> @Html.ActionLink("Edit", "EditFeedReceived", "FeedReceived", new { id = item.Key.FeedReceivedMasterId }, null)  </td>
+                            <td> @Html.ActionLink("Delete", "DeleteFeedReceived", "FeedReceived", new { id = item.Key.FeedReceivedMasterId, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                         @*}*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>
+

@@ -1,0 +1,179 @@
+﻿@model XenERP.Models.ModelView.FeedIssuedModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+
+<style>
+    .table-responsive {
+        min-height: 0.01%;
+        overflow-x: auto;
+    }
+
+    /*.select2 {
+        width: 200px;
+    }*/
+
+    .input_width {
+        width: 100%;
+    }
+
+    table.chompa td input[type="text"] {
+        width: 100%;
+    }
+
+    table.chompa td select {
+        width: 100%;
+    }
+</style>
+
+<script src="~/Scripts/JqueryValidation.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".select2").select2();
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+
+        $('#ProductId').on('change', function () {
+            var rvwId = $(this).val();
+
+          
+            if (rvwId == '') {
+                $("#UnitCode").val('');
+                $("#SecondaryUnitId").val();
+                $("#PrimaryUnitId").val();
+                $(".uc").text();
+                $(".uc1").text();
+
+            }
+            else {
+                //$("#UOM_size").empty();
+                //$("#UOM_size").append($('<option/>', {
+                //    value: "",
+                //    text: "----Select UOM Size ----"
+                //}));
+                $.post("/HariProductOpening/GetUomHo", { productId: rvwId }, function (data) {
+
+                    $("#UnitCode").val(data.Unit);
+                    $("#SecondaryUnitId").val(data.UnitId);
+                    $("#PrimaryUnitId").val(data.PrimaryUnit);
+                    $(".uc").text(' (In ' + data.Unit + ' )');
+                    $(".uc1").text(data.Unit);
+
+                });
+
+            }
+        });
+
+        $("form").on("submit", function (event) {
+
+        });
+    });
+
+</script>
+
+
+
+@using (Html.BeginForm("CreateOpeningHo", "HariProductOpening"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+
+
+
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class=""> Date:<span style="color:Red;">*</span> </label>
+                        <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.OpeningDate, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                        @Html.ValidationMessageFor(model => model.OpeningDate)
+                    </div>
+
+                    <div class="form-group">
+                        <label class=""> Product :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.product, "Value", "Text"), "------None-----", new { @class = "form-control select2" })
+                        @Html.ValidationMessageFor(model => model.ProductId)
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+
+                        <label class="black_txt_010">Opening Quantity:<span style="color:blue;" class="uc"></span><span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.OpeningQuantity, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.OpeningQuantity)
+                    </div>
+                    <div class="form-group">
+                        <label class="">Unit:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.UnitCode, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.HiddenFor(model => model.SecondaryUnitId)
+                        @Html.HiddenFor(model => model.PrimaryUnitId)
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Price (Per <span style="color:blue;" class="uc1"></span>)<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.Price, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Price)
+                    </div>
+
+                    <br />
+                    <br />
+                    <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary" />
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </aside>
+}

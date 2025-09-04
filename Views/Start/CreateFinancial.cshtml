@@ -1,0 +1,331 @@
+﻿@model XenERP.Models.FinancialYearMaster
+
+@{
+    if (ViewBag.set == 0)
+    {
+        Layout = "~/Views/Shared/_Layoutstart.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+
+    }
+}
+
+
+@{
+    
+    //var compid = Session["companyid"];
+
+
+    ViewBag.Title = "Xpert | New Financial";
+}
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+@* <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js" type="text/javascript"></script>*@
+
+
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../Scripts/custom.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+
+
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+      
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+    });
+
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+      
+
+        $("#CompanyId").change(function () {
+
+
+         
+                        $.get("/Start/GetFinancialDate", { id: $("#CompanyId").val() }, function (data) {
+
+                           if (data == "") {
+
+
+                                alert("null");
+                            }
+
+                            else {                            
+
+                                var value = new Date (parseInt(data.Startdate.replace(/(^.*\()|([+-].*$)/g, '')));
+
+
+                                alert("hi");
+
+                                var dat = value.getMonth() + 1 + "/" + value.getDate() +  "/" + value.getFullYear();
+
+
+                               
+//                          
+
+//                             var date=  $.datepicker.formatDate(Culture,new Date(value)); 
+
+                                $("#sDate").val(dat);
+//                                $("#eDate").val(data.EndDate);
+                            }
+                        });
+
+        });
+    });
+
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnsubmit").click(function () {
+
+
+
+
+            if ($("#sDate").val() == "") {
+                alert("Please enter start date");
+                return false;
+
+            }
+
+
+            if ($("#eDate").val() == "") {
+                alert("Please enter end date");
+                return false;
+
+            }
+        });
+
+    });
+
+</script>
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../Scripts/custom.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/locales/bootstrap-datepicker.de.js"
+    type="text/javascript"></script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Financial Year   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+                   	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("CreateCompany", "Start")"><span>Organization Settings</span></a></li>                           
+                        	<li class="selected">Financial Settings</li>                      
+                           @* <li>Currencies</li>
+                             <li>Tax Rates</li>*@
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+
+                                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+
+
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                               
+
+ <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                                <form role="form">
+                                    <div class="box-body">
+                                    </div>
+
+                                 @*   @if (ViewBag.finyear == 0)
+                                    {
+
+*@
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                     Company Name:<span style="color:Red;">*</span></label>
+                     @Html.DropDownListFor(model => model.CompanyId, new SelectList(ViewBag.companydet, "Id", "Name"), "--Select a company---", new { @class = "form-control" })
+                    
+                                     
+                                    </div>
+                                        
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                     Start Date:<span style="color:Red;">*</span></label>
+                                                <div class="input-group date" @*data-date-format="@Session["DateFormatLower"]"*@  id="dp3">@Html.TextBoxFor(model => model.sDate, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                    
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                 End Date:<span style="color:Red;">*</span></label>
+                                  <div class="input-group date" @*data-date-format="@Session["DateFormatLower"]"*@  id="dp4">@Html.TextBoxFor(model => model.eDate, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                    
+                        
+                                     
+                                    </div>
+                                        
+
+@*
+                                    }*@
+                                    @*else
+                                    {
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                     Start Date:<span style="color:Red;">*</span></label>
+
+                     @try
+                     {
+                     <input type="text" id="sDatee" class = "form-control", readonly ="readonly" name="sDatee"value="@String.Format(Session["DateFormatUpper"].ToString(), @ViewBag.start)" />
+
+                     }
+                     catch { 
+                     
+                                          <input type="text" id="sDatee" class = "form-control", readonly ="readonly" name="sDatee" />
+
+                     
+                     }
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                 End Date:<span style="color:Red;">*</span></label>
+       @try
+       {
+                     <input type="text" id="eDatee" class = "form-control", readonly ="readonly" name="eDatee" value="@String.Format(Session["DateFormatUpper"].ToString(), @ViewBag.end)"/>
+
+                                  
+       }
+       catch { 
+       
+       
+       
+       
+                     <input type="text" id="eDatee" class = "form-control", readonly ="readonly" name="eDatee" />
+
+       }
+                                  
+                             
+
+
+                                    </div>
+                                    }
+                                </form>
+                         
+                    </div>  
+                    
+                        *@
+
+                    
+                                         
+
+                                          <form >
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("CreateCompany", "Start")"><span>Back</span></a></span></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("CreateGroupMaster", "Start")"><span>Next</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+                    
+                    
+                    
+                     <!-- /.row -->
+                </section><!-- /.content -->
+        
+        
+        </aside>
+        
+        
+        
+        
+}

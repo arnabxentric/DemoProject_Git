@@ -1,0 +1,211 @@
+﻿@model XenERP.Models.FinancialYearMasterModelView
+@{
+    //Layout = "~/Views/Shared/_LayoutStart.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+}
+
+@{
+    
+    var compid=Session["companyid"];
+    var date=0;
+    ViewBag.Title="Financial Settings";
+}
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<script language="javascript">
+
+    $(document).ready(function () {
+
+
+//        var culture = Session["DateCulture"].ToString();
+
+
+//        var dateformat = Session["DateCulture"].ToString();
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true});
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true});
+
+      
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/Company/CompanyList";
+
+
+        });
+
+
+
+    });
+    </script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnsubmit").click(function () {
+
+
+
+
+            if ($("#sDate").val() == "") {
+                alert("Please enter start date");
+                return false;
+
+            }
+
+
+            if ($("#eDate").val() == "") {
+                alert("Please enter end date");
+                return false;
+
+            }
+        });
+
+    });
+
+</script>
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../Scripts/custom.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Financial Year   <small>Master Entry</small>                    
+                    </h1>
+                 @*   <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>*@
+                </section>
+                  
+
+     
+
+
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                   
+                                      <input name="" type="button" id="btncancel" value="Cancel" class="btn btn-primary" />
+                                    
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+
+                             
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                               
+
+ <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                                <form role="form">
+                                   
+                                    <div class="box-body">
+
+
+                                  
+
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                     Start Date:<span style="color:Red;">*</span></label>
+                                                <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.sDate, new { @class = "form-control"})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                    
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                 End Date:<span style="color:Red;">*</span></label>
+                                  <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.eDate, new { @class = "form-control"})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                    
+                        
+                                     
+                                    </div>
+                                        
+
+
+                                    <br />
+                                        <a href="@Url.Action("CompanyList","Company")">Back To List</a>
+                                    </div>
+                                      
+                                </form>
+               
+                    </div>  
+                    
+                    
+                    
+                                         
+
+                    
+                    
+                    
+                     <!-- /.row -->
+                </section><!-- /.content -->
+        
+        
+        </aside>
+        
+        
+        
+        
+}

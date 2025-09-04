@@ -1,0 +1,350 @@
+﻿@model XenERP.Models.Company
+
+@{
+    ViewBag.Title = "Create";
+    //Layout = null;
+}
+
+@*
+<h2>Create</h2>
+
+@using (Html.BeginForm()) {
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Company</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Userid)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Userid)
+            @Html.ValidationMessageFor(model => model.Userid)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CompanyDisplayName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CompanyDisplayName)
+            @Html.ValidationMessageFor(model => model.CompanyDisplayName)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CompanyLogo)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CompanyLogo)
+            @Html.ValidationMessageFor(model => model.CompanyLogo)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.BusinessLine)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.BusinessLine)
+            @Html.ValidationMessageFor(model => model.BusinessLine)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CompanyType)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CompanyType)
+            @Html.ValidationMessageFor(model => model.CompanyType)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CompanyDescription)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CompanyDescription)
+            @Html.ValidationMessageFor(model => model.CompanyDescription)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CurrencyId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CurrencyId)
+            @Html.ValidationMessageFor(model => model.CurrencyId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.GST_VATNumber)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.GST_VATNumber)
+            @Html.ValidationMessageFor(model => model.GST_VATNumber)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TANNO)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.TANNO)
+            @Html.ValidationMessageFor(model => model.TANNO)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ROC)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ROC)
+            @Html.ValidationMessageFor(model => model.ROC)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TIN)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.TIN)
+            @Html.ValidationMessageFor(model => model.TIN)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PANNO)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PANNO)
+            @Html.ValidationMessageFor(model => model.PANNO)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Website)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Website)
+            @Html.ValidationMessageFor(model => model.Website)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PurchaseEmailId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PurchaseEmailId)
+            @Html.ValidationMessageFor(model => model.PurchaseEmailId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.SalesEmailId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.SalesEmailId)
+            @Html.ValidationMessageFor(model => model.SalesEmailId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Fax)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Fax)
+            @Html.ValidationMessageFor(model => model.Fax)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CountryId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.CountryId)
+            @Html.ValidationMessageFor(model => model.CountryId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.StateId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.StateId)
+            @Html.ValidationMessageFor(model => model.StateId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.City)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.City)
+            @Html.ValidationMessageFor(model => model.City)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Zipcode)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Zipcode)
+            @Html.ValidationMessageFor(model => model.Zipcode)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Address)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Address)
+            @Html.ValidationMessageFor(model => model.Address)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PostalCountryId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PostalCountryId)
+            @Html.ValidationMessageFor(model => model.PostalCountryId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PostalStateId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PostalStateId)
+            @Html.ValidationMessageFor(model => model.PostalStateId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PostalCity)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PostalCity)
+            @Html.ValidationMessageFor(model => model.PostalCity)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PostalZipcode)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PostalZipcode)
+            @Html.ValidationMessageFor(model => model.PostalZipcode)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PostalAddress)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PostalAddress)
+            @Html.ValidationMessageFor(model => model.PostalAddress)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IssamepostalAddress)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.IssamepostalAddress)
+            @Html.ValidationMessageFor(model => model.IssamepostalAddress)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ContactNumber)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ContactNumber)
+            @Html.ValidationMessageFor(model => model.ContactNumber)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.EmailId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.EmailId)
+            @Html.ValidationMessageFor(model => model.EmailId)
+        </div>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}*@
+
+
+@* <script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>*@
+
+  @*<script src="../../js/bootstrap.min.js" type="text/javascript"></script>*@
+@*  <script src="../../Scripts/bootstrap.min.js" type="text/javascript"></script>*@
+
+<script src="../../js/plugins/wizard/jquery.bootstrap.wizard.min.js" type="text/javascript"></script>
+
+<script src="../../js/plugins/preetify/prettify.js" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        $('#rootwizard').bootstrapWizard({ onTabShow: function (tab, navigation, index) {
+            var $total = navigation.find('li').length;
+            var $current = index + 1;
+            var $percent = ($current / $total) * 100;
+            $('#rootwizard').find('.bar').css({ width: $percent + '%' });
+        }
+        });
+        window.prettyPrint && prettyPrint()
+    });
+  
+	</script>
+        @* <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />*@
+         @*  <link href="../../css/preetify/bootstrap.min.css" rel="stylesheet" type="text/css" />*@
+<link href="../../css/preetify/prettify.css" rel="stylesheet" type="text/css" />
+    <div class='container'>
+		
+		<div class="span12">
+			<section id="wizard">
+			  <div class="page-header">
+	            <h1>Wizard With Progress Bar using events</h1>
+	          </div>
+	
+				<div id="rootwizard">
+					<div class="navbar">
+					  <div class="navbar-inner">
+					    <div class="container">
+					<ul>
+					  	<li><a href="#tab1" data-toggle="tab">First</a></li>
+						<li><a href="#tab2" data-toggle="tab">Second</a></li>
+						<li><a href="#tab3" data-toggle="tab">Third</a></li>
+						<li><a href="#tab4" data-toggle="tab">Forth</a></li>
+						<li><a href="#tab5" data-toggle="tab">Fifth</a></li>
+						<li><a href="#tab6" data-toggle="tab">Sixth</a></li>
+						<li><a href="#tab7" data-toggle="tab">Seventh</a></li>
+					</ul>
+					 </div>
+					  </div>
+					</div>
+					<div id="bar1" class="progress1 progress-striped1 active1">
+					  <div class="bar1"></div>
+					</div>
+					<div class="tab-content">
+					    <div class="tab-pane" id="tab1">
+					      1
+					    </div>
+					    <div class="tab-pane" id="tab2">
+					      2
+					    </div>
+						<div class="tab-pane" id="tab3">
+							3
+					    </div>
+						<div class="tab-pane" id="tab4">
+							4
+					    </div>
+						<div class="tab-pane" id="tab5">
+							5
+					    </div>
+						<div class="tab-pane" id="tab6">
+							6
+					    </div>
+						<div class="tab-pane" id="tab7">
+							7
+					    </div>
+						<ul class="pager wizard">
+							<li class="previous first" style="display:none;"><a href="#">First</a></li>
+							<li class="previous"><a href="#">Previous</a></li>
+							<li class="next last" style="display:none;"><a href="#">Last</a></li>
+						  	<li class="next"><a href="#">Next</a></li>
+						</ul>
+					</div>	
+				</div>
+				
+
+				
+			</section>
+ 		</div>
+	</div>

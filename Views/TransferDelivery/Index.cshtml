@@ -1,0 +1,215 @@
+﻿@model IEnumerable<XenERP.Models.TransferDeliveryReceive>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int SlNo = 0;
+    long branchid = ViewBag.Branchid;
+}
+
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<aside class="right-side">
+    <section class="content-header">
+        <h1>
+            Transfer<small>List</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+    <div class="box">
+        <div class="col-xs-12"><a href="@Url.Action("Create", "TransferDelivery")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Transfer Delivery</a></div><br /><br />
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <th>
+                            Sl. No.
+                        </th>
+                        <th>
+                            T.Delivery No.
+                        </th>
+                        <th>
+                            T.Order No.
+                        </th>
+                        <th>
+                            Transfer Date
+                        </th>
+                        <th>
+                            Receive Date
+                        </th>
+                        <th>
+                            Transfer From
+                        </th>
+                        <th>
+                            Transfer To
+                        </th>
+
+                        <th>
+                            Remarks
+                        </th>
+
+
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                        </th>
+
+
+
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+                        //totalpurchaserate = totalpurchaserate + item.PurchaseRate;
+
+                        SlNo = SlNo + 1;
+                        //totalsellrate = totalsellrate + item.SellRate;
+
+
+                        <tr>
+                            <td>@SlNo</td>
+                            <td>
+
+
+
+
+                                @Html.DisplayFor(modelItem => item.TransferDeliveryNo)
+
+                            </td>
+                            <td>
+
+
+
+
+                                @Html.DisplayFor(modelItem => item.TransferOrderNo)
+
+                            </td>
+                            <td>
+                                @String.Format(Session["DateFormatUpper"].ToString(), item.TransferDeliveryDate)
+
+                            </td>
+
+                            <td>
+
+                                @String.Format(Session["DateFormatUpper"].ToString(), item.TransferReceiveDate)
+                            </td>
+
+
+
+                            <td>
+
+
+                                @Html.DisplayFor(modelItem => item.Warehouse.Name) ( @Html.DisplayFor(modelItem => item.Warehouse.Code))
+                            </td>
+
+
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.Warehouse1.Name) (@Html.DisplayFor(modelItem => item.Warehouse1.Code))
+                            </td>
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.Comments)
+                            </td>
+
+
+                            <td>
+
+                                @Html.DisplayFor(modelItem => item.Status)
+                            </td>
+
+                            <td class="dxgv">
+                                <img src="../../Images/image_elements.png" />
+                                @if (branchid != 0 && item.Status == "Transferred")
+                                {
+                                    <div class="pop">
+                                        <ul>
+                                            <li> @Html.ActionLink("Edit", "Create", new { id = item.Id }) </li>
+                                            @*<li>@Html.ActionLink("Print", "PrintTransferOrderPDF", new { id = item.Id })</li>*@
+                                        </ul>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="pop">
+                                        <ul>
+                                            @*<li> @Html.ActionLink("Display", "Display", new { id = item.Id }) </li>*@
+
+                                            <li>@Html.ActionLink("Print", "PrintTransferDeliveryPDF", new { id = item.Id })</li>
+                                        </ul>
+                                    </div>
+                                }
+                            </td>
+
+
+
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</aside>
+

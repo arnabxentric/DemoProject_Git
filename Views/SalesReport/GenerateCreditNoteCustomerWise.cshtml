@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "GenerateCreditNoteCustomerWise";
+}
+
+
+
+@model XenERP.Models.SalesInvoice
+
+<aside class="right-side">
+    <section class="content">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header"> </div>
+                    <div class="box-body">
+                        <h1>Generating Credit Note For Period From @ViewBag.From To @ViewBag.To</h1>
+
+                        <h1>Are you sure you want to Generate Credit Note?</h1>
+                        
+                        @using (Html.BeginForm())
+                        {
+                            <p>
+                                @Html.Hidden("From", (object)ViewBag.From)
+                                @Html.Hidden("To", (object)ViewBag.To)
+                                <input type="submit" value="Generate" class="btn btn-primary" /> |
+                                @Html.ActionLink("Back to Report Page", "CreditNoteCustomerWise")
+                            </p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</aside>

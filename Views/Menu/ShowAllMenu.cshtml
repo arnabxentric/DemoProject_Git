@@ -1,0 +1,404 @@
+﻿@model XenERP.Models.MenuaccessUser
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+}
+@{
+    
+    int SlNo = 0;
+    decimal? totalsellrate = 0;
+}
+@*<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#loader").hide();
+
+        $("#btnsave").on("click", function () {
+
+            alert("hi");
+
+            if ($('form').valid()) {
+
+                alert("htttti");
+                $("#btnsave").hide();
+                $("#loader").show();
+            }
+
+            else {
+
+                alert("hi2");
+                $("#btnsave").show();
+                $("#loader").hide();
+            }
+
+        });
+    });
+</script>*@
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        
+
+        $(".chkall").click(function () {
+
+            $(".checkmenu").prop('checked', $(this).is(':checked'));
+
+        });
+
+
+        $(".checkmenu").click(function () {
+
+
+            if ($(".checkmenu:checked").length == $(".checkmenu").length) {
+
+                $('.chkall').prop('checked', true);
+
+            }
+
+            else {
+
+                $('.chkall').prop('checked', false);
+
+            }
+
+
+        });
+
+
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#RoleId").change(function () {
+
+
+            $.post("/Menu/GetUserName", { type: $("#RoleId").val() }, function (data) {
+                var select = $("#AssignedUserId");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "--Select--"
+                }));
+
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Id,
+                        text: itemData.Name
+                    }));
+                });
+            });
+        });
+
+
+
+    });
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#loader").hide();
+        $("#btnsave").click(function () {
+
+            var Menu = "";
+
+
+
+            $("input:checkbox[class=checkmenu]:checked").each(function () {
+
+                if (Menu == "") {
+
+                    Menu = $(this).val();
+
+                }
+
+                else {
+                    Menu = Menu + "," + $(this).val();
+
+                }
+
+
+            });
+
+
+
+
+            if ($('#RoleId').val() == "") {
+
+                alert("Please select a Role");
+                return false;
+            }
+
+
+            if ($('#AssignedUserId').val() == "") {
+
+                alert("Please select a User");
+                return false;
+            }
+
+
+
+            if (Menu == "") {
+
+                alert("Please select atleast one  Menu");
+                return false;
+            }
+
+            else {
+
+
+                $("#btnsave").hide();
+                $("#loader").show();
+
+                $.post('/Menu/ShowAllMenu', { 'company': $('#CompanyId').val(), 'role': $('#RoleId').val(), 'user': $('#AssignedUserId').val(), 'menu': Menu }, function (data) {
+
+                    alert("Menu has been assign successfuly");
+
+                    window.location.href = '/Menu/ShowAllMenu';
+
+                    $("#btnsave").show();
+                    $("#loader").hide();
+
+
+
+                });
+            }
+        });
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $("#AssignedUserId").on("change", function () {
+
+
+            $(".checkmenu").each(function () {
+
+                $(this).prop('checked', false);
+            });
+            if ($("#AssignedUserId").val() != "" && $("#CompanyId").val() != "") {
+
+
+
+                $.get("/Menu/ShowAllMenujson/", { userid: $("#AssignedUserId").val() }, function (data) {
+
+                    if (data.length != 0) {
+
+
+
+                        for (var i = 0; i < data.length; i++) {
+
+                            var menu = data[i].Name;
+
+                            var menuu = $('#' + menu);
+
+
+                            $('#' + menu).prop('checked', true);
+
+
+                            menuu.parents(".checkmenu").addClass("checked");
+                            menuu.parents(".checkmenu").addClass('active').attr('checked', true);
+
+                        }
+                    }
+                });
+            }
+
+
+            else {
+
+
+                $(".checkmenu").removeClass("checked");
+
+
+
+
+
+            }
+
+        });
+
+
+    });
+
+</script>
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<aside class="right-side">
+<section  class="content-header">
+                    <h1>
+                  Menu<small>List</small>            
+                    </h1>
+                    
+                    <ol class="breadcrumb">
+                        <li><a href="@Url.Action("DashBoard", "DashBoard", new { id = 0 })"><i class="fa fa-dashboard"></i> Home</a></li>
+                       
+                          <li class="active">Admin</li>
+                        <li class="active">Menu</li>
+                    </ol>
+                </section>
+       
+
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"> 
+                                    
+                                       <div>
+                                            <div class="action-container" id="loader">
+                                                <img src="../../Images/ajax-loader(1).gif" />
+                                            </div>
+                                            <div id="btnshow">
+                                                &nbsp; &nbsp; &nbsp; &nbsp;
+                                                <br />
+                                              
+                                     <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary" />
+                                            </div>
+                                        </div>
+
+
+                                   
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+
+
+<div>
+                  <div class="form-group">
+                                          <label class="black_txt_010">          
+           Role :</label>
+                    @Html.DropDownListFor(model => model.RoleId, new SelectList(ViewBag.Role, "Id", "RoleName"), "-----Select----", new { @class = "form-control" })
+                     @Html.ValidationMessageFor(model => model.RoleId)
+ 
+              
+                        </div>  
+                        
+                        <div class="form-group">
+                                          <label class="black_txt_010">          
+           User :</label>
+
+
+            <select id="AssignedUserId" name="AssignedUserId" class="form-control">                
+                  
+                  </select>
+
+                 
+                     @Html.ValidationMessageFor(model => model.AssignedUserId)
+ 
+              
+                        </div>           
+
+                        </div>           
+
+</div>           
+
+</div>           
+
+                  </div>
+
+
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+
+                         
+
+    <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    
+                         <th>
+                   <center>   <input type="checkbox" id="chkall" class="chkall" /> Select All</center> 
+                        </th>
+                        <th>
+                        Menu
+                        </th>
+                     
+                     
+
+
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                  @foreach (XenERP.Models.MenuMaster item in ViewBag.list)
+                  {
+
+                       
+                        <tr>
+                      
+
+                         <td>
+                         <div class="chekbox">
+                                      <input type="checkbox" id="@item.Name" class="checkmenu" value="@item.Name"  />
+                     </div>
+                            </td>
+                            <td>
+
+
+                                <b>@Html.DisplayFor(modelItem => item.Name)</b>
+                     
+                            </td>
+                          
+                    
+
+                        </tr>
+                  }
+              
+
+                </tbody>
+   
+            </table>
+
+            </div>
+            </div>
+
+             </div>           
+
+</div>           
+
+</div>           
+
+            </aside>

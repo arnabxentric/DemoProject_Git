@@ -1,0 +1,306 @@
+﻿@model XenERP.Models.ModelView.FarmModelView
+
+@{
+    ViewBag.Title = "FarmInformationDetails";
+}
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(document).ready(function () {
+
+            $("#imgdivFarm,#imgdiv").on('click', function () {
+                $(".showImage").empty();
+                var jk = $(this).find('img')
+                var pk = $(jk).clone();
+                $(pk).css({ width: '500px', height: '500px' });
+
+                $(".showImage").append(pk);
+                // $(".showImage").html(b);
+
+                //                  $(this).clone().appendTo($(".showImage"));
+                $("#myModal").modal('show');
+
+            });
+
+
+        });
+
+
+    });
+    </script>
+
+
+
+
+@*<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+    <script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>*@
+
+
+@using (Html.BeginForm())
+{
+
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Farm<small> Details</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Details</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+         <div class="col-xs-12">   <li class="pull-right">  <a href="@Url.Action("FarmShowAll", "Farm")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Close</a></li></div>
+               @* <li class="pull-right"> <input name="" type="button" id="btnclose" value="close" class="btn btn-primary" /></li>*@
+            </ul>
+        </div>
+        <section class="content">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    @ViewBag.Message
+                </div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissable">
+                    <i class="fa fa-ban"></i>
+                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                    <b>Error!</b>
+                    @ViewBag.Error
+                </div>
+            }
+
+
+            @Html.HiddenFor(d => d.Id)
+
+
+
+            <section class="content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Farm Information</h4>
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm Name : </label>
+                                    @Html.DisplayFor(model => model.FarmName, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm Code : </label>
+                                    @Html.DisplayFor(model => model.FarmCode, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm Area : </label>
+                                    @Html.DisplayFor(model => model.Area, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm Location: </label>
+                                    @Html.DisplayFor(model => model.Location, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm Village: </label>
+                                    @Html.DisplayFor(model => model.Village, new { @class = "form-control" })
+                                </div>
+
+                        
+                            <div class=" form-group ">
+                                <label class="black_txt_010">A/C Holder Name: </label>
+                                @Html.DisplayFor(model => model.BankAcHolderNm, new { @class = "form-control" })
+                            </div>
+                            <div class=" form-group ">
+                                <label class="black_txt_010">A/C No: </label>
+                                @Html.DisplayFor(model => model.AcNumber, new { @class = "form-control" })
+                            </div>
+                            <div class=" form-group ">
+                                <label class="black_txt_010">IFSC Code: </label>
+                                @Html.DisplayFor(model => model.IfscCode, new { @class = "form-control" })
+                            </div>
+                               
+
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+                                            <b>Farmer Image</b>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="col-md-4">
+                                                &nbsp;  &nbsp;  &nbsp;
+                                                <img style="width:200px;height:200px;" src="@Url.Action("GetFarmerImage", "Farm", new { UserId = Model.Id })" id="frmrImg" name="frmrImg" alt="Image not found" />
+                                                @*<input type="file" id="farmerimg" name="farmerimg" onchange="readURL(this);" />*@
+                                                <br />
+                                                <br />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+                                            <b>Passbook Image</b>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="col-md-4">
+                                                &nbsp;  &nbsp;  &nbsp;
+                                                <img style="width:200px;height:200px;" src="@Url.Action("GetBankImage", "Farm", new { UserId = Model.Id })" id="psImg" name="psImg" alt="Image not found" />
+                                                @*<input type="file" id="passImg" name="passImg" onchange="readURL(this);" />*@
+                                                <br />
+                                                <br />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>  
+
+
+                        </div>
+                    </div>
+
+                        </div>
+
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Farmer Information</h4>
+                             
+                              
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm State: </label>
+                                    @Html.DisplayFor(model => model.State, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farm Address : </label>
+                                    @Html.DisplayFor(model => model.Address, new { @class = "form-control" })
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="black_txt_010">Farmer Name : </label>
+                                    @Html.DisplayFor(model => model.FarmerName, new { @class = "form-control" })
+                                </div>
+                                @*<div class="form-group">
+                                    <label class="black_txt_010">Farmer Code: </label>
+                                    @Html.DisplayFor(model => model.FarmerCode, new { @class = "form-control" }) 
+                                </div>*@
+                                <div class="form-group">
+                                    <label class="black_txt_010">Farmer Contact No: </label>
+                                    @Html.DisplayFor(model => model.FarmerContactNo, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="black_txt_010">Farmer Adress: </label>
+                                    @Html.DisplayFor(model => model.FarmerAddress, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="black_txt_010">Pan No: </label>
+                                    @Html.DisplayFor(model => model.PANNO, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="black_txt_010">Aadhar No: </label>
+                                    @Html.DisplayFor(model => model.AadharNo, new { @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="black_txt_010">Partner/Proprietor Name: </label>
+                                    @Html.DisplayFor(model => model.PartnerName, new { @class = "form-control" })
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+                                            <b>Aadhar Card Image</b>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="col-md-4">
+                                                &nbsp;  &nbsp;  &nbsp;
+                                                <img style="width:200px;height:200px;" src="@Url.Action("GetAadharImage", "Farm", new { UserId = Model.Id })" id="adhImg" name="adhImg" alt="Image not found" />
+                                                @*<input type="file" id="aadharImg" name="aadharImg" onchange="readURL(this);" />*@
+                                                <br />
+                                                <br />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+                                            <b>Pan Card Image</b>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="col-md-4">
+                                                &nbsp;  &nbsp;  &nbsp;
+                                                <img style="width:200px;height:200px;" src="@Url.Action("GetPanImage", "Farm", new { UserId = Model.Id })" id="pnImg" name="pnImg" alt="Image not found" />
+                                                @*<input type="file" id="panImg" name="panImg" onchange="readURL(this);" />*@
+                                                <br />
+                                                <br />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>  
+
+
+
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+             <div id="myModal" class="modal fade">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>               
+
+            </div>
+
+            <div class="modal-body">              
+
+                <form>
+
+                    <div class="form-group showImage">                            
+
+                    </div>                
+
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+            </section>
+
+        </section>
+    </aside>
+}
+
+
+
+

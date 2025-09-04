@@ -1,0 +1,227 @@
+﻿@{
+    ViewBag.Title = "Reconciled Cheque";
+}
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+@*<script src="../../Scripts/custom.js" type="text/javascript"></script>*@
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+@model IEnumerable<XenERP.Models.Reconcilation>
+
+
+@{
+    
+    ViewBag.Title = "Reconciled Cheque";
+    int SlNo = 0;
+    
+    decimal Totalopening = 0;
+  //  int id = ViewBag.bankid;
+    decimal? totalsellrate = 0;
+}
+<style type="text/css">
+.input-group.date.recondateclass {
+    margin-left: 3px;
+    margin-top:2px;
+    margin-bottom:3px;
+    width: 96%;
+}
+.table-striped tr td input { height:31px!important; }
+
+</style>
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+@if (Model.Count() > 0)
+{
+    
+    <aside class="right-side">
+
+     <section  class="content-header">
+                    <h1>
+                       Reconciled Cheques  <small>from Bank</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                   <!-- Main content -->
+                <section class="content">
+            
+                    <div class="row top-mar">
+                      
+                           
+                                <div class="col-md-12">
+                                  <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+              <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    
+                        <th>
+                  SL. No.
+                        </th>
+                        
+                        <th>
+                 Party
+                        </th>
+                        <th>
+                 Cheque No
+                        </th>
+                      <th>
+                 Cheque Date
+                      </th>
+
+                        <th>
+                 Cheque Details
+                        </th>
+
+                        <th>
+                   Amount
+                        </th>
+                      
+                        <th>
+                        Deposited To
+                       </th>
+
+                      <th>
+                 Deposited On
+                        </th>
+                        <th>
+                        Clearance/ Bounce Date
+                        </th>
+                   
+                  <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+
+                        SlNo = SlNo + 1;
+                      
+                        
+                      <tr>
+
+                        <td align="center">
+                    @SlNo
+                     
+                          </td>
+                              <td align="left">   
+                           @Html.DisplayFor(modelItem => item.LedgerMaster.ledgerID)-  @Html.DisplayFor(modelItem => item.LedgerMaster.ledgerName)
+                     
+                            </td>
+                            <td align="left">   
+                                 @Html.DisplayFor(modelItem => item.ReceiptPayment.chequeNo)
+                     
+                            </td>
+                               
+
+                            <td align="left">   
+                    
+                                @item.ReceiptPayment.chequeDate.Value.ToString("dd/MM/yyyy")
+                            </td>
+                           
+                            
+
+                          
+                                           
+                               
+                      
+                             
+                   <td align="left" width="20%"> 
+                      @Html.DisplayFor(modelItem => item.ReceiptPayment.chequeDetails)
+                   </td>
+                         
+                            
+                                   
+                   <td align="right"> 
+                        @Html.DisplayFor(modelItem => item.ReceiptPayment.RPBankAmount)
+                   </td>
+                       
+                        
+                   <td>
+                        @Html.DisplayFor(modelItem => item.ReceiptPayment.CardName)
+                   </td>   
+                   <td>
+                        @Html.DisplayFor(modelItem => item.ReceiptPayment.transactionType)
+                   </td>
+                   <td>
+                         @Html.DisplayFor(modelItem => item.ReceiptPayment.CreditCardNo)
+                   </td>
+                   <td>
+                         @Html.DisplayFor(modelItem => item.Status)
+                   </td>
+                         
+               </tr>
+                        
+                        
+                    }
+                </tbody>
+     
+   
+            </table>
+
+            <br />
+            <br />
+
+
+            <table>
+            <tr>
+              <td>
+                            <input type="button" id="btnreconcile"class="btn btn-primary" value="Reconcil" />
+              </td>
+                                      
+            </tr>
+            </table>
+
+            </div>
+            </div>
+
+            </div>
+            </div>
+            </div>
+            </section>
+            </aside>
+}
+else
+{
+    <aside class="right-side">
+              <div class="box">
+        <div class="box-body table-responsive">
+           @Html.Raw("Sorry...Data Not Found")
+        </div>
+    </div>
+    </aside>
+}
+

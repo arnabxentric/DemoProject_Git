@@ -1,0 +1,1107 @@
+﻿@model XenERP.Models.Tax
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<title>Add Tax Rate</title>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#dataTable").on("keypress", '.taxpercent', function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+    });
+           
+       
+</script>
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+        var table = document.getElementById('dataTable');
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+
+
+
+
+        var cell1 = row.insertCell(0);
+        var element2 = document.createElement("select");
+        element2.className = "taxname";
+        element2.id = "taxcomp" + taxdrop;
+        element2.name = "TaxcompName";
+        var option1 = document.createElement("option");
+        option1.innerHTML = "select";
+        option1.value = "";
+        element2.add(option1, null);
+        cell1.appendChild(element2);
+
+        var cell2 = row.insertCell(1);
+        var element3 = document.createElement("input");
+        element3.className = "taxrate";
+        element3.type = "text";
+        element3.name = "txtpercentage";
+        element3.readonly = "readonly";
+
+        cell2.appendChild(element3);
+
+
+
+
+        var cell4 = row.insertCell(2);
+        var element4 = document.createElement("label");
+        element4.type = "checkbox";
+        element4.name = "dependtax";
+        element4.id = "dependtax" + taxdrop;
+        element4.className = "dependtax";
+        cell4.appendChild(element4);
+
+
+        var cell5 = row.insertCell(3);
+        var element5 = document.createElement("label");
+        element5.type = "label";
+        element5.readonly = "readonly";
+        element5.name = "compoundtax";
+        cell5.appendChild(element5);
+
+
+        var cell6 = row.insertCell(4);
+        var element6 = document.createElement("input");
+        element6.type = "text";
+        element6.className = "effectiverate";
+        element6.readonly = "readonly";
+        element6.name = "effective";
+        cell6.appendChild(element6);
+
+
+
+        var cell7 = row.insertCell(5);
+        var element7 = document.createElement("input");
+        element7.type = "button";
+        element7.id = "btndelete";
+        element7.name = "button[]";
+        element7.title = "Delete this row";
+        element7.className = "add-component-deletebotton";
+        cell7.appendChild(element7);
+
+
+
+
+
+        var cell8 = row.insertCell(6);
+        var element8 = document.createElement("input");
+        element8.type = "hidden";
+        element8.className = "dependshide";
+        element8.name = "dependshide";
+        cell8.className = "display-non-div";
+        cell8.appendChild(element8);
+
+
+
+
+
+
+        var cell9 = row.insertCell(7);
+        var element9 = document.createElement("input");
+        element9.type = "hidden";
+        element9.className = "compoundhide";
+        element9.name = "compoundhide";
+        cell9.className = "display-non-div";
+        cell9.appendChild(element9);
+
+
+
+
+        $.getJSON('/Tax/GetTax', null, function (data) {
+
+
+            $.each(data, function () {
+                $("#taxcomp1").append($("<option />").val(this.Id).text(this.Name));
+            });
+
+
+            $("#name").attr("maxlength", "100");
+            $(".taxname").attr("maxlength", "100");
+            $(".taxpercent").attr("maxlength", "8");
+
+
+
+
+        });
+    });
+
+
+    
+
+</script>
+<script language="javascript" type="text/javascript">
+
+
+
+    $(document).ready(function () {
+
+        $("#btnsubmit").on("click", function () {
+
+            if ($("input:radio[id=singletax]:checked").val() == "1") {
+
+                var test = true;
+                if ($("#Name").val() == "") {
+                    test = false;
+                    alert("Please enter Tax name");
+                    return false;
+                }
+
+                if ($("#Rate").val() == "") {
+                    test = false;
+                    alert("Please enter rate");
+                    return false;
+                }
+
+
+
+
+            }
+
+            if ($("input:radio[id=combinedtax]:checked").val() == "2") {
+
+
+
+                var test = true;
+                if ($("#Name").val() == "") {
+                    test = false;
+                    alert("Please enter Tax name");
+                    return false;
+                }
+
+
+
+                var rowlength = $("table#dataTable").find('tr');
+
+                if (rowlength.length < 2) {
+                    test = false;
+                    alert("Please add new Component tax");
+                    return false;
+                }
+
+
+
+            }
+
+
+            if (test == false) {
+
+                return false;
+
+            }
+
+
+        });
+    });
+</script>
+<script language="javascript" type="text/javascript">
+
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+        var MyRows = $('table#dataTable').find('tr');
+
+        var ParentTaxName = "";
+        var parentrate = "";
+
+
+        var effectiveTotal = 0;
+        var parentEffectiveRate = 0;
+        for (var i = 1; i < MyRows.length; i++) {
+
+
+            var taxname = $(MyRows[i]).find('td:eq(0)');
+            var rate = $(MyRows[i]).find('td:eq(1)');
+            var deptax = $(MyRows[i]).find('td:eq(2)');
+            var comptax = $(MyRows[i]).find('td:eq(3)');
+            var efftax = $(MyRows[i]).find('td:eq(4)');
+            var deptd = $(MyRows[i]).find('td:eq(5)');
+            var comtd = $(MyRows[i]).find('td:eq(6)');
+            deptd.find('.dependshide').val('false');
+            comtd.find('.compoundhide').val('false');
+            if (MyRows.length == 2) {
+                deptax.html('');
+                comptax.html('');
+                var rate = rate.find('.taxrate').val();
+                efftax.find('.effectiverate').val(rate);
+                return false;
+            }
+            var taxval = taxname.find('.taxname option:selected').text();
+            var rate = rate.find('.taxrate').val();
+            var taxdep = deptax.find('.dependscheck').is(':checked');
+            var taxcompounded = comptax.find('.compoundcheck').is(':checked');
+
+            var taxeff = efftax.find('.effectiverate');
+
+
+
+
+            if (taxval == "select") {
+                alert("Please select  tax in row " + i);
+                return false;
+            }
+
+
+
+            if (taxdep == false && taxcompounded == false) {
+
+                taxeff.val(rate);
+                var e = parseFloat(rate);
+                effectiveTotal += e;
+                parentEffectiveRate = e;
+                ParentTaxName = taxname.find('.taxname option:selected').text();
+                var taxdeplabel = deptax.find(".denpendlabel");
+                taxdeplabel.html('');
+
+            }
+            if (taxdep == true && taxcompounded == false) {
+
+                var e = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                taxeff.val(e.toFixed(2));
+                effectiveTotal += e;
+                var taxdeplabel = deptax.find(".denpendlabel");
+                taxdeplabel.html(ParentTaxName);
+
+            }
+            if (taxdep == false && taxcompounded == true) {
+
+                var e = (100 + parseFloat(effectiveTotal)) * rate / 100;
+                taxeff.val(e.toFixed(2));
+                effectiveTotal += e;
+                parentEffectiveRate = e;
+                ParentTaxName = taxname.find('.taxname option:selected').text();
+                var taxdeplabel = deptax.find(".denpendlabel");
+                taxdeplabel.html('');
+
+            }
+
+
+        }
+        $("#totaleffective").text(effectiveTotal.toFixed(2));
+
+        $("#totaleff").val(effectiveTotal);
+
+
+        var totaltax = 0;
+
+        $(".taxrate").each(function () {
+
+
+            var rate = $(this).val();
+            totaltax += parseFloat(rate);
+
+        });
+
+        $("#Nettaxrate").text(totaltax.toFixed(2));
+
+
+
+    });
+
+
+    var taxdrop = 1;
+
+
+    function addRow(tableID) {
+
+
+
+        taxdrop++;
+
+
+        var taxname = true;
+
+        $(".taxname").each(function () {
+
+
+            if ($(this).val() == "") {
+
+                taxname = false;
+
+                alert('Please select a tax name');
+
+                return false;
+
+            }
+
+        });
+
+        if (taxname == false) {
+
+            return false;
+        }
+
+
+
+        else {
+
+
+
+
+
+
+            var MyRows = $('table#dataTable').find('tr');
+
+            for (var i = 0; i < MyRows.length; i++) {
+
+                for (var j = i + 1; j < MyRows.length; j++) {
+
+                    var taxname = $(MyRows[i]).find('td:eq(0)');
+                    var taxval = taxname.find('.taxname option:selected').val();
+                    var taxname1 = $(MyRows[j]).find('td:eq(0)');
+                    var taxval1 = taxname1.find('.taxname option:selected').val();
+
+                    if (taxval == taxval1) {
+
+
+                        alert("duplicate tax name not allowed , select different tax name in row " + j);
+
+                        return;
+                    }
+                }
+            }
+
+            var table = document.getElementById(tableID);
+
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+
+
+
+
+
+            var cell1 = row.insertCell(0);
+            var element2 = document.createElement("select");
+            element2.className = "taxname";
+            element2.id = "taxcomp" + taxdrop;
+            element2.name = "TaxcompName";
+            var option1 = document.createElement("option");
+            option1.innerHTML = "select";
+            option1.value = "";
+            element2.add(option1, null);
+            cell1.appendChild(element2);
+
+            var cell2 = row.insertCell(1);
+            var element3 = document.createElement("input");
+            element3.className = "taxrate";
+            element3.type = "text";
+            element3.name = "txtpercentage";
+            element3.readonly = "readonly";
+
+            cell2.appendChild(element3);
+
+
+            if (MyRows.length == 1) {
+
+                var cell4 = row.insertCell(2);
+                var element4 = document.createElement("label");
+                element4.type = "checkbox";
+                element4.name = "dependtax";
+                element4.id = "dependtax" + taxdrop;
+                element4.className = "compoundcheck";
+                cell4.appendChild(element4);
+
+
+                var cell5 = row.insertCell(3);
+                var element5 = document.createElement("label");
+                element5.type = "label";
+                element5.name = "compoundtax";
+                element5.readonly = "readonly";
+                element5.name = "effective";
+                cell5.appendChild(element5);
+
+
+            }
+            else {
+                var cell3 = row.insertCell(2);
+                var element1 = document.createElement("input");
+                element1.type = "checkbox";
+                element1.name = "taxes";
+                element1.id = "dependcheckbox" + taxdrop;
+                element1.className = "dependscheck";
+                cell3.appendChild(element1);
+
+                var element5 = document.createElement("label");
+                element5.type = "label";
+                element5.name = "dependtax";
+                element5.id = "label" + taxdrop;
+                element5.className = "denpendlabel";
+                cell3.appendChild(element5);
+
+
+
+                var cell4 = row.insertCell(3);
+                var element4 = document.createElement("input");
+                element4.type = "checkbox";
+                element4.name = "compoundtax";
+                element4.id = "compoundcheck" + taxdrop;
+                element4.className = "compoundcheck";
+                cell4.appendChild(element4);
+            }
+
+            var cell5 = row.insertCell(4);
+            var element5 = document.createElement("input");
+            element5.className = "effectiverate";
+            element5.type = "text";
+            element5.readonly = "readonly";
+            element5.name = "effective";
+            cell5.appendChild(element5);
+
+
+
+
+            var cell6 = row.insertCell(5);
+            var element6 = document.createElement("input");
+            element6.type = "button";
+            element6.id = "btndelete";
+            element6.name = "button[]";
+            element6.title = "Delete this row";
+            element6.className = "add-component-deletebotton";
+            cell6.appendChild(element6);
+
+
+
+            var cell8 = row.insertCell(6);
+            var element8 = document.createElement("input");
+            element8.type = "hidden";
+            element8.className = "dependshide";
+            element8.name = "dependshide";
+            cell8.className = "display-non-div";
+            cell8.appendChild(element8);
+
+
+
+
+
+
+            var cell9 = row.insertCell(7);
+            var element9 = document.createElement("input");
+            element9.type = "hidden";
+            element9.className = "compoundhide";
+            element9.name = "compoundhide";
+            cell9.className = "display-non-div";
+            cell9.appendChild(element9);
+
+
+
+            $.getJSON('/Tax/GetTax', null, function (data) {
+
+
+                $.each(data, function () {
+                    $("#taxcomp" + taxdrop).append($("<option />").val(this.Id).text(this.Name));
+
+
+                });
+
+            });
+
+
+
+
+
+            $("#totaleffective").text(grandTotal.toFixed(2));
+            $("#totaleff").val(grandTotal);
+
+
+        }
+    }
+   
+    
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var taxids = "";
+        $("#Rate").val('0.0');
+
+        $("#combination").hide();
+
+        $("#singletax").click(function () {
+
+            if ($("#singletax").val() == "1") {
+
+                $("#tax").show();
+                $("#single").show();
+                $("#combination").hide();
+                $("#Name").val('');
+                $("#Rate").val('');
+
+
+                $(".taxname").val('');
+
+                $(".taxrate").val('');
+
+
+                $(".dependscheck").val('');
+
+                $(".compoundcheck").val('');
+
+                $(".effectiverate").val('');
+
+
+            }
+
+
+        });
+
+
+
+
+        $("#combinedtax").click(function () {
+
+            $("#Name").val('');
+            $("#Rate").val('');
+
+
+            $(".taxname").val('');
+
+            $(".taxrate").val('');
+
+
+            $(".dependscheck").val('');
+
+            $(".compoundcheck").val('');
+
+            $(".effectiverate").val('');
+
+
+
+            taxids = $("#taxcomp1").val();
+
+            $.post("/Tax/getTaxerate", { id: taxids }, function (data) {
+
+
+                var taxtd = $("#taxcomp1").closest('td'); //.attr('id');
+                var taxtr = taxtd.closest('tr');
+                taxtr.find('.taxrate').val(data);
+
+
+
+            });
+
+
+            if ($("#combinedtax").val() == "2") {
+                $("#tax").hide();
+                $("#combination").show();
+
+            }
+
+
+
+        });
+
+    });
+
+
+
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        function checkSelects() {
+            var $elements = $('select');
+
+            $elements
+        .removeClass('error')
+        .each(function () {
+            var selectedValue = this.value;
+
+            $elements
+                .not(this)
+                .filter(function () {
+                    return this.value == selectedValue;
+                })
+                .addClass('error');
+        });
+        }
+
+
+
+
+
+
+        $("#dataTable").on("change", '.taxname', function (event) {
+
+            checkSelects();
+
+
+
+
+            var id = $(this).attr('id');
+            var taxid = $("#" + id).val();
+
+            var MyRows = $('table#dataTable').find('tr');
+
+
+
+            for (var i = 0; i < MyRows.length; i++) {
+
+                for (var j = i + 1; j < MyRows.length; j++) {
+
+                    var taxname = $(MyRows[i]).find('td:eq(0)');
+                    var taxval = taxname.find('.taxname option:selected').val();
+                    var taxname1 = $(MyRows[j]).find('td:eq(0)');
+                    var taxval1 = taxname1.find('.taxname option:selected').val();
+
+                    if (taxval == taxval1) {
+
+
+                        alert("duplicate tax name not allowed , select different tax name in row " + j);
+
+                        return;
+                    }
+
+
+
+                }
+            }
+
+            $.get("/Tax/getTaxerate", { id: taxid }, function (data) {
+
+                var taxtd = $("#" + id).closest('td'); //.attr('id');
+                var taxtr = taxtd.closest('tr');
+                taxtr.find('.taxrate').val(data);
+                taxtr.find('.effective').val(data);
+                taxtr.find('.effectiverate').val(data);
+                taxtr.find('.compoundcheck').removeAttr('checked');
+                taxtr.find('.dependscheck').removeAttr('checked');
+                taxtr.find(".denpendlabel").html('');
+                taxtr.find('.dependshide').val('false');
+                taxtr.find('.compoundhide').val('false');
+                var ParentTaxName = "";
+                var parentrate = "";
+
+
+                var effectiveTotal = 0;
+                var parentEffectiveRate = 0;
+                for (var k = 1; k < MyRows.length; k++) {
+
+
+                    var taxname = $(MyRows[k]).find('td:eq(0)');
+                    var rate = $(MyRows[k]).find('td:eq(1)');
+                    var deptax = $(MyRows[k]).find('td:eq(2)');
+                    var comptax = $(MyRows[k]).find('td:eq(3)');
+                    var efftax = $(MyRows[k]).find('td:eq(4)');
+                    var taxval = taxname.find('.taxname option:selected').text();
+                    var rate = rate.find('.taxrate').val();
+                    var taxdep = deptax.find('.dependscheck').is(':checked');
+                    var taxcompounded = comptax.find('.compoundcheck').is(':checked');
+
+                    var taxeff = efftax.find('.effectiverate');
+
+
+
+
+                    if (taxval == "select") {
+                        alert("Please select  tax in row " + k);
+                        return false;
+                    }
+
+
+
+                    if (taxdep == false && taxcompounded == false) {
+
+                        taxeff.val(rate);
+                        var e = parseFloat(rate);
+                        effectiveTotal += e;
+                        parentEffectiveRate = e;
+                        ParentTaxName = taxname.find('.taxname option:selected').text();
+                        var taxdeplabel = deptax.find(".denpendlabel");
+                        taxdeplabel.html('');
+
+                    }
+                    if (taxdep == true && taxcompounded == false) {
+
+                        var e = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                        taxeff.val(e.toFixed(2));
+                        effectiveTotal += e;
+                        var taxdeplabel = deptax.find(".denpendlabel");
+                        taxdeplabel.html(ParentTaxName);
+
+                    }
+                    if (taxdep == false && taxcompounded == true) {
+
+                        var e = (100 + parseFloat(effectiveTotal)) * rate / 100;
+                        taxeff.val(e.toFixed(2));
+                        effectiveTotal += e;
+                        parentEffectiveRate = e;
+                        ParentTaxName = taxname.find('.taxname option:selected').text();
+                        var taxdeplabel = deptax.find(".denpendlabel");
+                        taxdeplabel.html('');
+
+                    }
+
+
+                }
+
+                $("#totaleffective").text(effectiveTotal.toFixed(2));
+                $("#totaleff").val(effectiveTotal);
+
+
+                var totaltax = 0;
+
+                $(".taxrate").each(function () {
+
+
+                    var rate = $(this).val();
+                    totaltax += parseFloat(rate);
+
+                });
+
+                $("#Nettaxrate").text(totaltax.toFixed(2));
+
+
+
+
+                $("#taxtotal").val(totaltax);
+
+
+            });
+
+
+        });
+
+
+    });
+
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+        $("#dataTable").on("change", '.dependscheck,.compoundcheck', function (event) {
+
+            var id = $(this).attr('id');
+
+            var classcheck = $(this).attr('class');
+            var comptd = $('#' + id).closest('td');
+            if (classcheck == 'dependscheck') {
+                var comptr = comptd.closest('tr');
+                comptr.find('.compoundcheck').removeAttr('checked');
+                comptr.find('.compoundhide').val('false');
+                if ($("#" + id).is(":checked")) {
+                    comptr.find('.dependshide').val('true');
+                }
+                else {
+                    comptr.find('.dependshide').val('false');
+                }
+
+
+            }
+            else if (classcheck == 'compoundcheck') {
+                var comptr = comptd.closest('tr');
+                comptr.find('.dependscheck').removeAttr('checked');
+                comptr.find('.dependshide').val('false');
+                if ($("#" + id).is(":checked")) {
+                    comptr.find('.compoundhide').val('true');
+                }
+                else {
+                    comptr.find('.compoundhide').val('false');
+                }
+            }
+
+            var MyRows = $('table#dataTable').find('tr');
+            var rowindex = $(this).closest('td').parent()[0].sectionRowIndex;
+
+            // alert(rowindex);
+            var ParentTaxName = "";
+            var parentrate = "";
+
+            var totaltax = 0;
+            var effectiveTotal = 0;
+            var parentEffectiveRate = 0;
+            for (var i = 1; i < MyRows.length; i++) {
+
+
+                var taxname = $(MyRows[i]).find('td:eq(0)');
+                var rate = $(MyRows[i]).find('td:eq(1)');
+                var deptax = $(MyRows[i]).find('td:eq(2)');
+                var comptax = $(MyRows[i]).find('td:eq(3)');
+                var efftax = $(MyRows[i]).find('td:eq(4)');
+                var taxval = taxname.find('.taxname option:selected').text();
+                var rate = rate.find('.taxrate').val();
+                var taxdep = deptax.find('.dependscheck').is(':checked');
+                var taxcompounded = comptax.find('.compoundcheck').is(':checked');
+
+                var taxeff = efftax.find('.effectiverate');
+
+
+
+
+                if (taxval == "select") {
+                    alert("Please select  tax in row " + i);
+                    return false;
+                }
+
+
+
+                if (taxdep == false && taxcompounded == false) {
+
+                    taxeff.val(rate);
+                    var e = parseFloat(rate);
+                    effectiveTotal += e;
+                    parentEffectiveRate = e;
+                    ParentTaxName = taxname.find('.taxname option:selected').text();
+                    var taxdeplabel = deptax.find(".denpendlabel");
+                    taxdeplabel.html('');
+
+                }
+                if (taxdep == true && taxcompounded == false) {
+
+                    var e = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                    taxeff.val(e.toFixed(2));
+                    effectiveTotal += e;
+                    var taxdeplabel = deptax.find(".denpendlabel");
+                    taxdeplabel.html(ParentTaxName);
+
+                }
+                if (taxdep == false && taxcompounded == true) {
+
+                    var e = (100 + parseFloat(effectiveTotal)) * rate / 100;
+                    taxeff.val(e.toFixed(2));
+                    effectiveTotal += e;
+                    parentEffectiveRate = e;
+                    ParentTaxName = taxname.find('.taxname option:selected').text();
+                    var taxdeplabel = deptax.find(".denpendlabel");
+                    taxdeplabel.html('');
+
+                }
+
+
+            }
+            $("#totaleffective").text(effectiveTotal.toFixed(2));
+
+            $("#totaleff").val(effectiveTotal);
+
+
+
+        });
+
+    });
+
+
+</script>
+@using (Html.BeginForm("CreateTax", "Tax"))
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                Tax <small>Master Entry</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+
+        </section>
+       
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right">
+                    <input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                </li>
+            </ul>
+        </div>
+
+
+           @if (ViewBag.Error!= null)
+        { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+        }
+
+
+
+
+
+
+
+        <section class="content">
+            <div class="row">
+                <!-- Main content -->
+                <!-- left column -->
+                <div class="col-md-4">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <div class="box-header">
+                        </div>
+                        <!-- form start -->
+                        <div class="box-body">
+                            <table width="" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    
+                                    <td>
+                                        <div>
+                                            &nbsp;
+                                            <input type="radio" checked="checked" name="Cont" id="singletax" value="1" />
+                                            <strong>&nbsp;Single tax rate </strong>&nbsp;
+                                            <input type="radio" name="Cont" id="combinedtax" value="2" /><strong> &nbsp;Combined
+                                                tax rate </strong>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <br />
+                            <div id="single">
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Tax Name:<span style="color: Red;">*</span></label>
+                                    @Html.HiddenFor(model => model.TaxId)
+                                    <input type="hidden" id="taxtotal" name="taxtotal" />
+                                    <input type="hidden" id="totaleff" name="totaleff" />
+                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Tax Name" })
+                                    @Html.ValidationMessageFor(model => model.Name)
+                                </div>
+                                  <div class="form-group" id="tax">
+                                    <label class="black_txt_010">
+                                        Tax Rate:<span style="color: Red;">*</span></label>
+                                    @Html.TextBoxFor(model => model.Rate, new { @class = "form-control", @placeholder = "Enter Tax Rate", @onkeypress = "return Decimal(event)" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Category:<span style="color: Red;">*</span></label>
+                                    @Html.DropDownList("Category", ViewData["Categorylist"] as SelectList, new { @class = "form-control" })
+                                </div>
+                              
+                                <div class="form-group">
+                                    <label class="black_txt_010">
+                                        Status:<span style="color: Red;">*</span></label>
+                                    <select id="Status" name="Status" class="form-control">
+                                        <option value="Active">Active</option>
+                                        <option value="InActive">InActive</option>
+                                    </select>
+                                </div>
+                              <div class="form-group">
+                                          <label class="black_txt_010">
+                  Ledger Name :<span style="color:Red;">*</span></label>
+
+               
+                                   @Html.DropDownListFor(model => model.LId, new SelectList(ViewBag.ledger, "Id", "Name"), "-----Select a Ledger----", new { @class = "form-control" })
+
+                 @Html.ValidationMessageFor(model => model.LId)
+
+                                      
+                                     
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="combination" class="col-md-8">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                        </div>
+                        <div class="box-body">
+                            <div class="form-group">
+                                <h2>
+                                    Tax Component</h2>
+                            </div>
+                            <div class="form-group">
+                                <table class="my-table-style" id="dataTable" width="100%" border="0">
+                                    <tr class="my-table-header">
+                                        <td style="text-align: center;" class="my-table-header">
+                                            <label class="black_txt_010">
+                                                Tax Name</label>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <label class="black_txt_010">
+                                                Rate(%)</label>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <label class="black_txt_010">
+                                                Depends on Tax</label>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <label class="black_txt_010">
+                                                Compounded on Total</label>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <label class="black_txt_010">
+                                                Effective Tax Rate(%)</label>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <label class="black_txt_010">
+                                                Action</label>
+                                        </td>
+                                       
+                                    </tr>
+                                </table>
+                                <table width="100%" border="0">
+                                    <tr>
+                                        <td style="width: 9%; font-weight: bold">
+                                            Net tax rate:
+                                        </td>
+                                        <td style="width: 16%; font-weight: bold">
+                                            <span id="Nettaxrate"></span>
+                                        </td>
+                                        <td style="width: 10%; font-weight: bold">
+                                            Net Effective tax rate:
+                                        </td>
+                                        <td style="width: 9%; font-weight: bold">
+                                            <span id="totaleffective"></span>
+                                        </td>
+                                        <td style="width: 1%; font-weight: bold">
+                                            &nbsp;
+                                        </td>
+                                        <td style="width: 1%; font-weight: bold">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                </table>
+                                <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </aside>
+        
+        
+        
+        
+}

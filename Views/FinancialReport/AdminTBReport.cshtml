@@ -1,0 +1,319 @@
+﻿@model IEnumerable<XenERP.Models.AccountsBook_GroupWise_TrialBalance_Current_Result>
+
+@{
+
+    var SlNo = 0;
+    decimal? tdebit = 0;
+    decimal? tcredit = 0;
+    decimal? topeningdr = 0;
+    decimal? topeningcr = 0;
+    decimal? tclosingdr = 0;
+    decimal? tclosingcr = 0;
+    decimal? total = 0;
+
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<aside class="right-side">
+    <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+            <div class="box-body table-responsive divContent">
+                <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+                            <th colspan="8">
+
+                                <h3>Trial Balance HISS</h3>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th style="padding: 20px; text-align: center;" rowspan="2">SlNo.</th>
+
+                            <th style="padding:20px;text-align:center; " rowspan="2">
+                                Group Name
+                            </th>
+
+
+
+                            <th style="padding:8px;" colspan="2">
+                                Opening Balance
+                            </th>
+
+                            <th style="padding:8px;" colspan="2">
+                                @*@Html.DisplayNameFor(model => model.Debit)*@
+                                Transactions
+                            </th>
+
+                            <th style="padding:8px;" colspan="2">
+                                Closing Balance
+                            </th>
+
+
+
+                        </tr>
+                        <tr>
+                            @*<th>SlNo.</th>
+
+            <th>
+                Group Name
+            </th>*@
+
+                            <th style="padding:8px;">
+                                Debit Opening
+                            </th>
+                            <th style="padding:8px;">
+                                Credit Opening
+                            </th>
+                            <th style="padding:8px;">
+                                @Html.DisplayNameFor(model => model.Debit)
+                            </th>
+                            <th style="padding:8px;">
+                                @Html.DisplayNameFor(model => model.Credit)
+                            </th>
+                            <th style="padding:8px;">
+                                Debit Closing
+                            </th>
+                            <th style="padding:8px;">
+                                Credit Closing
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            SlNo = SlNo + 1;
+                            topeningdr += item.OpeningDebit;
+                            topeningcr += item.OpeningCredit;
+                            tdebit += item.Debit;
+                            tcredit += item.Credit;
+                            tclosingdr += item.ClosingDebit;
+                            tclosingcr += item.ClosingCredit;
+
+
+                            <tr>
+                                <td> @SlNo</td>
+
+                                <td>
+                                  
+                                    @Html.ActionLink(item.LedgerName, "AdminGroupDetail", "FinancialReport", new { GroupId = item.GroupId, GroupName = item.LedgerName, from = ViewBag.From, To = ViewBag.To }, new { target = "_blank" })
+                                </td>
+
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.OpeningDebit)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.OpeningCredit)
+                                </td>
+
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.Debit)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.Credit)
+                                </td>
+
+
+
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.ClosingDebit)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.ClosingCredit)
+                                </td>
+
+
+
+                            </tr>
+
+                        }
+
+                        <tr>
+                            <td colspan="2">  Total</td>
+                            <td align="right">
+                                @topeningdr
+                            </td>
+                            <td align="right">
+                                @topeningcr
+                            </td>
+                            <td align="right">
+                                @tdebit
+                            </td>
+                            <td align="right">
+                                @tcredit
+                            </td>
+                            <td align="right">
+                                @tclosingdr
+                            </td>
+                            <td align="right">
+                                @tclosingcr
+                            </td>
+
+
+                        </tr>
+
+                        @* <tr>
+                                  <td colspan="2"> Closing Balance</td>
+                                   @if (topeningcr >= topeningdr)
+                            {
+                                var balance = topeningcr - topeningdr;
+                                total = topeningcr;
+
+
+                                    <td align="right">
+                                        @balance
+                                    </td>
+                                    <td align="right">
+                                        &nbsp;
+                                    </td>
+
+
+
+                            }
+                            else
+                            {
+                                var balance = topeningdr - topeningcr;
+                                total = topeningdr;
+
+
+                                    <td align="right">
+                                         &nbsp;
+                                    </td>
+                                    <td align="right">
+                                       @balance
+                                    </td>
+
+
+
+                            }
+
+                            @if (tcredit >= tdebit)
+                            {
+                                var balance = tcredit - tdebit;
+                                total = tcredit;
+
+
+                                    <td align="right">
+                                        @balance
+                                    </td>
+                                    <td align="right">
+                                        &nbsp;
+                                    </td>
+
+
+
+                            }
+                            else
+                            {
+                                var balance = tdebit - tcredit;
+                                total = tdebit;
+
+
+                                    <td align="right">
+                                         &nbsp;
+                                    </td>
+                                    <td align="right">
+                                       @balance
+                                    </td>
+
+
+
+                            }
+                              @if (tclosingcr >= tclosingdr)
+                            {
+                                var balance = tclosingcr - tclosingdr;
+                                total = tclosingcr;
+
+
+                                    <td align="right">
+                                        @balance
+                                    </td>
+                                    <td align="right">
+                                        &nbsp;
+                                    </td>
+
+
+
+                            }
+                            else
+                            {
+                                var balance = tclosingdr - tclosingcr;
+                                total = tclosingdr;
+
+
+                                    <td align="right">
+                                         &nbsp;
+                                    </td>
+                                    <td align="right">
+                                       @balance
+                                    </td>
+
+
+
+                            }
+                            </tr>*@
+                        @*  <tr>
+                              <td colspan="4">Net Total</td>
+
+                                <td align="right">
+                                    @total
+                                </td>
+                                <td align="right">
+                                   @total
+                                </td>
+                                <td align="right">
+                                    &nbsp;
+                                </td>
+                                <td align="right">
+                                   &nbsp;
+                                </td>
+
+                            </tr>*@
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</aside>

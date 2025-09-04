@@ -1,0 +1,199 @@
+﻿@model IEnumerable<XenERP.Models.FeedReturnedMaster>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var role = Convert.ToString(Session["Role"]);
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Feed Returned Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+        @if (ViewBag.Side != 1)
+        {
+            <div class="col-xs-12"><a href="@Url.Action("CreateFeedReturned", "FeedReturned")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Create New Feed Returned</a></div><br /><br />
+        }
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Challan No</th>
+                        <th>Farmer Name</th>
+                        @* <th>UnitId</th>*@
+                        <th>Flock Code </th>
+                        <th>Date Of Issue</th>
+                        <th>Status</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+                            <td align="center"><a href='@Url.Action("FeedReturnedInformationDetails", "FeedReturned", new { id = item.Id })' class="AccoDet">@item.ChallanNo</a> @Html.HiddenFor(m => item.Id, new { @class = "AcId" })</td>
+                            <td>@Html.DisplayFor(modelItem => item.FarmMaster.FarmerName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FlockReceivedInFarmMaster.FlockCode)</td>
+                            <td> @Html.DisplayFor(modelItem => item.DateOfIssue)</td>
+
+                            @if (role == "SuperAdmin")
+                            {
+                                <td> @Html.Label("Issued") </td>
+                                <td> @Html.ActionLink("Edit", "EditFeedReturned", "FeedReturned", new { id = item.Id }, null)  </td>
+                                <td> @Html.ActionLink("Delete", "DeleteFeedReturned", "FeedReturned", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+
+                            }
+                            else
+                            {
+
+                                if (Session["PoultryEditId"] != null)
+                                {
+
+                                   
+
+                                        if (item.Status == "InActive")
+                                        {
+                                            <td> @Html.Label("Already Received") </td>
+                                            <td>@Html.ActionLink("Edit", "EditFeedReturned", "FeedReturned", new { id = item.Id }, null)</td>
+                                             <td>@Html.ActionLink("Delete", "DeleteFeedReturned", "FeedReturned", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                                        }
+
+                                        else
+                                        {
+                                            <td> @Html.ActionLink("Accept", "ReceiveToUnit", "FeedIssued", new { id = item.Id, rf = "Farm" }, new { onclick = "return confirm('Are you sure you Ready to Receive this Feed?');" })  </td>
+                                            <td></td>
+                                            <td></td>
+                                        }
+                                   
+                             
+
+                                }
+
+                                else
+                                {
+                                    if (ViewBag.Side == 1)
+                                    {
+
+                                        if (item.Status == "InActive")
+                                        {
+                                            <td> @Html.Label("Already Received") </td>
+                                            <td> @Html.Label("Cannot Be Edited") </td>
+                                            <td> @Html.Label("Cannot Be Deleted") </td>
+                                        }
+
+                                        else
+                                        {
+                                            <td> @Html.ActionLink("Accept", "ReceiveToUnit", "FeedIssued", new { id = item.Id, rf = "Farm" }, new { onclick = "return confirm('Are you sure you Ready to Receive this Feed?');" })  </td>
+                                            <td></td>
+                                            <td></td>
+                                        }
+                                    }
+                                    else if (item.Status == "InActive")
+                                    {
+
+
+                                        <td> @Html.Label("Already Received") </td>
+                                        <td> @Html.Label("Cannot Be Edited") </td>
+                                        <td> @Html.Label("Cannot Be Deleted") </td>
+                                    }
+
+                                    else
+                                    {
+
+                                        <td> @Html.Label("Issued") </td>
+                                        <td> @Html.ActionLink("Edit", "EditFeedReturned", "FeedReturned", new { id = item.Id }, null)  </td>
+                                        <td> @Html.ActionLink("Delete", "DeleteFeedReturned", "FeedReturned", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                                    }
+
+
+
+
+                                }
+
+
+
+
+
+
+
+
+
+
+
+                            }
+
+
+
+                        </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

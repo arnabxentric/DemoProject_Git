@@ -1,0 +1,686 @@
+﻿@model XenERP.Models.Stock
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";   
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../Scripts/custom.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<title>WareHouse Transfer</title>
+<script language="javascript">
+
+    $(document).ready(function () {
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+
+    });
+
+</script>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $.post("/Warehouse/GetWarehouse", { type: $("#WarehouseId").val() }, function (data) {
+
+            var select = $("#WarehouseTo");
+            select.empty();
+            select.append($('<option/>', {
+                value: "",
+                text: "--Select--"
+            }));
+
+            $.each(data, function (index, itemData) {
+                select.append($('<option/>', {
+                    value: itemData.Id2,
+                    text: itemData.Name
+                }));
+            });
+        });
+
+
+
+
+        $("#WarehouseId").change(function () {
+
+
+            $(".Product").val('');
+            $(".Availability").val('');
+            $(".Quantity").val('');
+
+            $(".Totalvalue").val('');
+            $.post("/Warehouse/GetWarehouse", { type: $("#WarehouseId").val() }, function (data) {
+
+                var select = $("#WarehouseTo");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "--Select--"
+                }));
+
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Id2,
+                        text: itemData.Name
+                    }));
+                });
+            });
+
+
+
+        });
+
+
+
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+    
+        $("#dataTable .productid").hide();
+
+        $("#dataTable").on("keypress", '.Product', function (event) {
+
+            $(".Product").attr("maxlength", "50");
+
+        });
+
+        $("#dataTable").on("keypress", '.Quantity', function (event) {
+
+            $(".Quantity").attr("maxlength", "8");
+
+
+        });
+
+        $("#dataTable").on("keypress", '.Availability', function (event) {
+
+            $(".Availability").attr('readonly', 'readonly');
+
+        });
+
+
+
+        $("#dataTable").on("keypress", '.Quantity', function (event) {
+
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1)) {
+
+                event.preventDefault();
+            }
+
+
+
+           
+        });
+
+        $("#dataTable").on("keypress", '.Availability', function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+    });
+           
+       
+</script>
+
+
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 0;
+
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+
+    });
+
+
+
+
+    function addRow(tableID) {
+
+        rowadd++;
+
+        var table = document.getElementById(tableID);
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell3 = row.insertCell(0);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtproduct";
+        element2.id = "Product" + rowadd;
+        element2.className = "Product";
+        cell3.appendChild(element2);
+
+
+
+        var cell4 = row.insertCell(1);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtAvailability";
+        element3.id = "Availability";
+        element3.className = "Availability";
+        element3.readonly = "readonly";
+        cell4.appendChild(element3);
+
+
+
+
+        var cell5 = row.insertCell(2);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "txtquantity";
+        element4.className = "Quantity";
+        element4.id = "Quantity";
+        cell5.appendChild(element4);
+
+
+
+
+        var cell1 = row.insertCell(3);
+        var element1 = document.createElement("input");
+        element1.type = "button";
+        element1.id = "btndelete";
+        element1.name = "button[]";
+        element1.title = "Delete this row";
+        element1.className = "add-component-deletebotton";
+        cell1.appendChild(element1);
+
+
+
+          var cell6 = row.insertCell(4);
+        var element5 = document.createElement("input");
+        element5.type = "hidden";
+        element5.name = "txtproductid";
+        element5.id = "ProductId";
+        element5.className = "productid";
+        element5.id = "productid" + rowadd;
+        cell6.appendChild(element5);
+        cell6.className = "display-non-div";
+
+
+    }
+
+
+
+
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+    
+    
+
+        $("#dataTable").on("keypress", '.Product', function (event) {
+
+            var id = $(this).attr('id');
+
+
+            $('#Product' + rowadd).autocomplete({
+
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Warehouse/getProduct',
+                        data: {
+
+                            query: request.term
+
+
+                        },
+
+
+                        dataType: 'json',
+                        type: 'POST',
+
+                        success: function (data) {
+
+
+
+                                response($.map(data, function (item) {
+
+
+
+                                    return {
+
+
+                                        label: item.Name,
+                                        value: item.Id
+
+
+
+                                    }
+                                }));
+                           
+                        }
+                    })
+                },
+
+                change: function (event, ui) {
+
+                    if (ui.item == null || ui.item == undefined) {
+
+                        $('#' + id).val('');
+                        alert("Item not found");
+
+                        var coltd = $("#" + id).closest('td');
+                        var coltr = coltd.closest('tr');
+                        coltr.find('.Quantity').val('');
+                        coltr.find('.Price').val('');
+                        coltr.find('.Totalvalue').val('');
+                        coltr.find('.Availability').val('');
+                              
+                    }
+
+                },
+
+                select: function (event, ui) {
+
+
+                    $.get('/Warehouse/getSelectedProduct', { 'id': ui.item.value, wareid:$('#WarehouseId').val() }, function (data) {
+
+
+                        if (ui.item.value == '') {
+
+
+
+                            $('#Product' + rowadd).val('');
+
+
+                        }
+
+                        else {
+
+
+
+                            $('#Product' + rowadd).val(ui.item.value);
+                            $('#Product' + rowadd).val(ui.item.label);
+
+
+                            $('#ProductId' + rowadd).val(ui.item.value);
+                            $('#ProductId' + rowadd).val(ui.item.label);
+
+                            var ctd = $('#Product' + rowadd).closest('td'); //.attr('id');
+                            var ctr = ctd.closest('tr');
+                            var up = ctr.find('.Quantity').val("1");
+                            ctr.find('.Availability').val(data);
+                            ctr.find('.productid').val(ui.item.value);
+
+
+                        }
+
+                    });
+                    return false;
+                },
+                minLength: 1
+            });
+
+
+        });
+
+    });
+</script>
+<script language="javascript">
+
+    var rowadd = 1;
+
+    $(document).ready(function () {
+
+
+        var table = document.getElementById('dataTable');
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell3 = row.insertCell(0);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtproduct";
+        element2.id = "Product" + rowadd;
+        element2.className = "Product";
+        cell3.appendChild(element2);
+
+
+
+        var cell4 = row.insertCell(1);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtAvailability";
+        element3.id = "Availability";
+        element3.readonly = "readonly";
+        element3.className = "Availability";
+        cell4.appendChild(element3);
+
+
+
+
+        var cell5 = row.insertCell(2);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "txtquantity";
+        element4.className = "Quantity";
+        element4.id = "Quantity";
+        cell5.appendChild(element4);
+
+
+
+
+        var cell1 = row.insertCell(3);
+        var element1 = document.createElement("input");
+        element1.type = "button";
+        element1.id = "btndelete";
+        element1.name = "button[]";
+        element1.title = "Delete this row";
+        element1.className = "add-component-deletebotton";
+        cell1.appendChild(element1);
+
+
+
+        var cell6 = row.insertCell(4);
+
+        var element5 = document.createElement("input");
+        element5.type = "hidden";
+        element5.name = "txtproductid";
+        element5.className = "productid";
+        element5.id = "productid";
+        cell6.appendChild(element5);
+        cell6.className = "display-non-div";
+
+
+
+
+        $("#btnsubmit").on("click", function () {
+
+            var test = true;
+
+            if ($("#WarehouseTo").val() == "") {
+                test = false;
+                alert("Please Select a To Warehouse");
+                return false;
+            }
+
+
+            if ($("#Quantity").val() > $("#Availability").val()) {
+                test = false;
+                alert("The Transfer quantity is greater than the available quantity");
+                return false;
+            }
+
+
+           
+            $(".Product ").each(function (i) {
+                if ($(this).val() == "") {
+                    test = false;
+                    alert("Product name cannot be left blank");
+                    return false;
+
+                }
+
+            });
+
+
+
+
+            if (test == false) {
+
+                return false;
+
+            }
+
+
+        });
+
+
+
+    });
+</script>
+
+
+
+
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Stock Transfer   <small> Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+    
+                <section class="content">
+
+
+                 
+           
+           
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+
+
+                    <div class="row">
+         
+                                  
+                <!-- Main content -->
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                                   <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                    
+                
+                                           
+                           
+                                   <div class="box-body">
+                                       
+                                  
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                      From WareHouse:<span style="color:Red;">*</span></label>
+                 @Html.DropDownListFor(model => model.WarehouseId, new SelectList(ViewBag.FromWarehouse, "Id", "Name"),  new { @class = "form-control" })
+
+
+
+
+                                        </div>
+
+
+                                         <div class="form-group">
+                                          <label class="black_txt_010">
+                   To WareHouse:<span style="color:Red;">*</span></label>
+                   
+               
+
+                   <select id="WarehouseTo" name="WarehouseTo" class="form-control">               
+
+                   </select>
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+                                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                 Date:<span style="color:Red;">*</span></label>
+                          
+
+                                                            <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.TranDate, new { @class = "form-control" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+                                         </div>
+
+
+
+                                         
+                                         
+
+                                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                 Comments:</label>
+                 
+                 @Html.TextAreaFor(model => model.Comments, new { @class = "form-control" })
+                 
+                                      
+                                         </div>
+
+
+
+
+
+                                        </div>
+                                        </div>
+                                       </div> 
+
+                                        
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                        <div class="form-group">
+                                        <h2>
+                                  Item Details</h2>
+                            
+                                            
+                                        </div>
+                                        <div class="form-group">
+                                           <table class="my-table-style" id="dataTable" width="100%" border="0">
+                                    <tr class="my-table-header">
+                                        <td class="my-table-header" style="text-align:center;">
+                                            <label class="black_txt_010">
+                      Item</label>
+                                        </td>
+                                        <td  style="text-align:center;">
+                                             <label class="black_txt_010">
+                     Availability</label>
+                                        </td>
+
+                                          <td  style="text-align:center;">
+                                             <label class="black_txt_010">
+                     Quantity</label>
+                                        </td>
+
+                                        <td></td>
+                                    </tr>
+                                </table>
+                                <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                             
+                      
+                                        </div>
+                                     </div>
+                                     </div>
+                                     </div>
+                                
+                                    
+
+                         
+                    </div>   
+                 
+                
+
+              </section>
+        
+        
+        </aside>
+        
+        
+        
+        
+}

@@ -1,0 +1,359 @@
+﻿@model XenERP.Models.ReceiptPayment
+@{
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+<script src="../../Chart/highcharts.js" type="text/javascript"></script>
+<script src="../../Chart/exporting.js" type="text/javascript"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/jQuery.print.js" type="text/javascript"></script>
+
+
+
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function ($) {
+
+
+
+
+        $('#print').click(function () {
+
+
+            var prodid = $("#CustomerId").val();
+
+
+            $.get("/PurchaseReport/PurchasebySupplierPrint", { id: prodid }, function (data) {
+
+
+                $("#ProductDetailsprint").hide();
+                $("#ProductDetailsprint").html(data);
+                $("#ProductDetailsprint").print();
+
+
+
+            });
+
+        });
+    });
+
+
+</script>
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#remove').click(function () {
+
+
+            $('#CustomerDetails').show();
+
+
+        });
+
+
+
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad {
+        width: 100% !important;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+       $("#loader").hide();
+
+         var Culture="@Session["DateCulture"]";
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true,language:Culture});
+
+
+        $("#graph").hide();
+
+
+        $('#btnsubmit').click(function () {
+
+        $("#graph").show();
+
+            var fromdate = $("#FromDate").val();
+
+            var todate = $("#ToDate").val();
+
+
+            var CustName=$("#txtcustomer").val();
+
+
+            if(CustName=="")
+            {
+              alert("Supplier Name cannot be blank");
+              return false;
+            }
+
+
+
+            if(fromdate=="")
+            {
+
+            alert("From Date cannot be blank");
+            return false;
+            }
+
+
+            if(todate=="")
+            {
+
+            alert("From Date cannot be blank");
+            return false;
+            }
+
+
+            if((Date.parse(fromdate))>(Date.parse(todate)))
+            {
+                alert("From Date cannot be greater than To Date");
+            return false;
+            }
+
+            else
+            {
+
+
+             $("#btnshow").hide();
+
+            $("#loader").show();
+
+                $.get("/Reports/PurchaseInvoiceTrackDetails", { from: fromdate, to: todate, id: $("#CustomerId").val() }, function (data) {
+
+
+
+                $("#btnshow").show();
+                $("#loader").hide();
+                $("#CustomerDetails").css("display", "block");
+                $("#CustomerDetails").html(data);
+
+
+
+
+            });
+
+            }
+
+        });
+
+    });
+
+
+</script>
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#txtcustomer').autocomplete({
+
+
+            source: function (request, response) {
+                $.ajax({
+                    url: '/PurchaseReport/getSupplier',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+
+                $('#txtcustomer').val(ui.item.label);
+                $('#CustomerId').val(ui.item.value);
+
+                $.get('/PurchaseReport/getSelectedSupplier', { 'id': ui.item.value }, function (data, status) {
+
+                    $('#txtcustomer').val(data.Name);
+                });
+
+                return false;
+            },
+            minLength: 1
+        });
+
+
+    });
+
+
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+
+
+
+
+
+        <section class="content-header">
+            <h1>
+                Purchase By Supplier  <small>Report</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+
+                        <li class="pull-right"></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+
+                                        <div class="box-body">
+
+
+                                            <table>
+                                                <tr>
+
+
+                                                    <td> &nbsp; &nbsp; &nbsp; &nbsp;Supplier :</td>
+                                                    <td>
+
+                                                        <input type="text" id="txtcustomer" name="txtcustomer" class="form-control" />
+
+
+                                                        <input type="hidden" id="CustomerId" name="CustomerId" class="form-control" />
+                                                    </td>
+
+
+                                                    <td>
+
+                                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;From Date:</span>
+                                                    </td>
+                                                    <td>
+
+
+                                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">
+
+                                                            <input type="text" readonly="readonly" class="form-control" id="FromDate" />
+                                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td>
+
+                                                        <span class="r-txt"> &nbsp; &nbsp; &nbsp; &nbsp;To Date:</span>
+                                                    </td>
+
+                                                    <td>
+
+                                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">  <input readonly="readonly" type="text" class="form-control" id="ToDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+
+                                                    </td>
+
+
+
+                                                    <td>
+                                                        <div>
+
+
+                                                            <div id="loader"><img src="../../Images/ajax-loader(1).gif" /> </div>
+                                                            <div id="btnshow">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnsubmit" class="btn btn-primary" value="Show" /></div>
+
+                                                        </div>
+
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="tab-pane" id="tab_4">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+            <div id="CustomerDetails">
+            </div>
+
+        </section>
+    </aside>
+}
+
+

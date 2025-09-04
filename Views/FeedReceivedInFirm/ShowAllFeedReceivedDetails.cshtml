@@ -1,0 +1,660 @@
+﻿
+@model XenERP.Models.ModelView.FeedStockModelView
+@{
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+<script src="../../Chart/highcharts.js" type="text/javascript"></script>
+<script src="../../Chart/exporting.js" type="text/javascript"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/jQuery.print.js" type="text/javascript"></script>
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1',
+                                                                 'packages':['corechart']}]}">
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#remove').click(function () {
+            $('#CustomerDetails').show();
+
+        });
+
+
+
+    });
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+
+        $('#print').click(function () {
+
+            $.get("/SalesReport/SalesbyDatePrint", function (data) {
+                $("#CustomerDetailsprint").hide();
+                $("#CustomerDetailsprint").html(data);
+                $("#CustomerDetailsprint").print();
+            });
+
+        });
+
+
+
+
+        $('#FarmerName').autocomplete({
+
+
+            source: function (request, response) {
+                $.ajax({
+                    url: '/PoultryReport/getFarmer',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#FarmerName").val("");
+
+                    $('#FarmId').val(0);
+
+
+                }
+                else {
+
+                    $('#FarmerName').val(ui.item.label);
+                    $('#FarmId').val(ui.item.value);
+                }
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                $('#FarmerName').val(ui.item.label);
+                $('#FarmId').val(ui.item.value);
+                var v = $("#FarmId").val();
+                var fd = $('#FromDate').val();
+                var td = $('#ToDate').val();
+                $.get("/FeedReceivedInFirm/GetFlockNameNew", { data: v, FromDate: fd, ToDate: td }, function (data) {
+
+                    $("#FlockId").empty();
+                    var options = $("#FlockId");
+                    options.append(new Option("---Select Flock Code-----", "-1"));
+                    $.each(data, function () {
+                        options.append(new Option(this.FlockCode, this.Id));
+                    });
+
+
+                });
+
+
+                return false;
+            },
+
+            minLength: 1
+        });
+
+
+
+    });
+
+
+</script>
+<!-- Ionicons -->
+@*<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />*@
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+@*<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>*@
+<style type="text/css">
+    .btn-facebook {
+        background-color: #3b5998;
+        border-color: rgba(0, 0, 0, 0.2);
+        color: #ffffff;
+        float: right;
+    }
+
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad {
+        width: 100% !important;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+     $("#exportformat").hide();
+         var Culture="@Session["DateCulture"]";
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true,language:Culture});
+
+
+        $("#loader").hide();
+        $("#graph").hide();
+
+
+        $('#btnsubmit').click(function () {
+        $("#exportformat").show();
+        $("#graph").show();
+
+            var fromdate = $("#FromDate").val();
+            var todate = $("#ToDate").val();
+            var flock = $("#FlockId").val();
+            if (fromdate != "" && todate != "")
+            {
+
+             $("#btnshow").hide();
+
+             $("#loader").show();
+
+             $("#loading").fadeIn();
+             var opts = {
+                 lines: 12, // The number of lines to draw
+                 length: 7, // The length of each line
+                 width: 4, // The line thickness
+                 radius: 10, // The radius of the inner circle
+                 color: '#000', // #rgb or #rrggbb
+                 speed: 2.0, // Rounds per second
+                 trail: 60, // Afterglow percentage
+                 shadow: false, // Whether to render a shadow
+                 hwaccel: false // Whether to use hardware acceleration
+             };
+             var target = document.getElementById('loading');
+             var spinner = new Spinner(opts).spin(target);
+
+
+
+
+
+            $.get("/FeedReceivedInFirm/ShowAllFeedReceivedDetailsPartial", { From: fromdate, To: todate, flockid: flock }, function (data) {
+
+                 $("#btnshow").show();
+                $("#loader").hide();
+                $("#CustomerDetails").css("display", "block");
+                $("#CustomerDetails").html(data);
+                $("#loading").fadeOut();
+
+            });
+
+
+
+            }
+
+            else
+            {
+
+            $("#btnshow").hide();
+
+            $("#loader").show();
+
+            $("#loading").fadeIn();
+            var opts = {
+                lines: 12, // The number of lines to draw
+                length: 7, // The length of each line
+                width: 4, // The line thickness
+                radius: 10, // The radius of the inner circle
+                color: '#000', // #rgb or #rrggbb
+                speed: 2.0, // Rounds per second
+                trail: 60, // Afterglow percentage
+                shadow: false, // Whether to render a shadow
+                hwaccel: false // Whether to use hardware acceleration
+            };
+            var target = document.getElementById('loading');
+            var spinner = new Spinner(opts).spin(target);
+
+
+            $.get("/FeedReceivedInFirm/ShowAllFeedReceivedDetailsPartial", { From: 0, To: 0, flockid: flock }, function (data) {
+                 $("#btnshow").show();
+                $("#loader").hide();
+                $("#CustomerDetails").css("display", "block");
+                $("#CustomerDetails").html(data);
+                $("#loading").fadeOut();
+
+            });
+
+
+           }
+        });
+    });
+
+
+</script>
+<script type="text/javascript">
+    function onDataBound(e) {
+
+
+        // Get the export link as jQuery object
+        var $exportLink = $('#export');
+
+        // Get its 'href' attribute - the URL where it would navigate to
+        var href = $exportLink.attr('href');
+
+        // Update the 'page' parameter with the grid's current page
+        href = href.replace(/page=([^&]*)/, 'page=' + requestObject.page || '~');
+
+        // Update the 'sort' parameter with the grid's current sort descriptor
+        href = href.replace(/sort=([^&]*)/, 'sort=' + requestObject.sort || '~');
+
+        // Update the 'pageSize' parameter with the grid's current pageSize
+        href = href.replace(/pageSize=([^&]*)/, 'pageSize=' + grid.dataSource._pageSize);
+
+        //update filter descriptor with the filters applied
+
+        href = href.replace(/filter=([^&]*)/, 'filter=' + (requestObject.filter || '~'));
+
+        // Update the 'href' attribute
+        $exportLink.attr('href', href);
+    }
+</script>
+<script type="text/javascript">
+
+    function validationCheck() {
+
+        var summary = "";
+        summary += isvalidEmail();
+        summary += isvalidSubject();
+
+        if (summary != "") {
+
+            alert(summary);
+
+            return false;
+
+        }
+
+        else {
+            return true;
+        }
+
+    }
+
+    function isvalidEmail() {
+
+        var id;
+
+        var temp = document.getElementById("emailid");
+
+        id = temp.value;
+
+        var re = /\w+([-+.']\w+)*@@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+
+        if (id == "") {
+
+            return ("Please Enter Email" + "\n");
+
+        }
+
+        else if (re.test(id)) {
+
+            return "";
+
+        }
+
+        else {
+            return ("Email should be in the form abc@xyz.com" + "\n");
+
+        }
+
+    }
+
+    function isvalidSubject() {
+
+        var id;
+
+        var temp = document.getElementById("subject");
+
+        id = temp.value;
+
+        if (id == "") {
+            return ("Please enter Subject" + "\n");
+        }
+
+        else {
+
+            return "";
+        }
+
+    }
+
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#btnmail').click(function () {
+            var id;
+
+            var temp = document.getElementById("emailid");
+            id = temp.value;
+
+            if (id == "") {
+                alert("Please Enter Email" + "\n");
+                return false;
+            }
+
+            var sub;
+
+            var temp = document.getElementById("subject");
+
+            sub = temp.value;
+
+            if (sub == "") {
+                alert("Please Enter Subject" + "\n");
+                return false;
+
+            }
+
+            else {
+
+
+
+                var Mail = $("#emailid").val();
+                var msg = $("#message").val();
+                var sub = $("#subject").val();
+
+                $.post("/PoultryReport/SalesbyDateMail", { Mailto: Mail, message: msg, subj: sub }, function (data) {
+                    window.location.href = "/PoultryReport/StockbyDate";
+                });
+            }
+
+        });
+    });
+
+
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+
+
+        <section class="content-header">
+            <h1>
+                Daily Chick and Feed Status <small>Report</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+
+                        <li class="pull-right"></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-body">
+
+                                            <table>
+                                                @*<tr>
+                                                        <td><span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;Unit Name:</span></td>
+                                                        <td>
+                                                            <div class="form-group">
+                                                                @*<label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                                                                @Html.TextBoxFor(model => model.UnitCode, new { @class = "form-control", @placeholder = "Enter Unit Name" })
+                                                                @Html.HiddenFor(model => model.UnitId)
+
+                                                            </div>
+                                                        </td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>*@
+
+                                                <tr>
+
+                                                    <td>
+
+                                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;From Date:</span>
+                                                    </td>
+                                                    <td>
+
+
+                                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">
+
+                                                            <input type="text" readonly="readonly" class="form-control" id="FromDate" />
+                                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="r-txt"> &nbsp; &nbsp; &nbsp; &nbsp;To Date:</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">  <input readonly="readonly" type="text" class="form-control" id="ToDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+
+
+
+
+
+                                                <tr>
+
+                                                    <td>
+                                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;Farmer Name:</span>
+                                                    </td>
+
+                                                    <td>
+
+
+                                                        <div class="form-group">
+                                                            @*<label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>*@
+                                                            @Html.TextBoxFor(model => model.FarmerName, new { @class = "form-control", @placeholder = "Enter Farmer Name" })
+                                                            @Html.HiddenFor(model => model.FarmId)
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td>
+
+                                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;Flock Code:</span>
+                                                    </td>
+                                                    <td>
+
+
+                                                        <div class="form-group">
+                                                            @*<label class="black_txt_010"> Flock Code :<span style="color:Red;">*</span> </label>*@
+                                                            @Html.DropDownListFor(model => model.FlockId, Enumerable.Empty<SelectListItem>(), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(model => model.FlockId)
+
+                                                        </div>
+
+                                                    </td>
+
+                                                    <td>
+                                                        <div>
+
+
+                                                            <div id="loader"><img src="../../Images/ajax-loader(1).gif" /> </div>
+                                                            <div id="btnshow">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnsubmit" class="btn btn-primary" value="Show" /></div>
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="tab-pane" id="tab_4">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+
+                                        </div>
+                                        <div class="box-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+        </section>
+
+
+    </aside>
+}
+<div id="CustomerDetailsprint">
+</div>
+<aside class="right-side">
+
+
+
+    <div class="input-group input-group-lg">
+
+
+
+
+
+        <!-- /btn-group -->
+
+    </div>
+</aside>
+<!-- COMPOSE MESSAGE MODAL -->
+<div class="modal fade" id="compose-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    <i class="fa fa-envelope-o"></i><b>Send a Report by Email</b>
+                </h4>
+            </div>
+            <form action="#" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">TO:</span>
+                            <input name="email_to" type="email" id="emailid" class="form-control" placeholder="Email TO" />
+                        </div>
+                    </div>
+                    <div id="cc" class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-addon">Subject:</span>
+                            <input name="email_to" id="subject" type="email" class="form-control" value="Sales By Datewise Report"
+                                   placeholder="Subject" />
+                        </div>
+                    </div>
+                    @*<div id="bcc" class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">BCC:</span>
+                                <input name="email_to" type="email" class="form-control" placeholder="Email BCC"/>
+                            </div>
+                        </div>*@
+                    <div class="form-group">
+                        <textarea name="message" id="message" class="form-control" placeholder="Message"
+                                  style="height: 120px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer clearfix">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                        <i class="fa fa-times"></i>Discard
+                    </button>
+                    <button id="btnmail" type="button" class="btn btn-primary pull-left">
+                        <i class="fa fa-envelope"></i>Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<div id="CustomerDetails">
+</div>
+
+<br />
+
+

@@ -1,0 +1,1058 @@
+﻿@using XenERP.Models;
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+
+            $(".closebtn").on("click", function () {
+
+                $('#div1').hide();
+                $('#div2').hide();
+                $('#div3').hide();
+
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        //declare array with divs to show
+        var menuArray = ['0'];
+
+        $(function () {
+
+            $('#lidiv1').click(function () {
+                var targetID = $(this).attr('target');
+                $('.targetDiv').hide();
+                $('#div1').show('slide');
+            });
+            $('#lidiv2').click(function () {
+                var targetID = $(this).attr('target');
+                $('.targetDiv').hide();
+                //                if (targetID == 1) {
+                //                    $('#div1').show('slide');
+                //                }
+                //                if (targetID == 2) {
+                //                    $('#div2').show('slide');
+                //                }
+                //                if (targetID == 3) {
+                //                    $('#div3').show('slide');
+                //                }
+                //show all menu items in chain
+                var found = false;
+
+                //get containing div target number
+                var current = $(this).parent().attr('id').toString().charAt(3);
+                var length = menuArray.length;
+
+                //remove elements of array lower than clicked button
+                for (var i = 0; i < length; i++) {
+                    //check if next menu item is a button just pressed and never delete root menu (elem == 0)
+                    if (menuArray[0] == current || menuArray[0] == 0) {
+                        found = true;
+                    }
+                    //hide div if no longer in menu structure and remove from menuArray[0]
+                    if (!found) {
+                        $('#div' + menuArray[0]).hide();
+                        menuArray.shift();
+                    }
+
+                };
+
+                //add new target to beginning of array
+                menuArray.unshift(targetID);
+
+                //show each element in the menu structure
+                menuArray.forEach(function (elem, index) {
+                    if (index != 0) {
+                        $('#div' + elem).show();
+                    }
+                });
+
+                //get div of target to show sliding effect
+                var targetDiv = $('#div' + menuArray[0]);
+                //  alert(targetDiv);
+                //show the div as the last element on the page
+                targetDiv.insertAfter('#div' + menuArray[1]);
+                $('#div2').show('slide');
+            });
+            $('#lidiv3').click(function () {
+                var targetID = $(this).attr('target');
+                $('.targetDiv').hide();
+                $('#div3').show('slide');
+            });
+
+            //            $('.showButton').click(function () {
+            //                //   $('#div2').show('slide');
+            //                //   alert("hi");
+            //                //get target div to show
+            //                var targetID = $(this).attr('target');
+            //                //    alert(targetID);
+            //                //hide all divs
+            //                $('.targetDiv').hide();
+            //                //                if (targetID == 1) {
+            //                //                    $('#div1').show('slide');
+            //                //                }
+            //                //                if (targetID == 2) {
+            //                //                    $('#div2').show('slide');
+            //                //                }
+            //                //                if (targetID == 3) {
+            //                //                    $('#div3').show('slide');
+            //                //                }
+            //                //show all menu items in chain
+            //                var found = false;
+
+            //                //get containing div target number
+            //                var current = $(this).parent().attr('id').toString().charAt(3);
+            //                var length = menuArray.length;
+
+            //                //remove elements of array lower than clicked button
+            //                for (var i = 0; i < length; i++) {
+            //                    //check if next menu item is a button just pressed and never delete root menu (elem == 0)
+            //                    if (menuArray[0] == current || menuArray[0] == 0) {
+            //                        found = true;
+            //                    }
+            //                    //hide div if no longer in menu structure and remove from menuArray[0]
+            //                    if (!found) {
+            //                        $('#div' + menuArray[0]).hide();
+            //                        menuArray.shift();
+            //                    }
+
+            //                };
+
+            //                //add new target to beginning of array
+            //                menuArray.unshift(targetID);
+
+            //                //show each element in the menu structure
+            //                menuArray.forEach(function (elem, index) {
+            //                    if (index != 0) {
+            //                        $('#div' + elem).show();
+            //                    }
+            //                });
+
+            //                //get div of target to show sliding effect
+            //                var targetDiv = $('#div' + menuArray[0]);
+            //                //  alert(targetDiv);
+            //                //show the div as the last element on the page
+            //                targetDiv.insertAfter('#div' + menuArray[1]);
+
+            //                //slide out last div
+            //                targetDiv.show('slide');
+
+            //            });
+
+
+
+
+        });
+    </script>
+
+
+
+    @try
+    {
+        if (Session["company"].ToString() == "0")
+        {
+
+
+        }
+        else
+        {
+            <a href="#" class="logo"> <img src="@Url.Content("~/Companyimages/" + @Session["companylogo"].ToString())" + style="width:160px;height:40px;" alt="Company Image" /></a>
+            <div class="top-mane">
+                <div class="global-header-middle">
+                    <ul id="div0">
+                        <li id="lidiv1" class="showButton" target="1">
+                            <img src="../../Images/search.png" alt="search" />
+                        </li>
+                        <li id="lidiv2" class="showButton" target="2">
+                            <img src="../../Images/add-manu.png" alt="menu" />
+                        </li>
+                        <li id="lidiv3" class="showButton" target="3">
+                            <img src="../../Images/time.png" alt="time" />
+                        </li>
+                    </ul>
+                </div>
+                <!-- div1 Branch -->
+                <div id="div1" class="targetDiv search">
+                    <button type="button" class="closebtn" title="Close" style="color: #fff;">
+                        x
+                    </button>
+                    <label>
+                        Search
+                    </label>
+                    <input name="" type="text" />
+                </div>
+
+
+                <div id="div2" class="targetDiv add-nav">
+                    <button type="button" title="Close" class="closebtn" style="color: #fff;">
+                        x
+                    </button>
+                    <h3 class="tableCell title subsection20TitleText">
+                    </h3>
+                    <div style="width: 760px;" class="table applyWidth">
+                        <div class="tableRow topNavContentSection">
+
+                            @if (Session["Role"] == "SuperAdmin")
+                            {
+
+                                //-------------------------------------------------MASTER  HEAD MENU -------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate">
+                                    <ul class="subTitle">
+                                        <li>
+                                            <h1>
+                                                Masters
+                                            </h1>
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllCustomer", "Customer")">
+                                                            Customers
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllSupplier", "Supplier")">
+                                                            Suppliers
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllPerson", "SalesPerson")">
+                                                            Sales Person
+                                                        </a>
+                                                    </li>
+
+                                                    @* <li data-qbo-bind="css: timeactivity"><a href="@Url.Action("ShowAllWarehouse", "Warehouse")">
+        Ware House </a></li>*@
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllDepartment", "Department")">
+                                                            Department
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllBusinessPartner", "BusinessPartner")">
+                                                            Business Partner
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllBank", "Bank")">
+                                                            Banks
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllProductCategory", "ProductCategory")">
+                                                            Product Category
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("Create", "Group")">
+                                                            Product
+                                                            Group
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllProduct", "Product")">
+                                                            Product
+                                                        </a>
+                                                    </li>
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ProductMultiUnit", "Product")">
+                                                            Product Unit Mapping
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity"><a href="@Url.Action("CreateUnit", "Home")">Units</a></li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllBranch", "Branch")">
+                                                            Farm Unit
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("Index", "Shed")">
+                                                           Shed Master
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                //---------------------------------------------------ACCOUNTS----------------------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate" data-qbo-bind="visible: showEmployees">
+                                    <ul class="subTitle">
+                                        <li>
+                                            <h1>
+                                                Accounts
+                                            </h1>
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowGroupMaster", "GroupMaster")">
+                                                            Account Groups
+                                                        </a>
+                                                    </li>
+
+                                                    @* <li data-qbo-bind="css: timeactivity"><a href="@Url.Action("ShowAllSubgroup", "SubGroup")">
+        Sub Group </a></li>*@
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowLedgerMaster", "LedgerMaster")">
+                                                            Ledger Master
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowSubLedgerMaster", "LedgerMaster")">
+                                                            Sub Ledger Master
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ReceiveVoucherList", "Voucher")">
+                                                            Receive Voucher
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("PaymentVoucherList", "Voucher")">
+                                                            Payment Voucher
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllContraVoucher", "Contra")">
+                                                            Contra Voucher
+                                                        </a>
+                                                    </li>
+
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllJournal", "Journal")">
+                                                            Journal
+                                                        </a>
+                                                    </li>
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("Index", "CashTransfer")">
+                                                            Cash Transfer
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ReceiveList", "DoubleEntry")">
+                                                            Multi Receive Voucher
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("PaymentList", "DoubleEntry")">
+                                                            Multi Payment Voucher
+                                                        </a>
+                                                    </li>
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ChequeInHand", "Bank")">
+                                                            Cheque/DD In Hand
+                                                        </a>
+                                                    </li>
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("Reconcilation", "Bank")">
+                                                            Reconciliation
+                                                        </a>
+                                                    </li>
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ReconciledCheque", "Bank")">
+                                                            Reconciled Cheque/DD
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                //---------------------------------------------------INVENTORY---------------------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate" data-qbo-bind="visible: showEmployees">
+                                    <ul class="subTitle">
+                                        <li>
+                                            <h1>
+                                                Inventory
+                                            </h1>
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllWarehouse", "Warehouse")">
+                                                            WareHouse
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ItemAdjustment", "Warehouse")">
+                                                            Item Adjustment
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("CreateWarehouseTransfer", "Warehouse")">
+                                                            Stock Transfer
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                //-----------------------------------------------------SETTINGS-----------------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate" data-qbo-bind="visible: showEmployees">
+                                    <ul class="subTitle">
+                                        <li>
+                                            <h1>
+                                                Settings
+                                            </h1>
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowAllCompany", "Company")">
+                                                            Company Settings
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                        <a href="@Url.Action("ShowFinancialYear", "Financial")">
+                                                            Financial Year
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllCurrencyrate", "Tax")">
+                                                            Currency Rate
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("TaxDetails", "Tax")">
+                                                            Tax
+                                                        </a>
+                                                    </li>
+
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("CustomerDiscount", "Settings")">
+                                                            Customer Discount
+                                                        </a>
+                                                    </li>
+
+                                                    @* <li data-qbo-bind="css: timeactivity"><a href="@Url.Action("FetchPriceList", "PriceList")">Price List
+                                                        </a></li>*@
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("ShowAllPaymentTerm", "PaymentTerm")">
+                                                            Payment Term
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("FetchPriceList", "PriceList")">
+                                                            Price List
+                                                        </a>
+                                                    </li>
+                                                    <li data-qbo-bind="css: timeactivity">
+                                                        <a href="@Url.Action("SetPrefix", "Prefix")">
+                                                            Set Prefix
+                                                        </a>
+                                                    </li>
+
+                                                </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+
+
+                            }
+
+
+                            else
+                            {
+
+
+                                XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+
+                                InventoryEntities db = new InventoryEntities();
+                                var menuheader = db.MenuHeaderMasters.ToList();
+                                int CompId = Convert.ToInt32(Session["companyid"]);
+                                int userid = Convert.ToInt32(Session["AssignId"]);
+
+
+
+                                var list = rep.GetMenuheader(userid, CompId);
+
+                                //-------------------------------------------------MASTER  HEAD MENU -------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate">
+                                    <ul class="subTitle">
+                                        <li>
+
+                                            @{
+
+                                                var masters = list.Where(l => l.AccessMenuHeaderId == 6);
+                                            }
+                                            @if (masters.Count() > 0)
+                                            {
+                                                <h1>
+                                                    Masters
+                                                </h1>
+                                            }
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+                                                    @foreach (var master in masters)
+                                                    {
+
+                                                        if (master.Name == "Customer")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllCustomer", "Customer")">
+                                                                    Customers
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "Supplier")
+                                                        {
+
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllSupplier", "Supplier")">
+                                                                    Suppliers
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "SalesPerson")
+                                                        {
+
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllPerson", "SalesPerson")">
+                                                                    Sales Person
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "Department")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllDepartment", "Department")">
+                                                                    Department
+                                                                </a>
+                                                            </li>
+                                                        }
+
+
+                                                        if (master.Name == "BusinessPartner")
+                                                        {
+
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllBusinessPartner", "BusinessPartner")">
+                                                                    Business Partner
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "Bank")
+                                                        {
+
+
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllBank", "Bank")">
+                                                                    Banks
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "ProductCategory")
+                                                        {
+
+
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllProductCategory", "ProductCategory")">
+                                                                    Product Category
+                                                                </a>
+                                                            </li>
+                                                        }
+
+
+                                                        if (master.Name == "ProductGroup")
+                                                        {
+
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("Create", "Group")">
+                                                                    Product
+                                                                    Group
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "Product")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllProduct", "Product")">
+                                                                    Product
+                                                                </a>
+                                                            </li>
+
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ProductMultiUnit", "Product")">
+                                                                    Product Unit Mapping
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (master.Name == "Unit")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity"><a href="@Url.Action("CreateUnit", "Home")">Units</a></li>
+                                                        }
+
+                                                        if (master.Name == "Branch")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllBranch", "Branch")">
+                                                                    Branch
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        <li data-qbo-bind="css: timeactivity">
+                                                            <a href="@Url.Action("Index", "Shed")">
+                                                                Shed Master
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </ul>
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                                //---------------------------------------------------ACCOUNTS----------------------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate">
+                                    <ul class="subTitle">
+                                        <li>
+
+                                            @{
+
+                                                var accounts = list.Where(l => l.AccessMenuHeaderId == 4);
+                                            }
+                                            @if (accounts.Count() > 0)
+                                            {
+                                                <h1>
+                                                    Accounts
+                                                </h1>
+                                            }
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+                                                    @foreach (var account in accounts)
+                                                    {
+                                                        if (account.Name == "AccountGroup")
+                                                        {
+
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowGroupMaster", "GroupMaster")">
+                                                                    Account Groups
+                                                                </a>
+                                                            </li>
+
+                                                        }
+
+
+                                                        if (account.Name == "Ledger")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowLedgerMaster", "LedgerMaster")">
+                                                                    Ledger Master
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (account.Name == "SubLedger")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowSubLedgerMaster", "LedgerMaster")">
+                                                                    Sub Ledger Master
+                                                                </a>
+                                                            </li>
+                                                        }
+
+
+                                                        if (account.Name == "Voucher")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ReceiveVoucherList", "Voucher")">
+                                                                    Receive Voucher
+                                                                </a>
+                                                            </li>
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("PaymentVoucherList", "Voucher")">
+                                                                    Payment Voucher
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (account.Name == "Contra")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllContraVoucher", "Contra")">
+                                                                    Contra Voucher
+                                                                </a>
+                                                            </li>
+
+                                                        }
+
+                                                        if (account.Name == "Journal")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllJournal", "Journal")">
+                                                                    Journal
+                                                                </a>
+                                                            </li>
+
+                                                        }
+                                                        if (account.Name == "CashTransfer")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("Index", "CashTransfer")">
+                                                                    Cash Transfer
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        if (account.Name == "ChequeInHand")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ChequeInHand", "Bank")">
+                                                                    Cheque/DD In Hand
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        if (account.Name == "Reconcilation")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("Reconcilation", "Bank")">
+                                                                    Reconciliation
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        if (account.Name == "ReconciledCheque")
+                                                        {
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ReconciledCheque", "Bank")">
+                                                                    Reconciled Cheque/DD
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                </ul>
+                                            </ul>
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                                //---------------------------------------------------INVENTORY---------------------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate">
+                                    <ul class="subTitle">
+                                        <li>
+
+
+                                            @{
+                                                var inventrory = list.Where(l => l.AccessMenuHeaderId == 5);
+                                            }
+
+                                            @if (inventrory.Count() > 0)
+                                            {
+                                                <h1>
+                                                    Inventory
+                                                </h1>
+                                            }
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+
+                                                    @foreach (var inv in inventrory)
+                                                    {
+
+                                                        if (inv.Name == "Warehouse")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllWarehouse", "Warehouse")">
+                                                                    WareHouse
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        if (inv.Name == "ItemAdjustment")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ItemAdjustment", "Warehouse")">
+                                                                    Item Adjustment
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                        if (inv.Name == "StockTransfer")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("CreateWarehouseTransfer", "Warehouse")">
+                                                                    Stock Transfer
+                                                                </a>
+                                                            </li>
+                                                        }
+
+                                                    }
+
+                                                </ul>
+                                            </ul>
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                                //-----------------------------------------------------SETTINGS-----------------------------------------------------------------------------------------
+
+                                <div class="tableCell expandedCreate" data-qbo-trackarea="expandedcreate">
+                                    <ul class="subTitle">
+                                        <li>
+                                            @{
+                                                var settings = list.Where(l => l.AccessMenuHeaderId == 3);
+                                            }
+                                            @if (settings.Count() > 0)
+                                            {
+                                                <h1>
+                                                    Settings
+                                                </h1>
+                                            }
+                                            <ul>
+                                                <ul data-dojo-attach-point="_apCreateEmployeesList">
+
+
+                                                    @foreach (var menu in settings)
+                                                    {
+                                                        if (menu.Name == "Company")
+                                                        {
+
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowAllCompany", "Company")">
+                                                                    Company Settings
+                                                                </a>
+                                                            </li>
+                                                        }
+
+
+                                                        if (menu.Name == "Financial")
+                                                        {
+
+                                                            <li class="upgrade" data-qbo-bind="css: payrollfeature">
+                                                                <a href="@Url.Action("ShowFinancialYear", "Financial")">
+                                                                    Financial Year
+                                                                </a>
+                                                            </li>
+                                                        }
+
+
+                                                        if (menu.Name == "CurrencyRate")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllCurrencyrate", "Tax")">
+                                                                    Currency Rate
+                                                                </a>
+                                                            </li>
+
+                                                        }
+
+
+                                                        if (menu.Name == "Tax")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("TaxDetails", "Tax")">
+                                                                    Tax
+                                                                </a>
+                                                            </li>
+
+
+                                                        }
+
+                                                        if (menu.Name == "CustomerDiscount")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("CustomerDiscount", "Settings")">
+                                                                    Customer Discount
+                                                                </a>
+                                                            </li>
+
+                                                        }
+
+                                                        if (menu.Name == "PaymentTerm")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("ShowAllPaymentTerm", "PaymentTerm")">
+                                                                    Payment Term
+                                                                </a>
+                                                            </li>
+
+                                                        }
+                                                        if (menu.Name == "PriceList")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("FetchPriceList", "PriceList")">
+                                                                    Price List
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                        if (menu.Name == "SetPrefix")
+                                                        {
+                                                            <li data-qbo-bind="css: timeactivity">
+                                                                <a href="@Url.Action("SetPrefix", "Prefix")">
+                                                                    Set Prefix
+                                                                </a>
+                                                            </li>
+
+                                                        }
+
+                                                    }
+                                                </ul>
+                                            </ul>
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+
+
+                            }
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- div3 Branch -->
+                <div id="div3" class="targetDiv time">
+                    <button type="button" class="closebtn" title="Close" style="color: #fff;">
+                        x
+                    </button>
+                    Content of div 3.<br />
+                </div>
+            </div>
+            <!-- Header Navbar: style can be found in header.less -->
+<nav class="navbar navbar-static-top" role="navigation">
+    <!-- Sidebar toggle button-->
+    <a href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </a>
+
+    <div class="navbar-right">
+
+
+        <ul class="nav navbar-nav">
+            <!-- Messages: style can be found in dropdown.less-->
+            <!-- Notifications: style can be found in dropdown.less -->
+            <li class="dropdown notifications-menu">
+
+
+                @if (Session["Role"] == "SuperAdmin")
+                {
+
+
+
+                    <a class="underline" href="@Url.Action("CompanyList", "Company")">All Companies</a>
+
+                }
+
+
+            </li>
+
+            <!-- Tasks: style can be found in dropdown.less -->
+            <!-- User Account: style can be found in dropdown.less -->
+            <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="glyphicon glyphicon-user"></i>
+                    <span>    <i class="caret"></i></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <!-- User image -->
+                    <li class="user-header bg-light-blue">
+
+                        @if (Session["Userimage"] == null)
+                        {
+                            <img src="../../img/avatar5.png" class="img-circle" alt="User Image" />
+
+                        }
+                        else
+                        {
+                            <img src="@Url.Content("~/img/" + Session["Userimage"])" class="img-circle" alt="User Image" />
+                        }
+                        <p>
+                            @Session["name"] - @Session["Role"]
+
+                            @*
+                                <small>Member Since-
+                                 @try
+                                 {
+                                  @String.Format(Session["DateFormatLower"].ToString(), @Session["CreatedDate"].ToString())
+                                   }
+                                                       catch { }</small>*@
+                        </p>
+                    </li>
+                    <!-- Menu Body -->
+                    @*<li class="user-body">
+                            <div class="col-xs-4 text-center">
+                                <a href="#">Followers</a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <a href="#">Sales</a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <a href="#">Friends</a>
+                            </div>
+                        </li>*@
+                    <!-- Menu Footer-->
+                    <li class="user-footer">
+                        <div class="pull-left">
+                            <a href="@Url.Action("UserProfile", "User", new { id = @Session["Createdid"] })" class="btn btn-default btn-flat">Profile</a>
+                        </div>
+                        <div class="pull-right">
+                            <a href="@Url.Action("Logout", "Home")" class="btn btn-default btn-flat">Sign out</a>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="navbar-right right_sec2">
+        <h3 style="font-family:'Times New Roman'">
+            Unit :
+            <span style="color:crimson">
+                @Session["BranchName"].ToString()
+            </span>
+        </h3>
+    </div>
+</nav>
+        }
+    }
+    catch { }
+</body>
+</html>

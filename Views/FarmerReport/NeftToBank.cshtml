@@ -1,0 +1,198 @@
+﻿@model XenERP.Models.ModelView.FeedStockModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<script src="../../Reports/Scripts/custom.js" type="text/javascript"></script>
+<script src="../../Reports/js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script src="../../Reports/Scripts/jQuery.print.js" type="text/javascript"></script>
+
+<script type="text/javascript" language="javascript">
+
+    $(document).ready(function () {
+        var Culture = "@Session["DateCulture"]";
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true, language: Culture });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true, language: Culture });
+
+        $("#btnsubmit").on("click", function () {
+
+
+
+            if ($("#Name").val() == "") {
+                alert("Please enter bank name");
+                return false;
+            }
+
+            if ($("#OpeningBalance").val() == "") {
+                alert("Please enter Opening Balance");
+                return false;
+            }
+        });
+
+    });
+
+</script>
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+
+
+    <aside class="right-side">
+        <section class="content-header">
+            <h1>
+                National Electronic Funds Transfer (NEFT) 
+                <input type="submit" id="btnsubmit" class="btn btn-primary pull-right " value="Save" />
+            </h1>
+          
+        </section>
+
+
+
+        @*<div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+
+                <li class="pull-right">
+                    <input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+
+                </li>
+            </ul>
+
+        </div>*@
+
+
+        <section class="content">
+
+            <div class="row">
+
+                <!-- Main content -->
+                <!-- left column -->
+                <div class="col-md-6">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <div class="box-header">
+
+                        </div>
+                        <!-- form start -->
+
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Bank Name :<span style="color:Red;">*</span>
+                                </label>
+                                @Html.DropDownListFor(model => model.BankId, new SelectList(ViewBag.bank, "Value", "Text"), "-----Select a Bank----", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.BankId)
+
+                              
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+
+                        </div>
+                        <div class="box-body">
+
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Sheet Creation Date<span style="color:Red;">*</span>
+                                </label>
+
+                                <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">
+                                    @Html.TextBoxFor(m => m.SheetSubmissionDate, new { @class = "form-control", @readonly = "readonly" })
+
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.BankId)
+                            </div>
+
+            
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+            <div class="box-body table-responsive" id="divPrint">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+
+                        <tr>
+                            <th style="text-align:center">SL No</th>
+                            <th style="text-align:center">Farmer Name</th>
+                            <th style="text-align:center">Branch</th>
+                            <th style="text-align:center">GC Amount</th>
+                            <th style="text-align:center">Flock Code</th>
+                            <th style="text-align:center">A/C No</th>
+                            <th class="DoNeft"> DO NEFT?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @for (int i = 0; i < Model.neftList.Count(); i++)
+                        {
+
+                            <tr>
+                                @{ Slno = Slno + 1;
+                                }
+                                <td>
+                                    @Slno
+                                    @Html.HiddenFor(m => m.neftList[i].Id)
+                                    @Html.HiddenFor(m=>m.neftList[i].FarmerReportId)
+                                    @Html.HiddenFor(m => m.neftList[i].BranchId)
+                                    @Html.HiddenFor(m => m.neftList[i].FarmId)
+                                    @Html.HiddenFor(m => m.neftList[i].FlockId)
+                                    @Html.HiddenFor(m => m.neftList[i].GCAmount)
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => Model.neftList[i].FarmerName)</td>
+                                <td>@Html.DisplayFor(modelItem => Model.neftList[i].BranchName)</td>
+                                <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].GCAmount)</td>
+                                <td style="text-align:center">@Html.DisplayFor(modelItem => Model.neftList[i].FlockCode)</td>
+                                <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].FarmerAcNo)</td>
+                                <td style="text-align:center">@Html.CheckBoxFor(modelItem => Model.neftList[i].DoNEFT, new { @class = "DoNeft" })</td>
+
+                            </tr>
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+            </div><!-- /.box-body -->
+
+        </section>
+
+
+    </aside>
+
+
+
+
+}
+

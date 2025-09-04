@@ -1,0 +1,191 @@
+﻿@model IEnumerable<XenERP.Models.VoucherModelView>
+@{
+
+    int SlNo = 0;
+
+    decimal? TotalAmt = 0;
+
+}
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .invoice th,
+    td {
+        padding: 3px 2px 3px 2px;
+        text-align: center;
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+</style>
+
+<div align="center">
+    <span style="font-size:x-large;font-weight:bolder">HI-BREED INTERNATIONAL SALES && SERVICE</span><br />
+    <span style="font-size:medium;font-weight:normal"> 22, R.N. Mukherjee Road, 5th Floor, Kolkata-700 001</span><br />
+    <span style="font-size:medium;font-weight:normal">GST NO - 19AABFH7726D1ZG</span>
+    <br />
+   
+        <span style="font-size:medium;font-weight:normal">
+
+          @ViewBag.DateRange
+
+        </span>
+    
+    <br />
+    <br />
+    <div style="font-size:medium;font-weight:normal;text-align:left;padding-left:10px">
+        @*<b>Purchase By Product Details </b>*@
+
+    </div>
+</div>
+<br />
+
+
+<table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+    <thead>
+        <tr>
+            <th>
+                SlNo.
+            </th>
+            <th>
+                Voucher No.
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Branch
+            </th>
+            <th>
+                Particulars
+            </th>
+            <th>
+                Paid To
+            </th>
+            <th>
+                Mode of Payment
+            </th>
+            <th>
+                Amount
+            </th>
+
+
+
+            <th>
+                Remarks
+            </th>
+
+            <th>
+                Entry Date
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+
+            SlNo = SlNo + 1;
+
+            //TotalCashAmt = TotalCashAmt + item.RPCashAmount;
+
+            //TotalBankAmt = TotalBankAmt + item.RPBankAmount;
+
+            TotalAmt = TotalAmt + item.TotalAmount;
+            string VoucherNo = "";
+            if (item.Prefix != null)
+            {
+                VoucherNo = item.Prefix + item.VoucherNo;
+            }
+            else
+            {
+                VoucherNo = "V00" + item.VoucherNo;
+            }
+
+
+
+            <tr>
+                <td align="left">@SlNo</td>
+                <td nowrap>
+
+
+                    @VoucherNo
+
+
+                </td>
+                <td nowrap>
+                    @String.Format("{0:dd/MM/yyyy}", item.RPdate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.branchCode)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.GeneralLedger)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MoneyReceiptNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModeOfPay)
+                </td>
+                <td align="right">
+                    @Html.DisplayFor(modelItem => item.TotalAmount)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.remarks)
+                </td>
+
+
+
+
+                <td>
+                    @String.Format("{0:dd/MM/yyyy}", item.chqDate)
+                </td>
+
+            </tr>
+
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="7"></td>
+            <td align="right">
+                <strong>  @TotalAmt </strong>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+    </tfoot>
+
+
+</table>
+
+
+
+

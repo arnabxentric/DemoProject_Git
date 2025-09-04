@@ -1,0 +1,712 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FeedIssuedModelView>
+
+@using XenERP.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+
+<style>
+.table-responsive {
+    min-height: 0.01%;
+    overflow-x: auto;
+}
+</style>
+<script src="~/Scripts/JqueryValidation.js" type="text/javascript"></script>
+
+
+<script language="javascript" type="text/javascript">
+   
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+    });
+
+
+    function addRow(tableID) {
+        var rowadd = parseInt($("#IdToHold").val());       
+        rowadd++;
+        $("#IdToHold").val(rowadd);
+        var table = document.getElementById(tableID);
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+
+        //------------Code By Ayan--------------------
+        //-----Change------
+
+        var elementH = document.createElement("input");
+        elementH.type = "hidden";
+        elementH.name = "IdToHoldInEdit" + rowadd;
+        elementH.id = "IdToHoldInEdit" + rowadd;
+        elementH.value = rowadd;
+        elementH.className = "IdToHoldInEdit";
+
+       //---------------------------
+
+
+
+        var cell0 = row.insertCell(0);
+        var element0 = document.createElement("select");
+        element0.className = "CategoryName";
+        element0.id = "Category" + rowadd;
+        element0.name = "CategoryName" + rowadd;
+        var option0 = document.createElement("option");
+        option0.innerHTML = "Select";
+        option0.value = "";
+        element0.add(option0, null);
+        cell0.appendChild(element0);
+        cell0.appendChild(elementH);
+
+        $.get('/FeedIssued/GetCategoryType', null, function (data) {
+
+            $.each(data, function () {
+                $("#Category" + rowadd).append($("<option />").val(this.Id).text(this.Name));
+            });
+
+        });
+
+
+
+        var cell1 = row.insertCell(1);
+        var element1 = document.createElement("select");
+        element1.className = "FeedName";
+        element1.id = "Feed" + rowadd;
+        element1.name = "FeedName" + rowadd;
+        var option1 = document.createElement("option");
+        option1.innerHTML = "Select";
+        option1.value = "";
+        element1.add(option1, null);
+        cell1.appendChild(element1);
+
+
+        var cell2 = row.insertCell(2);
+        var element2 = document.createElement("select");
+        element2.className = "PurchaseChallanNo";
+        element2.id = "PurchaseChallanNo" + rowadd;
+        element2.name = "PurchaseChallanNo" + rowadd;
+        var option1 = document.createElement("option");
+        option1.innerHTML = "Select";
+        option1.value = "";
+        element2.add(option1, null);
+        cell2.appendChild(element2);
+
+
+
+        $("#dataTable").on('change', '.FeedName', function () {
+            var v = $("#Feed" + rowadd).val();
+            // var p = v.toString();
+           // alert(v);
+            $.get('/FeedIssued/GetPurchaseChallanNo', { FeedId: v }, function (data) {
+                $("#PurchaseChallanNo" + rowadd).empty();
+                $("#PurchaseChallanNo" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                $.each(data, function () {
+                    $("#PurchaseChallanNo" + rowadd).append($("<option />").val(this.Id).text(this.No));
+                });
+
+            });
+        });
+
+
+
+
+        var cell3 = row.insertCell(3);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "FeedAvailable" + rowadd;
+        element3.id = "FeedAvailable" + rowadd;
+        element3.className = "FeedAvailable";
+        element3.readOnly = true;
+
+        var element3H = document.createElement("input");
+        element3H.type = "hidden";
+        element3H.name = "PuchaseChallanDetailsId" + rowadd;
+        element3H.id = "PuchaseChallanDetailsId" + rowadd;
+        element3H.className = "PuchaseChallanDetailsId";
+
+        cell3.appendChild(element3H);
+        cell3.appendChild(element3);
+
+
+        var cell4 = row.insertCell(4);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "FeedDesc" + rowadd;
+        element4.id = "FeedDesc" + rowadd;
+        element4.className = "FeedDesc";
+        element4.readOnly = true;
+        cell4.appendChild(element4);
+
+        var cell5 = row.insertCell(5);
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.name = "FeedQuantity" + rowadd;
+        element5.className = "FeedQuantity";
+        element5.id = "FeedQuantity" + rowadd;
+        cell5.appendChild(element5);
+
+
+        var cell6 = row.insertCell(6);
+        var element6 = document.createElement("select");
+        element6.className = "UOMName";
+        element6.id = "UOM" + rowadd;
+        element6.name = "UOM" + rowadd;
+        var option2 = document.createElement("option");
+        option2.innerHTML = "select";
+        option2.value = "";
+        element6.add(option2, null);
+        cell6.appendChild(element6);
+
+//        $("#dataTable").on('change', '.FeedName', function () {
+//            var v = $("#Feed" + rowadd).val();
+//            var p = v.toString();
+
+//            $.get('/FeedIssued/GetUnitTypeWithProductId', { CatId: p }, function (data) {
+//                $("#UOM" + rowadd).empty();
+//                $("#UOM" + rowadd).append($("<option />").val(-1).text("--Select--"));
+//                $.each(data, function () {
+
+//                    $("#UOM" + rowadd).append($("<option />").val(this.UnitId).text(this.UnitName));
+//                    $("#UOM" + rowadd).append($("<option />").val(this.UnitIdSecondary).text(this.UnitNameSecondary));
+//                });
+
+//            });
+//        });
+
+
+
+
+
+        var cell7 = row.insertCell(7);
+        var element7 = document.createElement("input");
+        element7.type = "text";
+        element7.name = "PrimaryUnit" + rowadd;
+        element7.className = "PrimaryUnit";
+        element7.id = "PrimaryUnit" + rowadd;
+        element7.readOnly = true;
+        cell7.appendChild(element7);
+
+
+        var cell8 = row.insertCell(8);
+        var element8 = document.createElement("input");
+        element8.type = "text";
+        element8.name = "PriceRate" + rowadd;
+        element8.className = "PriceRate";
+        element8.id = "PriceRate" + rowadd;
+        cell8.appendChild(element8);
+
+
+
+        var cell9 = row.insertCell(9);
+        var element9 = document.createElement("input");
+        element9.type = "text";
+        element9.name = "UnitPrice" + rowadd;
+        element9.className = "UnitPrice";
+        element9.id = "UnitPrice" + rowadd;
+      //  element9.readOnly = true;
+        cell9.appendChild(element9);
+
+
+        var cell10 = row.insertCell(10);
+        var element10 = document.createElement("input");
+        element10.type = "text";
+        element10.name = "TotalQuantity" + rowadd;
+        element10.className = "TotalQuantity";
+        element10.id = "TotalQuantity" + rowadd;
+        element10.readOnly = true;
+        cell10.appendChild(element10);
+
+     
+
+        var cell11 = row.insertCell(11);
+        var element11 = document.createElement("input");
+        element11.type = "button";
+        element11.id = "btndelete";
+        element11.name = "button[]";
+        element11.title = "Delete this row";
+        element11.className = "add-component-deletebotton";
+        cell11.appendChild(element11);
+
+
+    };
+
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#dataTable").on('change', '.CategoryName', function () {
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var nmn = ctr.find('.IdToHoldInEdit');
+            var ppp = nmn.val();
+            var rowadd = parseInt(ppp);         
+            var v = $("#Category" + rowadd).val();
+            var p = v.toString();          
+            $.get('/FeedIssued/GetFeedTypeWithCatId', { CatId: p }, function (data) {
+                $("#Feed" + rowadd).empty();
+                $("#Feed" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                $.each(data, function () {
+                    $("#Feed" + rowadd).append($("<option />").val(this.Id).text(this.Name));
+                });
+
+            });
+        });
+
+
+        //$("#dataTable").on('change', '.FeedName', function () {
+
+        //    var ctd = $(this).closest('td');
+        //    var ctr = ctd.closest('tr');
+        //    var nmn = ctr.find('.IdToHoldInEdit');
+        //    var ppp = nmn.val();
+        //    var rowadd = parseInt(ppp);        
+
+        //    var v = $("#Feed" + rowadd).val();
+        //    var p = v.toString();
+
+        //    $.get('/FeedIssued/GetUnitTypeWithProductId', { CatId: p }, function (data) {
+        //        $("#UOM" + rowadd).empty();
+
+        //        $("#FeedQuantity" + rowadd).val(0);
+        //        $("#PrimaryUnit" + rowadd).val(0);
+        //        $("#TotalQuantity" + rowadd).val(0);
+
+        //        $("#UOM" + rowadd).append($("<option />").val(-1).text("--Select--"));
+        //        $.each(data, function () {
+        //            alert(this.AvailableFeed);
+        //            $("#FeedAvailable" + rowadd).val(this.AvailableFeed);
+        //            $("#UOM" + rowadd).append($("<option />").val(this.UnitId).text(this.UnitName));
+        //            $("#UOM" + rowadd).append($("<option />").val(this.UnitIdSecondary).text(this.UnitNameSecondary));
+        //        });
+
+        //    });
+        //});
+
+
+
+
+        $("#dataTable").on('change', '.PurchaseChallanNo', function () {
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var nmn = ctr.find('.IdToHoldInEdit');
+            var ppp = nmn.val();
+            var rowadd = parseInt(ppp);
+
+            var v = $("#Feed" + rowadd).val();
+            var prch = $("#PurchaseChallanNo" + rowadd).val();
+
+
+            $.get('/FeedIssued/GetUnitTypeWithProductId', { PId: prch, CatId: v }, function (data) {
+                $("#UOM" + rowadd).empty();
+
+                $("#FeedQuantity" + rowadd).val(0);
+                $("#PrimaryUnit" + rowadd).val(0);
+                $("#TotalQuantity" + rowadd).val(0);
+
+                //$("#UOM" + rowadd).append($("<option />").val(-1).text("--Select--"));
+                $.each(data, function () {
+                  //  alert(this.AvailableFeed);
+                    $("#FeedAvailable" + rowadd).val(this.AvailableFeed);
+                    //$("#UOM" + rowadd).append($("<option />").val(this.UnitId).text(this.UnitName));
+                    $("#UOM" + rowadd).append($("<option />").val(this.UnitIdSecondary).text(this.UnitNameSecondary));
+                    $("#PrimaryUnit" + rowadd).val(this.UnitFormula);
+                    $("#PriceRate" + rowadd).val(this.Price);
+                //    $("#UnitName" + rowadd).val(this.UnitName);
+                    $("#FeedDesc" + rowadd).val(this.UnitNameSecondary);
+                    
+
+                });
+            });
+
+        });
+
+        $("#dataTable").on('keyup', '.FeedQuantity', function () {
+            var UM = $(this).val();
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+
+            var vgh = parseFloat(ctr.find(".FeedQuantity").val()) || 0;
+            var hhh = parseFloat(ctr.find(".PrimaryUnit").val()) || 0;
+            ctr.find(".TotalQuantity").val(hhh * vgh);
+
+
+        });
+    });
+
+</script>
+
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+
+        $("#dataTable").on('change', '.UOMName', function () {
+            var UM = $(this).val();
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var prod = ctr.find('.FeedName').val();          
+            $.getJSON('/FeedIssued/GetUnitFormula', { unit: UM, product: prod }, function (data) {
+                ctr.find(".PrimaryUnit").val(data.Formula);
+                var vgh = parseFloat(ctr.find(".FeedQuantity").val()) || 0;
+                var hhh = parseInt(data.Formula) || 0;
+
+
+                ctr.find(".TotalQuantity").val(hhh * vgh);
+                $(".FeedQuantity").on('keyup', function () {
+                    var vgg = parseFloat(ctr.find(".FeedQuantity").val()) || 0;
+                    var qu = (hhh * vgg).toFixed(2);
+                    ctr.find(".TotalQuantity").val();
+
+
+                })
+            });
+        });
+
+
+        $("#dataTable").on('keyup', '.FeedQuantity', function () {
+            var UM = $(this).val();
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var hhh = parseInt(ctr.find(".PrimaryUnit").val()) || 0;
+            var vgg = (parseFloat(ctr.find(".FeedQuantity").val())).toFixed(2) || 0;
+
+            ctr.find(".TotalQuantity").val(hhh * vgg).ToFixed(2);
+
+        });
+
+    });
+
+</script>
+
+
+@using (Html.BeginForm("EditFeedIssued", "FeedIssued"))
+{
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Feed Issued<small>Edit</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active"> Farm Edit</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"><input name="" type="submit" value="Submit" class="btn btn-primary"> </li>
+
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        @*<section class="content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                        </div>
+                        <div class="box-body">*@
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+       
+
+        @foreach (var item in Model)
+        {
+         @Html.HiddenFor(d => item.Id)
+         @Html.HiddenFor(d => item.UserId)
+         @Html.HiddenFor(d => item.CompanyId)
+         @Html.HiddenFor(d => item.BranchId)
+       
+        <div class="col-md-12">
+
+       <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+                    
+                   
+                        <div class="form-group">
+                            <label class="black_txt_010"> Unit Code:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => item.UnitCode, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100", @readonly = "readonly", @Name = "UnitCode" })
+                            @Html.HiddenFor(model => item.UnitId, new { @Name = "UnitId" })
+                        </div>
+                       
+                    <div class="form-group">
+                        <label class="black_txt_010">Delivery Hand Challan:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => item.DeliveryChallanNo, new { @class = "form-control DeliveryChallanNo", @placeholder = "Enter Delivery Challan No", @id = "DeliveryChallanNo", @Name = "DeliveryChallanNo" })
+                        @Html.ValidationMessageFor(model => item.DeliveryChallanNo)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010">TruckNo:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => item.DeliveryTruckNo, new { @class = "form-control DeliveryTruckNo", @placeholder = "Enter Truck No", @id = "DeliveryTruckNo", @Name = "DeliveryTruckNo" })
+                        @Html.ValidationMessageFor(model => item.DeliveryTruckNo)
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010">Delivery Man:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => item.DeliveryManName, new { @class = "form-control DeliveryManName", @placeholder = "Enter Delivery Man Name", @id = "DeliveryManName", @Name = "DeliveryManName" })
+                        @Html.ValidationMessageFor(model => item.DeliveryManName)
+                    </div>                 
+                    
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Delivery Man No:<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => item.DeliveryManNo, new { @class = "form-control DeliveryManNo", @placeholder = "Enter Delivery Man No", @id = "DeliveryManNo", @Name = "DeliveryManNo" })
+                        @Html.ValidationMessageFor(model => item.DeliveryManNo)
+                    </div>
+
+                     <div class="form-group">
+                        <label class="black_txt_010"> Date Of Despatch:<span style="color:Red;">*</span> </label>
+                         <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => item.DateOfIssueString, new { @class = "form-control", @Name = "DateOfIssueString", @readonly = "readonly" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>                       
+                        @Html.ValidationMessageFor(model => item.DateOfIssueString)
+                    </div>
+
+                     <div class="form-group">
+                        <label class="black_txt_010"> Challan No:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => item.ChallanNo, new { @class = "form-control", @placeholder = "Enter Challan No", @maxlength = "100", @id = "ChallanNo", @Name = "ChallanNo", @readonly ="readonly" })
+                        @Html.ValidationMessageFor(model => item.ChallanNo)
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+
+        </div>
+      
+          <div class="col-md-12">
+
+        <div class="form-group">
+                          <h3>Feed Details</h3>
+                          </div>
+                         <div class="form-group">
+                         <div class="table-responsive">
+                          <table class="my-table-style table" id="dataTable">
+                          <tr class="my-table-header">
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Feed/Medicine Category</label>
+                          </td>
+
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Feed/Medicine Name</label>
+                          </td>
+
+                           <td class="my-table-header" style="text-align:center;">
+                             <label class="black_txt_010">Purchase Callan No</label>
+                           </td>
+
+                          <td class="my-table-header" style="text-align:center;">
+                           <label class="black_txt_010">Feed/Med Available</label>
+                           </td>
+
+                           <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Description</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Feed/Med Issuing Quantity</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Unit Type</label>
+                          </td>
+
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Unit Of</label>
+                          </td>
+
+                           <td style="text-align:center;">
+                          <label class="black_txt_010">Original Price</label>
+                          </td>
+
+
+                              <td style="text-align:center;">
+                                  <label class="black_txt_010">Unit Price</label>
+                              </td>
+
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Total Quantity</label>
+                          </td>
+
+
+
+                          <td style="text-align: center;">
+                          <label class="black_txt_010">Action</label>
+                           </td>
+
+                           </tr>
+
+                           @{ int H = 0;                              
+                               
+                            }
+
+                           @for (int i = 0; i < item.feedMasterDetails.Count(); i++)
+                           {
+
+                               H = H + i;
+                         
+                        
+                            <tr >
+
+                             <td  style="text-align:center;">
+                               @Html.Hidden("IdToHoldInEdit", i, new { @Name = "IdToHoldInEdit" + i, @class = "IdToHoldInEdit" })
+
+                           @Html.DropDownListFor(model => item.feedMasterDetails[i].CategoryId, new SelectList(ViewBag.CategoryName, "Id", "Name", item.feedMasterDetails[i].CategoryId), new { @class = "form-control CategoryName", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Category" + i, @Name = "CategoryName" + i })
+                        
+                          </td>
+
+                          @{
+                              InventoryEntities db = new InventoryEntities();
+
+                              var kl = Convert.ToInt32(item.feedMasterDetails[i].CategoryId);
+                              var v = db.Products.Where(g => g.CategoryId == kl).Select(g=>new {Id=g.Id, Name=g.ShortName }).ToList();
+
+
+                           }
+
+                           <td  style="text-align:center;">
+                           @Html.DropDownListFor(model => item.feedMasterDetails[i].ProductId, new SelectList(v, "Id", "Name", item.feedMasterDetails[i].ProductId), new { @class = "form-control FeedName", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Feed" + i, @Name = "FeedName" + i })
+                        
+                          </td>
+
+                          <td style="text-align:center;">
+                            @Html.HiddenFor(model => item.feedMasterDetails[i].PurchaseChallanId, new { @class = "form-control PurchaseChallanNo", @id = "PurchaseChallanNo" + i, @Name = "PurchaseChallanNo" + i ,@readonly ="readonly" })
+                              @Html.HiddenFor(model => item.feedMasterDetails[i].PurchaseChallanDetailsId, new { @class = "form-control PuchaseChallanDetailsId", @id = "PuchaseChallanDetailsId" + i, @Name = "PuchaseChallanDetailsId" + i, @readonly = "readonly" })
+                              @Html.TextBoxFor(model => item.feedMasterDetails[i].PurchaseChallanNo, new { @class = "form-control PurchaseChallanString", @id = "PurchaseChallanString" + i, @Name = "PurchaseChallanString" + i, @readonly = "readonly" })
+                           </td>
+
+
+                           <td style="text-align:center;">
+                             @Html.TextBoxFor(model => item.feedMasterDetails[i].ProductAvailable, new { @class = "form-control FeedAvailable", @id = "FeedAvailable" + i, @Name = "FeedAvailable" + i })
+                           </td>
+
+
+                           <td style="text-align:center;">
+                          @Html.TextBoxFor(model => item.feedMasterDetails[i].Description, new { @class = "form-control FeedDesc", @id = "FeedDesc" + i, @Name = "FeedDesc" + i })
+                          </td>
+
+                           <td  style="text-align:center;">
+                           @Html.TextBoxFor(model => item.feedMasterDetails[i].Quantity, new { @class = "form-control FeedQuantity", @id = "FeedQuantity" + i, @Name = "FeedQuantity" + i })
+                          </td>
+
+                           @{
+                              
+
+                               var klu = Convert.ToInt32(item.feedMasterDetails[i].ProductId);
+                               var ppp = db.Products.Where(pk => pk.Id == klu).FirstOrDefault();
+
+
+                               List<long> jjj = new List<long>();
+                               jjj.Add(Convert.ToInt32(ppp.UnitId));
+                               jjj.Add(Convert.ToInt32(ppp.UnitIdSecondary));
+
+                               var klj = db.UOMs.Where(ml => jjj.Contains(ml.Id)).ToList();
+                               
+            
+                           }
+
+
+
+                           @*<td  style="text-align:center;">
+                          @Html.DropDownListFor(model => item.feedMasterDetails[i].UOMId, new SelectList(klj, "Id", "Description", item.feedMasterDetails[i].UOMId), new { @class = "form-control UOMName", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "UOM" + i, @Name = "UOM" + i })
+                          </td>*@
+
+                        <td style="text-align:center;">
+                         @Html.HiddenFor(model => item.feedMasterDetails[i].UOMId , new { @class = "form-control UOMName", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "UOM" + i, @Name = "UOM" + i })
+                         @Html.TextBoxFor(model => item.feedMasterDetails[i].UOMName, new { @class = "form-control UDisplay", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "UDisplay" + i, @Name = "UDisplay" + i })
+                         </td>
+
+
+                          <td style="text-align:center;">
+                           @Html.TextBoxFor(model => item.feedMasterDetails[i].UnitFormula, new { @class = "form-control PrimaryUnit", @id = "PrimaryUnit" + i, @Name = "PrimaryUnit" + i })
+                          </td>
+
+                           <td style="text-align:center;">
+                           @Html.TextBoxFor(model => item.feedMasterDetails[i].PriceRate, new { @class = "form-control PriceRate", @id = "PriceRate" + i, @Name = "PriceRate" + i })
+                          </td>
+
+                           <td style="text-align:center;">
+                           @Html.TextBoxFor(model => item.feedMasterDetails[i].UnitPrice, new { @class = "form-control UnitPrice", @id = "UnitPrice" + i, @Name = "UnitPrice" + i })
+                            </td>
+                          <td style="text-align:center;">
+                          @{
+                               var k = item.feedMasterDetails[i].UnitFormula * item.feedMasterDetails[i].Quantity;                             
+                            }
+
+                         @Html.TextBox("TotalQuantity", k, new { @class = "form-control TotalQuantity", @readonly = "readonly", @id = "TotalQuantity" + i, @Name = "TotalQuantity" + i })
+                          </td>
+
+
+
+                          <td style="text-align: center;">
+                         <input type="button" id="btndelete" name="button[]" title = "Delete this row" class="add-component-deletebotton"/>
+                          </td>
+                             
+                             </tr>
+                           }
+                        
+                           </table>
+                          
+
+                              @Html.Hidden("IdToHold", H)
+                           </div>
+                            <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('dataTable')" />
+                           </div>
+
+                          
+
+</div>
+
+        }
+
+
+    </aside>
+
+}

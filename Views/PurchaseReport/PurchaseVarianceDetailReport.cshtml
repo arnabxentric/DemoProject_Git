@@ -1,0 +1,312 @@
+﻿@model IEnumerable<XenERP.Models.PurchaseOrderVarianceDetail>
+@using XenERP.Models;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style type="text/css">
+        table.dataTable thead .sorting_desc {
+            background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+        }
+        .tcol thead{background:#61C3FB; color:#0C0C0C;}
+        .tcol tbody{background:#C4FEFA; color:#0C0C0C;}
+        table.dataTable thead .sorting_asc {
+            background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+        }
+    </style>
+   
+    <style type="text/css">
+        .ui-autocomplete-loading {
+            background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+        }
+
+        .marginleft10 {
+            margin-left: 10px !important;
+        }
+
+        .screenlet-title-bar {
+            color: #0099cc;
+            font-size: 14pt;
+            font-weight: bold;
+            height: 24px;
+        }
+
+        .ErrorControl {
+            background: none repeat scroll;
+            border: 1px solid Red;
+            padding: 4px;
+            width: 96%;
+        }
+
+        .pad svg {
+            width: 100% !important;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width" />
+    <title>PurchaseVarianceDetailReport</title>
+</head>
+<body>
+    <section class="content">
+        
+        <span style="padding:3px;font-size:medium;font-weight:bolder;">Purchase Order Variance Details</span>
+       
+        <div class="row">
+
+
+            @if (Enumerable.Any(ViewBag.PurchaseOrder))
+            {
+                <table border="1" width="100%" class="tcol">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                P.O. NO.
+                            </th>
+                            <th>
+                                PO Date
+                            </th>
+                            <th>
+                                PO Status
+                            </th>
+                            <th>
+                                Party
+                            </th>
+                            <th>
+                                Warehouse
+                            </th>
+
+                            <th>
+                                Product
+                            </th>
+                            <th>
+                                Quantity
+                            </th>
+                            <th>
+                                Price
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (PurchaseOrderVarianceDetail item in ViewBag.PurchaseOrder)
+                        {
+                            <tr>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PONO)
+                                </td>
+                                <td>
+                                   
+                                    @String.Format(Session["DateFormatUpper"].ToString(), item.PODate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.POStatus)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Party)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Warehouse)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProductName)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.POQuantity)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.POPrice)
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            }
+            @if (Enumerable.Any(ViewBag.PurchaseReceipt))
+            {
+                <table border="1" width="100%" class="tcol">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                Challan No.
+                            </th>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                                Ref. Challan
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                TruckNO
+                            </th>
+
+                            <th>
+                                Party
+                            </th>
+                            <th>
+                                Warehouse
+                            </th>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (PurchaseOrderVarianceDetail item in ViewBag.PurchaseReceipt)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CHNO)
+                                </td>
+                                <td>
+                                   
+                                    @String.Format(Session["DateFormatUpper"].ToString(), item.CHDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PartyCHNO)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CHStatus)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TruckNO)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Party)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Warehouse)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProductName)
+                                </td>
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.PRQuantity)
+                                </td>
+
+
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            }
+            @if (Enumerable.Any(ViewBag.PurchaseInvoice))
+            {
+                <table border="1" width="100%" class="tcol">
+                    <thead>
+                        <tr>
+                            <th>
+                                Invoice NO
+                            </th>
+                            <th>
+                                Invoice Date
+                            </th>
+                            <th>
+                                Ref. Invoice
+                            </th>
+                            <th>
+                                Party
+                            </th>
+                            <th>
+                                Ref. Party
+                            </th>
+                            <th>
+                                Warehouse
+                            </th>
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+                            <th>
+                                Rate
+                            </th>
+                            <th>
+                                SubTotal
+                            </th>
+                            <th>
+                                GrandTotal
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (PurchaseOrderVarianceDetail item in ViewBag.PurchaseInvoice)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InvoiceNO)
+                                </td>
+                                <td>
+                                  
+                                    @String.Format(Session["DateFormatUpper"].ToString(), item.InvoiceDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PartyInvoiceNO)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Party)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ReferenceParty)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Warehouse)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProductName)
+                                </td>
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.PIQuantity)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.PIPrice)
+                                </td>
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.SubTotal)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.GrandTotal)
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            }
+        </div>
+        
+        </section>
+</body>
+
+</html>

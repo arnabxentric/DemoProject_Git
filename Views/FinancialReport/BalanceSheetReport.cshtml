@@ -1,0 +1,135 @@
+﻿@model IEnumerable<XenERP.Models.BalanceSheetReportModelView>
+@{
+   
+    var SlNo = 0;
+ 
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading
+    {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+    .marginleft10
+    {
+        margin-left: 10px !important;
+    }
+    .screenlet-title-bar
+    {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+    .ErrorControl
+    {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+    
+    .pad svg
+    {
+        width: 100% !important;
+    }
+    
+    #tab_1 input[type="text"]{background-color: #eee !important; border: 1px solid #ccc !important;}
+     .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{background:none !important; border:none !important;}
+    .font-bold{font-weight:bold; font-size: 14pt;}
+     .right-input{text-align:right;}
+</style>
+<aside class="right-side">
+                 <div class="box box-primary">
+                 <div class="box-header"></div>
+                 <div class="box-body">
+                 <div class="box-body table-responsive divContent">
+                 <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                 <thead></thead>
+                <tbody>
+                           <tr>
+                           <th colspan="5">
+                          @* <h3><b> @Html.DisplayFor(modelItem => item.Taxname)</b>( @Html.DisplayFor(modelItem => item.Rate) @Html.Raw("%"))</h3>*@
+                          <h3>Balance Sheet</h3>
+                           </th>
+                           </tr>
+                          
+                           <tr>
+                           <th>SlNo.</th>
+                           <th >Group Name</th>
+                           <th>Particulars</th>
+                           <th>Debit Amount</th>
+                           <th>Credit Amount</th>
+                           </tr>
+                       
+
+                      @foreach (var item in Model)
+                      {
+                          SlNo = SlNo + 1;
+                          if (@item.Sortorder.Length == 3)
+                          {
+                                     <tr>
+                                     <td> @SlNo</td>
+                                     <td><input type='text' name='GroupName' class = "GroupName form-control , font-bold" value='@item.GroupName' readonly='readonly'/> </td>
+                                    @* <td>  @Html.DisplayFor(modelItem => item.GroupName)</td>*@
+                                      <td><input type='text' name='GroupName' class = "GroupName form-control" value='@item.LedgerName' readonly='readonly'/> </td>
+                                       <td><input type='text' name='GroupName' class = "GroupName form-control ,right-input" value='@item.DebitAmount' readonly='readonly'/> </td>
+                                        <td><input type='text' name='GroupName' class = "GroupName form-control , right-input" value='@item.CreditAmount' readonly='readonly'/> </td>
+                                     
+                                     </tr>
+                          }
+                          else
+                          {
+                           <tr>
+                                     <td> @SlNo</td>
+                                     <td><input type='text' name='GroupName' class = "GroupName form-control" value='@item.GroupName' readonly='readonly'/> </td>
+                                    @* <td>  @Html.DisplayFor(modelItem => item.GroupName)</td>*@
+                                      <td><input type='text' name='GroupName' class = "GroupName form-control" value='@item.LedgerName' readonly='readonly'/> </td>
+                                       <td align="right"><input type='text' name='GroupName' class = "GroupName form-control , right-input" value='@item.DebitAmount' readonly='readonly'/> </td>
+                                        <td align="right"><input type='text' name='GroupName' class = "GroupName form-control , right-input" value='@item.CreditAmount' readonly='readonly'/> </td>
+                                     
+                                     </tr>
+                          }
+                      
+                      }
+                    <tr>
+                     
+                       <td align="right" colspan="3">  <b> Grand Total:</b></td>
+                       <td align="right"><b> @Html.DisplayFor(model=>model.FirstOrDefault().DebitTotal)</b> </td>
+                         <td align="right"><b> @Html.DisplayFor(model=>model.FirstOrDefault().CreditTotal)</b> </td>
+                    </tr>   
+                      
+                </tbody>
+            </table>
+            </div>
+            </div>
+            </div>
+</aside>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>profitLossReport</title>
+</head>
+<body>
+    <div>
+        
+    </div>
+</body>
+</html>

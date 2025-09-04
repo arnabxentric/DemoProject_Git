@@ -1,0 +1,464 @@
+﻿@model XenERP.Models.ModelView.ChickIssuedHOModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+
+        $("#UnitId").change(function () {
+            var v = $("#UnitId").val();
+
+            $.get("/Flock/GetFarmName", { data: v }, function (data) {
+
+                $("#FarmId").empty();
+                var options = $("#FarmId");
+                options.append(new Option("---Select Farm Code-----", "-1"));
+                $.each(data, function () {
+                    options.append(new Option(this.FarmCode, this.Id));
+                });
+
+                //$("#FarmId").get(0).options.length = 0;
+                //$("#FarmId").get(0).options[0] = new Option("Select Farm Code", "-1");
+
+                //$.each(data.d, function (index, item) {
+                //    $("#FarmId").get(0).options[$("#FarmId").get(0).options.length] = new Option(item.FarmCode, item.Id);
+                //});
+
+            });
+
+
+
+          //  $.get("/ChickIssueHO/GetChallanNo", {}, function (data) {
+
+          //      $("#ChallanNo").val(data);
+
+         //   });
+
+
+
+
+
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       
+        $("#FarmId").change(function () {
+            var v = $("#FarmId").val();
+
+            $.get("/Flock/GetFlockCode", { data: v }, function (data) {
+                $("#FlockCode").val(data);
+            });
+
+        });
+
+
+        $("#ChicksPlaced_HO_").keyup(function () {
+            var ac = parseInt($("#AvailableChicks").val());
+            var cp = parseInt($("#ChicksPlaced_HO_").val());
+
+            if (cp > ac) {
+                alert("Please give less than or equal to available value!");
+                $("#btnsave").attr('disabled', 'disabled');
+            }
+
+            else {
+                $("#btnsave").removeAttr('disabled');
+            }
+
+
+        });
+
+
+
+        $("#dataTable").on('keyup', '.IssuedChicks', function () {
+            var totChicks = 0;
+       
+            $(".IssuedChicks").each(function () {
+                totChicks += +$(this).val();              
+                $("#ChicksPlaced_HO_").val(totChicks);
+            });
+        });
+
+       
+        $("#dataTable").on('keyup', '.WeightOfChicks', function () {
+            var totWeight = 0;
+
+            $(".WeightOfChicks").each(function () {
+                totWeight += +$(this).val();
+                $("#ChicksWeight").val(totWeight);
+            });
+        });
+
+       
+        $("#btnSave").on("click keypress", function (event) {
+
+            if (event.which == 13) {
+                event.preventDefault();
+                return false;
+            }
+
+
+      //  $("form").on("submit", function (event) {
+
+            var isValid = $(this).valid();
+
+            if (isValid) {
+
+                //var result = checkproductcount();
+
+                //if (result == false) {
+                //    $('#errordiv').css("display", "block");
+                //    $('#errordiv').append('You must add atleast one line item');
+                //    return false;
+                //}
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+
+                $("form").submit();
+            }
+
+            else {
+
+                //                $("#btnsave").show();
+            }
+
+
+        });
+
+        $("#PurchaseChallanNo").change(function () {           
+            var pid = $("#PurchaseChallanNo").val();          
+            console.log(pid);
+            $.get("/ChickIssueHO/GetAvailableChicks", { PId: pid }, function (data) {
+                //$("#FarmId").empty();
+                //var options = $("#FarmId");
+                //options.append(new Option("---Select Farm Code-----", "-1"));
+                $("#dataTable").find("tr:gt(0)").remove();
+                //$.each(data, function () {
+
+
+                $.each(data, function (index, item) {
+
+                      console.log(data);
+                      console.log(index);
+                      console.log(item.ChickName);
+                     // alert(item.ChicksId);
+                    //  //===============shobha
+                  
+                      //1 column ChickName
+                      //  dataTable
+
+                    //  chicksdetailslist
+                      var totalData = '<tr>';
+                  
+                      totalData = totalData + '<td><input  type="text" readonly="" class="form-control ChicksId" name="chicksdetailslist[' + index + '].ChicksId" value = "' + item.ChicksId + '"  id="chicksdetailslist_' + index + '__ChicksId" ></td>';
+                      totalData = totalData + '<td><input  type="text" readonly="" class="form-control ChickName" name="chicksdetailslist[' + index + '].ChickName" value = "'+item.ChickName+'"  id="chicksdetailslist_' + index + '__ChickName" ></td>';
+
+                      ////2 column Quantity
+                      totalData = totalData + '<td><input type="text" readonly="" class="form-control Quantity" name="chicksdetailslist[' + index + '].AvailableChicks" value = "' + item.Quantity + '"  id="chicksdetailslist_' + index + '__AvailableChicks" ></td>';
+                      ////3 column Price
+                      totalData = totalData + '<td><input type="text" readonly="" class="form-control Price" name="chicksdetailslist[' + index + '].Price" value = "' + item.Price + '"  id="chicksdetailslist_' + index + '__Price" ></td>';
+
+                      ////4 column IssuedChicks
+                      totalData = totalData + '<td><input type="text"   class="form-control IssuedChicks" name="chicksdetailslist[' + index + '].IssuedChicks" value = "' + 0 + '"  id="chicksdetailslist_' + index + '__IssuedChicks" ></td>';
+
+                    ////5 column IssuedChicks
+                      totalData = totalData + '<td><input type="text"   class="form-control WeightOfChicks" name="chicksdetailslist[' + index + '].WeightOfChicks" value = "' + 0 + '"  id="chicksdetailslist_' + index + '__WeightOfChicks" ></td></tr>';
+                      //alert(totalData)
+                      console.log(totalData);
+                      $("#dataTable").append(totalData);
+                    //shobha
+                   
+
+
+
+
+                });
+
+
+                var Tp = 0;
+                var t = 0;
+                var a = 0;
+                
+                $(".Quantity").each(function () {
+                    var Q = parseFloat($(this).val());
+                    var ctd = $(this).closest('td');
+                    var ctr = ctd.closest('tr');
+                    var pr =  parseFloat(ctr.find(".Price").val());
+                     Tp = Tp + (Q * pr);         
+                  
+                   a = a + Q;              
+                   
+                });
+                var av = (parseFloat(Tp / a)).toFixed(2);               
+                $("#RatePerChick").val(av);
+
+
+
+            });
+
+            $("#dataTable").on('keyup', '.IssuedChicks', function () {
+
+                var UM = $(this).val();
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+
+                var vvv = parseFloat(ctr.find(".Quantity").val()) || 0;
+                var vgh = parseFloat(ctr.find(".IssuedChicks").val()) || 0;
+
+
+                if (vgh > vvv) {
+
+                    alert("Issued chick can not be more than remaining chick");
+
+                    $("#btnsave").attr("disabled", true);
+                }
+                else {
+                    $("#btnsave").attr("disabled", false);
+
+                }
+
+            });
+
+
+        });
+    });
+</script>
+
+
+
+@using (Html.BeginForm("CreateChickIssued", "ChickIssueHO"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>Chick<small>Create</small> </h4>
+            @*<ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>*@
+        </section>
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+         @Html.Hidden("BranchId", (long)ViewBag.BranchId)
+          @Html.Hidden("CompanyId", (long)ViewBag.CompanyId)
+            @Html.Hidden("UserId", (long)ViewBag.UserId)
+
+
+       
+
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010"> Unit Code :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.UnitId, new SelectList(ViewBag.FarmUnit, "Id", "Name"), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.UnitId)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Date Of Despatch:<span style="color:Red;">*</span> </label>
+                            <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateOfDespatchString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                            @Html.ValidationMessageFor(model => model.DateOfDespatch)
+                        </div>
+
+                      
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Hatchery Name :</label>
+                            @Html.TextBoxFor(model => model.HatcheryName, new { @class = "form-control", @placeholder = "Enter Hatchery Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.HatcheryName)
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Received Challan No: <span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.PurchaseChallanNo, new SelectList(ViewBag.ReceivedChallanNo, "PId", "PNo"), "------None-----", new { @class = "form-control", @placeholder = "Enter Checken Quality", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.PurchaseChallanNo)
+
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Chicks Placed:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.ChicksPlaced_HO_, new { @class = "form-control", @placeholder = "Enter No of Chicken Placed", @maxlength = "100", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.ChicksPlaced_HO_)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Quality Of Chicken : <span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.QualityofChicken, new SelectList(ViewBag.QualityofChicken, "Value", "Text"), "------None-----", new { @class = "form-control", @placeholder = "Enter Checken Quality", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.QualityofChicken)
+
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+
+                     
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Chicks Weight:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.ChicksWeight, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.ChicksWeight)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Rate Per Chick(Rs):<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.RatePerChick, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100",@readonly ="readonly" })
+                            @Html.ValidationMessageFor(model => model.RatePerChick)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">DeliveryChallanNo:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.DeliveryChallanNo, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100"})
+                            @Html.ValidationMessageFor(model => model.DeliveryChallanNo)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">DeliveryTruckNo:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.DeliveryTruckNo, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.DeliveryTruckNo)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010">DeliveryManName:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.DeliveryManName, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.DeliveryManName)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010">DeliveryManNo:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.DeliveryManNo, new { @class = "form-control", @placeholder = "Enter Chicken Weight", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.DeliveryManNo)
+                        </div>
+
+
+                        <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-12">
+
+
+            <div class="form-group">
+
+                <div class="row">
+                    <h4>Chicks Availablity</h4>
+                </div>
+                <div class="form-group">
+                    <div class="table-responsive">
+                        <table class="my-table-style table chickTable" id="dataTable">
+                            <tr class="my-table-header">
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Chicks Id</label>
+                                </td>
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Chicks Category</label>
+                                </td>
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Available Chicks</label>
+                                </td>
+
+                                <td class="my-table-header" style="text-align:center;">
+                                    <label class="black_txt_010">Price</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Issued Chicks</label>
+                                </td>
+
+                                <td style="text-align:center;">
+                                    <label class="black_txt_010">Chicks Weight</label>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </aside>
+}

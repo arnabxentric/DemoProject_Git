@@ -1,0 +1,128 @@
+﻿@model IEnumerable<XenERP.Models.CollectionExpense>
+@using XenERP.Models
+@{
+
+    var SlNo = 0;
+
+    decimal? total = 0;
+
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+@*<aside class="right-side">
+    <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">*@
+            <div>
+                <table class="invoice" width="80%" border="1" cellspacing="2" cellpadding="2" style="border:5px solid">
+                    @foreach (BranchMaster branch in ViewBag.Branches)
+                    {
+                        SlNo = 0;
+                        total = 0;
+                        if (Model.Where(d => d.BranchName == branch.Name).Count() == 0)
+                        {
+                            continue;
+                        }
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align:center;">
+
+                                    <h3>Expenses for HARI Unit : @branch.Name   @ViewBag.From</h3>
+                                </th>
+                            </tr>
+
+                            <tr>
+                                <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">SlNo.</th>
+                                <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+                                    Ledger Name
+                                </th>
+
+                                <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+                                    Expense Amount
+                                </th>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Where(d => d.BranchName == branch.Name))
+                            {
+                                SlNo = SlNo + 1;
+                                total += item.Amount;
+                               
+                                <tr>
+                                    <td style="text-align:center;padding:10px;font-size:16px;font-weight:500;"> @SlNo</td>
+
+                                    <td  style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+
+                                        @Html.DisplayFor(modelItem => item.LedgerName)
+                                    </td>
+
+
+                                    <td style="text-align:right;padding-right:30px;font-size:16px;font-weight:500;">
+                                        @Html.DisplayFor(modelItem => item.Amount)
+                                    </td>
+
+
+
+
+                                </tr>
+
+                            }
+
+                            <tr>
+                                <td colspan="2" style="text-align:center;padding:10px;"><b>Total</b></td>
+                                <td style="text-align:right;padding-right:30px;font-size:16px;font-weight:500;">
+                                    <b> @total</b>
+                                </td>
+
+
+                            </tr>
+
+
+                        </tbody>
+                    }
+                    </table>
+            </div>
+        @*</div>
+    </div>
+</aside>*@
+

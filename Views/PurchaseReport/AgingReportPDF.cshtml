@@ -1,0 +1,197 @@
+﻿@model IEnumerable<XenERP.Models.Aging>
+
+
+
+@{
+
+    int SlNo = 0;
+    decimal current = 0;
+    decimal days30 = 0;
+    decimal days60 = 0;
+    decimal days90 = 0;
+    decimal days365 = 0;
+    decimal total = 0;
+    decimal nettotal = 0;
+}
+
+
+
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .invoice th,
+    td {
+        padding: 3px 2px 3px 2px;
+        text-align: center;
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+        font-weight: 900;
+        font-size: 15px;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group
+    }
+
+    .invoice tfoot {
+        display: table-row-group
+    }
+
+    .invoice tr {
+        page-break-inside: avoid
+    }
+
+    /*    table.print-friendly tr td, table.print-friendly tr th {
+        page-break-inside: avoid;
+    }*/
+    /*    table, tr, td, th, tbody, thead, tfoot {
+        page-break-inside: avoid !important;
+    }*/
+</style>
+<div align="center">
+    <span style="font-size:x-large;font-weight:bolder">@ViewBag.Company</span><br />
+    <span style="font-size:medium;font-weight:normal"> 22, R.N. Mukherjee Road, 5th Floor, Kolkata-700 001</span><br />
+    @*<span style="font-size:medium;font-weight:normal">GST NO - 19AAACU4031E1ZO</span>*@
+    <br />
+    <span style="font-size:medium;font-weight:normal">Aging Report As on Dated @ViewBag.AsOnDate </span>
+    <br />
+    <br />
+    @*<div style="font-size:medium;font-weight:normal;text-align:left;padding-left:10px">
+            Ledger For:<b> @ViewBag.LedgerName </b>
+            <br />
+            Address: @ViewBag.Address
+        </div>*@
+</div>
+<br />
+@*<div style="display: block;">*@
+<table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+    <thead>
+        <tr>
+            <th style="text-align:center;">
+                Sl. No.
+            </th>
+            <th style="text-align:center;">
+                Party Name
+            </th>
+            <th style="text-align:center;">
+                Current
+            </th>
+            <th style="text-align:center;">
+                1-30 Days
+            </th>
+            <th style="text-align:center;">
+                31-60 Days
+            </th>
+            <th style="text-align:center;">
+                61-90 Days
+            </th>
+            <th style="text-align:center;">
+                91+ Days
+            </th>
+
+            <th style="text-align:center;">
+                Total
+            </th>
+
+        </tr>
+
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+
+            SlNo = SlNo + 1;
+            current += item.Current;
+            days30 += item.Days_1_30;
+            days60 += item.Days_31_60;
+            days90 += item.Days_61_90;
+            days365 += item.Days_91_365;
+            total = item.Current + item.Days_1_30 + item.Days_31_60 + item.Days_61_90 + item.Days_91_365;
+            nettotal += total;
+
+            <tr>
+                <td>@SlNo</td>
+                <td style="text-align:left;">
+
+                    @Html.DisplayFor(modelItem => item.PartyName)
+
+                </td>
+
+                <td style="text-align:right;">
+                    @Html.DisplayFor(modelItem => item.Current)
+                </td>
+                <td style="text-align:right;">
+                    @Html.DisplayFor(modelItem => item.Days_1_30)
+                </td>
+                <td style="text-align:right;">
+                    @Html.DisplayFor(modelItem => item.Days_31_60)
+                </td>
+                <td style="text-align:right;">
+                    @Html.DisplayFor(modelItem => item.Days_61_90)
+                </td>
+                <td style="text-align:right;">
+                    @Html.DisplayFor(modelItem => item.Days_91_365)
+                </td>
+                <td style="text-align:right;">
+                    @total
+                </td>
+
+            </tr>
+
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td>
+                TOTAL
+            </td>
+
+
+            <td style="text-align:right;">
+                @Math.Round(current, 2)
+            </td>
+
+            <td style="text-align:right;">
+                @Math.Round(days30, 2)
+            </td>
+
+            <td style="text-align:right;">
+                @Math.Round(days60, 2)
+            </td>
+
+            <td style="text-align:right;">
+                @Math.Round(days90, 2)
+            </td>
+
+            <td style="text-align:right;">
+                @Math.Round(days365, 2)
+            </td>
+
+            <td style="text-align:right;">
+                @Math.Round(nettotal, 2)
+            </td>
+
+        </tr>
+    </tfoot>
+</table>
+
+@*</div>*@
+

@@ -1,0 +1,192 @@
+﻿@model IEnumerable<XenERP.Models.Tax>
+
+@{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+
+@{
+    
+ 
+    ViewBag.Title = "Xpert | Tax List";
+}
+
+
+@{
+    int SlNo = 0;
+    var compid = Session["companyid"];
+
+ }
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center#53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Tax <small>Details</small>             
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+
+                
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Start", new { id = compid })"><span>Organization Settings</span></a></li>                           
+                        	<li><a href="@Url.Action("CreateFinancial", "Start")"><span>Financial Settings</span></a></li>                      
+                            <li><a href="@Url.Action("ShowAllCurrencyrate", "Start")"><span>Currencies</span></a></li>
+                             <li class="selected"> Tax Rates</li>
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+
+                    
+                        <div class="butom-new"><a href="@Url.Action("Createcurrencyrate","Start")"><img src="../../Images/symbol-Add.png" />Add Currency</a> </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div class="box">
+                                
+                           
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error!= null)
+        { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+        }
+
+ 
+
+
+
+                                <div class="box-body table-responsive">
+                                    <table id="example1" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                            <th>SlNO.</th>
+                                             
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rate)
+            </th>
+           
+         
+             <th>
+            </th>
+                                  </tr>
+                                        </thead>
+                                        <tbody>
+                                             @foreach (var item in Model)
+                                             {
+
+                                                 SlNo = SlNo + 1;
+        <tr>
+           <td>
+           @SlNo
+           </td>
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rate)
+            </td>
+           
+                   
+            <td>
+              
+                @Html.ActionLink("Details", "TaxrateDetails", new { id = item.TaxId }) 
+                
+            </td>
+        </tr>
+                                      
+                                                 
+                                                 
+                                             }
+                                               </tbody>
+                                       
+                                    </table>
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                      
+                      
+                      <form >
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("ShowAllCurrencyrate", "Start")"><span>Back</span></a></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("ShowGroupMaster", "Start")"><span>Next</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+             
+            </aside>
+    

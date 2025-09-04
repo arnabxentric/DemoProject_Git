@@ -1,0 +1,227 @@
+﻿@model IEnumerable<XenERP.Models.PurchaseInvoice>
+@{
+
+    var SlNo = 0;
+
+    decimal SalesTotal = 0;
+
+}
+
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+
+
+    });
+
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .invoice th,
+    td {
+        padding: 5px 5px 5px 5px;
+        /* text-align: center;*/
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+
+    .grey {
+        background-color: rgba(128,128,128,.25);
+    }
+
+    .red {
+        background-color: rgba(255,0,0,.25);
+    }
+
+    .blue {
+        background-color: rgba(0,0,255,.25);
+    }
+</style>
+<div align="center">
+
+
+    <div align="center">
+        @*<span style="font-size:medium;">
+                Hello! This is a reminder that your account balance @ViewBag.TotalDue.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("hi-IN"))) was overdue as of @ViewBag.from.
+                Please find the Payables for your reference. If you have any queries regarding this account,
+                please contact our office as soon as possible.
+            </span>*@
+        <br />
+        <span style="font-size:xx-large;font-weight:bolder">@ViewBag.CompanyName</span><br />
+        <span style="font-size:large;font-weight:bolder"> @ViewBag.AddressCompany</span><br />
+        <span style="font-size:large;font-weight:bolder"> GST NO - @ViewBag.GSTNO</span><br /><br />
+        <div style="border-style: double;">
+            <h2>@ViewBag.CustomerName</h2>
+            <span style="font-size:large;font-weight:bold;font-family:Verdana, Geneva, Tahoma, sans-serif;"> Outstanding Bill wise details</span><br />
+            @if (ViewBag.from != null)
+            {
+                <span style="font-size:large;font-weight:bolder">@Html.Raw("As On:")@ViewBag.from    @Html.Raw("&nbsp;&nbsp;")  </span>
+            }
+            <h3>@ViewBag.Address</h3>
+        </div>
+    </div>
+
+    <br />
+
+
+    <table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+        @*<colgroup>
+                <col class="blue1" />
+                <col class="blue1" />
+                <col class="blue1" />
+                <col class="blue1" />
+                <col class="grey" />
+                <col class="blue1" />
+                <col class="blue1" />
+                <col class="blue1" />
+                <col class="grey" />
+                <col class="blue" />
+                <col class="blue1" />
+            </colgroup>*@
+        <thead>
+            <tr>
+
+                <th style="text-align:center">
+                    SlNo.
+                </th>
+                <th style="text-align:center">
+                    Party
+                </th>
+                <th style="text-align:center">
+                    Dates
+                </th>
+
+                <th style="text-align:center">
+                    Ref. No.
+                </th>
+
+                <th style="text-align:center">
+                    Pending Amount
+                </th>
+                <th style="text-align:center">
+                    Due On
+                </th>
+                <th style="text-align:center">
+                    Overdue by days
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                SlNo = SlNo + 1;
+
+
+
+                <tr class="red">
+
+
+                    <td align="center">
+                        <b> @SlNo </b>
+
+                    </td>
+                    <td align="left">
+                        <b> @item.DeliveryName</b>
+                    </td>
+                    <td align="center">
+                        <b>@String.Format("{0:dd/MM/yyyy}", item.InvoiceDate)</b>
+                    </td>
+                    <td align="center">
+                        <b> @(item.NO+" ("+item.Reference+")")</b>
+                    </td>
+
+                    <td align="right">
+                        <b> @item.BCGrandTotal</b>
+                    </td>
+
+                    <td align="center">
+                        <b>@String.Format("{0:dd/MM/yyyy}", item.InvoiceDate)</b>
+                    </td>
+                    <td align="right">
+                        <b> @item.CurrencyId</b>
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+
+    </table>
+</div>
+

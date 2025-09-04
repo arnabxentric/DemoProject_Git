@@ -1,0 +1,207 @@
+﻿@model IEnumerable<XenERP.Models.Company>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Userid)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CompanyDisplayName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CompanyLogo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BusinessLine)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CompanyType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CompanyDescription)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CurrencyId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GST_VATNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TANNO)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ROC)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TIN)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PANNO)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Website)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PurchaseEmailId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SalesEmailId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Fax)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CountryId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StateId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.City)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Zipcode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Address)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalCountryId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalStateId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalCity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalZipcode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PostalAddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IssamepostalAddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ContactNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmailId)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Userid)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompanyDisplayName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompanyLogo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BusinessLine)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompanyType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CompanyDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CurrencyId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.GST_VATNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TANNO)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ROC)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TIN)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PANNO)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Website)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PurchaseEmailId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SalesEmailId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Fax)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CountryId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StateId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Zipcode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Address)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalCountryId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalStateId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalCity)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalZipcode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PostalAddress)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IssamepostalAddress)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ContactNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EmailId)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

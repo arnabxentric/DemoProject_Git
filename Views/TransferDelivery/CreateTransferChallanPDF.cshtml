@@ -1,0 +1,408 @@
+﻿@model XenERP.Models.TransferDeliveryReceive
+@{
+    Layout = null;
+    
+}
+<style type="text/css">
+#scissors {
+    height: 43px; /* image height */
+    width: 90%;
+    margin: auto auto;
+    background-image: url('../../Images/scissor.png');
+    background-repeat: no-repeat;
+    background-position: right;
+    position: relative;
+}
+#scissors div {
+    position: relative;
+    top: 50%;
+    border-top: 3px dashed black;
+    margin-top: -3px;
+}
+
+u {    
+    border-bottom: 1px dotted #000;
+    text-decoration: none;
+}
+
+    </style>
+@using XenERP.Models
+@{
+    ViewBag.Title = "Transfer Delivery";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+    Company company = ViewBag.company;
+    BranchMaster FromBranch = ViewBag.fromBranch;
+    BranchMaster ToBranch = ViewBag.toBranch;
+    int slno = 0;
+    decimal totalquantity = 0;
+    decimal totalKGs = 0;
+    string unitname = "";
+    string unitSecondaryname = "";
+    long UnitIdSecondary = 0;
+}
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+
+
+     <!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Untitled Document</title>
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+</head>
+
+<body>
+<table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+  <tr>
+    <td colspan="4">
+        <div>
+            @*<div class="logo"><img src="@Url.Content("~/Companyimages/" + @company.CompanyLogo)" /></div>*@
+            <div class="logo"><img style="width:200px;height:100px;float:left;display:inline" src="~/Companyimages/Picture1.png" /></div>
+
+
+            @*<div class="header" style="float:right;vertical-align:top;display:inline">
+                <span style="font-size:xx-large;font-weight:bolder">@company.Name</span>
+                <br /><span>@company.Address</span>
+                <br /><b>Email :@company.EmailId ,&nbsp;Website :@company.Website</b>
+                <br /><span style="font-size:medium;font-weight:bolder;">GSTIN :@company.GST_VATNumber</span>
+          </div>*@
+            <div class="header" style="float:right;text-align:left;vertical-align:top;display:inline">
+                <span style="font-size:xx-large;font-weight:bolder">@company.Name</span>
+
+                <br />H.O.-@company.Address
+                <br /><b>Email :@company.EmailId ,&nbsp;Website :@company.Website ,&nbsp;FAX:&nbsp;@company.Fax </b>
+                <br /><strong>GSTIN:&nbsp;@company.GST_VATNumber&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CIN:&nbsp;@company.TANNO</strong>
+            </div>
+        </div>
+    </td>
+     
+  </tr>
+  <tr>
+    <td colspan="4" align="center"><span style="font-size:xx-large;font-weight:bolder;">Challan</span></td>
+  </tr>
+  <tr>
+    <td colspan="2" width="30%">
+        From,
+        <p>
+            <strong>Factory Branch Name : @FromBranch.Name</strong>
+            <br />Factory Branch Address : @FromBranch.Address
+            <br />Mobile : @FromBranch.ContactNumber
+        </p>
+        <hr />
+        To,
+        <p>
+
+            <strong>Factory Branch Name : @ToBranch.Name</strong>
+            <br />Factory Branch Address : @ToBranch.Address
+            <br />Mobile : @ToBranch.ContactNumber
+
+        </p>
+    </td>
+    <td colspan="2" width="70%" class="date">
+    	 <p>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="45%" style="padding:0px 5px;"><strong>Challan No.</strong>&nbsp;&nbsp;&nbsp;:&nbsp;@Model.TransferDeliveryNo</td>
+            </tr>
+            <tr>
+                <td style="padding:0px 5px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="45%" style="padding:0px 5px;"><strong>Challan Date</strong>&nbsp;:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.TransferDeliveryDate)</td>
+            </tr>
+            @*<tr>
+                <td style="padding:0px 5px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="45%" style="padding:0px 5px;"><strong>Order No.</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;@Model.OrderNo</td>
+            </tr>
+            <tr>
+                <td style="padding:0px 5px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="45%" style="padding:0px 5px;"><strong>Order Date</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.Date)</td>
+            </tr>*@
+            @*<tr>
+                <td style="padding:0px 5px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="45%" style="padding:0px 5px;"><strong>Reference No.</strong>:&nbsp;@Model.ReferenceChallanNo</td>
+                
+            </tr>*@
+           
+        </table>
+        </p>
+    </td>
+  </tr>
+  <tr>
+    <th align="center" width="10%" style="padding:8px;" >SL.No.</th>
+    <th align="center" width="50%" style="padding:8px;">Description</th>
+    <th align="center"  width="40%" style="padding:8px;">Quantity</th>
+    @*<th align="center" width="20%">Unit</th>*@
+    
+  </tr>
+    @foreach (TransferDeliveryDetailModelView item in ViewBag.podmvList)
+    {
+        ++slno;
+       // decimal quantityinBag = 0;
+        decimal quantityinKG = 0;
+        //  unitname = item.SecUnitName;
+        //if (item.UnitIdSecondary == 1)
+        //{
+        quantityinKG = item.TransferQuantity;
+        totalKGs += item.TransferQuantity;
+        //quantityinBag = item.UnitFormula;
+        //totalquantity += item.UnitFormula;
+
+    @*}
+        else
+    {
+        quantityinKG = item.Quantity * item.UnitFormula;
+        totalKGs += item.Quantity * item.UnitFormula;
+        quantityinBag = item.Quantity;
+        totalquantity += item.Quantity;
+    }*@
+    unitSecondaryname = item.UnitSecondaryName;
+    //unitname = item.UnitName;
+    //UnitIdSecondary = item.UnitIdSecondary;
+  <tr>
+  <td>
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+       	<td align="center"  style="padding:8px;">@slno</td>
+  </tr>
+  </table>
+  </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center"  style="padding:8px;">@item.ItemName</td>
+            </tr>
+        </table>
+    </td>
+      @*@if (item.UnitIdSecondary == 1)
+      {*@
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+           
+        	  <tr>
+            	  <td align="right" style="padding:8px;">@Math.Round(quantityinKG, 0)</td>
+                  <td align="center" style="padding:8px;">@unitSecondaryname</td>
+              </tr>
+          
+        </table>
+    </td>
+    @*<td>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                 <tr>
+                    <td align="right" style="padding:8px;">@Math.Round(quantityinBag, 0) </td>
+                    <td align="center" style="padding:8px;">@unitname</td>
+                </tr>
+        </table>
+    </td>
+      }
+      else
+      {
+        <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+
+                <tr>
+                    <td align="right" style="padding:8px;">@Math.Round(quantityinBag, 0)</td>
+                    <td align="center" style="padding:8px;">@unitSecondaryname</td>
+                </tr>
+
+            </table>
+        </td>
+        <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td align="right" style="padding:8px;">@Math.Round(quantityinKG, 0) </td>
+                    <td align="center" style="padding:8px;">@unitname</td>
+                </tr>
+            </table>
+        </td>
+
+      }*@
+
+  </tr>
+  }
+
+
+
+  @*<tr class="total">
+    <td colspan="2">
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center"  style="padding:10px;"><strong>Total Quantity</strong></td>
+                
+            </tr>
+        </table>
+    </td>
+    <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="right" style="padding:10px;"><strong>@totalquantity</strong></td>
+            </tr>
+        </table>
+    </td>
+   <td>
+    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td align="center" style="padding:10px;"><strong>@unitname</strong></td>
+            </tr>
+        </table>
+    </td>
+  </tr>*@
+ 
+
+
+
+
+
+   
+   
+
+
+
+
+
+</table>
+    <br />
+    <div class="bottom">
+@*@if (UnitIdSecondary == 1)
+{*@
+        <strong>Wt. in @unitSecondaryname :&nbsp;@Math.Round(totalKGs) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<strong>No. of @unitname :</strong>&nbsp;@Math.Round(totalquantity)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<strong>Freight :</strong>&nbsp; &nbsp; &nbsp;. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</strong >
+@*}
+else
+{
+        <strong>No. of @unitSecondaryname :&nbsp;@Math.Round(totalquantity) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<strong>Wt. in @unitname :</strong>&nbsp;@Math.Round(totalKGs)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<strong>Freight :</strong>&nbsp; &nbsp; &nbsp;. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</strong>
+}*@
+
+    </div>
+
+
+ 
+
+    <br />
+    <br />
+   
+
+    <div class="bottom">
+        <p><span style="font-size:large">I accept the above goods in good condition on behalf of above party.</span></p>
+        <p><span style="font-size:large">Lorry No.: <u> @Model.LorryNo </u> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Transporter Name:   <u>@Model.Transporter</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contact No:   <u>@Model.TransporterContact</u></span></p>
+        <p><span style="font-size:large">&nbsp;</span></p>
+        <p><span style="font-size:large">&nbsp;</span></p>
+        <p><span style="font-size:large">Sign. of Driver&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign. of Customer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign. of Supervisor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For @ViewBag.CompanyName</span></p>
+    </div>
+       
+
+
+        <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  
+   
+        @*<hr style="border-top: dotted 5px;" />*@
+        <div id="scissors">
+            <div></div>
+        </div>
+        <br />
+      
+
+        <table width="100%" border="1" cellspacing="0" cellpadding="0" class="invoice">
+
+
+            <tr>
+                <td colspan="4" align="center">
+                    <u><strong><span style="font-size:xx-large">GATE PASS</span></strong></u>
+                    <br /><span style="font-size:large">@company.Name</span>
+
+                </td>
+
+            </tr>
+            <tr>
+                <td colspan="2" width="50%" style="padding:8px;">
+                    
+                        <span style="font-size:medium"><strong>Challan No.</strong>:&nbsp;@Model.TransferDeliveryNo</span>
+
+                    
+                </td>
+                <td colspan="2" width="50%" style="padding:8px;">
+                    
+                        <strong>Date</strong>:&nbsp;@String.Format("{0:dd/MM/yyyy}", @Model.TransferDeliveryDate)
+
+                    
+                </td>
+            </tr>
+
+            <tr>
+
+                <td colspan="2" align="left" style="padding:8px;">
+
+                    <span>
+                        <strong>Company</strong>:&nbsp;@company.Name
+                        <strong>Branch</strong>:&nbsp;@ToBranch.Name
+                    </span>
+
+</td>
+                <td colspan="2" width="50%" style="padding:8px;">
+                   <strong>Lorry No.</strong>:&nbsp;@Model.LorryNo
+                </td>
+            </tr>
+@*@if (UnitIdSecondary == 1)
+{*@
+
+            <tr>
+                <td colspan="2" width="50%" style="padding:8px;">
+                    
+                        <strong>Wt. in @unitSecondaryname</strong>:&nbsp;@Math.Round(totalKGs)
+
+                   
+                </td>
+                @*<td colspan="2" width="50%" style="padding:8px;">
+                    
+                        <strong>No. of @unitname</strong>:&nbsp;@Math.Round(totalquantity)
+
+                    
+                </td>
+            </tr>
+}
+else
+{
+    <tr>
+        <td colspan="2" width="50%" style="padding:8px;">
+
+            <strong>No. of @unitSecondaryname</strong>:&nbsp;@Math.Round(totalquantity)
+
+
+        </td>
+        <td colspan="2" width="50%" style="padding:8px;">
+
+            <strong>Wt. in @unitname</strong>:&nbsp;@Math.Round(totalKGs)
+
+
+        </td>
+    </tr>
+}*@
+        </table>
+
+
+</body>
+</html>

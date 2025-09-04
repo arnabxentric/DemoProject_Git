@@ -1,0 +1,883 @@
+﻿@model XenERP.Models.ReceiptPayment
+@{
+    var duedate = ViewBag.duedate;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using XenERP.Models;
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Accordion/highlight.js" type="text/javascript"></script>
+<link href="../../Accordion/github.css" rel="stylesheet" type="text/css" />
+<link href="../../Accordion/Demo.css" rel="stylesheet" type="text/css" />
+<script src="../../Accordion/Cookie.js" type="text/javascript"></script>
+<script src="../../Accordion/accordion.js" type="text/javascript"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <script language="javascript">
+
+
+        $(document).ready(function () {
+
+
+
+            $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+
+            $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+            var myDate = new Date();
+            var prettyDate = (myDate.getMonth() + 1) + '/' + myDate.getDate() + '/' +
+        myDate.getFullYear();
+            $("#PaymentDate").val(prettyDate);
+
+            $('#RPBankAmount').val('0.0');
+            $('#RPCashAmount').val('0.0');
+            $('#TotBalance').val('0.0');
+            $('#Totalpayment').val('0.0');
+            $('#cardamount').val('0.0');
+
+
+
+            $('#RPBankAmount').keyup(function () {
+                var chAmnt = $('#RPBankAmount').val();
+                var caAmnt = $('#RPCashAmount').val();
+                var cardAmt = $('#cardamount').val();
+
+
+                if (chAmnt != '') {
+                    if (caAmnt != '0') {
+                        var amnt = parseFloat(chAmnt) + parseFloat(caAmnt) + parseFloat(cardAmt);
+                        $('#Totalpayment').val(amnt);
+                    }
+                    else {
+                        var amnt = parseFloat(chAmnt);
+                        $('#Totalpayment').val(amnt);
+                    }
+                }
+
+
+            });
+
+
+
+            $('#RPCashAmount').keyup(function () {
+                var chAmnt = $('#RPBankAmount').val();
+                var caAmnt = $('#RPCashAmount').val();
+                var cardAmt = $('#cardamount').val();
+
+                if (caAmnt != '') {
+
+                    if (chAmnt != '0' || chAmnt != '') {
+                        var amnt = parseFloat(chAmnt) + parseFloat(caAmnt) + parseFloat(cardAmt);
+                        $('#Totalpayment').val(amnt);
+                    }
+                    else {
+                        var amnt = parseFloat(chAmnt);
+                        $('#Totalpayment').val(amnt)
+                    }
+                }
+
+            });
+
+            $('#cardamount').keyup(function () {
+                var chAmnt = $('#RPBankAmount').val();
+                var caAmnt = $('#RPCashAmount').val();
+                var cardAmt = $('#cardamount').val();
+
+                if (caAmnt != '') {
+
+                    if (chAmnt != '0' || chAmnt != '') {
+                        var amnt = parseFloat(chAmnt) + parseFloat(caAmnt) + parseFloat(cardAmt);
+                        $('#Totalpayment').val(amnt);
+                    }
+                    else {
+                        var amnt = parseFloat(chAmnt);
+                        $('#Totalpayment').val(amnt)
+                    }
+                }
+
+            });
+
+
+
+            $('#btnsubmit').on("click", function () {
+
+
+
+                var newAmnt = $('#vouchertype').val();
+                if (newAmnt == "") {
+                    $('#vouchertype').addClass('ErrorControl');
+                    $('#vouchertype').focus();
+                    return false;
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+            $("#chequeNo").attr("maxlength", "30");
+            $("#RPBankAmount").attr("maxlength", "10");
+            $("#RPCashAmount").attr("maxlength", "10");
+            $("#Totalpayment").attr("maxlength", "10");
+            $("#Remarks").attr("maxlength", "200");
+
+
+
+        });
+    </script>
+</head>
+<body id="skin-black">
+    <!-- header logo: style can be found in header.less -->
+    <header class="header">
+        
+            <!-- Header Navbar: style can be found in header.less -->
+          
+        </header>
+    <div class="wrapper row-offcanvas row-offcanvas-left">
+        <!-- Left side column. contains the logo and sidebar -->
+        <!-- Right side column. Contains the navbar and content of the page -->
+        <aside class="right-side">                
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>
+                        Invoice
+                        <small>#@ViewBag.invoice </small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Examples</a></li>
+                        <li class="active">Blank page</li>
+                    </ol>
+                </section>
+
+                <div class="pad margin no-print">
+                    <div class="alert alert-info" style="margin-bottom: 0!important;">
+                        <i class="fa fa-info"></i>
+                        <b>Note:</b> This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
+                    </div>
+                </div>
+                
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+
+                <!-- Main content -->
+                <section class="content invoice">                    
+                    <!-- title row -->
+
+
+                    @foreach (Company comp in ViewBag.company)
+                    {
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2 class="page-header">
+                                <i class="fa fa-globe"></i> Xpert
+                                <small class="pull-right">Invoice Date:@String.Format("{0:dd/MM/yyyy}", @ViewBag.invdate) </small>
+                            </h2>                            
+                        </div><!-- /.col -->
+                    </div>
+                
+                    <!-- info row -->
+                    <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+                            From
+                            <address>
+                                <strong>@comp.CompanyDisplayName</strong><br>
+                             @comp.Address<br>
+                              @comp.CountryId,  @comp.StateId, @comp.City @comp.Zipcode<br>
+                                Phone:  @comp.ContactNumber<br/>
+                                Email:  @comp.EmailId
+                            </address>
+                        </div><!-- /.col -->
+                          @foreach (Customer sup in ViewBag.supplierdet)
+                          {
+                        <div class="col-sm-4 invoice-col">
+                            To
+                            <address>
+                             
+                                <strong>@sup.Name</strong><br>
+                             @sup.AddressName<br>
+                              @sup.Country,  @sup.StateRegion, @sup.City @sup.PostalCode<br>
+                                Phone:  @sup.ContactMobile<br/>
+                                Email:  @sup.ContactEmail
+                            </address>
+                        </div>
+                          }<!-- /.col -->
+                        <div class="col-sm-4 invoice-col">  
+                            <b>Invoice: #@ViewBag.invoice</b><br/><br />
+                            <b>Payment Due: @String.Format("{0:dd/MM/yyyy}", @ViewBag.duedate)</b><br/>
+                            <b>Amount Due: @ViewBag.Nettotal</b><br/>
+                          
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    }
+
+
+
+
+
+
+
+
+
+                    <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+@*    <title>jQuery Accordion Demo</title>
+*@  
+</head>
+<body>
+<h2>Receive Method</h2>
+<div id="body">
+<!-- panel -->
+
+<!-- end panel -->
+<!-- panel -->
+  @using (Html.BeginForm("CreateInvoicePayment", "SalesInvoicePayment"))
+  {
+       @Html.ValidationSummary(true)
+      
+<div class="accordion" id="section2">CHEQUE/CASH/CREDIT CARD<span></span></div>
+<div class="container">
+    <div class="content">
+     
+    @*  <form>*@
+  <fieldset> 
+   <legend>Cheque Information </legend><br />
+    
+        <br />
+           
+  
+       
+       <table width="90%">
+
+
+       <tr>
+       <td>
+       Bank:
+       </td>
+       <td>
+
+
+    <input type="hidden" id="Invoiceno" name="Invoiceno" value="@ViewBag.invoice" />
+    
+    <input type="hidden" id="Invid" name="Invid" value="@ViewBag.id" />
+
+                                       @Html.DropDownListFor(model => model.RPBankId, new SelectList(ViewBag.Bank, "LId", "Name"), "-----Select a Ledger----", new { @class = "form-control" })
+
+       </td>
+       
+        <td>&nbsp;</td>
+       
+         <td>
+      
+               Cheque No. :
+
+       </td>
+       <td>
+              
+ @Html.TextBoxFor(model => model.chequeNo, new { @class = "form-control", @placeholder = "Enter cheque No.",@maxlength="50",@onkeypress="return Numeric(event)" })  
+                @Html.ValidationMessageFor(model => model.chequeNo)
+                        
+       </td>
+      
+       
+       </tr>
+
+
+
+       <tr>
+     
+
+
+      <td>
+      
+              Cheque Amount :
+
+       </td>
+       <td>
+              
+              
+ @Html.TextBoxFor(model => model.RPBankAmount, new { @class = "form-control", @placeholder = "Enter cheque Amount ", @maxlength = "15", @onkeypress = "return Decimal(event)" })  
+                    
+       </td>
+       <td>&nbsp;</td>
+        <td>
+            
+               Cheque Date :
+       </td>
+       <td>
+                                         <div class="input-group date" id="dp3">@Html.TextBoxFor(model => model.chequeDate, new { @class = "form-control", @readonly = "", @value = DateTime.Today })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+              
+       </td>
+       </tr>
+
+
+
+
+        <tr>
+      
+      
+
+     
+       </tr>
+
+
+       
+
+   
+
+
+       </table>
+     
+  </fieldset> @*</form>*@<br />
+@* <form>*@
+  <fieldset>
+       <legend> Cash Information </legend><br />    
+
+       <table width="53%">
+       <tr>
+
+       <td>
+            
+               Cash Amount:
+       </td>
+       <td> 
+ @Html.TextBoxFor(model => model.RPCashAmount, new { @class = "form-control", @placeholder = "Enter Cash Amount ", @maxlength = "15", @onkeypress = "return Decimal(event)" })  
+                        
+       </td>
+
+       
+       <td>
+            
+             
+       </td>
+       
+       <td>
+            
+           </td>
+       </tr>
+       </table>
+
+  </fieldset> 
+        
+      @*  </form>  *@
+        <br />
+        
+      @*   <form>  *@
+  <fieldset> 
+        
+                                   
+                  <legend>Credit Card Information</legend><br />                       
+                                     
+                  <table width="90%">
+                  
+
+
+       <tr>
+       <td>
+                     Card Number:
+       </td>
+       <td>
+
+ @Html.TextBoxFor(model => model.CreditCardNo, new { @class = "form-control", @placeholder = "Enter Credit Card No. ", @maxlength = "50", @onkeypress = "return Numeric(event)" })  
+       </td>
+       <td></td>
+         
+          <td>
+      
+                       Expiration Date :
+
+       </td>
+       <td>
+              
+         <select id="month" name="month">
+         <option value="01">01</option>
+          <option value="02">02</option>
+          <option value="03">03</option>
+           <option value="04">04</option>
+           <option value="05">05</option>
+           <option value="06">06</option>
+            <option value="07">07</option>
+      <option value="08">08</option>
+         <option value="09">09</option>
+            <option value="10">10</option>
+                           <option value="11">11</option>
+                             <option value="12">12</option>
+         </select>&nbsp;
+
+
+
+
+
+
+
+
+        / <select id="year" name="year">
+         <option value="2014">2014</option>
+          <option value="2015">2015</option>
+          <option value="2016">2016</option>
+           <option value="2017">2017</option>
+           <option value="2018">2018</option>
+           <option value="2019">2019</option>
+            <option value="2020">2020</option>
+      <option value="2021">2021</option>
+         <option value="2022">2022</option>
+            <option value="2023">2023</option>
+                           <option value="2024">2024</option>
+                             <option value="2025">2025</option>
+         </select>
+                               
+       </td>
+  
+       </tr>
+
+     
+     
+       <tr>
+        <td>
+
+       </td>
+       </tr>
+       <tr>
+        <td>
+
+       </td>
+       <td>
+
+   <div class="row">
+<div class="credit-card-visa-icon"></div>
+<div class="credit-card-mastercard-icon"></div>
+<div class="credit-card-amex-icon"></div>
+<div class="credit-card-discover-icon"></div>
+</div>
+       </td>
+      
+         
+       
+       </tr>
+
+
+
+        <tr>
+      
+      
+       <td>
+            
+   Name On Card:
+       </td>
+       <td> 
+ @Html.TextBoxFor(model => model.CardName, new { @class = "form-control", @placeholder = "Enter Card Name ", @maxlength = "50", @onkeypress = "return Character(event)" })  
+                        
+       </td>
+
+  
+  <td></td>
+         
+       <td>
+      Card  Amount:
+       </td>
+       <td>
+       <input name="cardamount" type="text" id="cardamount"  onkeypress="return Numeric(event)" placeholder="Enter Amount" class="form-control" />
+       </td>
+       </tr>
+
+</table>
+      
+  </fieldset> 
+     @*   </form> *@ 
+              <br />   
+     @* <form>  *@
+  <fieldset> 
+        
+                                   
+                 
+<table width="90%">
+
+       <tr>
+        <td>        Total Payment Value :
+
+       </td>
+       <td>
+              
+            <input type="text" class="form-control" id="Totalpayment" readonly="readonly" name="Totalpayment" />
+              
+                        @Html.ValidationMessageFor(model => model.RPCashAmount)
+                            
+                                    
+       </td>
+       <td></td>
+  <td>
+            
+             Payment Date :
+       </td>
+       <td>
+                                         <div class="input-group date" id="dp4">@Html.TextBoxFor(model => model.PaymentDate, new { @class = "form-control", @readonly = "" ,@value=DateTime.Now})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+              
+       </td>
+
+</tr>
+
+
+
+            <tr>
+       <td>
+          
+                   Remarks:
+       </td>
+       <td> 
+       
+        <textarea id="Remarks"  name="Remarks" class="form-control"></textarea>
+               
+       </td>
+      
+
+       </tr>
+
+
+       <tr>
+       <td align="right">
+
+    <center><input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></center> 
+       </td>
+       </tr>
+
+     </table>         
+      </fieldset> 
+     @*  </form>*@
+
+   
+    </div>
+    </div>
+      
+    
+  }
+    <!-- end panel -->
+    <!-- panel -->
+    <!-- end panel -->
+    <!-- panel -->
+    <!-- end panel -->
+    <!-- panel -->
+    <div class="container">
+        <div class="content">
+            <style type="text/css">
+                #left_nav
+                {
+                    width: 250px;
+                }
+                #body
+                {
+                    width: 70%;
+                    float: left;
+                    margin: 10px;
+                }
+                .accordion
+                {
+                    margin: 0;
+                    padding: 10px;
+                    height: 33px;
+                    border-top: #f0f0f0 1px solid;
+                    background: #53a9bc;
+                    font-family: Arial, Helvetica, sans-serif;
+                    text-decoration: none;
+                    text-transform: uppercase;
+                    color: #000;
+                    font-size: 1em;
+                }
+                .accordion-open
+                {
+                    background: #000;
+                    color: #fff;
+                }
+                .accordion-open span
+                {
+                    display: block;
+                    float: right;
+                    padding: 10px;
+                }
+                .accordion-open span
+                {
+                    background: url(/../Images/minus.png) center center no-repeat;
+                }
+                .accordion-close span
+                {
+                    display: block;
+                    float: right;
+                    background: url(/../Images/plus.png) center center no-repeat;
+                    padding: 10px;
+                }
+                div.container
+                {
+                    padding: 0;
+                    margin: 0;
+                }
+                div.content
+                {
+                    background: #f0f0f0;
+                    margin: 0;
+                    padding: 10px;
+                    font-size: .9em;
+                    line-height: 1.5em;
+                    font-family: "Helvetica Neue" , Arial, Helvetica, Geneva, sans-serif;
+                }
+                div.content ul, div.content p
+                {
+                    padding: 0;
+                    margin: 0;
+                    padding: 3px;
+                }
+                div.content ul li
+                {
+                    list-style-position: inside;
+                    line-height: 25px;
+                }
+                div.content ul li a
+                {
+                    color: #555555;
+                }
+                code
+                {
+                    overflow: auto;
+                }
+            </style>
+        </div>
+    </div>
+    <!-- end panel -->
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //syntax highlighter
+            hljs.tabReplace = '    ';
+            hljs.initHighlightingOnLoad();
+
+            $.fn.slideFadeToggle = function (speed, easing, callback) {
+                return this.animate({ opacity: 'toggle', height: 'toggle' }, speed, easing, callback);
+            };
+
+            //accordion
+            $('.accordion').accordion({
+                defaultOpen: 'section1',
+                cookieName: 'accordion_nav',
+                speed: 'slow',
+                animateOpen: function (elem, opts) { //replace the standard slideUp with custom function
+                    elem.next().stop(true, true).slideFadeToggle(opts.speed);
+                },
+                animateClose: function (elem, opts) { //replace the standard slideDown with custom function
+                    elem.next().stop(true, true).slideFadeToggle(opts.speed);
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
+<!-- Table row -->
+  <div class="row">
+                      @*  <div class="col-xs-12 table-responsive">*@
+                            <table id="example1-payment" class="table table-bordered table-striped dataTable " aria-describedby="example1_info">
+                                <thead>
+                                    <tr>
+                                      
+                                        <th>Item</th>
+                                         <th>Description</th>
+                                         <th>Quantity</th>
+                                         <th>Unit Price</th>                                       
+                                        <th>Amount(@ViewBag.currencyname)</th>
+                                    </tr>                                    
+                                </thead>
+                                <tbody role="alert" aria-live="polite" aria-relevant="all">
+
+
+                                @foreach (SalesInvoiceDetail purchase in ViewBag.PurDetails)
+                                {
+
+                                    <tr>
+                                      <td>
+                                      
+                                      @purchase.Product.Description
+
+                                      </td>
+                                       <td>
+                                      
+                                      @purchase.Description
+
+                                      </td>
+
+                                      <td align="right">
+                                      
+                                      @purchase.Quantity
+
+                                      </td>
+
+                                      
+                                      <td align="right">
+                                      
+                                      @purchase.TotalAmount
+
+                                      </td>
+                                     
+
+                                             <td align="right">
+                                      
+                                      @purchase.TotalAmount
+
+                                      </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>                            
+                       @* </div><!-- /.col -->*@
+                    </div>
+                    
+                    
+              
+              
+              
+              
+              
+                    
+                    
+                    
+                    <!-- /.row -->
+<div class="row">
+    <!-- accepted payments column -->
+    <div class="col-xs-6">
+        <p class="lead">
+            Payment Methods:</p>
+        <img src="../../img/credit/visa.png" alt="Visa" />
+        <img src="../../img/credit/mastercard.png" alt="Mastercard" />
+        <img src="../../img/credit/american-express.png" alt="American Express" />
+        <img src="../../img/credit/paypal2.png" alt="Paypal" />
+        <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+            Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya
+            handango imeem plugg dopplr jibjab, movity jajah plickers sifteo edmodo ifttt zimbra.
+        </p>
+    </div>
+    <!-- /.col -->
+    <div class="col-xs-6 no-right-app">
+     
+        <div class="table-responsive">
+            <table class="table" width="80%" id="sub-total">
+                <tr>
+                    <th align="center" style="width: 50%">
+                           <h4> Subtotal(@ViewBag.currencyname):    </h4>
+                    </th>
+                    <td align="right">
+                      <h4>  @ViewBag.subtotal    </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <th  align="center" >
+                        Tax:
+                    </th>
+                      <td align="right">
+                      <b>  @ViewBag.taxtotal </b> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                       Addition:
+                    </th>
+                      <td align="right">
+                   <b>    @ViewBag.Addition</b> 
+                    </td>
+                </tr>
+                 <tr>
+                    <th>
+                       Deduction:
+                    </th>
+                       <td align="right">
+                   <b>    @ViewBag.deduction</b> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                         <h4> Grand Total(@ViewBag.currencyname):    </h4>
+                    </th>
+                      <td align="right">
+                           <h4>    @ViewBag.grandtotal    </h4>
+                    </td>
+                </tr>
+
+
+                @foreach(ReceiptPayment payment in ViewBag.paymentless)
+                {
+
+                  <tr>
+                    <th>
+                   Less Payment (@String.Format("{0:dd/MM/yyyy}",@payment.RPDatetime))
+                    </th>
+                       <td align="right">
+                        <b>    @payment.TotalAmount</b> 
+                    </td>
+                </tr>
+                    }
+                       <tr>
+                    <th>
+                  <h3>Amount Due:</h3>
+                    </th>
+                      <td align="right">
+                       <h3>   @ViewBag.Amountdue  </h3>
+                    </td>
+                </tr>
+                     
+
+            </table>
+        </div>
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+<!-- this row will not appear when printing -->
+<div class="row no-print">
+    <div class="col-xs-12">
+        <button class="btn btn-default" onclick="window.print();">
+            <i class="fa fa-print"></i>Print</button>
+        <button class="btn btn-success pull-right">
+            <i class="fa fa-credit-card"></i>Submit Payment</button>
+        <button class="btn btn-primary pull-right" style="margin-right: 5px;">
+            <i class="fa fa-download"></i>Generate PDF</button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+</section><!-- /.content -->
+</aside>
+        <!-- /.right-side -->
+    </div>
+    <!-- ./wrapper -->
+</body>
+</html>

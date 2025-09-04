@@ -1,0 +1,15 @@
+﻿@model XenERP.Models.Group
+@foreach (var item in Model.Group1)
+{ 
+    <ul>
+    @if (item != null)
+    {        
+        <li><a href="#" id='@item.Id' class="usr">@item.Code</a>
+        @if (item.Group1.Count > 0)
+        {         
+            @Html.Partial("Childrens", item)           
+        }
+        </li>
+    }
+    </ul>
+}

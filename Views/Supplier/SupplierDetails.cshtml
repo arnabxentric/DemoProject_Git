@@ -1,0 +1,670 @@
+﻿@model XenERP.Models.Supplier
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+
+@*<script src="../../Scripts/jquery-2.1.0.js" type="text/javascript"></script>*@
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/Supplier/ShowAllSupplier";
+
+
+        });
+
+
+
+
+
+    });
+    </script>
+
+
+@using (Html.BeginForm("EditSupplier", "Supplier"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Supplier<small>Details</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#tab_1" data-toggle="tab">Details</a></li>
+                                    <li><a href="#tab_2" data-toggle="tab">Address</a></li>
+                                      <li><a href="#tab_3" data-toggle="tab">Contact</a></li>
+                                        <li><a href="#tab_4" data-toggle="tab">Bank</a></li>
+                                        <li class="pull-right"><input type="button" id="btncancel" class="btn btn-primary" value="Back To List" /></li>
+                                   
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                       
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Supplier Code :</label>
+
+                   @Html.HiddenFor(d => d.Id)
+                     @Html.HiddenFor(d => d.UserId)
+                          @Html.HiddenFor(d => d.CompanyId)
+                   @Html.DisplayFor(model => model.Code, new { @class = "form-control", @placeholder = "Enter Supplier Code" })
+               
+                                      
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                              Supplier Name:</label>
+                                    @Html.DisplayFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Supplier Name" })
+                                  
+                                    </div>
+
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                                Organization Name:</label>
+                                    @Html.DisplayFor(model => model.OrganisationName, new { @class = "form-control", @placeholder = "Enter Organization Name" })
+                                      @Html.ValidationMessageFor(model => model.OrganisationName)
+
+                                  
+                                    </div>
+
+
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Opening Balance:</label>
+                                    @Html.DisplayFor(model => model.OpeningBalance, new { @class = "form-control", @placeholder = "Enter Discount" })
+                                      @Html.ValidationMessageFor(model => model.OpeningBalance)
+
+                                  
+                                    </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  GST/VAT No:</label>
+                                    @Html.DisplayFor(model => model.GstVatNumber, new { @class = "form-control", @placeholder = "Enter GST/VAT No" })
+                                      @Html.ValidationMessageFor(model => model.GstVatNumber)
+
+                                  
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                Notes:</label>
+                                    @Html.DisplayFor(model => model.Notes, new { @class = "form-control", @placeholder = "Enter Notes" })
+                                      @Html.ValidationMessageFor(model => model.Notes)
+
+                                  
+                                    </div>
+
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Taxable</label>
+                                    @Html.CheckBoxFor(model => model.Taxable, new { @class = "form-control"})
+                                      @Html.ValidationMessageFor(model => model.GstVatNumber)
+
+                                  
+                                    </div>
+
+                                                                        </div>
+                                    </div>
+                                    </div>
+
+
+
+
+
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+                        
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              PAN No:</label>
+
+                  
+                   @Html.DisplayFor(model => model.PanNo, new { @class = "form-control", @placeholder = " PAN No." })
+                                  @Html.ValidationMessageFor(model => model.PanNo)
+
+                                    </div>
+
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             TIN No:</label>
+                                    @Html.DisplayFor(model => model.TinNo, new { @class = "form-control", @placeholder = "Enter TIN No." })
+                                        @Html.ValidationMessageFor(model => model.TinNo)
+
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Service Tax No:</label>
+                                    @Html.DisplayFor(model => model.ServiceTaxNo, new { @class = "form-control", @placeholder = "Enter Service Tax No" })
+                                    @Html.ValidationMessageFor(model => model.ServiceTaxNo)
+
+                                    </div>
+
+
+                                    
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+        Tax Rate:</label>
+
+                 
+                        @try
+                        {
+                            XenERP.Models.Repository.TaxRepository cur2 = new XenERP.Models.Repository.TaxRepository();
+
+                            var group = cur2.GetTax(Convert.ToInt32(Model.TaxId));
+                        
+                    @group.Name  
+                        }
+                        catch { }
+                        
+                        
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+        Currency:</label>
+
+                 
+                        @try
+                        {
+                            XenERP.Models.Repository.TaxRepository cur2 = new XenERP.Models.Repository.TaxRepository();
+
+                            var group = cur2.GetCurency(Convert.ToInt32(Model.CurrencyId));
+                        
+                    @group.ISO_4217  
+                        }
+                        catch { }
+                        
+                        
+                              
+
+                              @Html.ValidationMessageFor(model => model.ServiceTaxNo)
+
+                                    </div>
+
+
+                                         </div>
+                                    </div>
+                                    </div>
+
+
+
+                         
+                                        </div>   
+                                        
+                                        </div>
+                                    <div class="tab-pane" id="tab_2">
+                                                <div class="row">         
+      <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                        
+                   <h4>Postal Address </h4>
+
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Country :</label>
+
+            
+                   @Html.DisplayFor(model => model.PoCountry, new { @class = "form-control", @placeholder = "Enter Country" })
+                                      @Html.ValidationMessageFor(model => model.PoCountry)
+
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              State :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DisplayFor(model => model.PoStateRegion, new { @class = "form-control", @placeholder = "Enter State" })
+                                   @Html.ValidationMessageFor(model => model.PoStateRegion)
+
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             City:</label>
+                                    @Html.DisplayFor(model => model.PoCity, new { @class = "form-control", @placeholder = "Enter City" })
+                                                                        @Html.ValidationMessageFor(model => model.PoCity)
+
+                                    </div>
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Address:</label>
+                                    @Html.DisplayFor(model => model.PoAddressName, new { @class = "form-control", @placeholder = "Enter Address" })
+                                       @Html.ValidationMessageFor(model => model.PoAddressName)
+                                       </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Zip Code:</label>
+                                    @Html.DisplayFor(model => model.PoPostalCode, new { @class = "form-control", @placeholder = "Enter Zip Code" })
+                                      @Html.ValidationMessageFor(model => model.PoPostalCode)
+
+
+                                    </div>
+
+
+
+
+
+
+
+                 
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                                                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                                                           
+                <h4>Physical Address </h4> 
+                           
+                                                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Country :</label>
+
+             
+                   @Html.DisplayFor(model => model.Country, new { @class = "form-control", @placeholder = "Enter Country" })
+                 @Html.ValidationMessageFor(model => model.Country)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              State :</label>
+
+                  
+                   @Html.DisplayFor(model => model.StateRegion, new { @class = "form-control", @placeholder = "Enter State" })
+                                           @Html.ValidationMessageFor(model => model.StateRegion)
+            
+                                     
+                                    </div>
+
+                                    
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             City:</label>
+                                    @Html.DisplayFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })
+                                      @Html.ValidationMessageFor(model => model.City)
+            
+                                    </div>
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Address:</label>
+                                    @Html.DisplayFor(model => model.AddressName, new { @class = "form-control", @placeholder = "Enter Address" })
+                                       @Html.ValidationMessageFor(model => model.AddressName)
+            
+                                    </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Zip Code:</label>
+                                    @Html.DisplayFor(model => model.PostalCode, new { @class = "form-control", @placeholder = "Enter Zip Code" })
+                                     @Html.ValidationMessageFor(model => model.PostalCode)
+            
+                                    </div>
+                                    
+
+
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>            
+                                     <div class="tab-pane" id="tab_3">
+                                                <div class="row">         
+      <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                    Contact Name:</label>
+
+             
+                   @Html.DisplayFor(model => model.ContactName, new { @class = "form-control", @placeholder = "Enter Contact Name " })
+                 @Html.ValidationMessageFor(model => model.ContactName)
+            
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Email Id :</label>
+
+                  
+                   @Html.DisplayFor(model => model.ContactEmail, new { @class = "form-control", @placeholder = "Enter   Email Id " })
+                                  @Html.ValidationMessageFor(model => model.ContactEmail)
+            
+                                        
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Office Phone:</label>
+                                    @Html.DisplayFor(model => model.ContactOfficePhone, new { @class = "form-control", @placeholder = "Enter Office Phone" })
+                                      @Html.ValidationMessageFor(model => model.ContactOfficePhone)
+            
+                      
+                                    </div>
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Website:</label>
+
+             
+                   @Html.DisplayFor(model => model.ContactWebsite, new { @class = "form-control", @placeholder = "Enter Website" })
+                             @Html.ValidationMessageFor(model => model.ContactWebsite)
+            
+                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Phone Number:</label>
+            
+                   @Html.DisplayFor(model => model.ContactPhone, new { @class = "form-control", @placeholder = "Enter Phone Number" })
+               @Html.ValidationMessageFor(model => model.ContactPhone)
+            
+                      
+                                                     
+                                     
+                                    </div>
+
+                                                            
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                  
+                                         <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+               
+
+                                    
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Mobile Number:</label>
+
+                  
+                   @Html.DisplayFor(model => model.ContactMobile, new { @class = "form-control", @placeholder = "Enter  Mobile Number" })
+               @Html.ValidationMessageFor(model => model.ContactMobile)
+            
+                      
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+             DDI Number:</label>
+
+                  
+                   @Html.DisplayFor(model => model.ContactDDINumber, new { @class = "form-control", @placeholder = "Enter DDI Number" })
+               @Html.ValidationMessageFor(model => model.ContactDDINumber)
+            
+                      
+                                                     
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Fax:</label>
+
+                  
+                   @Html.DisplayFor(model => model.ContactFaxNo, new { @class = "form-control", @placeholder = "Enter Fax" })
+               @Html.ValidationMessageFor(model => model.ContactFaxNo)
+            
+                      
+                                                     
+                                     
+                                    </div>
+
+                                         
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Toll Free Number:</label>
+
+                  
+                   @Html.DisplayFor(model => model.ContactTollFreeNo, new { @class = "form-control", @placeholder = "Enter   Toll Free Number" })
+               @Html.ValidationMessageFor(model => model.ContactTollFreeNo)
+            
+                      
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+                                      <div class="tab-pane" id="tab_4">
+                                                <div class="row">         
+                          <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                        </div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+           Bank Name :</label>
+
+           
+                   @Html.DisplayFor(model => model.BankName, new { @class = "form-control", @placeholder = "Enter Bank Name " })
+               @Html.ValidationMessageFor(model => model.BankName)
+            
+                                      
+                                     
+                                    </div>
+
+
+
+                                         
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+           Bank Branch :</label>
+
+           
+                   @Html.DisplayFor(model => model.BankBranch, new { @class = "form-control", @placeholder = "Enter Bank Branch " })
+               @Html.DisplayFor(model => model.BankBranch)
+            
+                                      
+                                     
+                                    </div>
+
+                                    
+                                                            
+                                          
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+           Bank Account :</label>
+
+           
+                   @Html.DisplayFor(model => model.BankAccount, new { @class = "form-control", @placeholder = "Enter Bank Account" })
+               @Html.ValidationMessageFor(model => model.BankAccount)
+            
+                                      
+                                     
+                                    </div>
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                          </div>
+                                         </div>
+
+                                         </div>
+                                         </div>
+                                         </div>
+                                      
+                        </section>
+                        </aside>
+}

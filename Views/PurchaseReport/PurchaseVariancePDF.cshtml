@@ -1,0 +1,170 @@
+﻿
+@model IEnumerable<XenERP.Models.PurchaseOrderVarianceDetail>
+
+@{
+    Layout = null;
+    var SlNo = 0;
+    decimal SubTotal = 0;
+    decimal Discount = 0;
+    decimal TotAmt = 0;
+    int totalcartons = 0;
+    decimal AddTotal = 0;
+    decimal DiscountTotal = 0;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: verdana, arial, sans-serif;
+            font-size: 10px;
+        }
+
+        .invoice th,
+        td {
+            padding: 3px 2px 3px 2px;
+            text-align: center;
+        }
+
+        .invoice th {
+            border-bottom: 2px solid #333333;
+        }
+
+        .invoice td {
+            border-bottom: 1px solid #999999;
+        }
+
+        .invoice table {
+            overflow: visible !important;
+        }
+
+        .invoice thead {
+            display: table-header-group;
+        }
+
+        .invoice tfoot {
+            display: table-row-group;
+        }
+
+        .invoice tr {
+            page-break-inside: avoid;
+        }
+    </style>
+    <title>PurchaseVarianceReport</title>
+</head>
+<body>
+    <table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+        <thead>
+            <tr>
+                <th>
+                    SlNo.
+                </th>
+
+                <th>
+                    P.O. No.
+                </th>
+                <th>
+                    P.O.Date
+                </th>
+                <th>
+                    P.O.Status
+                </th>
+
+                <th>
+                    Party
+                </th>
+                <th>
+                    Warehouse
+                </th>
+
+                <th>
+                    Product
+                </th>
+                <th>
+                    P.O.Quantity
+                </th>
+                <th>
+                    P.O.Rate
+                </th>
+                <th>
+                    Challan Quantity
+                </th>
+                <th>
+                    Invoice Quantity
+                </th>
+                <th>
+                    Invoice Rate
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                SlNo = SlNo + 1;
+
+                <tr>
+
+                    <td>
+                        @SlNo
+
+                        <input type="hidden" value="@SlNo" class="hiddenSL" />
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PONO)
+
+                    </td>
+                    <td>
+
+                        @String.Format(Session["DateFormatUpper"].ToString(), item.PODate)
+                        <input type="hidden" value="@item.POId" class="AccoDethid" />
+                        <input type="hidden" value="@item.ProductName" class="AccoDethpid" />
+
+
+                        <img src="~/Images/moonspin.gif" alt="Loader" width="20px" height="10px" style="display:none;" class="imgLoader" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.POStatus)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Party)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Warehouse)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td align="right">
+                        @Html.DisplayFor(modelItem => item.POQuantity)
+                    </td>
+                    <td align="right">
+                        @Html.DisplayFor(modelItem => item.POPrice)
+                    </td>
+                    <td align="right">
+                        @Html.DisplayFor(modelItem => item.PRQuantity)
+                    </td>
+                    <td align="right">
+                        @Html.DisplayFor(modelItem => item.PIQuantity)
+                    </td>
+                    <td align="right">
+                        @Html.DisplayFor(modelItem => item.PIPrice)
+                    </td>
+
+
+                </tr>
+                                <tr>
+                                    <td colspan="12"><div id="demo_@SlNo"></div></td>
+                                </tr>
+
+            }
+        </tbody>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+﻿@model IEnumerable<XenERP.Models.BranchMaster>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    
+    int SlNo = 0;
+
+
+    decimal? totalsellrate = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                  Farm Unit<small>List</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+
+
+
+    <div class="box">
+                              <div class="col-xs-12"><a href="@Url.Action("CreateBranch", "Branch")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>New Farm Unit</a></div><br /><br />          
+
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    
+                        <th>
+                     SlNo.
+                        </th>
+
+
+                                                <th>
+                  Farm Unit Code
+                        </th>
+                        <th>
+                  Farm Unit Name
+                        </th>
+                        
+                        <th>
+             Created Date
+                        </th>
+                        <th>
+                        </th>
+                        
+
+
+   @*<th>
+                        </th>*@
+                        
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+                        //totalpurchaserate = totalpurchaserate + item.PurchaseRate;
+
+                        SlNo = SlNo + 1;
+                        //totalsellrate = totalsellrate + item.SellRate;
+                        
+                        
+                        <tr>
+                       <td>@SlNo</td>
+                         <td>
+
+                         
+
+
+                                 @Html.DisplayFor(modelItem => item.Code)
+                     
+                            </td>
+                            <td>
+
+                         
+
+
+                                 @Html.DisplayFor(modelItem => item.Name)
+                     
+                            </td>
+                          
+                         
+
+
+                           
+
+
+                            <td style="text-align:right;">
+                           
+                           @{
+                               
+                               
+
+  @String.Format(Session["DateFormatUpper"].ToString(), item.CreatedDate)
+
+                               
+       
+                               
+                               }
+
+                      
+                            </td>
+
+                            <td>
+                            
+                             @Html.ActionLink("Edit", "EditBranch", new { id = item.Id }) 
+                            </td>
+
+
+                            
+                                        @*<td>
+                   
+          
+                  @Html.ActionLink("Delete", "DeleteBranch", new { id = item.Id }, new { onclick = "return confirm('Do you want to delete this row?');" })
+            
+            </td>*@
+
+                             
+                        </tr>
+                    }
+                </tbody>
+   
+            </table>
+
+            </div>
+            </div>
+            </aside>
+</body> </html> 

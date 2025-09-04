@@ -1,0 +1,177 @@
+﻿
+@model IEnumerable<XenERP.Models.ModelView.FarmerReportModelView>
+    @{
+        ViewBag.Title = "FarmerTDSPending";
+    }
+
+ <style>
+    .table-responsive {
+        min-height: 0.01%;
+        overflow-x: auto;
+    }
+</style>
+<script src="~/Reports/Scripts/jQuery.print.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+
+
+            $(function () {
+                $('#datatable-buttons').dataTable({
+                    "bPaginate": true,
+                    "bLengthChange": true,
+                    "bFilter": true,
+                    "bSort": true,
+                    "bInfo": true,
+                    "bAutoWidth": true
+                });
+            });
+
+
+            $("#print").click(function () {
+
+                $("#divPrint").print();
+
+            })
+
+        })
+
+
+</script>
+
+
+<aside class="right-side">
+    <div class="input-group input-group-lg">
+        <div class="col-lg-12" id="exportformat">
+            <table>
+                <tr>
+
+                    <td>
+                        <button id="print" class="btn btn-primary" type="button"><i class="fa fa-print"></i>Print </button>
+                    </td>
+
+                </tr>
+
+            </table>
+
+
+        </div>
+
+
+
+        <!-- /btn-group -->
+
+    </div>
+
+</aside>
+
+
+
+<aside class="right-side">
+
+    <h1>
+        Farmer Net Growing Charge and TDS Pending List
+    </h1>
+
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+
+            <div class="table-responsive" id="divPrint">
+                @*<table id="datatable-buttons" width="100%" class="table table-bordered table-striped chompa">*@
+                <table id="datatable-buttons" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+
+
+                    <thead>
+
+
+                        <tr>
+                            <th>
+                               BranchName
+                            </th>
+                            <th>
+                                Farmer Name
+                            </th>
+                            <th>
+                                PAN NO
+                            </th>
+                           <th>
+                               Running Flock
+                           </th>
+
+                            <th>
+                                Net Growing Charge
+                            </th>
+                            <th>
+                                TDS Pending
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                           // SlNo = SlNo + 1;
+
+
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BranchName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FarmerName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PanNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FlockCode)
+                                </td>
+                            
+                             
+                                <td>
+
+                                    @Html.DisplayFor(modelItem => item.NetGrowingCharge)
+
+                                </td>
+                                <td>
+
+                                    @Html.DisplayFor(modelItem => item.TDSDeduction)
+
+                                </td>
+                             
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+
+                            <td> Grand Total</td>
+
+                            <td></td>
+                            <td> </td>
+                            <td></td>
+                       
+
+                        </tr>
+                    </tfoot>
+
+
+                </table>
+
+
+
+            </div>
+        </div>
+
+
+
+    </div>
+</aside>
+

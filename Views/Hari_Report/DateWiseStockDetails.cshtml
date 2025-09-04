@@ -1,0 +1,230 @@
+﻿@model IEnumerable<XenERP.Models.UnitStockDetails>
+
+
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<link href="~/Content/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet" />
+
+<script src="~/Content/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="~/Content/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="~/Content/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="~/Content/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/Content/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="~/Content/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="~/Content/vendors/jszip/dist/jszip.min.js"></script>
+<script src="~/Content/vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="~/Content/vendors/pdfmake/build/vfs_fonts.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<style>
+    .modal-content {
+        /*b2b266*/
+        background-color: #b2b266;
+        width: 600px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .table th {
+        text-align: center;
+    }
+</style>
+
+<script>
+
+    $(document).ready(function () {
+
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+
+                $("#datatable-buttons").DataTable({
+                    bSort: false,
+                    ordering: false,
+                    dom: "Bfrtip",
+                    "iDisplayLength": 100,
+                    columnDefs: [{
+                        orderable: false,
+                        targets: "no-sort"
+                    }],
+                    buttons: [
+
+                      {
+                          extend: "excelHtml5",
+                          className: "btn-sm",
+                          title: "ProductStock" + "(" + "@ViewBag.from" + " To " + "@ViewBag.to" + ")",
+                          //exportOptions: {
+                          //    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                          //},
+                          customize: function (xlsx) {
+                              var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                              $('row c[r^="C"]', sheet).attr('s', '2');
+                          }
+                      },
+                    ],
+                    responsive: true
+                });
+            }
+        };
+
+
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        $('#datatable-responsive').DataTable();
+
+        $('#datatable-scroller').DataTable({
+            ajax: "js/datatables/json/scroller-demo.json",
+            deferRender: true,
+            scrollY: 380,
+            scrollCollapse: true,
+            scroller: true
+        });
+
+        $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        var $datatable = $('#datatable-checkbox');
+
+        $datatable.dataTable({
+            'order': [[1, 'asc']],
+            'columnDefs': [
+              { orderable: false, targets: [0] }
+            ]
+        });
+        $datatable.on('draw.dt', function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_flat-green'
+            });
+        });
+
+        TableManageButtons.init();
+
+        $datatable.dataTable({
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo($(column.footer()).empty())
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search(val ? '^' + val + '$' : '', true, false)
+                                .draw();
+                        });
+
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append('<option value="' + d + '">' + d + '</option>')
+                    });
+                });
+            }
+        });
+
+    });
+</script>
+
+
+<div class="box">
+
+    <div class="box-body table-responsive">
+
+
+        <table id="datatable-buttons" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>SlNo.</th>
+                    <th>Branch</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>Item</th>
+                    <th>Opening Stock</th>
+                    <th>Received from HO</th>
+                    <th>Issued to Farm</th>
+                    <th>Returned from Farmer</th>
+                    <th>Returned to HO</th>
+                    <th>Closing Stock</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+
+                    Slno = Slno + 1;
+                    <tr>
+                        <td>@Slno</td>
+                        <td>@item.Branch</td>
+                        <td>@item.FrmDate</td>
+                            <td>@item.ToDate</td>
+                            <td>@item.Item</td>
+                            <td align="center">
+                                @item.OpeningStock
+                            </td>
+                            <td align="center">
+                                @item.ReceiveFromHo
+                            </td>
+                            <td align="center">
+                                @item.IssueToFarmer
+                            </td>
+                            <td align="center">
+                                @item.ReturnToUnit
+                            </td>
+
+                            <td style="text-align:center"> @Html.DisplayFor(modelItem => item.ReturnToHo)</td>
+                            <td style="text-align:center;width:200px"> @Html.DisplayFor(modelItem => item.ClosingStock)</td>
+
+                        </tr>
+
+                }
+
+
+            </tbody>
+        </table>
+    </div><!-- /.box-body -->
+</div>

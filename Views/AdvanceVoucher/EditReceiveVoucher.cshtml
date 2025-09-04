@@ -1,0 +1,634 @@
+﻿@model XenERP.Models.AdvanceVoucherModelView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/JqueryValidation.js"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $(".select2").select2();
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+    });
+</script>
+
+
+<script type="text/javascript">
+         $(document).ready(function () {
+
+             $("#Amount").on("keypress", function (event) {
+
+
+
+                 if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                     return true;
+                 }
+
+                 if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+                     event.preventDefault();
+                     return false;
+                 }
+                 if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                     event.preventDefault();
+                 }
+
+             });
+
+             //$("#BranchId").change(function () {
+
+             //    $.get("/PoultryDetailedReport/GetFarmerName", { brnchId: $('#BranchId option:selected').val() }, function (data) {
+
+             //        $("#FarmId").empty();
+             //        var options = $("#FarmId");
+             //            options.append(new Option("---Select FarmerName-----", "-1"));
+             //            $.each(data, function () {
+             //                options.append(new Option(this.FarmerName, this.Id));
+             //            });
+
+
+             //        });
+
+             //});
+
+             $("#FarmId").change(function () {
+
+                 var v = $("#FarmId option:selected").val();
+                // var fd = $('#Date').val();
+
+                 if (v != "") {
+                 $.get("/PoultryDailyEntry/GetFlockNameNew", { data: v }, function (data) {
+
+                     $("#FlockId").empty();
+                     var options = $("#FlockId");
+                     options.append(new Option("---Select Flock Code-----", "-1"));
+                     $.each(data, function () {
+                         options.append(new Option(this.FlockCode, this.Id));
+                     });
+
+                 });
+                 } else {
+                     $("#FlockId").empty();
+                     var options = $("#FlockId");
+                     options.append(new Option("---Select Flock Code-----", "-1"));
+                 }
+
+             });
+
+
+         });
+
+         $(document).ready(function () {
+             $("#currencytbl").on('keyup', '.denocount', function () {
+                 var nettotal = 0;
+                 $(".denocount").each(function () {
+                     var ctr = $(this).closest('tr');
+                     var deno = ctr.find('.deno').val() || 0;
+                     var denocount = $(this).val() || 0;
+                     var total = parseInt(deno) * parseInt(denocount);
+                     nettotal += total;
+                     ctr.find('.total').text(total);
+
+                 });
+                 $('#nettotal').text('Rs. ' + nettotal);
+             });
+         });
+         $(document).ready(function () {
+             var nettotal = 0;
+             $(".denocount").each(function () {
+                 var ctr = $(this).closest('tr');
+                 var deno = ctr.find('.deno').val() || 0;
+                 var denocount = $(this).val() || 0;
+                 var total = parseInt(deno) * parseInt(denocount);
+                 nettotal += total;
+                 ctr.find('.total').text(total);
+
+             });
+             $('#nettotal').text('Rs. ' + nettotal);
+         });
+     $(document).ready(function () {
+              if ('@ViewBag.ModeOfPay' != '') {
+
+            var modeofpay = '@ViewBag.ModeOfPay';
+            $("#ModeOfPay").val(modeofpay);
+
+            if (modeofpay == "Cash") {
+                //$("#RPCashAmount").css("display", "block");
+                //$("#RPBankAmount").css("display", "none");
+                //$("#RPNEFTAmount").css("display", "none");
+                $("#NeftRtgsNo").css("display", "none");
+                $('#chequeNo').css("display", "none");
+                $('#chequeDetails').css("display", "none");
+                $('#cdate').css("display", "none");
+                $('#BankId').css("display", "none");
+                //         $('#Totalpayment').css("display", "block");
+
+                $(".chkbank").css("display", "none");
+                $(".chkno").css("display", "none");
+                $(".chkdet").css("display", "none");
+                //$(".chkbankamt").css("display", "none");
+                //$(".chkneftamt").css("display", "none");
+                $(".chkdate").css("display", "none");
+                $(".Neft").css("display", "none");
+                //$(".cashamt").css("display", "block");
+            }
+            else if (modeofpay == "Cheque") {
+                //$("#RPCashAmount").css("display", "none");
+                //$("#RPBankAmount").css("display", "block");
+                //$("#RPNEFTAmount").css("display", "none");
+                $("#NeftRtgsNo").css("display", "none");
+                $('#chequeNo').css("display", "block");
+                $('#chequeDetails').css("display", "block");
+                $('#cdate').css("display", "block");
+                $('#BankId').css("display", "block");
+                //         $('#Totalpayment').css("display", "block");
+
+                $(".chkbank").css("display", "block");
+                $(".chkno").css("display", "block");
+                $(".chkdet").css("display", "block");
+                //$(".chkbankamt").css("display", "block");
+                //$(".chkneftamt").css("display", "none");
+                $(".chkdate").css("display", "block");
+                $(".Neft").css("display", "none");
+                //$(".cashamt").css("display", "none");
+            }
+            else if (modeofpay == "NEFT") {
+
+                //$("#RPCashAmount").css("display", "none");
+                //$("#RPBankAmount").css("display", "none");
+                //$("#RPNEFTAmount").css("display", "block");
+                $("#NeftRtgsNo").css("display", "block");
+                $('#chequeNo').css("display", "none");
+                $('#chequeDetails').css("display", "none");
+                $('#cdate').css("display", "none");
+                $('#BankId').css("display", "block");
+                // $('#Totalpayment').css("display", "block");
+
+                $(".chkbank").css("display", "block");
+                $(".chkno").css("display", "none");
+                $(".chkdet").css("display", "none");
+                //$(".chkbankamt").css("display", "none");
+                //$(".chkneftamt").css("display", "block");
+                $(".chkdate").css("display", "none");
+                $(".Neft").css("display", "block");
+                //$(".cashamt").css("display", "none");
+            }
+
+        }
+        else {
+            //$("#RPCashAmount").val('');
+            //$("#RPBankAmount").val('');
+            //$("#RPNEFTAmount").val('');
+            $("#NeftRtgsNo").val('');
+            $('#chequeNo').val('');
+            $('#chequeDetails').val('');
+            $('#cdate').val('');
+            $('#NeftRtgsNo').val('');
+
+            //$("#RPCashAmount").css("display", "none");
+            //$("#RPBankAmount").css("display", "none");
+            //$("#RPNEFTAmount").css("display", "none");
+            $("#NeftRtgsNo").css("display", "none");
+            $('#chequeNo').css("display", "none");
+            $('#chequeDetails').css("display", "none");
+            $('#cdate').css("display", "none");
+            $('#BankId').css("display", "none");
+
+            $(".chkbank").css("display", "none");
+            $(".chkno").css("display", "none");
+            $(".chkdet").css("display", "none");
+            //$(".chkbankamt").css("display", "none");
+            //$(".chkneftamt").css("display", "none");
+            $(".chkdate").css("display", "none");
+            $(".Neft").css("display", "none");
+            //$(".cashamt").css("display", "none");
+        }
+
+             $("#ModeOfPay").change(function () {
+                 var mode = $("#ModeOfPay").val();
+                
+                 //$("#RPCashAmount").val('');
+                 //$("#RPBankAmount").val('');
+                 //$("#RPNEFTAmount").val('');
+                 $("#NeftRtgsNo").val('');
+                 //   $('#Totalpayment').val('');
+                 $('#chequeNo').val('');
+                 $('#chequeDetails').val('');
+                 $('#cdate').val('');
+                 $('#NeftRtgsNo').val('');
+               //  findtotal();
+                 if (mode == '') {
+
+                     //$("#RPCashAmount").css("display", "none");
+                     //$("#RPBankAmount").css("display", "none");
+                     //$("#RPNEFTAmount").css("display", "none");
+                     $("#NeftRtgsNo").css("display", "none");
+                     $('#chequeNo').css("display", "none");
+                     $('#chequeDetails').css("display", "none");
+                     $('#cdate').css("display", "none");
+                     $('#NeftRtgsNo').css("display", "none");
+                     //      $('#Totalpayment').css("display", "none");
+
+                     $(".chkbank").css("display", "none");
+                     $(".chkno").css("display", "none");
+                     $(".chkdet").css("display", "none");
+                     //$(".chkbankamt").css("display", "none");
+                     //$(".chkneftamt").css("display", "none");
+                     $(".chkdate").css("display", "none");
+                     $(".Neft").css("display", "none");
+                     //$(".cashamt").css("display", "none");
+                     //      $(".totpay").css("display", "none");
+
+
+                 }
+                 else {
+                     if (mode == 'Cash') {
+                         //$("#RPCashAmount").css("display", "block");
+                         //$("#RPBankAmount").css("display", "none");
+                         //$("#RPNEFTAmount").css("display", "none");
+                         $("#NeftRtgsNo").css("display", "none");
+                         $('#chequeNo').css("display", "none");
+                         $('#chequeDetails').css("display", "none");
+                         $('#cdate').css("display", "none");
+                         $('#BankId').css("display", "none");
+                         //         $('#Totalpayment').css("display", "block");
+
+                         $(".chkbank").css("display", "none");
+                         $(".chkno").css("display", "none");
+                         $(".chkdet").css("display", "none");
+                         //$(".chkbankamt").css("display", "none");
+                         //$(".chkneftamt").css("display", "none");
+                         $(".chkdate").css("display", "none");
+                         $(".Neft").css("display", "none");
+                        // $(".cashamt").css("display", "block");
+                     }
+                     else if (mode == 'Cheque') {
+
+                         //$("#RPCashAmount").css("display", "none");
+                         //$("#RPBankAmount").css("display", "block");
+                         //$("#RPNEFTAmount").css("display", "none");
+                         $("#NeftRtgsNo").css("display", "none");
+                         $('#chequeNo').css("display", "block");
+                         $('#chequeDetails').css("display", "block");
+                         $('#cdate').css("display", "block");
+                         $('#BankId').css("display", "block");
+                         //         $('#Totalpayment').css("display", "block");
+
+                         $(".chkbank").css("display", "block");
+                         $(".chkno").css("display", "block");
+                         $(".chkdet").css("display", "block");
+                         //$(".chkbankamt").css("display", "block");
+                         //$(".chkneftamt").css("display", "none");
+                         $(".chkdate").css("display", "block");
+                         $(".Neft").css("display", "none");
+                         //$(".cashamt").css("display", "none");
+                     }
+                     else if (mode == 'NEFT') {
+
+                         //$("#RPCashAmount").css("display", "none");
+                         //$("#RPBankAmount").css("display", "none");
+                         //$("#RPNEFTAmount").css("display", "block");
+                         $("#NeftRtgsNo").css("display", "block");
+                         $('#chequeNo').css("display", "none");
+                         $('#chequeDetails').css("display", "none");
+                         $('#cdate').css("display", "none");
+                         $('#BankId').css("display", "block");
+                         // $('#Totalpayment').css("display", "block");
+
+                         $(".chkbank").css("display", "block");
+                         $(".chkno").css("display", "none");
+                         $(".chkdet").css("display", "none");
+                        // $(".chkbankamt").css("display", "none");
+                        // $(".chkneftamt").css("display", "block");
+                         $(".chkdate").css("display", "none");
+                         $(".Neft").css("display", "block");
+                        // $(".cashamt").css("display", "none");
+                     }
+                 }
+             });
+         });
+</script>
+
+
+
+
+
+
+@using (Html.BeginForm("EditReceiveVoucher", "AdvanceVoucher", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+<aside class="right-side">
+
+    <section class="content-header">
+        <h4>Farmer Receive Voucher<small> Edit</small> </h4>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">Farmer Receive Edit</li>
+        </ol>
+    </section>
+
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            
+                <li class="pull-right">
+                    <input type="submit" id="btnsave" class="btn btn-primary" value="Save" />
+
+                </li>
+            
+            <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+        </ul>
+
+    </div>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+    @Html.HiddenFor(d => d.CompanyId)
+    @Html.HiddenFor(d => d.UserId)
+    @Html.HiddenFor(d => d.Id)
+
+
+    <div class="col-md-6">
+        <div class="box box-primary">
+            <div class="box-header">  </div>
+            <div class="box-body">
+
+                <div class="form-group">
+                    <label class="black_txt_010"> Date:<span style="color:Red;">*</span> </label>
+                    <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style="width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                    @Html.ValidationMessageFor(model => model.DateString)
+                </div>
+
+
+
+
+                @*<div class="form-group">
+                        <label class="black_txt_010"> Branch Name :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.Branch, "Id", "Name"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Branch Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.BranchId)
+
+                    </div>*@
+
+                <div class="form-group">
+                    <label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                    @if (ViewBag.FarmName != null)
+                    {
+                        @ViewBag.FarmName
+                        @Html.HiddenFor(model => model.FarmId)
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.FarmId, new SelectList(ViewBag.Farmer, "Id", "FarmName"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Farm Unit Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FarmId)
+                    }
+
+                </div>
+
+
+
+                <div class="form-group">
+                    <label class="black_txt_010"> Flock Code :<span style="color:Red;">*</span> </label>
+                    @if (ViewBag.FlockCode != null)
+                    {
+                        @ViewBag.FlockCode
+                        @Html.HiddenFor(model => model.FlockId)
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.FlockId, new SelectList(ViewBag.Flock, "Id", "FlockCode"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FlockId)
+                    }
+
+                </div>
+
+                <div class="form-group">
+                    <label class="black_txt_010"> Amount  :<span style="color:Red;"></span> </label>
+                    @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", @maxlength = "100" })
+                    @Html.ValidationMessageFor(model => model.Amount)
+                </div>
+
+                <div class="form-group">
+                    <label class="black_txt_010"> Remarks  : </label>
+                    @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @maxlength = "100" })
+                    @Html.ValidationMessageFor(model => model.Remarks)
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="box box-primary">
+            <div class="box-header">
+
+            </div>
+            <div class="box-body">
+
+                <div class="form-group">
+                    <label class="black_txt_010">
+                        Mode of Payment:<span style="color:Red;">*</span>
+                    </label>
+
+                    @*<select id="ModeOfPay" name="ModeOfPay" class="form-control">
+                            <option value="">--Select a Mode of Payment--</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="NEFT">Neft/Rtgs</option>
+                        </select>*@
+
+                    @Html.DropDownListFor(model => model.ModeOfPay, ViewData["mode"] as SelectList, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ModeOfPay)
+                </div>
+
+
+
+                <div class="form-group chkbank">
+                    <label class="black_txt_010">
+                        Bank Account Name :<span style="color:Red;">*</span>
+                    </label>(This Field is mandatory For Cheque Payment)
+
+
+                    @Html.DropDownListFor(model => model.RPBankId, new SelectList(ViewBag.Bank, "Id", "Name"), "-----Select a Bank Account----", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.RPBankId)
+
+
+                </div>
+
+                <div class="form-group chkno">
+                    <label class="black_txt_010">
+                        Cheque No. :
+                    </label>
+
+
+                    @Html.TextBoxFor(model => model.chequeNo, new { @class = "form-control", @placeholder = "Enter cheque No. " })
+
+                    @Html.ValidationMessageFor(model => model.chequeNo)
+
+
+                </div>
+
+
+                <div class="form-group chkdet">
+                    <label class="black_txt_010">
+                        Cheque Details :
+                    </label>
+
+
+                    @Html.TextAreaFor(model => model.chequeDetails, new { @class = "form-control", @placeholder = "Enter cheque Details " })
+
+                    @Html.ValidationMessageFor(model => model.chequeDetails)
+
+
+                </div>
+
+
+                <div class="form-group chkdate">
+                    <label class="black_txt_010">
+                        Cheque Date :
+                    </label>
+
+
+
+
+                    <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">   @Html.TextBoxFor(model => model.chequeDateString, new { @class = "form-control" }) <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+                </div>
+
+                <div class="form-group Neft">
+                    <label class="black_txt_010">
+                        Neft/Rtgs No :
+                    </label>
+
+
+
+                    @Html.TextBoxFor(model => model.NeftRtgsNo, new { @class = "form-control", @placeholder = "Enter Neft/Rtgs No " })
+                    @Html.ValidationMessageFor(model => model.NeftRtgsNo)
+
+
+                </div>
+
+            </div>
+
+        </div>   <!-- /.row -->
+    </div>
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-body" id="InvoiceDiv">
+
+                @*<div  style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>
+                    <div style="display:inline-block;width:150px"><input type="checkbox" id="chk1" /> PI/18-19/12345</div>*@
+            </div>
+            <div class="box-body">
+                <table id="currencytbl">
+                    <tr>
+                        <td><b>Denomination In INR(Rupees)</b> </td>
+                        <td><b>Count</b></td>
+                        <td style="text-align:center;"><b>Total</b></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 2000&nbsp;X&nbsp;<input type="hidden" class="deno" value="2000" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.TwoThousand, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    @*<tr>
+                             <td style="text-align:right;">Rs. 1000&nbsp;X&nbsp;<input type="hidden" class="deno" value="1000"/></td>
+                             <td style="text-align:right;"><input type="text" id="note1000" name="note1000" class="denocount"  />&nbsp;=&nbsp;</td>
+                             <td style="text-align:right;"></td>
+                        </tr>*@
+                    <tr>
+                        <td style="text-align:right;">Rs. 500&nbsp;X&nbsp;<input type="hidden" class="deno" value="500" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.FiveHundred, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 200&nbsp;X&nbsp;<input type="hidden" class="deno" value="200" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.TwoHundred, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 100&nbsp;X&nbsp;<input type="hidden" class="deno" value="100" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.OneHundred, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 50&nbsp;X&nbsp;<input type="hidden" class="deno" value="50" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.Fifty, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 20&nbsp;X&nbsp;<input type="hidden" class="deno" value="20" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.Twenty, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 10&nbsp;X&nbsp;<input type="hidden" class="deno" value="10" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.Ten, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 5&nbsp;X&nbsp;<input type="hidden" class="deno" value="5" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.Five, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 2&nbsp;X&nbsp;<input type="hidden" class="deno" value="2" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.Two, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right;">Rs. 1&nbsp;X&nbsp;<input type="hidden" class="deno" value="1" /></td>
+                        <td style="text-align:right;">@Html.TextBoxFor(model => model.One, new { @class = "denocount" })&nbsp;=&nbsp;</td>
+                        <td style="text-align:right;"><label class="total" /></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;" colspan="2"><b>Net Total</b></td>
+                        <td style="text-align:right;"><b><label id="nettotal" /></b></td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+</aside>
+}

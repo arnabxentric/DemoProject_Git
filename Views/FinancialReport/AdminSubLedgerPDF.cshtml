@@ -1,0 +1,284 @@
+﻿@model IEnumerable<XenERP.Models.AccountsBook_LedgerWise_DateRange_AllLedgerAdmin_Result>
+
+@using XenERP.Models;
+@{
+    List<SalesInvoiceDetailModelView> sales = ViewBag.salesdetails;
+    var SlNo = 1;
+    decimal? tdebit = 0;
+    decimal? tcredit = 0;
+    decimal? total = 0;
+    string openingDate = "";
+    decimal openingbal = 0;
+    string DRCR = "DR";
+}
+<!--for graph   -->
+<!--for graph   -->
+
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .invoice th,
+    td {
+        padding: 3px 2px 3px 2px;
+        text-align: center;
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+</style>
+<div align="center">
+    <span style="font-size:x-large;font-weight:bolder">HI-BREED INTERNATIONAL SALES & SERVICE </span><br />
+    <span style="font-size:medium;font-weight:normal"> 22, R.N. Mukherjee Road, 5th Floor, Kolkata-700 001</span><br />
+    <span style="font-size:medium;font-weight:normal">GST NO - 19AABFH7726D1ZG</span>
+    <br />
+    <div style="font-size:medium;font-weight:normal;padding-left:10px">
+        Ledger For:<b> @ViewBag.LedgerName </b>
+        <br />
+        Address: @ViewBag.Address
+    </div>
+    <br />
+    <span style="font-size:medium;font-weight:normal">From @ViewBag.From To @ViewBag.To</span>
+    <br />
+    <br />
+
+</div>
+<br />
+<table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+    <thead>
+        @*<tr>
+                <th colspan="7" align="center">
+
+
+
+                </th>
+            </tr>*@
+
+        <tr>
+            @*<th align="center">SlNo.</th>*@
+            <th align="center">
+                Date
+            </th>
+            <th align="center">
+                Voucher No.
+            </th>
+            <th align="center">
+                Source
+            </th>
+            <th align="center">
+                Particulars
+            </th>
+
+            <th align="center">
+                @Html.DisplayNameFor(model => model.Debit)
+            </th>
+            <th align="center">
+                @Html.DisplayNameFor(model => model.Credit)
+            </th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            tdebit += item.Debit;
+            tcredit += item.Credit;
+
+            if (SlNo == 1)
+            {
+
+                openingDate = "";// @String.Format(@Session["DateFormatUpper"].ToString(), item.RPdate);
+
+                if (item.DRCR == "DR")
+                {
+                    openingbal = item.OpeningBalance ?? 0;
+
+                }
+                else
+                {
+                    openingbal = item.OpeningBalance ?? 0;
+                    DRCR = "CR";
+                }
+
+            }
+            <tr>
+
+
+                @*<td style="text-align:center;vertical-align:top;"> @SlNo</td>*@
+                <td style="text-align:left;vertical-align:top;width:10%;">
+                    @item.RPdate.Value.ToString("dd/MM/yyyy")
+                </td>
+                <td style="text-align:center;vertical-align:top;width:20%;">
+                    @Html.DisplayFor(modelItem => item.VoucherNo)
+                </td>
+                <td style="text-align:left;vertical-align:top;width:10%;">
+                    @Html.DisplayFor(modelItem => item.RPType)
+                </td>
+
+                <td style="text-align:left;width:40%;">
+                    @if (item.RPType == "Payment" || item.RPType == "Receive")
+                    {
+                        @Html.DisplayFor(modelItem => item.LedgerName) <br /> @Html.DisplayFor(modelItem => item.Remarks)
+                    }
+                    else if (item.RPType == "Sales" || item.RPType == "Purchase")
+                    {
+                        <table style="width:100%;">
+                            @foreach (SalesInvoiceDetailModelView sale in sales.Where(d => d.SalesInvoiceId == item.Id))
+                            {
+                                int glen = sale.Description.Length;
+                                <tr>
+                                    @if (glen >= sale.ItemName.Length)
+                                    {
+                                        <td style="width:50%;">@sale.ItemName</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="width:50%;">@sale.ItemName.Substring(glen)</td>
+                                    }
+                                    <td align="right" style="border:none;">@Math.Round(sale.Quantity, 0) @sale.UnitSecondaryName</td>
+                                    <td align="right" style="border:none;">Rs @Math.Round(sale.Price, 2)/@sale.UnitSecondaryName.Substring(0, 2)   </td>
+                                    @*<td align="right" style="border:none;">@Math.Round(sale.UnitFormula, 0) @sale.UnitSecondaryName</td>*@
+                                </tr>
+
+                            }
+                        </table>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    }
+
+                </td>
+
+
+
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.ChequeNo)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>*@
+                <td style="text-align:right;vertical-align:bottom;width:10%;">
+                    @Html.DisplayFor(modelItem => item.Debit)
+                </td>
+                <td style="text-align:right;vertical-align:bottom;width:10%;">
+                    @Html.DisplayFor(modelItem => item.Credit)
+                </td>
+
+
+            </tr>
+            SlNo = SlNo + 1;
+        }
+
+        <tr>
+            <td style="text-align:left;font-weight:bold;" colspan="4"> Current Total</td>
+
+            <td align="right" style="font-weight:bold;">
+                @tdebit
+            </td>
+            <td align="right" style="font-weight:bold;">
+                @tcredit
+            </td>
+
+
+        </tr>
+
+        <tr>
+
+            <td style="text-align:left;font-weight:bold;" colspan="4">
+                Opening Balance
+            </td>
+
+            @if (DRCR == "DR")
+            {
+                tdebit += openingbal;
+                <td align="right" style="font-weight:bold;">
+                    @openingbal
+                </td>
+                <td align="right"></td>
+
+            }
+            else
+            {
+                tcredit += openingbal;
+                <td align="right"></td>
+                <td align="right" style="font-weight:bold;">
+                    @openingbal
+                </td>
+            }
+
+        </tr>
+
+        @if (tcredit >= tdebit)
+        {
+            var balance = tcredit - tdebit;
+            total = tcredit;
+            <tr>
+                <td style="text-align:left;font-weight:bold;" colspan="4"> Closing Balance</td>
+
+                <td align="right" style="font-weight:bold;">
+                    @balance
+                </td>
+                <td align="right">
+                    &nbsp;
+                </td>
+
+
+            </tr>
+        }
+        else
+        {
+            var balance = tdebit - tcredit;
+            total = tdebit;
+            <tr>
+                <td style="text-align:left;font-weight:bold;" colspan="4">Closing Balance</td>
+
+                <td align="right">
+                    &nbsp;
+                </td>
+                <td align="right" style="font-weight:bold;">
+                    @balance
+                </td>
+
+
+            </tr>
+        }
+        <tr>
+            <td style="text-align:left;font-weight:bold;" colspan="4"></td>
+
+            <td align="right" style="font-weight:bold;">
+                @total
+            </td>
+            <td align="right" style="font-weight:bold;">
+                @total
+
+    </tbody>
+
+</table>

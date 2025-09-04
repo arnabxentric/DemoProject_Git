@@ -1,0 +1,762 @@
+﻿
+@model XenERP.Models.ModelView.FarmerReportModelView
+ @using XenERP.Models
+
+@{
+    ViewBag.Title = "FarmerReportInformationDetails";
+}
+
+@{
+    Layout = null;
+}
+
+   <link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+   <link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="~/Scripts/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="~/js/jquery-ui-1.10.3.min.js"></script>
+        <script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+     <script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+   
+<script src="~/Reports/Scripts/jQuery.print.js"></script>
+  <script type="text/javascript">
+
+      $(document).ready(function () {
+      
+             var v = $("#murgirozon").val();
+             var w = $("#avgprice").val();
+           //  alert(v);
+             $("#TotalWeightOfChicksClosing").val(v);
+             
+          //   alert(w);
+          //   $("#TotalWeightOfChicks").val(v);
+             $("#AvgSaleRate").val(w)
+
+         });
+
+</script>
+
+<script type="text/javascript">
+     $(document).ready(function () {
+
+         $('#btnPrint').click(function () {           
+             $('#print1').print();    
+
+         });
+
+
+
+
+         $('#btnPDF').click(function () {
+           
+             
+             var Id = $("#Id").val();
+
+             window.location.href = "/FarmerReport/PrintFarmerReportPDF?id=" + Id;
+
+         });
+     });
+</script>
+
+
+
+
+@*<style type="text/css">
+    #MainDiv {
+        position: relative;
+        width: 500px;
+    }
+
+    #child .NextButton {
+        position: absolute;
+        top: 50%;
+        right: 2%;
+        height: 20px;
+        width: 20px;
+    }
+
+    #child .PreButton {
+        position: absolute;
+        top: 50%;
+        left: 2%;
+        height: 20px;
+        width: 20px;
+    }
+
+
+    #slider {
+        width: 800px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        #slider .slides {
+            display: block;
+            width: 8000px;
+            margin: 0;
+            padding: 0;
+        }
+
+        #slider .slide {
+            float: left;
+            list-style-type: none;
+            height: 120px;
+        }
+</style>*@
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @{ 
+        InventoryEntities db = new InventoryEntities();
+        string BranchName = "";
+        if (Model.BranchId != null)
+        {
+            BranchName = db.BranchMasters.Where(o => o.Id == Model.BranchId).FirstOrDefault().Name;
+        }
+    }
+    @Html.HiddenFor(d => d.Id)
+    <title>HI-BREED AVIAN RESEARCH & INTEGRATOR @BranchName DIVISION</title>
+    <style>
+table, th, td {
+    border: 1px solid black;
+	border-collapse:collapse;
+	text-align:center;
+}
+th, td {
+    padding: 2px;
+    font-size:18px;
+}
+.table_outer { width:90%; margin:0 auto;}
+.table_outer table tr td { font-size:18px;}
+</style>
+
+
+
+
+</head>
+
+
+<body>
+
+    @{
+        decimal murgirozon = 0;
+        int totalbirds = 0;
+        decimal amount = 0;
+        decimal avg = 0;
+        decimal avgprice = 0;
+        decimal perofmor = Convert.ToDecimal(Model.MortalityOfBirds * 100 / Model.NoOfChicks);
+        decimal percentageOfMortality = decimal.Round(perofmor, 2, MidpointRounding.AwayFromZero);
+        decimal avgwt = 0;
+        decimal TotalMedPrice = 0;
+        decimal TMP = 0;
+    //    decimal avgslrt = 0;
+
+    }
+
+    <div class="topdiv">
+        <br />
+        <div class="">
+
+            <link href="../../Content/translateelement.css" rel="stylesheet" type="text/css" />
+            <meta name="google-translate-customization" content="cf256858a07cdd1a-47c849e41d91ff95-g0b331fbce6d2e379-1b">
+            </meta>
+            <div id="google_translate_element" style="background: #fbdbbd;">
+            </div>
+            <script type="text/javascript">
+                function googleTranslateElementInit() {
+                    new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+                }
+            </script>
+            <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        </div>
+    </div>
+
+
+
+
+
+
+    <div class="nav-tabs-custom">
+
+        <ul class="nav nav-tabs">
+            <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+            <li class="pull-right"> <input name="" type="button" id="btnPrint" value="Print" class="btn btn-primary" /></li>
+            <li class="pull-right"> <input name="" type="button" id="btnPDF" value="PDF Print" class="btn btn-primary" /></li>
+
+        </ul>
+
+    </div>
+    
+ <div class="table_outer" id="print1">
+     <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:10px;">
+         <tr>
+             <th colspan="8" style="text-decoration:underline; font-size:18px;">
+                 HI-BREED AVIAN RESEARCH & INTEGRATOR <br>@BranchName DIVISION
+             </th>
+         </tr>
+         <tr>
+             <td colspan="1">
+                 FARMER's NAME
+             </td>
+             <td colspan="3">
+                 @Model.FarmerName
+             </td>
+             <td colspan="3">
+
+             </td>
+     </tr>
+     <tr>
+         <td colspan="1">
+             ADDRESS
+         </td>
+         <td colspan="3">
+             @Model.Address
+         </td>
+         <td colspan="3">
+
+         </td>
+ </tr>
+
+         <tr>
+             <td colspan="1">
+                Lot No
+             </td>
+             <td colspan="3">
+                 @Model.LotNo
+             </td>
+             <td colspan="3"></td>
+         </tr>
+
+ <tr>
+     <td colspan="1">
+         SUPERVISOR's NAME
+     </td>
+     <td colspan="3">
+         @Model.SupervisorName
+     </td>
+     <td colspan="3">
+
+     </td>
+ </tr>
+ @*<tr>
+        <td style="border-top:none;" colspan="8"></td>
+    </tr>*@
+
+ <tr>
+     <td>
+         DATE OF PLACEMENT
+     </td>
+     <td>
+         @Model.DateOfPlacementString
+ </td>
+ <td>
+     FLOCK END ON
+ </td>
+ <td>
+     @Model.FlockEndDateString
+ </td>
+ <td>GROWING STAGE</td>
+ <td colspan="2">@Convert.ToInt32(Model.AgeOfChicks)</td>
+ </tr>
+ @*<tr>
+        <td style="border:none;"></td>
+    </tr>*@
+ <tr>
+     <td>NO OF CHICKS</td>
+     <td>@Model.NoOfChicks</td>
+     <td></td>
+     <td colspan="2"></td>
+     <td colspan="2"></td>
+
+ </tr>
+ <tr>
+     <td>MORTALITY OF BIRDS</td>
+     <td style="text-decoration:underline;">@Convert.ToInt32(Model.MortalityOfBirds)</td>
+     <td>TOTAL WEIGHT</td>
+     <td colspan="2" style="text-decoration:underline;">% Of Mortality</td>
+     <td colspan="2">AVERAGE WEIGHT</td>
+
+ </tr>
+ <tr>
+
+
+
+     <td>NO OF BIRDS SOLD</td>
+     <td style="text-decoration:underline;">@Model.NoOfBirdsSold</td>
+     <td> @Model.NoOfBirdsSoldWt </td>
+     <td colspan="2"><b>@percentageOfMortality</b></td>
+     <td colspan="2">@Model.AverageWeightOfChicks</td>
+
+ </tr>
+ @*<tr>
+        <td style="border:none;"></td>
+    </tr>*@
+ <tr>
+     <td>Shortage OF Birds</td>
+     <td>@Convert.ToInt32(Model.ShortageOfBirds)</td>
+     <td></td>
+     <td colspan="2"></td>
+     <td colspan="2"></td>
+
+ </tr>
+         <tr>
+             <td>Excess OF Birds</td>
+             <td>@Convert.ToInt32(Model.ExcessBirds)</td>
+             <td></td>
+             <td colspan="2"></td>
+             <td colspan="2"></td>
+
+         </tr>
+ @*<tr>
+        <td style="border:none;"></td>
+    </tr>*@
+ <tr>
+     <td>FEED RECEIVE IN KG</td>
+     <td>@Model.FeedRecieved</td>
+     <td></td>
+     <td colspan="2"></td>
+     <td colspan="2">FCR</td>
+
+ </tr>
+ <tr>
+     <td>FEED RETURNED IN KG</td>
+     <td>@Model.FeedReturned</td>
+     <td></td>
+     <td colspan="2"></td>
+     <td colspan="2"><b>@Model.FCRActual</b></td>
+
+ </tr>
+ <tr>
+     <td>FEED CONSUMED IN KG</td>
+     <td>@Model.FeedConsumed</td>
+     <td></td>
+     <td colspan="2"></td>
+     <td colspan="2"></td>
+
+ </tr>
+
+ <tr>
+     <td colspan="1"></td>
+     <td style="text-decoration:underline;">RATE</td>
+     <td colspan="1" style="text-decoration:underline;">AMOUNT</td>
+ </tr>
+ <tr>
+     <td colspan="1">CHICKS COST/PC</td>
+     <td>@Model.MurgirRateForFarmer</td>
+     <td colspan="1">@Model.MurgirDamForFarmer</td>
+     <td colspan="4"></td>
+
+ </tr>
+ <tr>
+     <td colspan="1">FEED COST/KG</td>
+     <td>@Model.FeedRateForFarmer</td>
+     <td colspan="1">@Model.KhabarKhorochForFarmer</td>
+     <td colspan="2">STANDARD COST/KG</td>
+     <td colspan="2">@Model.StandarCost</td>
+
+ </tr>
+ <tr>
+     <td colspan="1">MEDICINE COST</td>
+     <td>@Model.MedicineRateForFarmer</td>
+     <td colspan="1">@Model.MedicineKhorochForFarmer</td>
+     <td colspan="2">PRODUCTION COST/KG</td>
+     <td colspan="2"><b>@Model.ProductionCostForFarmer</b></td>
+ </tr>
+         <tr>
+             <td colspan="1">ADDITIONAL MEDICINE COST</td>
+             <td></td>
+             <td style="text-decoration:underline;"><b>@Model.AdditionalMedicineCost</b></td>
+             <td colspan="2"></td>
+             <td colspan="2"></td>
+         </tr>
+
+
+
+ <tr>
+     <td colspan="1">OVERHEAD COST/BIRD</td>
+     <td>@Model.OverHeadCost</td>
+     <td colspan="1">@Model.TotalOverHeadCost</td>
+     <td colspan="2">AVERAGE SALE RATE/KG</td>
+     <td colspan="2">@Model.AvgSaleRate </td>
+
+ </tr>
+ <tr>
+     <td colspan="1">TOTAL PRODUCTION COST</td>
+     <td></td>
+     <td colspan="1" style="text-decoration:underline;">@Model.TotalProductionCostForFarmer</td>
+     <td style="border:none;"></td>
+     <td style="border:none;"></td>
+ </tr>
+ <tr>
+     <td colspan="3" style="text-decoration:underline; font-weight:bold;">COMPUTATION OF GROWING CHARGE:</td>
+ </tr>
+ <tr>
+     <td colspan="1">Growing Charge /Kg (Fixed)</td>
+     <td>@Model.GrowingChargefixed</td>
+     <td>@Model.TotalGrowingChargeFixed</td>
+   
+         @if (Model.BranchId == 15)
+         {
+            <td rowspan="8" colspan="3">
+                <div>
+                    <h3>Growing Charge Rate Calculation</h3>
+                   
+                    if Standard Cost - Production Cost > 3 
+                    <br />
+                    then Rate= 3 X 0.5 + (Stand Cost - Prod Cost - 3) X 0.75
+                    <br />
+                    else (Stand Cost - Prod Cost) X 0.5
+                    <br />
+                    and same  for negative value
+                    <br />
+                    here, Stand Cost = @Model.StandarCost
+                    <br />
+                    Prod Cost = @Model.ProductionCostForFarmer
+                    <br />
+                    so, Stand Cost - Prod Cost = @(Model.StandarCost - Model.ProductionCostForFarmer)
+                    <br />
+                   @if((Model.StandarCost - Model.ProductionCostForFarmer)>3)
+                   {
+                      <label>Rate = 3 X 0.5 + @(Model.StandarCost - Model.ProductionCostForFarmer - 3) X 0.75 </label>
+                   }
+                   else if ((Model.StandarCost - Model.ProductionCostForFarmer) <= 3 && (Model.StandarCost - Model.ProductionCostForFarmer) >= -3)
+                   {
+                    <label> Rate =@(Model.StandarCost - Model.ProductionCostForFarmer) X 0.5</label>
+                   }
+                   else if ((Model.StandarCost - Model.ProductionCostForFarmer) < -3)
+                   {
+
+                    <label> Rate = -3 X 0.5 + @(Model.StandarCost - Model.ProductionCostForFarmer + 3) X 0.75</label>
+                   }
+
+                </div>
+            </td>
+         }
+
+
+ </tr>
+ <tr>
+     <td colspan="1">Growing Charge /Kg</td>
+     <td>@Model.GrowingChargeRate</td>
+     <td>@Model.TotalGrowingCharge</td>
+ </tr>
+ <tr>
+     <td colspan="1">Total Growing Charge</td>
+     <td></td>
+     @{
+         var Totgrch = Model.TotalGrowingChargeFixed + Model.TotalGrowingCharge;
+     }
+     <td>@Totgrch</td>
+ </tr>
+
+ <tr>
+     <td colspan="1">Rate Bonus more than Rs. @Model.RateBonus</td>
+     <td></td>
+     <td>@Model.TotalRateBonus</td>
+ </tr>
+
+         @{
+             var TotPay = Totgrch + Model.TotalRateBonus;
+
+         }
+
+ <tr>
+     <td colspan="1">Total</td>
+     <td></td>
+     <td>@TotPay </td>
+ </tr>
+
+ <tr>
+     <td colspan="1">SHORTAGE OF BIRDS DEDUCTION</td>
+     <td></td>
+     <td>@Model.ShortageOfBirdsDeduction</td>
+ </tr>
+         @{
+             var NetGrowingCharge = TotPay - Model.ShortageOfBirdsDeduction;
+
+         }
+
+
+
+         <tr>
+             <td colspan="1">Net Growing Charge</td>
+             <td></td>
+             <td>@NetGrowingCharge </td>
+
+         </tr>
+         <tr>
+             <td colspan="1">TDS Deduction</td>
+             <td></td>
+             <td>@Model.TDSDeduction </td>
+
+         </tr>
+         <tr>
+             <td colspan="1">TDS Pending</td>
+             <td></td>
+             <td>@decimal.Round(@Model.TDSPending,0).00 </td>
+
+         </tr>
+ <tr>
+     <td colspan="1">Amount due for Ready Bird purchase</td>
+     <td>@Model.AverageSaleRateForReadyBirdPurchase</td>
+     <td> @Model.AmountDueForReadyBirdPurchase </td>
+
+ </tr>
+         <tr>
+             <td colspan="1">Due Amount Paid for Ready Bird Purchase</td>
+             <td></td>
+             <td> @Model.DueAmountPaidForReadyBirdPurchase </td>
+
+         </tr>
+ <tr>
+             <td colspan="1">Advance Deduction</td>
+             <td></td>
+             <td> @Model.AdvanceDeduction </td>
+ </tr>
+         <tr>
+             <td colspan="1">Adjustment</td>
+             <td></td>
+             <td style="text-decoration:underline;"><b>@Model.Adjustment</b></td>
+
+         </tr>
+ <tr>
+     <td colspan="1">Amount of payment</td>
+     <td></td>
+     <td style="text-decoration:underline;"><b>@(NetGrowingCharge - Model.TDSDeduction - decimal.Round(Model.TDSPending,0) - Model.AdvanceDeduction - Model.Adjustment - Model.AmountDueForReadyBirdPurchase + Model.DueAmountPaidForReadyBirdPurchase)</b></td>
+ </tr>
+
+
+
+                @*<tr>
+        <td colspan="1">AdditionalMedicineCost</td>
+        <td></td>
+        <td style="text-decoration:underline;"><b>@Model.AdditionalMedicineCost </b></td>
+
+    </tr>*@
+
+
+
+
+ <tr>
+     <td colspan="1">Payment & R/O</td>
+     <td></td>
+     <td><b>@decimal.Round(Convert.ToDecimal(NetGrowingCharge - Model.TDSDeduction - decimal.Round(Model.TDSPending,0) - Model.AdvanceDeduction - Model.Adjustment - Model.AmountDueForReadyBirdPurchase + Model.DueAmountPaidForReadyBirdPurchase), 0, MidpointRounding.AwayFromZero) </b></td>
+ </tr>
+
+
+ </table>
+
+     <p style="page-break-after: always;">&nbsp; </p>
+
+
+ <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:15px;">
+                @*<tr>
+        <td style="border-top:none;" colspan="8"></td>
+    </tr>*@
+
+
+     <tr>
+         <th colspan="8" style="text-decoration:underline; font-size:18px;">
+             Sale Report
+         </th>
+     </tr>
+
+
+
+
+
+                @*<tr>
+        <td style="border-top:none;" colspan="8"></td>
+    </tr>*@
+     <tr>
+         <td style="text-decoration:underline;">DATE</td>
+         <td style="text-decoration:underline;">Invoice No</td>
+         <td style="text-decoration:underline;">Name of the Party</td>
+         <td style="text-decoration:underline;">No. of Bird</td>
+         <td style="text-decoration:underline;">Total Weight</td>
+         <td style="text-decoration:underline;">Average Weight</td>
+         <td style="text-decoration:underline;">Rate</td>
+         <td style="text-decoration:underline;">Amount</td>
+
+     </tr>
+
+
+
+     @foreach (var sell in @Model.murgibikri)
+     {
+         <tr>
+             <td>@sell.DateOfSellingString</td>
+             <td>@sell.NO</td>
+             <td>@sell.PartyName</td>
+             <td>@sell.NoOfBirds</td>
+             <td>@sell.Quantity</td>
+             <td>@decimal.Round(Convert.ToDecimal(sell.Quantity / sell.NoOfBirds), 3, MidpointRounding.AwayFromZero)</td>
+             <td>@sell.Price</td>
+             <td>@sell.TotalAmount</td>
+
+         </tr>
+         murgirozon = murgirozon + Convert.ToDecimal(@sell.Quantity.Value);
+         totalbirds = totalbirds + Convert.ToInt32(@sell.NoOfBirds.Value);
+         amount = amount + Convert.ToDecimal(@sell.TotalAmount.Value);
+
+
+     }
+     @{
+
+         var tbirds = 0;
+         decimal mozon = 0;
+         if (totalbirds == 0)
+         {
+             tbirds = 1;
+         }
+         else
+         {
+             tbirds = totalbirds;
+         }
+
+         if (murgirozon == 0)
+         {
+             mozon = 1;
+         }
+         else
+         {
+             mozon = murgirozon;
+         }
+
+         avg = Convert.ToDecimal(amount / mozon);
+         avgprice = decimal.Round(avg, 2, MidpointRounding.AwayFromZero);
+         avgwt = decimal.Round(mozon / tbirds, 3, MidpointRounding.AwayFromZero);
+     }
+     <tr>
+         <td style="text-decoration:underline">Total</td>
+         <td></td>
+         <td></td>
+         <td style="text-decoration:underline;">@totalbirds</td>
+         <td style="text-decoration:underline;">@murgirozon</td>
+         <td style="text-decoration:underline;">@avgwt</td>
+         <td style="text-decoration:underline;">@avgprice</td>
+         <td style="text-decoration:underline;">@amount</td>
+
+
+     </tr>
+
+     @Html.Hidden("murgirozon", murgirozon, new { @id = "murgirozon", @name = "murgirozon" })
+     @Html.Hidden("avgprice", avgprice, new { @id = "avgprice", @name = "avgprice" })
+
+ </table>
+     <p style="page-break-after: always;">&nbsp;</p>
+
+
+     <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:15px;">
+                @*<tr>
+        <td style="border-top:none;" colspan="8"></td>
+    </tr>*@
+
+
+         <tr>
+             <th colspan="8" style="text-decoration:underline; font-size:18px;">
+               Medicine Report
+             </th>
+         </tr>
+         <tr>
+             <td style="text-decoration:underline;">Medicine Name</td>
+             <td style="text-decoration:underline;">Rate</td>
+             <td style="text-decoration:underline;">Consumption</td>
+             <td style="text-decoration:underline;">Amount</td>
+
+         </tr>
+
+         @foreach (var ml in @Model.medlist)
+         {
+             <tr>
+                 <td>@ml.ProductName</td>
+
+                     @if (Model.BranchId != 2)
+                     {
+
+                        <td>  @ml.UnitPrice </td>
+
+                     }
+                     else
+                     {
+                        <td>  @ml.PriceRate </td>
+
+                     }
+
+                 <td>@ml.ConsumedQuantity</td>
+
+               @if (Model.BranchId != 2)
+                 {
+                 <td>@ml.Amount</td>
+                 }
+               else
+               {
+                <td>@ml.AmountOriginal</td>
+               }
+
+             </tr>
+             if (Model.BranchId != 2)
+            {
+            TotalMedPrice = TotalMedPrice + ml.Amount;
+            }
+            else
+             {
+                 TotalMedPrice = TotalMedPrice + ml.AmountOriginal;
+             }
+         }
+         @{
+             TMP = decimal.Round(TotalMedPrice, 2, MidpointRounding.AwayFromZero);
+         }
+
+
+
+
+         <tr>
+             <td  style="text-decoration:underline; font-size:18px;">
+                Total
+             </td>
+             <td style="text-decoration:underline; font-size:18px;">
+
+             </td>
+             <td style="text-decoration:underline; font-size:18px;">
+
+             </td>
+             <td style="text-decoration:underline; font-size:18px;">
+                @TMP
+             </td>
+       </tr>
+</table>
+
+
+@if (Model.ExcessBirds > 0)
+{
+    <p style="page-break-after: always;">
+
+        Note:- Excess Birds  @Model.ExcessBirds  X Average Weight  @avgwt = @(Model.ExcessBirds * avgwt) weight is deducted from Sold Weight @murgirozon
+        and Calculation is made on that.
+    </p>
+
+}
+                @*@if (Model.BranchId == 15)
+    {
+        <p style="page-break-after: always;">
+
+            Note:- if (Standard Cost - Production Cost > 3 )then (Growing Charge Rate= 3 X 0.5 + (Standard Cost - Production Cost - 3) X 0.75)
+            else (Standard Cost - Production Cost) X 0.5
+            and if ( Production Cost - Standard Cost > 3 ) then (Growing Charge Rate = -(3 X 0.5) - (Production Cost - Standard Cost - 3) X 0.75)
+            else - ( Production Cost - Standard Cost ) X 0.5
+        </p>
+    }*@
+
+
+
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,153 @@
+﻿@model IEnumerable<XenERP.Models.MobileReport_ModelView>
+
+@{
+
+    var index = 0;
+
+}
+<!--for graph   -->
+<!--for graph   -->
+
+<style>
+    .modal-content {
+        background-color: #b2b266;
+        width: 1300px;
+        /*margin: 130px auto 0 auto;*/
+        text-align: center;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<style>
+    .table-responsive {
+        min-height: 0.01%;
+        overflow-x: auto;
+    }
+
+    table.chompa td table.pompa td {
+        width: 100%;
+    }
+</style>
+
+
+
+
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+
+
+
+<aside class="right-side">
+
+    <div class="box box-primary">
+        <div style="text-align:center" class="box-header">
+            LINESMAN WISE FARMER STATISTICS
+        </div>
+        <div class="box-body">
+
+
+            @foreach (var item in Model)
+            {
+              
+                <div class="">
+                    <h4 style="text-align:center">@item.LinsmanName</h4>
+                </div>
+                foreach (var item1 in item.FarmerGlanceList)
+                {
+
+                    <div class="col-md-4">
+                        <table style="height:288px;width:362.13px" class="table-responsive table-bordered">
+                            <tr>
+                                <td>Farmer Name : @item1.FarmerName</td>
+                                <td>Total Farming : @item1.TotalFarming</td>
+                            </tr>
+                            <tr>
+                                <td>Geo Latitude :@item1.GeoLat</td>
+                                <td>Geo Longitude :@item1.GeoLong</td>
+                            </tr>
+                            <tr>
+                                <td>Placement Date : @item1.PlacementDate</td>
+                                <td>Total Bird Place : @item1.TotalBirdPlaced</td>
+                            </tr>
+                            <tr>
+                                <td>Total Mortality : @item1.TotalMortality</td>
+                                <td>Bird Age : @item1.BirdAge</td>
+                            </tr>
+                            <tr>
+                                <td>Last Entry : @item1.LastEntry</td>
+                                <td>Entry Gap : @item1.EntryGap</td>
+                            </tr>
+                            <tr>
+                                <td>Mobile Entry : @item1.MobileEntry</td>
+                                <td>System Entry : @item1.SystemEntry</td>
+                            </tr>
+                            <tr>
+                                <td>Risk Factor : @item1.RiskFactor</td>
+                                <td></td>
+                            </tr>
+
+                            <tr>
+                                <td>With Farmer Upload : @item1.LineWidFarmer</td>
+                                <td>Bird Mortality Upload : @item1.BirdMortality</td>
+                            </tr>
+                            <tr>
+                                <td>Feed Bag Upload : @item1.FeedBag</td>
+                                <td>Post Mortem : @item1.PostMortem</td>
+                            </tr>
+                        </table>
+                        <br />
+
+                    </div>
+
+                }
+
+
+
+            }
+
+        </div>
+
+
+
+    </div>
+</aside>
+

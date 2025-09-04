@@ -1,0 +1,1936 @@
+﻿@model XenERP.Models.PurchaseReceiptModelView
+@using XenERP.Models
+@{
+    ViewBag.Title = "Purchase Receipt";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+@*
+<script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+        <script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>*@
+
+<script src="../../Scripts/PurchaseReceipt.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+ <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#ReferenceNo').change(function () {
+            var refno = $('#ReferenceNo').val();
+            if (refno == "") {
+                return false;
+            }
+            $("table#example1").find("tr:gt(0)").remove();
+
+            $.get('/PurchaseOrder/GetPODetails', { 'PONo': refno }, function (data, status) {
+
+
+
+               $('#Date').val(data.Date);
+                $('#DeliveryName').val(data.DeliveryName);
+                $('#StreetPoBox').val(data.StreetPoBox);
+                $('#Suburb').val(data.Suburb);
+                $('#City').val(data.City);
+                $('#StateRegion').val(data.StateRegion);
+                $('#Country').val(data.Country);
+                $('#PostalCode').val(data.PostalCode);
+                $('#SupplierName').val(data.SupplierName);
+                $('#SupplierCode').val(data.SupplierCode);
+                $('#SupplierId').val(data.SupplierId);
+                $('#Currencyrate').val(data.Currencyrate);
+                $('#TransactionCurrencyCode').val(data.TransactionCurrencyCode);
+                $('#TransactionCurrency').val(data.TransactionCurrency);
+                $('#WarehouseId').val(data.WarehouseId);
+                $('#PaymentTermId').val(data.PaymentTermId);
+              
+                $.each(data.pod, function (i, item) {
+                    //                    alert(item.PageName);
+                  
+                    $add_rowEdit(data.pod[i].ItemId, data.pod[i].ItemCode, data.pod[i].BarCode, data.pod[i].ItemName, data.pod[i].Description, data.pod[i].Quantity, data.pod[i].UnitId, data.pod[i].UnitName, data.pod[i].SecUnitId, data.pod[i].SecUnitName, data.pod[i].SecUnitFormula, data.pod[i].UnitFormula, data.pod[i].UnitIdSecondary, data.pod[i].UnitSecondaryName, data.pod[i].TotalQuantity, data.pod[i].Price, data.pod[i].TotalAmount, data.pod[i].Available);
+                });
+            });
+        });
+    });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#btnsupppdf").click(function () {
+
+                var id = $("#Id").val();
+
+
+                var url = "/PurchaseReceipt/PrintPurchaseReceiptPDF?id=" + id;
+
+                window.location.href = url;
+
+            });
+
+
+     //   alert('@Model.Id');
+        $("#GroupId").change(function () {
+
+            $.get("/Product/GetParentgroup", { id: $("#GroupId").val() }, function (data) {
+
+
+                if (data != null) {
+
+                    $("#parentname").val(data);
+                }
+
+                if (data == null || data == "") {
+
+                }
+
+            });
+            });
+
+        $('#SalesPrice').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+        $('#btnProduct').click(function () {
+            var Code = $('#Code').val();
+
+            var SalesPrice = $('#SalesPrice').val();
+            if (Code == '' || SalesPrice == '') {
+                $('#errordiv1').html('');
+                $('#errordiv1').css("display", "block");
+
+                if (Code == '') {
+                    $('#Code').parents(".form-group:first").addClass("has-error");
+                    $('#errordiv1').append('Product Code cannot be blank <br/>');
+                }
+                else {
+                    $('#Code').parents(".form-group:first").removeClass("has-error");
+                }
+                if (Description == '') {
+                    $('#Description').parents(".form-group:first").addClass("has-error");
+                    $('#errordiv1').append('Enter Product Name cannot be blank <br/>');
+                }
+                else {
+                    $('#Code').parents(".form-group:first").removeClass("has-error");
+                }
+                if (SalesPrice == '') {
+                    $('#SalesPrice').parents(".form-group:first").addClass("has-error");
+                    $('#errordiv1').append('Enter Sales Price <br/>');
+                }
+                else {
+                    $('#SalesPrice').parents(".form-group:first").removeClass("has-error");
+                }
+                return false;
+            }
+            else {
+                $('#errordiv1').html('');
+                $('#errordiv1').css("display", "none");
+                var Description = $('#Description').val();
+                var UnitId = $('#UnitId').val();
+                var GroupId = $('#GroupId').val();
+                Code = $('#parentname').val() + '-' + Code;
+
+                $('#btnProduct').css("display", "none");
+                $('#loader').css("display", "block");
+                $.post('/Product/Create', { 'Code': Code, 'Description': Description, 'UnitId': UnitId, 'GroupId': GroupId, 'SalesPrice': SalesPrice }, function (data, status) {
+                    if (data == "Duplicate") {
+                        $('#errordiv1').html('');
+                        $('#errordiv1').css("display", "block");
+                        $('#errordiv1').append('Product with this code already exists <br/>');
+                        $('#btnProduct').css("display", "block");
+                        $('#loader').css("display", "none");
+                        return false;
+                    }
+                    if (data != 'Failed') {
+                        dropDownProduct += '<option value="' + data.Id + '">' + data.Code + '</option>';
+
+                        var ctd = $('#drpProduct').closest('td'); //.attr('id');
+                        var ctr = ctd.closest('tr');
+                        // alert(ctd);
+                        ctd.html('');
+                        ctd.html(dropDownProduct);
+                        ctd.find('#drpProduct').val(data.Id);
+
+                        var qty = ctr.find('#quantity').val(1);
+                        var up = ctr.find('#unitprice').val(data.PurchasePrice);
+                        var as = ctr.find('.availabilityhide').val(data.Availability);
+                        var tx = ctr.find('#drpTax').val($('#TaxId').val());
+                        ctr.find('.uom').val(data.UnitId);
+                        ctr.find('.uomhide').val(data.UnitName);
+                        var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                        var am = ctr.find('.amounthide').val(parseFloat(amount));
+
+                        $('#myModal').modal('hide');
+                        $('#Code').val('');
+                        $('#Description').val('');
+                        $('#UnitId').val('');
+                        $('#GroupId').val('');
+
+                        $('#SalesPrice').val('');
+
+                        $('#btnProduct').css("display", "block");
+                        $('#loader').css("display", "none");
+                    }
+                    else {
+                        $('#errordiv1').html('');
+                        $('#errordiv1').css("display", "block");
+                        $('#errordiv1').append('Product create failed <br/>');
+                        $('#btnProduct').css("display", "block");
+                        $('#loader').css("display", "none");
+                        return false;
+                    }
+                });
+            }
+        });
+        //        $('#SupplierCode').change(function () {
+        //            var sid = $('#SupplierCode').val();
+        //          //  $('table#example1').empty();
+        //            $("table#example1").find("tr:gt(0)").remove();
+        //            for (var i = 0; i < 2; i++) {
+        //                $add_row();
+        //            }
+        //            $.get('/Supplier/checkSupplier', { 'query': sid }, function (data, status) {
+        //               
+        //                if (data == '') {
+        //                    $('#SupplierCode').val('');
+        //                    $('#SupplierName').val('');
+        //                    $('#SupplierCode').parents("td:first").addClass("has-error");
+        ////                    $('#TaxId').val('');
+        //                    $('#Currencyrate').val('');
+        //                    $('#TransactionCurrencyCode').val('');
+        //                    $('#tcc').text('Total In Supplier Currency' );
+        //                    $('#TransactionCurrency').val('');
+        //                }
+        //                else {
+        //                    $('#SupplierCode').parents("td:first").removeClass("has-error");
+        //                    $('#SupplierName').parents("td:first").removeClass("has-error");
+        //                    $('#SupplierCode').parents("td:first").addClass("has-success");
+        //                    $('#SupplierName').val(data.Name);
+        //                 //   $('#TaxId').val(data.TaxId);
+        //                    $('#SupplierCode').val(data.Code);
+        //                    $('#SupplierId').val(data.Id);
+        //                    $('#Currencyrate').val(data.CurrencyPurchaseRate);
+        //                    $('#TransactionCurrencyCode').val(data.CurrencyCode);
+        //                    $('#tcc').text('Total In ' + data.CurrencyCode);
+        //                    $('#TransactionCurrency').val(data.CurrencyId);
+        //                    $('#errordiv').html('');
+        //                    $('#errordiv').css("display", "none");
+        ////                    $('#SupplierName').attr('readonly', true);
+        ////                    $('#SupplierCode').attr('readonly', true);
+        //                }
+
+        //            });
+        //        });
+        //        $('#SupplierName').change(function () {
+        //            var sid = $('#SupplierName').val();
+        //            $("table#example1").find("tr:gt(0)").remove();
+        //            for (var i = 0; i < 2; i++) {
+        //                $add_row();
+        //            }
+        //            $.get('/Supplier/checkSupplierN', { 'query': sid }, function (data, status) {
+
+        //                if (data == '') {
+        //                    $('#SupplierCode').val('');
+        //                    $('#SupplierName').val('');
+        //                    $('#SupplierCode').parents("td:first").addClass("has-error");
+        //                    $('#TaxId').val('');
+        //                    $('#Currencyrate').val('');
+        //                    $('#TransactionCurrencyCode').val('');
+        //                    $('#tcc').text('Total In Supplier Currency');
+        //                    $('#TransactionCurrency').val('');
+        //                }
+        //                else {
+        //                    $('#SupplierCode').parents("td:first").removeClass("has-error");
+        //                    $('#SupplierName').parents("td:first").removeClass("has-error");
+        //                    $('#SupplierName').parents("td:first").addClass("has-success");
+        //                    $('#SupplierName').val(data.Name);
+        //                    $('#TaxId').val(data.TaxId);
+        //                    $('#SupplierCode').val(data.Code);
+        //                    $('#SupplierId').val(data.Id);
+        //                    $('#Currencyrate').val(data.CurrencyPurchaseRate);
+        //                    $('#TransactionCurrencyCode').val(data.CurrencyCode);
+        //                    $('#tcc').text(In + ' ' + data.CurrencyCode);
+        //                    $('#TransactionCurrency').val(data.CurrencyId);
+        //                    $('#errordiv').html('');
+        //                    $('#errordiv').css("display", "none");
+        //                    //                    $('#SupplierName').attr('readonly', true);
+        //                    //                    $('#SupplierCode').attr('readonly', true);
+        //                }
+
+        //            });
+        //        });
+
+        $('#WarehouseId').change(function () {
+            var wid = $('#WarehouseId').val();
+            $.get('/Warehouse/getWarehouse', { 'id': wid }, function (data, status) {
+
+                $('#DeliveryName').val(data.ContactName);
+                $('#StreetPoBox').val(data.Address);
+                $('#Suburb').val(data.Suburb);
+                $('#City').val(data.Town);
+                $('#StateRegion').val(data.State);
+                $('#Country').val(data.Country);
+                $('#PostalCode').val(data.PIN);
+            });
+        });
+
+        $('#SupplierCode').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Supplier/getSupplier',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Code,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#SupplierCode').val(ui.item.label);
+                $('#SupplierId').val(ui.item.value);
+
+                //                $.get('/Supplier/getSelectedSupplier', { 'id': ui.item.value }, function (data, status) {
+                //                    $('#SupplierName').val(data.Name);
+                //                 //   $('#TaxId').val(data.TaxId);
+                //                });
+//                $("table#example1").find("tr:gt(0)").remove();
+//                for (var i = 0; i < 2; i++) {
+//                    $add_row();
+//                }
+                $.get('/Supplier/checkSupplier', { 'query': ui.item.label }, function (data, status) {
+
+                    if (data == '') {
+                        $('#SupplierCode').val('');
+                        $('#SupplierName').val('');
+                        $('#SupplierCode').parents("td:first").addClass("has-error");
+                        $('#TaxId').val('');
+                        $('#Currencyrate').val('');
+                        $('#TransactionCurrencyCode').val('');
+                        $('#tcc').text('Total In Supplier Currency');
+                        $('#TransactionCurrency').val('');
+
+                    }
+                    else {
+                        $('#SupplierCode').parents("td:first").removeClass("has-error");
+                        $('#SupplierName').parents("td:first").removeClass("has-error");
+                        $('#SupplierName').parents("td:first").addClass("has-success");
+                        $('#SupplierName').val(data.Name);
+                        $('#TaxId').val(data.TaxId);
+                        $('#SupplierCode').val(data.Code);
+                        $('#SupplierId').val(data.Id);
+                        $('#Currencyrate').val(data.CurrencyPurchaseRate);
+                        $('#TransactionCurrencyCode').val(data.CurrencyCode);
+                        $('#tcc').text(In + ' ' + data.CurrencyCode);
+                        $('#TransactionCurrency').val(data.CurrencyId);
+
+                        $('#errordiv').html('');
+                        $('#errordiv').css("display", "none");
+                        //                    $('#SupplierName').attr('readonly', true);
+                        //                    $('#SupplierCode').attr('readonly', true);
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+        $('#SupplierName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Supplier/getSupplierN',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#SupplierName").val("");
+                    $('#SupplierCode').val('');
+                    $('#SupplierName').val('');
+                    $('#SupplierCode').parents("td:first").removeClass("has-success");
+                    $('#SupplierName').parents("td:first").removeClass("has-success");
+                    $('#SupplierName').parents("td:first").addClass("has-error");
+                    $('#SupplierId').val(0);
+                    $('#Currencyrate').val('');
+                    $('#TransactionCurrencyCode').val('');
+                    $('#TransactionCurrency').val('');
+                    // $('table#example11').find("tr").remove();
+                    // $('table#example2').find("tr").remove();
+                    $("table#example1").find("tr:gt(0)").remove();
+
+                    for (var i = 0; i < 2; i++) {
+                        $add_row();
+                    }
+                }
+            },
+            select: function (event, ui) {
+                $('#SupplierName').val(ui.item.label);
+                $('#SupplierId').val(ui.item.value);
+
+                $.get('/Supplier/checkSupplierN', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+
+                        $('#SupplierCode').val('');
+                        $('#SupplierName').val('');
+                        $('#SupplierName').parents("td:first").addClass("has-error");
+                        $('#PaymentTermId').val('');
+                        $('#SupplierId').val(0);
+                        $('#Currencyrate').val('');
+                        $('#TransactionCurrencyCode').val('');
+                        $('#tcc').text('Total In Supplier Currency');
+                        $('#TransactionCurrency').val('');
+                    }
+                    else {
+                        $('#SupplierCode').parents("td:first").removeClass("has-error");
+                        $('#SupplierName').parents("td:first").removeClass("has-error");
+                        $('#SupplierCode').parents("td:first").addClass("has-success");
+                        $('#SupplierName').parents("td:first").addClass("has-success");
+                        $('#SupplierName').val(data.Name);
+
+                        $('#SupplierCode').val(data.Code);
+                        $('#SupplierId').val(data.Id);
+                        $('#Currencyrate').val(data.CurrencyPurchaseRate);
+                        $('#TransactionCurrencyCode').val(data.CurrencyCode);
+                        $('#tcc').text('In ' + data.CurrencyCode);
+                        $('#TransactionCurrency').val(data.CurrencyId);
+
+                    }
+                });
+                return false;
+            },
+            minLength: 1
+        });
+        if ('@ViewBag.Id' != '') {
+
+            var dw = parseInt('@ViewBag.Id');
+
+            $('#WarehouseId').val(dw);
+            $('#DeliveryName').val('@ViewBag.AdressName');
+            $('#StreetPoBox').val('@ViewBag.Address');
+            $('#Suburb').val('@ViewBag.Suburb');
+            $('#City').val('@ViewBag.Town');
+            $('#StateRegion').val('@ViewBag.State');
+            $('#Country').val('@ViewBag.Country');
+            $('#PostalCode').val('@ViewBag.PIN');
+
+        }
+
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnInvoice").on("click", function (event) {
+            window.location.href = 'PurchaseInvoice/Create';
+            return false;
+        });
+
+        $("#btnDraft").on("click", function (event) {
+            $("#Status").val("Saved As Draft");
+
+        });
+
+        $("#btnSave").on("click", function (event) {
+            $("#Status").val("Saved");
+
+        });
+
+
+
+        $("form").on("submit", function (event) {
+
+            var isValid = $(this).valid();
+
+            if (isValid) {
+                var result = checkproductcount();
+
+                if (result == false) {
+                    $('#errordiv').css("display", "block");
+                    $('#errordiv').append('You must add atleast one line item');
+                    return false;
+                }
+                //  event.preventDefault();
+
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+            }
+
+            else {
+
+                //                $("#btnsave").show();
+            }
+
+
+        });
+
+
+
+
+
+     //   $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+        if ('@ViewBag.podmvList' != '') {
+            //   alert('@ViewBag.podmvList');
+            var array = '@Html.Raw(Json.Encode(ViewBag.podmvList))';
+            var arr = JSON.parse(array);
+            //  alert(arr.length);
+            for (var i = 0; i < arr.length; i++) {
+                //                if (arr[i].ItemId == 0 && arr[i].Description == '' && arr[i].Quantity == 0 && arr[i].Price == 0 && arr[i].Discount == 0 && arr[i].TaxId == 0) {
+                //                    $add_rowEdit(arr[i].ItemId, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].Price, arr[i].Discount, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                //                }
+                //                else {
+                $add_rowEdit(arr[i].ItemId, arr[i].ItemCode, arr[i].BarCode, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].SecUnitId, arr[i].SecUnitName, arr[i].SecUnitFormula, arr[i].UnitFormula, arr[i].UnitIdSecondary, arr[i].UnitSecondaryName, arr[i].TotalQuantity, arr[i].Price, arr[i].TotalAmount, arr[i].Available);
+                //             }
+            }
+
+            var cntr = 0;
+            var cntrdate = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                // var tax = $(MyRows[i]).find('td:eq(6)');
+                //  var discount = $(MyRows[i]).find('td:eq(7)');
+
+                var descriptionval = description.find('.descriptionhide');
+                var productval = product.find('.producthide');
+                var quantityval = quantity.find('.quantityhide');
+                var ofval = of.find('.ofhide');
+                var unitpriceval = unitprice.find('.unitpricehide');
+                //   var taxval = tax.find('.taxhide');
+                //   var discountval = discount.find('.discounthide');
+                if ('@ViewBag.Supply' != '') {
+                    if (cntr == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   ' + '@ViewBag.Supply' + '<br/>');
+                    }
+                }
+                if ('@ViewBag.Date' != '') {
+                    if ((cntr == 0 || cntr == 1) && cntrdate == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   ' + '@ViewBag.Date' + '<br/>');
+                        cntrdate++;
+                    }
+                }
+//                if (!(productval.val() == '' && descriptionval.val() == '' && quantityval.val() == 0 && unitpriceval.val() == 0)) {
+                if (!(productval.val() == '' && descriptionval.val() == '' && quantityval.val() == 0 && ofval.val() == 0)) {
+                    if (productval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        productval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Product not selected <br/>');
+                    }
+
+                    if (quantityval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        quantityval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Quantity cannot be empty<br/>');
+                    }
+                    if (ofval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        ofval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Of cannot be empty<br/>');
+                    }
+
+                    
+//                    if (unitpriceval.val() == 0) {
+//                        cntr++;
+//                        $('#errordiv').css("display", "block");
+//                        $('#errordiv').append(cntr + '   Unit Price cannot be empty<br/>');
+//                        unitpriceval.addClass('input-red-shadow');
+//                    }
+
+                }
+            }
+        }
+        else {
+            for (var i = 0; i < 2; i++) {
+                $add_row();
+            }
+
+        }
+
+    });
+
+    var tid = '';
+    $(document).ready(function () {
+        $('#example1').on('click', 'tr', function (e) {
+//            if ($('#SupplierCode').val() == '') {
+//                $('#errordiv').css("display", "block");
+//                $('#errordiv').html('Enter Supplier Code Or Supplier Name');
+//                return false;
+//            }
+//            else {
+//                $('#errordiv').html('');
+//                $('#errordiv').css("display", "none");
+//            }
+            var counter = 0;
+            var totalamount = 0;
+            var totaltax = 0;
+            var totaldiscount = 0;
+            var subtotal = 0;
+            var bctotalamount = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var code = $(MyRows[i]).find('td:eq(1)');
+                var barcode = $(MyRows[i]).find('td:eq(2)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                // var tax = $(MyRows[i]).find('td:eq(6)');
+                //  var discount = $(MyRows[i]).find('td:eq(6)');
+                var amount = $(MyRows[i]).find('td:eq(11)');
+                var producthide = $(MyRows[i]).find('td:eq(12)');
+                var uomhide = $(MyRows[i]).find('td:eq(13)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(14)');
+                //   var taxhide = $(MyRows[i]).find('td:eq(10)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var descriptionval = description.find('#description').val();
+                var codeval = code.find('#productcode').val();
+                var barcodeval = barcode.find('#barcode').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                //var taxval = tax.find('#drpTax').val();
+                //  var taxdtext = tax.find('#drpTax option:selected').text();
+                //  var discountval = discount.find('#discount').val();
+
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('')
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (codeval != null) {
+                    code.html('');
+                    code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                    code.find('.productcodehide').val(codeval);
+                }
+                if (barcodeval != null) {
+                    barcode.html('');
+                    barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                    barcode.find('.barcodehide').val(barcodeval);
+                }
+
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                //                if (taxval != null) {
+                //                    tax.html('');
+                //                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                //                    if (taxval == '') {
+                //                        tax.find('.taxhide').val('');
+                //                    }
+                //                    else {
+                //                        tax.find('.taxhide').val(taxdtext);
+                //                    }
+
+                //                    taxhide.find('.tax').val(taxval);
+                //                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+                //                if (discountval != null) {
+                //                    discount.html('');
+                //                    discount.html("<input type='text' value=''  class='discounthide input-non-active' style='text-align:right;' name='discounthide' readonly /> ");
+                //                    discount.find('.discounthide').val(discountval);
+
+                //                }
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if (checkproduct.val() != null && checkproduct.val() != '') {
+                    var qty = 0;
+                    var up = 0;
+                    var ofd = 0;
+                    //      var tx = 0;
+                    // var dis = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+                    //  var caldiscount = discount.find('.discounthide').val();
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    //        var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+                    var calof = of.find('.ofhide').val();
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    //                    if (caltax != '') {
+                    //                        var arr = caltax.split('-');
+                    //                        tx = parseFloat(arr[arr.length - 1]);
+                    //                    }
+                    //                    else {
+                    //                        tx = 0;
+                    //                    }
+                    //                    if (caldiscount != '') {
+                    //                        dis = parseFloat(caldiscount);
+                    //                    }
+                    //                    else {
+                    //                        dis = 0;
+                    //                    }
+                    if (calof != '') {
+                        ofd = parseFloat(calof);
+                    }
+                    else {
+                        ofd = 0;
+                    }
+                    var np = qty * up ;
+                    // var currentdis = np * dis / 100;
+                    var currentsub = np;
+                    subtotal += currentsub;
+                    //  totaldiscount += currentdis;
+
+
+                  //  amount.find('.amounthide').val(currentsub.toFixed(2));
+                    //alert(currentsub);
+                }
+            }
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            totalamount = subtotal;
+            bctotalamount = totalamount * currencyrate;
+//            $('#subtotal').text(subtotal.toFixed(2));
+
+//            $('#totalpo').text(totalamount.toFixed(2));
+//            $('#bctotalpo').text(bctotalamount.toFixed(2));
+//            $('#TotalAmount').val(subtotal.toFixed(2));
+
+//            $('#GrandTotal').val(totalamount.toFixed(2));
+//            $('#BCGrandTotal').val(bctotalamount.toFixed(2));
+
+            if ((tid == this.id && counter != 1) || (tid != this.id)) {
+
+                tid = this.id;
+
+
+
+                var product = $(this).find('td.products_0');
+                var productval = $(this).find('.product').val();
+                var code = $(this).find('td.productcode_0');
+                var codetext = code.find('.productcodehide').val();
+                var barcode = $(this).find('td.barcode_0');
+                var barcodetext = barcode.find('.barcodehide').val();
+                var description = $(this).find('td.description_0');
+                var descriptiontext = description.find('.descriptionhide').val();
+                var quantity = $(this).find('td.quantity_0');
+                var quantitytext = quantity.find('.quantityhide').val();
+                var unitprice = $(this).find('td.unitprice_0');
+                var unitpricetext = unitprice.find('.unitpricehide').val();
+                var uom = $(this).find('td.uom_0');
+                var uomval = $(this).find('.uom').val();
+                var uomtext = $(this).find('.uomhide').val();
+                var baseuom = $(this).find('td.baseuom_0');
+                var baseuomval = $(this).find('.baseuom').val();
+                var baseuomtext = $(this).find('.baseuomhide').val();
+                var secuomval = $(this).find('.secuom').val();
+                var secuomtext = $(this).find('.secuomhide').val();
+                var of = $(this).find('td.of_0');
+                var oftext = of.find('.ofhide').val();
+                //   var tax = $(this).find('td.taxes_0');
+                // var taxval = $(this).find('.tax').val();
+                //    var discount = $(this).find('td.discount_0');
+                //    var discounttext = discount.find('.discounthide').val();
+
+
+                //   alert(productval);
+                if (productval != '') {
+                    var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+
+                    dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+                    if (!(uomval == null || secuomval == '')) {
+
+                        dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+                    }
+                    dropDownUOM += '</select>';
+
+                    uom.html('');
+                    uom.html(dropDownUOM);
+                    uom.find('#drpUom').val(uomval);
+                }
+                product.html('');
+                product.html(dropDownProduct);
+                code.html('');
+                code.html("<input id='productcode' style='text-align:left;' class ='form-control'  type='text' value=''/> ");
+                barcode.html('');
+                barcode.html("<input id='barcode' style='text-align:left;' class ='form-control'  type='text' value=''/> ");
+                description.html('');
+                description.html("<div class='textarea-panel'><textarea id='description' class ='form-control '  style='width: 100%; height: 200%;'  value=''/> </div>");
+                quantity.html('');
+                quantity.html("<input id='quantity' style='text-align:right;' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                unitprice.html('');
+                unitprice.html("<input id='unitprice' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                of.html('');
+                of.html("<input id='of' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                //  tax.html('');
+                //   tax.html(dropDownTax);
+                //   discount.html('');
+                //    discount.html("<input id='discount' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                //   if (productval != 'null') {
+                product.find('#drpProduct').val(productval);
+                code.find('#productcode').val(codetext);
+                barcode.find('#barcode').val(barcodetext);
+                //  }
+                description.find('#description').val(descriptiontext);
+                quantity.find('#quantity').val(quantitytext);
+                unitprice.find('#unitprice').val(unitpricetext);
+                of.find('#of').val(oftext);
+                // if (taxval != 'null') {
+                //   tax.find('#drpTax').val(taxval);
+                //   }
+                //      discount.find('#discount').val(discounttext);
+
+            }
+
+            e.stopPropagation();
+
+
+
+        })
+        .on('click', '#description,#drpProduct,#drpUom,#quantity,#unitprice,#amounthide,#of,#productcode,#barcode', function (e) {
+
+            e.stopPropagation();
+        })
+
+        .on('change', '#drpProduct', function (e) {
+            var pid = $('#drpProduct').val();
+            var trObj = $(this).closest('tr');
+            if (pid == '') {
+
+                var qty = trObj.find('#quantity').val('');
+                var up = trObj.find('#unitprice').val('');
+                var as = trObj.find('.availabilityhide').val('');
+                // var tx = trObj.find('#drpTax').val($('').val());
+                var am = trObj.find('.amounthide').val('');
+                var uom = trObj.find('td.uom_0');
+
+                trObj.find('.baseuom').val('');
+                trObj.find('.baseuomhide').val('');
+                trObj.find('.ofhide').val('');
+                trObj.find('#of').val('');
+                trObj.find('.secuom').val('');
+                trObj.find('.secuomhide').val('');
+                trObj.find('.secofhide').val('');
+                uom.html('');
+                uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                uom.find('.uomhide').val('');
+                trObj.find('.uom').val('');
+                trObj.find('.totalquantityhide').val('');
+
+            }
+            else if (pid != 'addnew') {
+                $.get('/Product/getSelectedProduct', { 'id': pid }, function (data, status) {
+                    var qty = trObj.find('#quantity').val('');
+                    var up = trObj.find('#unitprice').val(data.PurchasePrice);
+                    var as = trObj.find('.availabilityhide').val(data.Availability);
+
+                    trObj.find('.uom').val(data.UnitIdSecondary);
+                    trObj.find('.uomhide').val(data.UnitNameSecondary);
+                    trObj.find('.baseuom').val(data.UnitId);
+                    trObj.find('.baseuomhide').val(data.UnitName);
+                    trObj.find('.ofhide').val('');
+                    trObj.find('.secuom').val(data.UnitIdSecondary);
+                    trObj.find('.secuomhide').val(data.UnitNameSecondary);
+                    trObj.find('.secofhide').val(data.UnitFormula);
+                    trObj.find('#of').val(data.UnitFormula);
+                    var uom = trObj.find('td.uom_0');
+                    var uomval = trObj.find('.uom').val();
+                    var uomtext = trObj.find('.uomhide').val();
+                    var baseuom = trObj.find('td.baseuom_0');
+                    var baseuomval = trObj.find('.baseuom').val();
+                    var baseuomtext = trObj.find('.baseuomhide').val();
+                    var secuomval = trObj.find('.secuom').val();
+                    var secuomtext = trObj.find('.secuomhide').val();
+
+                    var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+                    if (!(secuomval == null || secuomval == '')) {
+                        dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+
+                    }
+                    dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+
+                    dropDownUOM += '</select>';
+
+                    uom.html('');
+                    uom.html(dropDownUOM);
+                    trObj.find('.totalquantityhide').val(qty.val());
+                    var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                 //   var am = trObj.find('.amounthide').val(parseFloat(amount));
+                });
+            }
+            else {
+                $('#myModal').modal('show');
+
+                var qty = trObj.find('#quantity').val('');
+                var up = trObj.find('#unitprice').val('');
+                var as = trObj.find('.availabilityhide').val('');
+                //  var tx = trObj.find('#drpTax').val($('').val());
+                var am = trObj.find('.amounthide').val('');
+                trObj.find('#uom').val('');
+                trObj.find('.uomhide').val('');
+            }
+
+            e.stopPropagation();
+        })
+         .on('keydown.autocomplete', '#productcode', function (e) {
+
+             $(this).autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '/Product/getProductsAuto',
+                         data: { query: request.term },
+                         dataType: 'json',
+                         type: 'POST',
+                         success: function (data) {
+
+                             response($.map(data, function (item) {
+
+                                 return {
+                                     label: item.Code,
+                                     value: item.Id
+                                 }
+                             }));
+                         }
+                     })
+                 },
+                 change: function (event, ui) {
+
+                     if (ui.item == null || ui.item == undefined) {
+                         var qty = trObj.find('#quantity').val('');
+                         var up = trObj.find('#unitprice').val('');
+                         var as = trObj.find('.availabilityhide').val('');
+                         var tx = trObj.find('#drpTax').val($('').val());
+                         var am = trObj.find('.amounthide').val('');
+                         var uom = trObj.find('td.uom_0');
+
+
+                         trObj.find('.baseuom').val('');
+                         trObj.find('.baseuomhide').val('');
+                         trObj.find('.ofhide').val('');
+                         trObj.find('#of').val('');
+                         trObj.find('.secuom').val('');
+                         trObj.find('.secuomhide').val('');
+                         trObj.find('.secofhide').val('');
+                         uom.html('');
+                         uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                         uom.find('.uomhide').val('');
+                         trObj.find('.uom').val('');
+                         trObj.find('.totalquantityhide').val('');
+                     }
+                 },
+                 select: function (event, ui) {
+                     // $('#SupplierName').val(ui.item.label);
+                     $('#drpProduct').val(ui.item.value);
+                     $('#productcode').val(ui.item.label);
+                     var trObj = $(this).closest('tr');
+                     $.get('/Product/getSelectedProductAuto', { 'query': ui.item.value }, function (data, status) {
+                         if (data == '') {
+
+
+                             var qty = trObj.find('#quantity').val('');
+                             var up = trObj.find('#unitprice').val('');
+                             var as = trObj.find('.availabilityhide').val('');
+
+                             var am = trObj.find('.amounthide').val('');
+                             var uom = trObj.find('td.uom_0');
+
+
+                             trObj.find('.baseuom').val('');
+                             trObj.find('.baseuomhide').val('');
+                             trObj.find('.ofhide').val('');
+                             trObj.find('#of').val('');
+                             trObj.find('.secuom').val('');
+                             trObj.find('.secuomhide').val('');
+                             trObj.find('.secofhide').val('');
+                             uom.html('');
+                             uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                             uom.find('.uomhide').val('');
+                             trObj.find('.uom').val('');
+                             trObj.find('.totalquantityhide').val('');
+                         }
+                         else {
+                             var pname = trObj.find('#productcode').val(data.Name);
+                             var pcode = trObj.find('#drpProduct').val(data.Id);
+                             var qty = trObj.find('#quantity').val('');
+                             var up = trObj.find('#unitprice').val(data.PurchasePrice);
+                             var as = trObj.find('.availabilityhide').val(data.Availability);
+
+
+                             trObj.find('.uom').val(data.UnitIdSecondary);
+                             trObj.find('.uomhide').val(data.UnitNameSecondary);
+                             trObj.find('.baseuom').val(data.UnitId);
+                             trObj.find('.baseuomhide').val(data.UnitName);
+                             trObj.find('.ofhide').val(data.UnitFormula);
+                             trObj.find('.secuom').val(data.UnitIdSecondary);
+                             trObj.find('.secuomhide').val(data.UnitNameSecondary);
+                             trObj.find('.secofhide').val(data.UnitFormula);
+                             trObj.find('#of').val(data.UnitFormula);
+                             var uom = trObj.find('td.uom_0');
+                             var uomval = trObj.find('.uom').val();
+                             var uomtext = trObj.find('.uomhide').val();
+                             var baseuom = trObj.find('td.baseuom_0');
+                             var baseuomval = trObj.find('.baseuom').val();
+                             var baseuomtext = trObj.find('.baseuomhide').val();
+                             var secuomval = trObj.find('.secuom').val();
+                             var secuomtext = trObj.find('.secuomhide').val();
+
+                             var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+                             if (!(secuomval == null || secuomval == '')) {
+                                 dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+
+                             }
+                             dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+
+                             dropDownUOM += '</select>';
+
+                             uom.html('');
+                             uom.html(dropDownUOM);
+                             trObj.find('.totalquantityhide').val(qty.val());
+                             var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                         //    var am = trObj.find('.amounthide').val(parseFloat(amount));
+
+                         }
+                     });
+                     return false;
+                 },
+                 minLength: 1
+             });
+             e.stopPropagation();
+         })
+          .on('keypress', '#quantity,#of', function (event) {
+
+              if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                  return true;
+              }
+
+              if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                  event.preventDefault();
+                  return false;
+
+              }
+              if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                  event.preventDefault();
+              }
+              event.stopPropagation();
+
+          })
+           .on('change', '#quantity, #unitprice,#of', function (event) {
+
+               var trObj = $(this).closest('tr');
+               var qtyem = trObj.find('#quantity');
+               var upem = trObj.find('#unitprice');
+               var ofem = trObj.find('#of');
+
+
+               var amem = trObj.find('.amounthide');
+               var qty = qtyem.val();
+               var up = upem.val();
+               var of = ofem.val();
+
+               if (qty == '.' || qty == '') {
+                   qty = 0;
+                   qtyem.val(0);
+
+               }
+               if (up == '.' || up == '') {
+                   up = 0;
+                   upem.val(0);
+               }
+
+               if (of == '.' || of == '' || of == 0) {
+                   of = 1;
+                   ofem.val(1);
+               }
+               var totqty = parseFloat(qty);
+               trObj.find('.totalquantityhide').val(totqty);
+               var pq = parseFloat(qty) * parseFloat(up);
+
+               var am = pq;
+
+               amem.val(am.toFixed(2));
+               event.stopPropagation();
+           })
+          .on('click', '.del_ExpenseRow', function (e) {
+              $(this).closest('tr').remove();
+
+              //  e.stopPropagation();
+
+          })
+          .on('change', '#drpUom', function (e) {
+
+              var uid = $('#drpUom').val();
+              var trObj = $(this).closest('tr');
+
+              var scm = trObj.find('.secuom').val();
+              var soh = trObj.find('.secofhide');
+              if (uid == scm) {
+
+                  //  alert(soh);
+                  var qty = trObj.find('#quantity');
+                  var up = trObj.find('#unitprice');
+
+                  //  trObj.find('#totalquantityhide').val();
+
+                  trObj.find('#of').val(soh.val());
+                  var totamount = parseFloat(qty.val());
+                  trObj.find('.totalquantityhide').val(totamount);
+                  var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                  var am = trObj.find('.amounthide').val(parseFloat(amount));
+              }
+              else {
+                  var qty = trObj.find('#quantity');
+                  trObj.find('#of').val(1);
+                  trObj.find('.totalquantityhide').val(qty.val());
+                  var up = trObj.find('#unitprice');
+                  var amount = parseFloat(qty.val()) * parseFloat(up.val()) / parseFloat(soh.val());
+                  trObj.find('.amounthide').val(parseFloat(amount).toFixed(2));
+              }
+              e.stopPropagation();
+          }).on('keydown', '.producthide', function (e) {
+
+              if (e.keyCode == 9) {
+                  $(this).trigger('click');
+              }
+          }).on('keydown', '.amounthide', function (e) {
+
+              if (e.keyCode == 9) {
+
+                  $('#add_ExpenseRow').trigger('click');
+              }
+          });
+
+
+        $(document).click(function (e) {
+            $(".ignore").click(function () {
+                return false;
+            });
+            var uid = e.target.id;
+            if (uid.substring(0, 5) == "ui-id") {
+                return false;
+            }
+            var totalamount = 0;
+            var totaltax = 0;
+            var totaldiscount = 0;
+            var subtotal = 0;
+            var bctotalamount = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var code = $(MyRows[i]).find('td:eq(1)');
+                var barcode = $(MyRows[i]).find('td:eq(2)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                // var tax = $(MyRows[i]).find('td:eq(6)');
+                //  var discount = $(MyRows[i]).find('td:eq(6)');
+                var amount = $(MyRows[i]).find('td:eq(11)');
+                var producthide = $(MyRows[i]).find('td:eq(12)');
+                var uomhide = $(MyRows[i]).find('td:eq(13)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(14)');
+                //   var taxhide = $(MyRows[i]).find('td:eq(10)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var descriptionval = description.find('#description').val();
+                var codeval = code.find('#productcode').val();
+                var barcodeval = barcode.find('#barcode').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                //var taxval = tax.find('#drpTax').val();
+                //  var taxdtext = tax.find('#drpTax option:selected').text();
+                //  var discountval = discount.find('#discount').val();
+
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('')
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (codeval != null) {
+                    code.html('');
+                    code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                    code.find('.productcodehide').val(codeval);
+                }
+                if (barcodeval != null) {
+                    barcode.html('');
+                    barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                    barcode.find('.barcodehide').val(barcodeval);
+                }
+
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                //                if (taxval != null) {
+                //                    tax.html('');
+                //                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                //                    if (taxval == '') {
+                //                        tax.find('.taxhide').val('');
+                //                    }
+                //                    else {
+                //                        tax.find('.taxhide').val(taxdtext);
+                //                    }
+
+                //                    taxhide.find('.tax').val(taxval);
+                //                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+                //                if (discountval != null) {
+                //                    discount.html('');
+                //                    discount.html("<input type='text' value=''  class='discounthide input-non-active' style='text-align:right;' name='discounthide' readonly /> ");
+                //                    discount.find('.discounthide').val(discountval);
+
+                //                }
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if (checkproduct.val() != null && checkproduct.val() != '') {
+                    var qty = 0;
+                    var up = 0;
+                    var ofd = 0;
+                    //      var tx = 0;
+                    // var dis = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+                    //  var caldiscount = discount.find('.discounthide').val();
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    //        var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+                    var calof = of.find('.ofhide').val();
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    //                    if (caltax != '') {
+                    //                        var arr = caltax.split('-');
+                    //                        tx = parseFloat(arr[arr.length - 1]);
+                    //                    }
+                    //                    else {
+                    //                        tx = 0;
+                    //                    }
+                    //                    if (caldiscount != '') {
+                    //                        dis = parseFloat(caldiscount);
+                    //                    }
+                    //                    else {
+                    //                        dis = 0;
+                    //                    }
+                    if (calof != '') {
+                        ofd = parseFloat(calof);
+                    }
+                    else {
+                        ofd = 0;
+                    }
+                    var np = qty * up ;
+                    // var currentdis = np * dis / 100;
+                    var currentsub = np;
+                    subtotal += currentsub;
+                    //  totaldiscount += currentdis;
+
+
+                    amount.find('.amounthide').val(currentsub.toFixed(2));
+                    //alert(currentsub);
+                }
+            }
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            totalamount = subtotal;
+            bctotalamount = totalamount * currencyrate;
+//            $('#subtotal').text(subtotal.toFixed(2));
+
+//            $('#totalpo').text(totalamount.toFixed(2));
+//            $('#bctotalpo').text(bctotalamount.toFixed(2));
+//            $('#TotalAmount').val(subtotal.toFixed(2));
+
+//            $('#GrandTotal').val(totalamount.toFixed(2));
+//            $('#BCGrandTotal').val(bctotalamount.toFixed(2));
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        dropDownProduct = '<select id="drpProduct" class="form-control">';
+
+        dropDownProduct += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        dropDownProduct += '<option  value="' + 'addnew' + '" ><a data-toggle="modal" data-target="#myModal" href="#">ADD NEW</a> </option>';
+        $.get('/Product/getProducts', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownProduct += '<option value="' + data[count].Id + '">' + data[count].Code + '</option>';
+            };
+          //   dropDownProduct += '<option  value="' + '900' + '" >' + '<a href="' + '#myModal' + '">ADD NEW</a>' + '</option>';
+           // dropDownProduct += '<option  value="' + '900' + '" >' + 'ffffff' + '</option>';
+            dropDownProduct += '</select>';
+        });
+
+
+       
+
+        checkproductcount = function () {
+            var result = false;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+
+                var producthide = $(MyRows[i]).find('td:eq(12)');
+                var product = producthide.find('.product');
+                if (parseInt(product.val()) > 0) {
+                    result = true;
+                    return result;
+                }
+
+            }
+            return result;
+        };
+    });
+
+</script>
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+ @using (Html.BeginForm())
+ {
+<aside class="right-side">
+ <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>
+                       Purchase Receipt
+                        <small>Entry Form</small>
+                        @if(Model.CreatedFrom=="Purchase Order")
+                        {
+                           <span> From Purchase Order @Model.OrderNo </span>
+                        }
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#"></a></li>
+                        <li class="active"> </li>
+                    </ol>
+                </section>
+                   <div class="nav-tabs-custom">
+
+           
+                             
+                         
+                         
+                                <ul class="nav nav-tabs">
+                                @if(Model.Id != 0){
+                                     if (ViewBag.Message != "Error")
+                                           {
+                                       
+                                   <li class="pull-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Purchase Receipt @Model.NO (@Model.Status)    </li>
+                                   
+                                           }
+                                   @*  else
+                                     {
+                                         <li class="pull-left" style="color:Red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Network Connectivity Error OR System Busy. Please retry after sometime.    </li>
+                                     }*@
+                                     if (Model.Status == "Saved As Draft")
+                                     {
+                                        
+                                        <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                                        <li class="pull-right"><input type="submit" id="btnDraft" class="btn btn-primary" value="Save As Draft" /></li>   
+                                }
+                                else
+                                {
+                                    if (Model.Status == "Saved")
+                                    {
+                                             <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                                             <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+                                            }
+                                            else
+                                            {
+                                          <li id="" class="pull-right">  <a id = "btnsupppdf" >< img src="../../Images/capture-pdf.png"></a></li>
+                                    }
+                                    @*  <li class="dropdown pull-right">
+                                        <a class="dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#">
+                                            Convert To <span class="caret"></span>
+                                        </a>
+                                    
+                                        <ul class="dropdown-menu">
+                                          
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="/PurchaseInvoice/Create/@Model.Id?from=PR" >Invoice</a></li>
+                                        
+                                        </ul>
+                                    </li>*@
+                                     }
+                                }
+                                else
+                                {
+
+                                    if (Model.ReferenceNo != null)
+                                    {
+                                         <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                                    }
+                                    else
+                                    {
+                                    <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                                        if (Model.Status != "Saved")
+                                        {
+                                     <li class="pull-right"><input type="submit" id="btnDraft" class="btn btn-primary" value="Save As Draft" /></li>   
+                                    
+                                        }
+                                    }
+                                }
+                          </ul>
+                                         </div>   
+                                       @if (ViewBag.Message != null)
+                                       {
+                                           if (ViewBag.Message != "Error")
+                                           {
+                                          <div class="alert alert-success alert-dismissable" >
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <b>Purchase Receipt</b><br />
+                                     @ViewBag.Message. <a href='/PurchaseReceipt/Create'> Enter a new Purchase Receipt?</a> 
+                                    </div> 
+                                           }
+                                       }
+                                       
+
+                                           @if (ViewBag.ErrorTag != null)
+                                           {               
+                <div class="alert alert-danger alert-dismissable" id="errordiv1">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b><br />
+ 
+    @ViewBag.ErrorTag
+                                 
+ </div>
+                                           }  
+<div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b><br />
+ </div>
+  <div id="loading">
+                                    <div id="loadingcontent">
+                                         <p id="loadingspinner">
+                                          Loading...
+                                      </p>
+                                     </div>
+                                    </div>
+                <!-- Main content -->
+                <section class="content">
+                 @* <div class="form-group row"> <div class="col-xs-8"> <label class="control-label">Effective Date</label> <div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="mm-dd-yyyy"> <input class="form-control" type="text" readonly="" value="12-02-2012"> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div> </div> </div>*@
+                
+                      @* <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    *@
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="box">
+                               
+                                <div class="table-responsive">
+                                    <table id="example2" class="table table2">
+                                     @Html.HiddenFor(model => model.Id)
+                                    @* @Html.HiddenFor(model => model.NO)*@
+                                     @Html.HiddenFor(model => model.CreatedFrom)
+                                    @*@Html.HiddenFor(model => model.ReferenceNo)*@
+                                     @Html.HiddenFor(model => model.OrderNo)
+                                       @Html.HiddenFor(model => model.SupplierId)
+                                       @Html.HiddenFor(model => model.Status)
+                                        @Html.HiddenFor(model => model.TransactionCurrency)
+                                         @Html.HiddenFor(model => model.BaseCurrencyCode)
+                                        <tbody>
+                                         <tr>
+                                                <td> @Html.Label("Supplier Challan No")</td>
+                                                <td>  @Html.TextBoxFor(model => model.ReferenceChallan, new { @class = "form-control", @placeholder = "Enter Challan No" })
+                                                      @Html.ValidationMessageFor(model => model.ReferenceChallan) </td>
+                                              
+                                                <td></td>
+                                                <td> @Html.Label("Purchase Order")</td>
+                                        
+                                                 <td> @Html.DropDownListFor(model => model.ReferenceNo, new SelectList(ViewBag.ReferencePO, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                                      @Html.ValidationMessageFor(model => model.ReferenceNo)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td> @Html.Label("Supplier Code")<span style="font-weight:bold;color:Red;">*</span></td>
+                                        
+                                                 <td> @Html.TextBoxFor(model => model.SupplierCode, new { @class = "form-control", @placeholder = "Enter Supplier Code" })
+                                                @Html.ValidationMessageFor(model => model.SupplierCode)
+                                                </td>
+                                              
+                                                <td></td>
+                                                <td> @Html.Label("Delivery Name") </td>
+                                                
+                                               
+                                                  <td> @Html.TextBoxFor(model => model.DeliveryName, new { @class = "form-control", @placeholder = "Enter Delivery Name" })</td>
+                                            </tr>
+                                            <tr>
+                                                <td> @Html.Label("Supplier Name")<span style="font-weight:bold;color:Red;">*</span></td>
+                                                
+                                                  <td> @Html.TextBoxFor(model => model.SupplierName, new { @class = "form-control", @placeholder = "Enter Supplier Name" })
+                                                  @Html.ValidationMessageFor(model => model.SupplierName)
+                                                 </td>
+                                                <td></td>
+                                                <td>@Html.Label("Street Address")</td>
+                                                <td> @Html.TextBoxFor(model => model.StreetPoBox, new { @class = "form-control", @placeholder = "Enter Street Address" })
+                                                 @Html.ValidationMessageFor(model => model.StreetPoBox)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                 <td> @Html.Label("Supplier Reference")</td>
+                                                <td>  @Html.TextBoxFor(model => model.Reference, new { @class = "form-control", @placeholder = "Enter Supplier Refence" })</td>
+                                                <td></td>
+                                                <td>@Html.Label("Suhurb")</td>
+                                                <td> @Html.TextBoxFor(model => model.Suburb, new { @class = "form-control", @placeholder = "Enter Suhurb" })</td>
+                                            </tr>
+                                            <tr>
+                                               <td> @Html.Label("Payment Term")</td>
+                                                <td>    @Html.DropDownListFor(model => model.PaymentTermId, new SelectList(ViewBag.PaymentTerms, "Id", "PaymentTermDescription"), "----Select----", new { @class = "form-control" })</td>
+                                                <td></td>
+                                                <td>@Html.Label("City")</td>
+                                                <td> @Html.TextBoxFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })</td>
+                                            </tr>
+                                            <tr>
+                                                 <td> @Html.Label("Warehouse")</td>
+                                                <td>   @Html.DropDownListFor(model => model.WarehouseId, new SelectList(ViewBag.ddlWarehouses, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                                 @Html.ValidationMessageFor(model => model.WarehouseId)
+                                                </td>
+                                               
+                                                <td></td>
+                                                <td>@Html.Label("State/Region")</td>
+                                                <td> @Html.TextBoxFor(model => model.StateRegion, new { @class = "form-control", @placeholder = "Enter State/Region" })</td>
+                                            </tr>
+                                            <tr>
+                                               
+                                                <td> @Html.Label("Order Date")</td>
+                                                <td> @Html.TextBoxFor(model => model.Date, new { @class = "form-control", @readonly = "" })   
+                                                 @Html.ValidationMessageFor(model => model.Date)
+                                                 </td>
+                                                 
+                                                <td></td>
+                                                <td>@Html.Label("Country")</td>
+                                                <td> @Html.TextBoxFor(model => model.Country, new { @class = "form-control", @placeholder = "Enter Country" })</td>
+                                            </tr>
+                                           
+                                            <tr>
+                                                 <td> @Html.Label("Delivery Date")</td>
+                                                <td> <div class="input-group date" id="dp4"  data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.ReceiptDate, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                                 @Html.ValidationMessageFor(model => model.ReceiptDate)
+                                                </td>
+                                                <td></td>
+                                                <td>@Html.Label("Postal Code")</td>
+                                                <td> @Html.TextBoxFor(model => model.PostalCode, new { @class = "form-control", @placeholder = "Enter Postal Code" })</td>
+                                            </tr>
+                                             <tr>
+                                                 <td> @Html.Label("Supplier Currency")</td>
+                                               <td> @Html.TextBoxFor(model => model.TransactionCurrencyCode, new { @class = "form-control", @readonly = "" })</td>
+                                                
+                                                <td></td>
+                                                <td>@Html.Label("Value In Base Currency ") (@Html.DisplayFor(model => model.BaseCurrencyCode))</td>
+                                              <td> @Html.TextBoxFor(model => model.Currencyrate, new { @class = "form-control", @readonly = "" }) </td>
+                                            </tr>
+                                              <tr>
+                                                 <td> @Html.Label("Lorry No")</td>
+                                               <td> @Html.TextBoxFor(model => model.LorryNo, new { @class = "form-control", @placeholder = "Enter Lorry Number" })</td>
+                                                
+                                                <td></td>
+                                                <td>@Html.Label("Tag No ") </td>
+                                              <td> @Html.TextBoxFor(model => model.TagNo, new { @class = "form-control", @placeholder = "Enter Tag Number", @readonly = "" }) </td>
+                                            </tr>
+                                         </tbody> 
+                                          
+                                    </table>
+                                  
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                            
+                            <div class="box">
+                               
+                                <div class="box-body table-responsive">
+                                    <table id="example1" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                              
+						<th width='15%'>Item Code</th>
+                        <th width='15%'>Item Name</th>
+                       @* <th width='10%'>Bar Code</th>*@
+						<th  width='15%'>Description</th>
+						<th  width='5%'>Qty</th>
+						<th width='8%'>UOM</th>
+                     <th width='5%'>of</th>
+                        <th width='8%'>Unit</th>
+                      
+                       @* <th width='10%'>Total Qty</th>*@
+						@*<th width='10%'>Unit Price</th>
+				        <th width='10%'>Amount</th>*@
+                        <th class='display-non-div'></th>
+                        <th class='display-non-div'></th>
+                       @* <th style='display:none;padding:0px;'></th>*@
+						<th width='2%' align='center'>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                           @* <tr>
+                                                <td>Trident</td>
+                                                <td>Internet
+                                                    Explorer 4.0</td>
+                                                <td>Win 95+</td>
+                                                <td> 4</td>
+                                                <td>X</td>
+                                            </tr>*@
+                                        </tbody>
+                                    </table>
+                                   
+                                  @*  <input type="button" value="Add Row" id="add_ExpenseRow" />*@
+                                    @*<button type="button" class="btn btn-primary btn-sm" id="add_ExpenseRow">Add New Line</button>*@
+                                  
+                                    <img src="../../Images/add-a-new-line.jpg" id="add_ExpenseRow" style="margin-top:10px !important;" />
+                                  @*  <input type='hidden' id="TotalAmount" name="TotalAmount" />
+                                   
+                                    <input type='hidden' id="GrandTotal" name="GrandTotal"  />
+                                    <input type='hidden' id="BCGrandTotal" name="BCGrandTotal"  />
+                                       <table width="100%">
+                                    <tr>
+                                    <td colspan="3" style="width:71%;">
+                                    &nbsp;
+                                    </td>
+
+                                    <td colspan="2" style="font-weight:bold; width:20%">
+                                    Sub Total
+                                    </td>
+                                    <td style="font-weight:bold;text-align:right; width:9%;padding-right:3%;" id="subtotal">@Model.TotalAmount</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                   <td colspan="3">
+                                    </td>
+                                    <td colspan="2" style="font-weight:bold;"  id="tcc">
+                                     Total In @Model.TransactionCurrencyCode Supplier Currency
+                                    </td>
+                                    <td style="font-weight:bold;text-align:right; width:9%;padding-right:3%;" id="totalpo">@Model.GrandTotal</td>
+                                    </tr>
+                                    <tr>
+                                    <td colspan="3">
+                                    </td>
+                                    <td colspan="2" style="font-weight:bold;">
+                                     Total In @Model.BaseCurrencyCode (Base Currency)
+                                    </td>
+                                    <td style="font-weight:bold;text-align:right; width:9%;padding-right:3%;" id="bctotalpo">@Model.BCGrandTotal</td>
+                                    </tr>
+                                    </table>*@
+                                </div><!-- /.box-body -->
+                             @*  <button type="button" data-loading-text="Loading..." class="btn btn-primary">
+  Loading state
+</button>
+
+                               <!-- Button trigger modal -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Launch demo modal
+</button>
+<a data-toggle="modal" data-target="#myModal" href="#">Click</a>*@
+      <!-- Modal -->
+<div class="modal fade ignore" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Add New Product</h4>
+      </div>
+      <div class="modal-body" id="modal-body">
+       <div class="alert alert-danger alert-dismissable" id="errordiv1" style="display:none">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b><br />
+ </div>
+         
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Group :</label>
+
+                  
+                  @Html.DropDownList("GroupId", new SelectList(ViewBag.group, "Id", "Name"), "-----Select----", new { @class = "form-control" })<br />
+                
+                 	
+                                    </div>
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Code :<span style="color:Red;">*</span></label>
+                  <div class="clr"></div>
+
+            
+                  <input type="text" id="parentname" readonly="readonly" class="form-control parentname" name="parentname" />
+                    @Html.TextBox("Code", null, new { @class = "form-control Code", @placeholder = "Enter 10 Digit Code", @maxlength = "10", @onkeypress = "return AlphaNumeric(event)" })
+             <center> &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;   &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+                     </center> 
+                                      
+                                     <div class="clr"></div>
+                                    </div>
+
+
+
+                            
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  Name :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextArea("Description", new { @class = "form-control", @placeholder = "Enter Description" })
+            
+                                                     
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Unit:</label>
+
+                  
+                  @Html.DropDownList("UnitId", new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                         	
+<b>Example: piece, pound, meter.</b>          
+                                     
+                                    </div>
+                                    
+                                                 <div class="form-group">
+                                          <label class="black_txt_010">
+               Sales Price :</label>
+
+                  
+                   @Html.TextBox("SalesPrice", null, new { @class = "form-control", @placeholder = "Enter Sales Price", @maxlength = "20" })
+                
+                                                     
+                                     
+                                    </div>            
+                
+
+
+                                    
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+            Is Salable Product :</label>
+
+                  
+                @*   @Html.CheckBox("IsStockProduct", true, new {@readonly="readonly" })*@
+              
+                                <input checked="checked" type="checkbox" disabled/>      
+                                    </div>
+
+
+
+                                    
+                                    
+                                    @* <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+        <button type="button" class="btn btn-primary" id="btnProduct">Save changes</button>
+ <img src="../../Images/ajax-loader(1).gif" alt="Loading..." id="loader" style="display:none;" />
+      </div>
+    @*  <div class="modal-footer">
+        
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+      </div>*@
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Add New Product</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+        <button type="button" class="btn btn-primary">Save</button>
+       
+     
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+                            </div><!-- /.box -->
+                        </div>
+                    </div>
+                  
+              
+                </section><!-- /.content -->
+           </aside>     
+     
+                 
+ }

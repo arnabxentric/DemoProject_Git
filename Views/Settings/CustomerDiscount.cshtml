@@ -1,0 +1,380 @@
+﻿@model XenERP.Models.MenuaccessUser
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+}
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $("#btnsave").click(function () {
+
+
+            if ($("input:checkbox[id=discount]:checked").length == 0 && $("input:checkbox[id=Fdcheck1]:checked").length == 0 && $("input:checkbox[id=Fdcheck2]:checked").length == 0 && $("input:checkbox[id=Fdcheck3]:checked").length == 0 && $("input:checkbox[id=Fdcheck4]:checked").length == 0) {
+
+                var fd = "0,0,0,0,0";
+                $.post("/Settings/CustomerDiscount", { Fdiscount: fd }, function () {
+
+                    alert("Further Discount Saved Successfully...");
+                    window.location.href = "/Settings/CustomerDiscount";
+
+
+
+                });
+            }
+
+            else {
+
+                if ($("input:checkbox[id=discount]:checked").length == 0) {
+
+                    alert("Please select discount");
+                    return false;
+
+                }
+
+
+
+
+                if ($("input:checkbox[id=Fdcheck2]:checked").length > 0 && $("input:checkbox[id=Fdcheck1]:checked").length == 0) {
+
+                    alert("Please select Further discount1");
+                    return false;
+
+                }
+
+
+
+                if ($("input:checkbox[id=Fdcheck3]:checked").length > 0 && $("input:checkbox[id=Fdcheck2]:checked").length == 0) {
+
+                    alert("Please select Further discount2");
+                    return false;
+
+                }
+
+
+                if ($("input:checkbox[id=Fdcheck4]:checked").length > 0 && $("input:checkbox[id=Fdcheck3]:checked").length == 0) {
+
+                    alert("Please select Further discount3");
+                    return false;
+
+                }
+
+
+
+                else {
+
+                    var fd = "";
+
+                    $("input:checkbox[class=chkNumber]:checked").each(function () {
+
+                        if (fd == "") {
+
+                            fd = $(this).val();
+                        }
+                        else {
+
+                            fd = fd + "," + $(this).val();
+
+                        }
+
+                    });
+
+
+                    if (fd == "") {
+
+                        alert("Please Select a Further Discount");
+                        return false;
+
+                    }
+
+
+                    $.post("/Settings/CustomerDiscount", { Fdiscount: fd }, function () {
+
+                        alert("Discount Saved Successfully...");
+                        window.location.href = "/Settings/CustomerDiscount";
+
+
+
+                    });
+
+
+
+                }
+            }
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+        $('.chkSelectAll').click(function () {
+            $('.chkNumber').prop('checked', $(this).is(':checked'));
+        });
+
+        $('.chkNumber').click(function () {
+
+            if ($('.chkNumber:checked').length == $('.chkNumber').length) {
+                $('.chkSelectAll').prop('checked', true);
+            }
+            else {
+                $('.chkSelectAll').prop('checked', false);
+            }
+        });
+
+    });
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $.get("/Settings/ShowAllCusDiscount/", function (data) {
+        
+            for (var i = 0; i < data.length; i++) {
+                var dis = data[i].Discount;
+                var fd1 = data[i].FD1;
+                var fd2 = data[i].FD2;
+                var fd3 = data[i].FD3;
+                var fd4 = data[i].FD4;
+
+
+                if (dis == true) {
+
+                    $('#discount').prop('checked', true);
+
+                }
+
+                if (fd1 == true) {
+
+                    $('#Fdcheck1').prop('checked', true);
+
+                }
+                if (fd2 == true) {
+
+                    $('#Fdcheck2').prop('checked', true);
+
+                }
+
+                if (fd3 == true) {
+
+                    $('#Fdcheck3').prop('checked', true);
+
+                }
+
+
+                if (fd4 == true) {
+
+                    $('#Fdcheck4').prop('checked', true);
+
+                }
+
+                if (fd1 == true && fd2 == true && fd3 == true && fd4 == true) {
+
+                    $('#chkall').prop('checked', true);
+
+                }
+
+
+            }
+        });
+
+
+    });
+</script>
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<aside class="right-side">
+<section  class="content-header">
+                    <h1>
+                  Customer Discount<small>Settings</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                                 
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+       
+
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right">  <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary" />
+                                   
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+                                
+
+
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+
+                         
+
+    <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+            
+              <thead>
+                        <tr>
+                     <th>
+                        Name
+                        </th>
+                      <th>
+                        <input type="checkbox"  id="chkall"   class="chkSelectAll"  />  Select All
+                        </th>
+                       
+                     
+                     
+
+
+                    </tr>   
+                    
+                      </thead>
+                                
+                                      
+                             <tr>
+                      
+                        <td>
+
+
+                                <b>Discount</b>
+
+                     
+                            </td>
+                         <td>
+                         <div class="chekbox">
+                                      <input type="checkbox" id="discount" class="chkNumber" value="5"  />
+                     </div>
+                            </td>
+                          
+                            </tr>
+
+
+                             <tr>
+                       <td>
+
+
+                                <b>Further Discount1</b>
+
+                     
+                            </td>
+                         <td>
+                         <div class="chekbox">
+                                      <input type="checkbox" id="Fdcheck1" class="chkNumber" value="1"  />
+                     </div>
+                            </td>
+                           
+                            </tr>
+                               <tr>
+                            <td>
+
+
+                                <b>Further Discount2</b>
+
+                     
+                            </td>
+                         <td>
+                         <div class="chekbox">
+                         @Html.HiddenFor(model => model.CompanyId)
+                                      <input type="checkbox" id="Fdcheck2" class="chkNumber"   value="2"  />
+                     </div>
+                            </td>
+                          
+                              </tr>
+                              <tr>
+                            <td>
+
+
+                                <b>Further Discount3</b>
+
+                     
+                            </td>
+                         <td>
+                         <div class="chekbox">
+                                      <input type="checkbox" id="Fdcheck3" class="chkNumber"  value="3"   />
+                     </div>
+                            </td>
+                         
+                              </tr>
+                        
+                        <tr>
+                         
+                            <td>    <b>Further Discount4</b>
+
+                     
+                            </td>
+                         <td>
+                         <div class="chekbox">
+                                      <input type="checkbox" id="Fdcheck4" class="chkNumber" name="chkNumber"  value="4"   />
+                     </div>
+                            </td>
+                              
+                          
+                    
+
+                        </tr>
+              
+
+               
+   
+            </table>
+
+            </div>
+            </div>
+
+             </div>           
+
+</div>           
+
+</div>           
+
+            </aside>

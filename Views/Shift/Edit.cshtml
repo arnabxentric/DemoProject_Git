@@ -1,0 +1,198 @@
+﻿@model XenERP.Models.Shift
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="../../css/timepicker/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css" />
+
+<script src="../../js/plugins/timepicker/bootstrap-timepicker.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        $(".timepicker").timepicker({
+            showInputs: false
+        });
+    });
+</script>
+
+ @using (Html.BeginForm())
+ {
+    @Html.ValidationSummary(true)
+     @Html.HiddenFor(d => d.Id)
+            @Html.HiddenFor(d => d.UserId)
+              @Html.HiddenFor(d => d.CompanyId)
+                @Html.HiddenFor(d => d.BranchId)
+                 
+                    @Html.HiddenFor(d => d.CreatedOn)
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Shift   <small>Master Entry</small>                    
+                    </h1>
+                    @*<ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>*@
+                </section>
+
+
+
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+    
+                <section class="content">
+
+
+                 
+           
+
+
+
+
+
+                    <div class="row">
+         
+                                  
+                <!-- Main content -->
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                                   <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                    
+                
+                                           
+                           
+                                   <div class="box-body">
+                                       
+
+                                  
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                      Shift Name<span style="color:Red;">*</span></label>
+               @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })               
+               @Html.ValidationMessageFor(model => model.Name)
+
+             
+                                        </div>
+
+
+
+                                  
+
+
+                                        <div class="bootstrap-timepicker">
+                                        <div class="form-group">
+                                            <label>Start Time<span style="color:Red;">*</span></label>
+                                            <div class="input-group">                                            
+                                              @*  <input type="text" class="form-control timepicker"/>*@
+                                                  @Html.TextBoxFor(model => model.StartTime, new { @class = "form-control timepicker" })        
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-clock-o"></i>
+                                                </div>
+                                            </div><!-- /.input group -->
+                                        </div><!-- /.form group -->
+                                    </div>
+                                            
+                                  
+
+                                     <div class="bootstrap-timepicker">
+                                        <div class="form-group">
+                                            <label>End Time<span style="color:Red;">*</span></label>
+                                            <div class="input-group">                                            
+                                              @*  <input type="text" class="form-control timepicker"/>*@
+                                                  @Html.TextBoxFor(model => model.EndTime, new { @class = "form-control timepicker" })        
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-clock-o"></i>
+                                                </div>
+                                            </div><!-- /.input group -->
+                                        </div><!-- /.form group -->
+                                    </div>
+
+                                          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        </div>
+                                        </div>
+                                       </div> 
+
+                                        
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                   Remarks</label>
+                  
+                    
+  @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control" })        
+                                         </div>
+
+
+
+                                          
+
+
+                                         
+                                         
+
+                                            <div class="form-group">
+                                          <label class="black_txt_010">
+          Active </label>
+                 
+                  
+                 
+  @Html.CheckBoxFor(model => model.Status, new { @class = "form-control", @checked = "checked" })     
+                 
+                                      
+                                         </div>
+                                    
+                                     </div>
+                                     </div>
+                                     </div>
+                                
+                                    
+
+                         
+                    </div>   
+                 
+                
+
+              </section>
+        
+        
+        </aside>
+        
+        
+        
+        
+ }

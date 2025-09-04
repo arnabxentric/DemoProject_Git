@@ -1,0 +1,277 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FeedReceivedFromFarmModelView>
+
+@{
+    ViewBag.Title = "FarmInformationDetails";
+}
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#btnPDF').click(function () {
+            //Get the HTML of div
+            var divElement1 = document.getElementById("print1").innerHTML;
+
+
+            //Get the HTML of whole page
+            var oldPage = document.body.innerHTML;
+
+            //Reset the page's HTML with div's HTML only
+            document.body.innerHTML =
+                           "<html><head><title></title></head><body>"
+                           + divElement1 + "</body>";
+            //  window.location.href = "/PoultryDailyEntry/ShowAllDailyEntry";
+            //Print Page
+            window.print();
+
+            //Restore orignal HTML
+            //document.body.innerHTML = oldPage;
+
+            // $("#print1").show();
+
+        });
+    });
+    </script>
+
+
+
+@*<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+    <script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>*@
+
+
+@using (Html.BeginForm())
+{
+
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Feed/Medicine Receive<small> Details</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Details</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+                 <li class="pull-right"> <input name="" type="button" id="btnPDF" value="Print" class="btn btn-primary" /></li>
+            </ul>
+        </div>
+        <section class="content">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    @ViewBag.Message
+                </div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissable">
+                    <i class="fa fa-ban"></i>
+                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                    <b>Error!</b>
+                    @ViewBag.Error
+                </div>
+            }
+
+
+  @foreach (var item in Model)
+  {
+         @Html.HiddenFor(d => item.Id)
+
+         
+
+            <section class="content" id="print1">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Product Received Information</h4>
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Unit Code : </label>
+                                    @Html.DisplayFor(model => item.UnitCode, new { @class = "form-control" })
+                                </div> 
+                                
+                                
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Farmer Name : </label>
+                                    @Html.DisplayFor(model => item.FarmerName, new { @class = "form-control" })
+                                </div>  
+                                
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Flock Code : </label>
+                                    @Html.DisplayFor(model => item.FlockCode, new { @class = "form-control" })
+                                </div>                                 
+                                
+                                  <div class=" form-group ">
+                                    <label class="black_txt_010">Date Of Receipt: </label>
+                                    @Html.DisplayFor(model => item.DateOfReceiptString, new { @class = "form-control" })
+                                </div>                                
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Product Received Information</h4>
+
+                                 <div class=" form-group ">
+                                    <label class="black_txt_010">Challan No: </label>
+                                    @Html.DisplayFor(model => item.ChallanNo, new { @class = "form-control" })
+                                </div>
+                                
+                                 <div class=" form-group ">
+                                    <label class="black_txt_010">Delivery ManCode: </label>
+                                    @Html.DisplayFor(model => item.DeliveryManCode, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Delivery ManName : </label>
+                                    @Html.DisplayFor(model => item.DeliveryManName, new { @class = "form-control" })
+                                </div>
+
+                               
+         
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    
+
+    <div class="Row">
+
+        <div class="form-group">
+                          <h3>Feed Details</h3>
+                          </div>
+                         <div class="form-group">
+                         <div class="table-responsive">
+                          <table class="my-table-style table" id="dataTable">
+                          <tr class="my-table-header">
+
+                           <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Category Name</label>
+                          </td>
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Product Name</label>
+                          </td>
+
+                           <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Description</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Product Quantity</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Unit Type</label>
+                          </td>
+
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Unit Of</label>
+                          </td>
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Total Quantity</label>
+                          </td>
+                          </tr>
+
+
+                           @{ int H = 0;
+                               
+                            }
+
+                           @for (int i = 0; i < item.feedreceivedfromfirmDetails.Count(); i++)
+                           {
+
+                               H = H + i;
+                         
+                       
+                            <tr >
+
+                            <td  style="text-align:center;">
+                           @Html.DisplayFor(model => item.feedreceivedfromfirmDetails[i].CategoryName, new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Category" + i, @Name = "CategoryName" + i })
+                        
+                          </td>
+
+                              <td  style="text-align:center;">
+                           @Html.DisplayFor(model => item.feedreceivedfromfirmDetails[i].ProductName, new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Feed" + i, @Name = "FeedName" + i })
+                        
+                          </td>
+
+                           <td style="text-align:center;">
+                          @Html.DisplayFor(model => item.feedreceivedfromfirmDetails[i].Description, new { @class = "form-control", @id = "FeedDesc" + i, @Name = "FeedDesc" + i })
+                          </td>
+
+                           <td  style="text-align:center;">
+                           @Html.DisplayFor(model => item.feedreceivedfromfirmDetails[i].Quantity, new { @class = "form-control FeedQuantity", @id = "FeedQuantity" + i, @Name = "FeedQuantity" + i })
+                          </td>
+
+                           <td  style="text-align:center;">
+                          @Html.DisplayFor(model => item.feedreceivedfromfirmDetails[i].UOMName, new { @class = "form-control UOMName", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "UOM" + i, @Name = "UOM" + i })
+                          </td>
+
+
+                          <td style="text-align:center;">
+                           @Html.DisplayFor(model => item.feedreceivedfromfirmDetails[i].UnitFormula, new { @class = "form-control PrimaryUnit", @id = "PrimaryUnit" + i, @Name = "PrimaryUnit" + i })
+                          </td>
+
+                          <td style="text-align:center;">
+                          @{
+                               var k = item.feedreceivedfromfirmDetails[i].UnitFormula * item.feedreceivedfromfirmDetails[i].Quantity;
+                               var p = Convert.ToString(k);                           
+                            }
+
+                            
+                         @Html.Label("TotalQuantity",p)
+                          </td>
+
+
+                             </tr>
+                           }
+                        
+                           </table>
+
+                              @Html.Hidden("IdToHold", H)
+                           </div>
+                           @* <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('dataTable')" />*@
+                           </div>
+
+                          
+
+</div>
+
+
+
+
+           
+        </section>
+  }
+    </aside>
+}
+
+
+
+
+

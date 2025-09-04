@@ -1,0 +1,228 @@
+﻿@model XenERP.Models.ModelView.FeedStockModelView
+
+@*@model IEnumerable<XenERP.Models.ModelView.NEFTModelview>*@
+
+using XenERP.Models
+
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+
+    /*.dtwidth1 {
+        width: 20px;
+    }
+
+    .dtwidth2 {
+        width: 50px;
+    }
+
+    .dtwidth3 {
+        width: 100px;
+    }*/
+</style>
+
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": false,
+            "bAutoWidth": false
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+
+        $('#print').click(function () {
+
+            $("#example1 tr:gt(0)").each(function (index, item) {
+
+                var p = $(item).find('input[type="checkbox"]:checked');
+
+                if (p.val() != 'true') {
+                    $(item).find('input[type="checkbox"]').closest('td').closest('tr').hide();
+
+                }
+
+            });
+
+
+            $(".Status").hide();
+            $(".DoNeft").hide();
+            $("#divPrint").print();
+
+        });
+        var today = new Date();
+        //$("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        var afterTwoDays = new Date();
+        afterTwoDays.setDate(today.getDate() - 4);
+        $("#dp3").datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            startDate: afterTwoDays
+        });
+        $("#btnSubmit").on('click', function () {
+            $("#loading").fadeIn();
+        });
+
+    });
+
+
+
+</script>
+
+<script type="text/javascript">
+
+
+
+
+</script>
+
+
+<aside class="right-side"></aside>
+
+
+<aside class="right-side">
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                <img src="~/Images/newLoad.gif" />
+            </p>
+        </div>
+    </div>
+    @{
+        long Branchid = Convert.ToInt64(Session["BranchId"]);
+
+    }
+
+
+    <section class="content-header">
+        <h1>Ready GC Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+    @using (Html.BeginForm("GcReadyForDespatch", "HariDailyEntry", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+
+
+        <div class="box">
+            <div class="form-group">
+                <label class=""> HO Sending Date:<span style="color:Red;">*</span> </label>
+                <div class="input-group date" id="dp3" data-date-end-date="0d" data-date-format="@Session["DateFormatLower"]">
+                @Html.TextBoxFor(model => model.HoSentDate, new { @class = "form-control", @readonly = "" })  
+                <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                @Html.ValidationMessageFor(model => model.HoSentDate)
+                <input type="submit" id="btnSubmit" value="Submit" class="btn btn-primary pull-right" />
+            </div>
+         
+
+            <div class="box-body table-responsive" id="divPrint">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+
+                        <tr>
+                            <th>SL No</th>
+                            <th>Farmer Name</th>
+                            <th>Branch</th>
+                            <th>Lot No</th>
+                            <th>Placement Date</th>
+                            <th>End Date</th>
+                            <th>Flock Code</th>
+                            <th>Linsman</th>
+                            <th style="text-align:right">GC Amount</th>
+                            <th class="DoNeft">Sent</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @for (int i = 0; i < Model.neftList.Count(); i++)
+                        {
+
+                        <tr>
+                            @{ Slno = Slno + 1;
+                            }
+                            <td>
+                                @Slno
+                                @Html.HiddenFor(m => m.neftList[i].Id)
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => Model.neftList[i].FarmerName)</td>
+                            <td>@Html.DisplayFor(modelItem => Model.neftList[i].BranchName)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => Model.neftList[i].LotNo)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].PlacementDate)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].EndDate)</td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => Model.neftList[i].FlockCode)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].LinesmanName)</td>
+                            <td style="text-align:right">@Html.DisplayFor(modelItem => Model.neftList[i].GCAmount)</td>
+                            <td style="text-align:center">@Html.CheckBoxFor(modelItem => Model.neftList[i].DoNEFT, new { @class = "DoNeft" })</td>
+                        </tr>
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+            </div><!-- /.box-body -->
+
+
+        </div>
+
+    }
+
+
+</aside>

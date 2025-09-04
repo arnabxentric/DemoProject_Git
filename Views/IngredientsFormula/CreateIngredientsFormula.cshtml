@@ -1,0 +1,110 @@
+﻿@model XenERP.Models.IngredientFormulaModelView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@using (Html.BeginForm("CreateIngredientsFormula", "IngredientsFormula"))
+{
+    <aside class="right-side">
+
+
+      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                        <li><h1>Ingredients Formula<small>&nbsp;&nbsp;Entry</small></h1></li>
+                                </ul>
+             </div>
+
+                                     
+        @if (ViewBag.Message != null)
+        {
+            <div id="SUC" class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                       @ViewBag.Message
+             </div>
+        }
+        
+        @if (ViewBag.Error != null)
+        { 
+               <div class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+        }
+        
+
+                                
+
+
+
+
+  <section class="content">  
+  
+                   
+                                <div class="col-md-12">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                     </div>
+                                <div class="box-body">
+
+                                <table id="example3" class="table table-bordered table-striped1 dataTable">
+                                <tbody>
+                                <tr>
+                                <td class="col-md-6" align="center"><h5>Product Name</h5></td>
+                                <td class="col-md-6">    @Html.DropDownListFor(model => model.ProductId, new SelectList(ViewBag.product, "Id", "Name"), "----Select----", new { @class = "form-control" })</td>
+                                </tr>
+                                </tbody>
+                                </table>
+           
+  @*         <div class="col-lg-6">Part1</div>
+           <div class="col-lg-6">Part2</div>
+           <div class="clearfix"></div>
+           <div class="col-lg-6">Part1</div>
+           <div class="col-lg-6">Part2</div>
+           <div class="clearfix"></div>*@
+                
+
+           <table id="example2" class="table table-bordered table-striped1 dataTable" >
+          
+            <tr>
+                           <th colspan="2">
+                           <input name="" type="submit" id="btnsave" value="Save Ingrediets Specification" class="btn btn-primary pull-right space" />
+                        </th>
+                        
+                           </tr>
+                          
+           <tbody>
+            <div class="col-lg-12">
+                            @for (int i = 0; i < Model.itemList.Count(); i++)
+                             {
+ 
+                                  <div class="col-lg-6 pull-left"> 
+                                  <div class="col-lg-6">
+                                  <b> @Html.TextBoxFor(m => m.itemList[i].NutritionName, new { @class = "form-control",@readonly="readonly" })</b>
+                                  </div>
+                                <div class="col-lg-6">
+                               @Html.HiddenFor(m => m.itemList[i].NutritionId) 
+                               @Html.TextBoxFor(model => model.itemList[i].NutriValue, new { @class = "form-control" })
+                               </div>
+                               </div>
+                             }
+                             
+                           
+      </div>
+                         
+           </tbody>
+          
+           </table>
+         
+                    </div>
+                    </div>   <!-- /.row -->
+                    </div>
+                                               
+                </section><!-- /.content -->
+</aside>
+}
+

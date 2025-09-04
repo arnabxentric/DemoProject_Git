@@ -1,0 +1,291 @@
+﻿@model IEnumerable<XenERP.Models.PurchaseOrderVarianceDetail>
+
+@{
+    Layout = null;
+    var SlNo = 0;
+    decimal SubTotal = 0;
+    decimal Discount = 0;
+    decimal TotAmt = 0;
+    int totalcartons = 0;
+    decimal AddTotal = 0;
+    decimal DiscountTotal = 0;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style type="text/css">
+        table.dataTable thead .sorting_desc {
+            background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+        }
+
+        table.dataTable thead .sorting_asc {
+            background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+        }
+
+        .table-responsive {
+            min-height: 0.01%;
+            overflow-x: auto;
+        }
+
+        table.chompa td table.pompa td {
+            width: 100%;
+        }
+
+        .chompa thead {
+            background: #106FB7;
+            color: navajowhite;
+        }
+
+        .chompa tbody tr td {
+            padding: 2px;
+        }
+
+        .tumpa {
+            color: #0099cc;
+            cursor: pointer;
+        }
+    </style>
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $(".chompa").on('mouseover', 'tr.clickable-row td', function () {
+            var ctd = $(this).closest('td');
+            var ctr = ctd.parent('tr');
+
+           ctr.addClass("tumpa");
+            //ctr.css("background-color", "yellow");
+
+
+        });
+
+        $(".chompa").on('mouseout', 'tr.clickable-row td', function () {
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.parent('tr');
+
+            ctr.removeClass("tumpa");
+
+           // ctr.css("background-color", "Aquamarine");
+
+        });
+
+
+        $(".chompa").on('click', 'tr.clickable-row td', function () {
+
+
+            var UM = $(this).val();
+            var ctd = $(this).closest('td');
+            var ctr = ctd.closest('tr');
+            var fl = parseInt(ctr.find(".AccoDethid").val());
+            ctr.find(".imgLoader").show();
+            ctr.find(".pluspng").css("display", "none");
+            ctr.find(".minuspng").css("display", "inline");
+            var slNoH = ctr.find(".hiddenSL").val();
+            var getSL = ctr.next();
+
+            var newRow = getSL.find('div');
+          //  newRow.css("background-color", "Aquamarine");
+
+            if (newRow.text().length > 0) {
+                newRow.html('');
+                newRow.hide();
+                ctr.find(".minuspng").css("display", "none");
+                ctr.find(".pluspng").css("display", "inline");
+                ctr.find(".imgLoader").hide();
+            }
+
+            else {
+                newRow.show();
+                $.get("/PurchaseReport/PurchaseVarianceDetailReport", { id: fl }, function (data) {
+
+                    var newFarmDetailsDiv = $("<div></div>");
+                  //  newFarmDetailsDiv.css("opacity", "0.8");
+                    newFarmDetailsDiv.css("display", "block");
+                    newFarmDetailsDiv.html(data);
+                    newFarmDetailsDiv.appendTo(newRow);
+                    ctr.find(".imgLoader").hide();
+
+                });
+            }
+
+
+        });
+
+
+    });
+
+
+    </script>
+    @*<script type="text/javascript">
+        $(function () {
+
+
+            $('#example1').dataTable({
+
+                "bPaginate": true,
+                "bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "bAutoWidth": true
+            });
+        });
+        </script>*@
+    <style type="text/css">
+        .ui-autocomplete-loading {
+            background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+        }
+
+        .marginleft10 {
+            margin-left: 10px !important;
+        }
+
+        .screenlet-title-bar {
+            color: #0099cc;
+            font-size: 14pt;
+            font-weight: bold;
+            height: 24px;
+        }
+
+        .ErrorControl {
+            background: none repeat scroll;
+            border: 1px solid Red;
+            padding: 4px;
+            width: 96%;
+        }
+
+        .pad svg {
+            width: 100% !important;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width" />
+    <title>PurchaseVarianceReport</title>
+</head>
+<body>
+    <aside class="right-side">
+
+        <div class="box box-primary">
+            <div class="box-header">
+
+            </div>
+            <div class="box-body">
+
+                <div class="box-body table-responsive divContent">
+
+                    <table id="example1" width="100%" class="table table-bordered table-striped dataTable chompa" aria-describedby="example1_info">
+                        <thead>
+                            <tr>
+                                <th>
+                                    SlNo.
+                                </th>
+
+                                <th>
+                                    P.O. No.
+                                </th>
+                                <th>
+                                    P.O.Date
+                                </th>
+                                <th>
+                                    P.O.Status
+                                </th>
+
+                                <th>
+                                    Party
+                                </th>
+                                <th>
+                                    Warehouse
+                                </th>
+
+                                <th>
+                                    Product
+                                </th>
+                                <th>
+                                    P.O.Quantity
+                                </th>
+                                <th>
+                                    P.O.Rate
+                                </th>
+                                <th>
+                                    Challan Quantity
+                                </th>
+                                <th>
+                                    Invoice Quantity
+                                </th>
+                                <th>
+                                    Invoice Rate
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                SlNo = SlNo + 1;
+
+                                <tr class='clickable-row' data-href='#'>
+
+                                    <td>
+                                        @SlNo
+
+                                        <input type="hidden" value="@SlNo" class="hiddenSL" />
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PONO)
+                                        <img class="pluspng" src="~/Images/pluspng.png" />
+                                        <img class="minuspng" src="~/Images/minuspng.png" style="display:none" />
+                                    </td>
+                                    <td>
+                                        @String.Format(Session["DateFormatUpper"].ToString(), item.PODate)
+                                        <input type="hidden" value="@item.POId" class="AccoDethid" />
+                                        <img src="~/Images/moonspin.gif" alt="Loader" width="20px" height="10px" style="display:none;" class="imgLoader" />
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.POStatus)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Party)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Warehouse)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductName)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.POQuantity)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.POPrice)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.PRQuantity)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.PIQuantity)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.PIPrice)
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td colspan="12"><div id="demo_@SlNo"></div></td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </aside>
+</body>
+</html>

@@ -1,0 +1,845 @@
+﻿@model XenERP.Models.DoubleEntryModelView
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+
+
+}
+@*<style type="text/css">
+        body {
+           /* background: #0083B0;*/
+            background: -webkit-linear-gradient(to right, #0083B0, #00B4DB);
+            background: linear-gradient(to right, #0083B0, #00B4DB);
+            min-height: 100vh;
+        }
+
+        .form-control::placeholder {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .w1{
+            width :40%;
+        }
+    </style>*@
+<style type="text/css">
+    /*   .form-control:focus {
+        outline: none !important;
+        border: 1px solid red;
+        box-shadow: 0 0 10px #719ECE;
+    }
+    input:invalid {
+        border: 2px solid pink;
+    }*/
+</style>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<script>
+    // Add our custom rule / method
+    jQuery.validator.addMethod("notequalto", function (value, element, params) {
+       // alert(element.id);
+        var thisValue = value;
+        var input = element.id.toString();
+        var period = input.lastIndexOf('_');
+        var pluginName = input.substring(0, period);
+        var otherValue = $('#' + pluginName + '_' + params.other).val();
+     //   alert('#' + pluginName + '_' + params.other);
+        return this.optional(element) || value !== otherValue;
+    }, "These shouldn't equal");
+
+    $.validator.unobtrusive.adapters.add("notequalto", ["other"], function (options) {
+        options.rules["notequalto"] = options.params;
+        options.messages["notequalto"] = options.message;
+    });
+    $(document).ready(function () {
+
+        //jQuery.validator.addMethod("comparison", function (value, element) {
+        //    var pcompra = $("#DebitTotal").val();
+        //    return this.optional(element) || value > pcompra;
+        //});
+        //$("#form").validate({
+        //    rules: {
+        //        pcompra: {
+        //            required: true,
+        //            number: true
+        //        },
+        //        pventa: {
+        //            required: true,
+        //            number: true,
+        //            comparison: true
+        //        }
+        //    },
+        //    messages: {
+        //        pcompra: {
+        //            required: 'This field is required.',
+        //            number: 'Please enter a valid number.'
+        //        },
+        //        pventa: {
+        //            required: 'This field is required.',
+        //            number: 'Please enter a valid number.',
+        //            comparison: 'This field should larger than field pcompra'
+        //        }
+        //    }
+        //});
+    //});
+        $("#errordiv").on('click','#closebtn' ,function (e) {
+          //  e.stopPropagation();
+            $('#errordiv').html('<i class="fa fa - ban"></i><button id="closebtn"  type="button">×</button>     <b>Error!</b>');
+            $('#errordiv').css("display", "none");
+           // $('#errordiv').hide();
+        })
+        $(document).on('submit', 'form', function () {
+            var cntr = 0;
+            var totalcredit = $("#CreditTotal").val() ;
+            var totaldebit = $("#DebitTotal").val();
+            if ($('#example1 >tbody >tr').length < 2) {
+                cntr++;
+                $('#errordiv').html('<i class="fa fa - ban"></i><button id="closebtn"  type="button">×</button>     <b>Error!</b>');
+                $('#errordiv').append(cntr + '. Atleat 2 row are required.<br/>');
+                $('#errordiv').css("display", "block");
+            }
+           // alert(totalcredit);
+            if (parseFloat(Number(totalcredit).toFixed(2)) != parseFloat(Number(totaldebit).toFixed(2))) {
+                cntr++;
+                if(cntr == 1)
+                {
+                    $('#errordiv').html('<i class="fa fa - ban"></i><button id="closebtn"  type="button">×</button>     <b>Error!</b>');
+                    $('#errordiv').append(cntr + '. Total Debit and Credit must be equal<br/>');
+                    $('#errordiv').css("display", "block");
+                }
+                else {
+                    $('#errordiv').append(cntr + '. Total Debit and Credit must be equal<br/>');
+                    $('#errordiv').css("display", "block");
+                }
+               // $('#errordiv').show();
+                return false;
+            }
+
+            if (cntr > 0) {
+                return false;
+            }
+        });
+
+        var rowIdx = 0;
+
+        if ('@Model.DEV' == '') {
+            for (rowIdx = 0; rowIdx < 2; rowIdx++) {
+
+                $('#tbody').append(`<tr id="R${rowIdx}">
+             <td width="10%" class="row-index text-center">
+             <span class="Row"> Row ${rowIdx}  </span>
+             </td>
+                <td width="5%">
+
+                <select name="DEV[${rowIdx}].Club" id="DEV_${rowIdx}__Club" class="form-control Club" style='padding:0px;'>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+
+                </td>
+                <td width="35%">
+                    <input type="hidden" class="form-control DEVID" style='padding:0px;' name="DEV[${rowIdx}].Id" id="DEV_${rowIdx}__Id" value=""/>
+                    <input type="hidden" class="form-control DEVDEVID" style='padding:0px;' name="DEV[${rowIdx}].DEVId" id="DEV_${rowIdx}__DEVId" value=""/>
+                    <input type="hidden" class="form-control LID" style='padding:0px;' name="DEV[${rowIdx}].LID" id="DEV_${rowIdx}__LID" value="" />
+                    <input type="text" class="form-control LName" style='padding:2px;' name="DEV[${rowIdx}].LName" id="DEV_${rowIdx}__LName" value="" data-val="true" data-val-required="The Ledger Name field is required." />
+                    <span class="field-validation-valid Lvalid" data-valmsg-for="DEV[${rowIdx}].LName" data-valmsg-replace="true"></span>
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Debit" style='text-align:right;' name="DEV[${rowIdx}].Debit" id="DEV_${rowIdx}__Debit" value="" data-val="true" data-val-required="Debit required." data-val-range="Only positive number" data-val-range-max="3.40282346638529E+38" data-val-range-min="0" />
+                    <span class="field-validation-valid Dvalid" data-valmsg-for="DEV[${rowIdx}].Debit" data-valmsg-replace="true"></span>
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Credit" style='text-align:right;' name="DEV[${rowIdx}].Credit" id="DEV_${rowIdx}__Credit" value="" data-val="true" data-val-required="Credit required."  data-val-range="Only positive number" data-val-range-max="3.40282346638529E+38" data-val-range-min="0" data-val-notequalto="Dr Cr cannot match" data-val-notequalto-other="Debit" />
+                    <span class="field-validation-valid Cvalid" data-valmsg-for="DEV[${rowIdx}].Credit" data-valmsg-replace="true"></span>
+                </td>
+                <td width="20%">
+                    <input type="text" class="form-control LGroup"  name="DEV[${rowIdx}].LGroup" id="DEV_${rowIdx}__LGroup" value="" readonly/>
+                    <span class="field-validation-valid Gvalid" data-valmsg-for="DEV[${rowIdx}].LGroup" data-valmsg-replace="true"></span>
+                </td>
+                <td width='2%' align='center' style='background-color:#F9F9F9 !important; box-shadow:none !important'><img src='../../Images/icons-181e6a17.png' src='Delete' class='del_ExpenseRow input-non-active btn btn-danger remove' />
+                </td>
+
+              </tr>`);
+                updateValidation();
+            }
+        }
+        // Denotes total number of rows
+
+
+        // jQuery button click event to add a row
+        $('#addBtn').on('click', function () {
+            rowIdx = $('#example1 >tbody >tr').length;
+            // Adding a row inside the tbody.
+            $('#tbody').append(`<tr id="R${rowIdx}">
+             <td width="10%" class="row-index text-center">
+            <span class="Row"> Row ${rowIdx}  </span>
+             </td>
+                <td width="5%">
+
+                <select name="DEV[${rowIdx}].Club" id="DEV_${rowIdx}__Club" class="form-control Club" style='padding:0px;'>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+
+                </td>
+                <td width="35%">
+                    <input type="hidden" class="form-control DEVID" style='padding:0px;' name="DEV[${rowIdx}].Id" id="DEV_${rowIdx}__Id" value=""/>
+                    <input type="hidden" class="form-control DEVDEVID" style='padding:0px;' name="DEV[${rowIdx}].DEVId" id="DEV_${rowIdx}__DEVId" value=""/>
+                    <input type="hidden" class="form-control LID" style='padding:0px;' name="DEV[${rowIdx}].LID" id="DEV_${rowIdx}__LID" value=""/>
+                     <input type="text" class="form-control LName" style='padding:2px;' name="DEV[${rowIdx}].LName" id="DEV_${rowIdx}__LName"  data-val="true" data-val-required="The Ledger Name field is required." value="" />
+                     <span class="field-validation-valid Lvalid" data-valmsg-for="DEV[${rowIdx}].LName" data-valmsg-replace="true"></span>
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Debit" style='text-align:right;' name="DEV[${rowIdx}].Debit" id="DEV_${rowIdx}__Debit" value="" data-val="true" data-val-required="Debit required." data-val-range="Only positive number" data-val-range-max="3.40282346638529E+38" data-val-range-min="0" />
+                    <span class="field-validation-valid Dvalid" data-valmsg-for="DEV[${rowIdx}].Debit" data-valmsg-replace="true"></span>
+                </td>
+                <td width="15%">
+                    <input type="text" class="form-control Credit" style='text-align:right;' name="DEV[${rowIdx}].Credit" id="DEV_${rowIdx}__Credit" value="" data-val="true" data-val-required="Credit required." data-val-range="Only positive number" data-val-range-max="3.40282346638529E+38" data-val-range-min="0"  data-val-notequalto="Dr Cr cannot match" data-val-notequalto-other="Debit" />
+                    <span class="field-validation-valid Cvalid" data-valmsg-for="DEV[${rowIdx}].Credit" data-valmsg-replace="true"></span>
+                </td>
+                 <td width="20%">
+                    <input type="text" class="form-control LGroup" name="DEV[${rowIdx}].LGroup" id="DEV_${rowIdx}__LGroup" value="" readonly/>
+                    <span class="field-validation-valid Gvalid" data-valmsg-for="DEV[${rowIdx}].LGroup" data-valmsg-replace="true"></span>
+                </td>
+                <td width='2%' align='center' style='background-color:#F9F9F9 !important; box-shadow:none !important'><img src='../../Images/icons-181e6a17.png' src='Delete' class='del_ExpenseRow input-non-active btn btn-danger remove' /></td>
+
+              </tr>`);
+
+            totalDebitCredit();
+            updateValidation();
+        });
+
+        // jQuery button click event to remove a row.
+        //$('#tbody').on('click', '.remove', function () {
+
+        //    // Getting all the rows next to the row
+        //    // containing the clicked button
+        //    var child = $(this).closest('tr').nextAll();
+
+        //    // Iterating across all the rows
+        //    // obtained to change the index
+        //    child.each(function () {
+
+        //        // Getting <tr> id.
+        //        var id = $(this).attr('id');
+
+        //        // Getting the <p> inside the .row-index class.
+        //        var idx = $(this).children('.row-index').children('span');
+
+        //        // Gets the row number from <tr> id.
+        //        var dig = parseInt(id.substring(1));
+
+        //        // Modifying row index.
+        //        idx.html(`Row ${dig - 1}`);
+
+        //        // Modifying row id.
+        //        $(this).attr('id', `R${dig - 1}`);
+        //    });
+
+        //    // Removing the current row.
+        //    $(this).closest('tr').remove();
+
+        //    // Decreasing total number of rows by 1.
+        //    rowIdx--;
+        //});
+
+
+        $("#tbody").on("click", '.remove', function (event) {
+            // $(document).on('click', '.add-component-deletebotton', function () {
+
+            var j = $(this).closest('td').parent()[0].sectionRowIndex;
+            var tLID = $(this).closest('tr').find('.LID').val();
+            var tType = $(this).closest('tr').find('.LGroup').val();
+           // alert(tLID);
+          //  document.getElementById("example1").deleteRow(j);
+            var child = $(this).closest('tr').nextAll();
+           // var MyRows = $('table#example1').find('tr');
+            child.each(function () {
+                //   for (var i = 1; i < MyRows.length; i++) {
+               // var j = parseInt(i) - 1;
+                var devid = $(this).find('.DEVID');
+                var devdevid = $(this).find('.DEVDEVID');
+                var row = $(this).find('.Row');
+                var club = $(this).find('.Club');
+                var lid = $(this).find('.LID');
+                var lname = $(this).find('.LName');
+                var lvalid = $(this).find('.Lvalid');
+                var debit = $(this).find('.Debit');
+                var dvalid = $(this).find('.Dvalid');
+                var credit = $(this).find('.Credit');
+                var cvalid = $(this).find('.Cvalid');
+                var lgroup = $(this).find('.LGroup');
+                var gvalid = $(this).find('.Gvalid');
+                //var rtgs = $(MyRows[i]).find('.RTGSC');
+                //var linetotal = $(MyRows[i]).find('.LineTotalC');
+                row.text("Row" + j);
+
+
+                devid.attr("name", "DEV[" + j + "].Id");
+                devid.attr("id", "DEV_" + j + "__Id");
+
+                devdevid.attr("name", "DEV[" + j + "].DEVId");
+                devdevid.attr("id", "DEV_" + j + "__DEVId");
+
+
+                club.attr("name", "DEV[" + j + "].Club");
+                club.attr("id", "DEV_" + j + "__Club");
+
+                lid.attr("name", "DEV[" + j + "].LID");
+                lid.attr("id", "DEV_" + j + "__LID");
+
+                lname.attr("name", "DEV[" + j + "].LName");
+                lname.attr("id", "DEV_" + j + "__LName");
+
+                lvalid.attr("data-valmsg-for", "DEV[" + j + "].LName");
+
+                debit.attr("name", "DEV[" + j + "].Debit");
+                debit.attr("id", "DEV_" + j + "__Debit");
+
+                dvalid.attr("data-valmsg-for", "DEV[" + j + "].Debit");
+
+                credit.attr("name", "DEV[" + j + "].Credit");
+                credit.attr("id", "DEV_" + j + "__Credit");
+
+                cvalid.attr("data-valmsg-for", "DEV[" + j + "].Credit");
+
+                club.attr("name", "DEV[" + j + "].Club");
+                club.attr("id", "DEV_" + j + "__Club");
+
+                lgroup.attr("name", "DEV[" + j + "].LGroup");
+                lgroup.attr("id", "DEV_" + j + "__LGroup");
+
+                gvalid.attr("data-valmsg-for", "DEV[" + j + "].LGroup");
+
+                //linetotal.attr("name", "DEV[" + j + "].LineTotal");
+                //linetotal.attr("id", "DEV_" + j + "__LineTotal");
+                j++;
+            });
+            $(this).closest('tr').remove();
+          /*  alert(tType);*/
+            if (tType == "Bank") {
+                var isLIDExist = isLedgerExist(tLID);
+               /* alert(isLIDExist);*/
+                if (isLIDExist == false) {
+                    removeBankDetails(tLID);
+                    updateValidation();
+                }
+            }
+            totalDebitCredit();
+        });
+
+        $("#example1").on("keydown.autocomplete", '.LName', function (event) {
+            var id = $(this).attr('id');
+            var ctd = $('#' + id).closest('td');
+            var ctr = ctd.closest('tr');
+
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/LedgerMaster/getLedgersByNameWithLtype',
+                        data: { query: request.term },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return {
+                                    label: item.Name,
+                                    value: item.Id,
+                                    ltype: item.LGroup
+                                }
+                            }));
+                        }
+                    })
+                },
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $(this).val('');
+                        ctr.find('.LID').val('');
+
+                    }
+                },
+
+
+                select: function (event, ui) {
+                    ctr.find('.LID').val(ui.item.value);
+                    $(this).val(ui.item.label);
+                    ctr.find('.LGroup').val(ui.item.ltype);
+                   // alert(ui.item.ltype);
+                    if (ui.item.ltype == "Bank") {
+                        ctr.find('.LGroup').val("Bank");
+                        var isDup = checkLID(ui.item.value);
+                        if (isDup == false) {
+                            Bank(ui.item.value, ui.item.label);
+                            updateValidation();
+                        }
+                    }
+                    return false;
+                },
+                minLength: 1
+            });
+
+
+        });
+        $("#example1").on("keyup", '.Debit,.Credit', function (event) {
+           // alert($(this).hasClass('Debit'));
+            if ($(this).hasClass('Debit')) {
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+                ctr.find('.Credit').val('0');
+                ctr.find('.Credit').valid();
+            }
+            else {
+                var ctd = $(this).closest('td');
+                var ctr = ctd.closest('tr');
+                ctr.find('.Debit').val('0');
+                ctr.find('.Debit').valid();
+            }
+            totalDebitCredit();
+
+        });
+        function totalDebitCredit() {
+            var tdebit = 0;
+            var tcredit = 0;
+            $(".Debit").each(function () {
+                var value = $(this).val();
+                // add only if the value is number
+                if (!isNaN(value) && value.length != 0) {
+                    tdebit += parseFloat(value);
+                }
+            });
+            $("#DebitTotal").val(tdebit.toFixed(2));
+            $(".Credit").each(function () {
+                var value = $(this).val();
+                if (!isNaN(value) && value.length != 0) {
+                    tcredit += parseFloat(value);
+                }
+            });
+            $("#CreditTotal").val(tcredit.toFixed(2));
+        }
+
+        // function to remove Bank Details Div
+        function removeBankDetails(LID) {
+            $("#Bank .box-header").each(function (i) {
+
+
+                if (LID == $(this).find(".ledgerID").val()) {
+                    $(this).parents('.col-xs-4').remove();
+                    var i = 0
+
+                    $("#Bank .col-xs-4").each(function (i) {
+
+
+                       // alert(i);
+                        var bdid = $(this).find(".BDID");
+                        var bddevid = $(this).find(".BDDEVID");
+                        var lID = $(this).find(".ledgerID");
+                        var lName = $(this).find(".ledgerName");
+                        var mode = $(this).find(".Mode");
+                        var mvalid = $(this).find(".Mvalid");
+                        var chequeNo = $(this).find(".ChequeNo");
+                        var chequeDateString = $(this).find(".ChequeDateString");
+                        var chequeDetail = $(this).find(".ChequeDetail");
+
+                        bdid.attr("name", "DEVBD[" + i + "].Id");
+                        bdid.attr("id", "DEVBD_" + i + "__Id");
+
+                        bddevid.attr("name", "DEVBD[" + i + "].DEVId");
+                        bddevid.attr("id", "DEVBD_" + i + "__DEVId");
+
+                        lID.attr("name", "DEVBD[" + i + "].LID");
+                        lID.attr("id", "DEVBD_" + i + "__LID");
+
+                        lName.attr("name", "DEVBD[" + i + "].LName");
+                        lName.attr("id", "DEVBD_" + i + "__LName");
+
+                        mode.attr("name", "DEVBD[" + i + "].ModeOfPayment");
+                        mode.attr("id", "DEVBD_" + i + "__ModeOfPayment");
+
+                        mvalid.attr("data-valmsg-for", "DEVBD[" + i + "].ModeOfPayment");
+
+                        chequeNo.attr("name", "DEVBD[" + i + "].ChequeNo");
+                        chequeNo.attr("id", "DEVBD_" + i + "__ChequeNo");
+
+                        chequeDateString.attr("name", "DEVBD[" + i + "].ChequeDateString");
+                        chequeDateString.attr("id", "DEVBD_" + i + "__ChequeDateString");
+
+                        chequeDetail.attr("name", "DEVBD[" + i + "].ChequeDetail");
+                        chequeDetail.attr("id", "DEVBD_" + i + "__ChequeDetail");
+
+                        ++i;
+                    });
+                }
+
+            });
+        }
+
+        // function to check if the ledger which exists in the row to be deleted exist in other row also.
+        function isLedgerExist(LID) {
+            var rval = false;
+            $("#example1 .LID").each(function (i) {
+
+                // alert($(this).find(".ledgerID").val());
+                if (LID == $(this).val()) {
+
+                    rval = true;
+                }
+
+            });
+            return rval;
+        }
+
+        // function to check if the bank ledger already exists in band div or not
+        function checkLID(LID) {
+            var rval = false;
+            $("#Bank .box-header").each(function (i) {
+
+               // alert($(this).find(".ledgerID").val());
+                if (LID == $(this).find(".ledgerID").val()) {
+
+                    rval =true;
+                }
+
+            });
+            return rval;
+        }
+
+        // function to append bank details div with new bank details
+        function Bank(BankID,BankName) {
+            var divIdx = $(".Bank > div").length;
+            $('.Bank').append(`<div class="col-xs-4"><div class="box">
+                            <div class="box-header">
+                                ${BankName}
+                                <input type="hidden" class="DBID" name="DEVBD[${divIdx}].Id" id="DEVBD_${divIdx}__Id" value="" />
+                                <input type="hidden" class="DBDEVID" name="DEVBD[${divIdx}].DEVId" id="DEVBD_${divIdx}__DEVId" value="" />
+                                <input type="hidden" class="ledgerID" name="DEVBD[${divIdx}].LID" id="DEVBD_${divIdx}__LID" value="${BankID}" />
+                                <input type="hidden" class="ledgerName" name="DEVBD[${divIdx}].LName" id="DEVBD_${divIdx}__LName" value="${BankName}" />
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">Mode :</label>
+                                <select id="DEVBD_${divIdx}__ModeOfPayment" name="DEVBD[${divIdx}].ModeOfPayment" class="form-control Mode"   data-val="true" data-val-required="Please Select Mode of Payment.">
+                                    <option value="">--Select a Mode of Payment--</option>
+                                    <option value="Card">Card</option>
+                                    <option value="Cheque">Cheque</option>
+                                    <option value="NEFT">Neft/Rtgs</option>
+                                </select>
+                                <span class="field-validation-valid Mvalid" data-valmsg-for="DEVBD[${divIdx}].ModeOfPayment" data-valmsg-replace="true"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="black_txt_010">Cheque No/Neft No :</label>
+
+                                <input type="text" class="form-control ChequeNo" style='padding:2px;' name="DEVBD[${divIdx}].ChequeNo" id="DEVBD_${divIdx}__ChequeNo" value="" />
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">Cheque Date/Neft Date :</label>
+
+                                <div class="input-group date dp3" data-date-format="@Session["DateFormatLower"]" id="dp3"> <input type="text" class="form-control ChequeDateString" style='padding:2px;' name="DEVBD[${divIdx}].ChequeDateString" id="DEVBD_${divIdx}__ChequeDateString" value="" />  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">Cheque Detail/Neft Detail :</label>
+                                <input type="text" class="form-control ChequeDetail" style='padding:2px;' name="DEVBD[${divIdx}].ChequeDetail" id="DEVBD_${divIdx}__ChequeDetail" value="" />
+                            </div>
+                        </div></div>
+            `);
+
+
+        }
+        function updateValidation() {
+
+            $("form").removeData("validator");
+            $("form").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse("form");
+        }
+        $("#dp2").datepicker({ autoclose: true, todayHighlight: true });
+        $(".dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $('body').on('focus', ".dp3", function () {
+            $(this).datepicker({ autoclose: true, todayHighlight: true });
+        });
+    });
+
+
+</script>
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken()
+
+<aside class="right-side">
+    <section class="content-header">
+        @if (Model.DEVType == 1)
+        {
+            <h1> Receive<small>Double Entry Voucher</small> </h1>
+        }
+        else
+        {
+            <h1> Payment<small>Double Entry Voucher</small> </h1>
+        }
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+        </ul>
+    </div>
+
+
+    @if (ViewBag.Message != null)
+    {
+<div class="alert alert-success alert-dismissable">
+    <i class="fa fa-check"></i>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    @if (Model.DEVType == 1)
+    {
+        <b>Multi Receive Voucher</b><br />
+        @ViewBag.Message
+        <a href='/DoubleEntry/CreateDEV'> Enter a new Multi Receive Voucher?</a>
+    }
+    else if (Model.DEVType == 2)
+    {
+        <b>Multi Payment Voucher</b><br />
+        @ViewBag.Message
+        <a href='/DoubleEntry/CreateDEV'> Enter a new Multi Payment Voucher?</a>
+    }
+</div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+    @Html.ValidationMessage("PROGRAM_ID")
+    <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+        @*<i class="fa fa-ban"></i>
+            <button id="closebtn" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>*@
+    </div>
+    <section class="content">
+
+
+        <div class="row">
+            @*<div class="col-md-6">
+                <div class="box box-primary">*@
+            <div class="box-header">
+            </div>
+
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="col-xs-6">
+                        <div class="box">
+                            @Html.HiddenFor(model => model.Id)
+                            @Html.HiddenFor(model => model.CompanyId)
+                            @Html.HiddenFor(model => model.UserId)
+                            @Html.HiddenFor(model => model.CreatedBy)
+                            @Html.HiddenFor(model => model.FinancialYearId)
+                            @Html.HiddenFor(model => model.DEVType)
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Money Receipt No:
+                                </label>
+                                @Html.TextBoxFor(model => model.DEVNO, new { @class = "form-control", @placeholder = "Enter Money Receipt No." })
+                                <span class="field-validation-valid" data-valmsg-for="DEVNO" data-valmsg-replace="true"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Voucher Date :
+                                </label>
+                                <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp2">  @Html.TextBoxFor(model => model.DEVDateString, new { @class = "form-control" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                @Html.ValidationMessageFor(model => model.DEVDateString)
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="box">
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Remarks:
+                                </label>
+                                @Html.TextAreaFor(model => model.Narration, new { @class = "form-control", @placeholder = "Enter Remarks", @rows = "3" })
+                                @Html.ValidationMessageFor(model => model.Narration)
+
+                            </div>
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Branch:
+                                </label>
+                                @Html.DropDownListFor(model => model.BId, new SelectList(ViewBag.branchList, "Id", "Name"), "-----Select a Branch----", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.BId)
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="dynamicContents">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-body table-responsive">
+
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Row Number</th>
+                                        <th class="text-center">Club</th>
+                                        <th class="text-center">Particular</th>
+                                        <th class="text-center">Debit/From</th>
+                                        <th class="text-center">Credit/To</th>
+                                        <th class="text-center">Ledger Type</th>
+                                        <th class="text-center">Remove Row</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody">
+
+                                    @if (Model.DEV != null)
+                                    {
+                                        for (var i = 0; i < Model.DEV.Count; i++)
+                                        {
+                                            <tr>
+                                                <td width="10%" class="row-index text-center">
+                                                    <span class="Row"> Row @i </span>
+                                                </td>
+                                                <td width="5%">
+
+                                                    @*<select name="DEV[@i].Club" id="DEV_@(i)__Club" class="form-control" style='padding:0px;'>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                        </select>*@
+                                                    @Html.DropDownListFor(model => model.DEV[i].Club, new SelectList(ViewBag.ClubList, "Value", "Text", Model.DEV[i].Club), new { @class = "form-control Club", style = "padding:0px;" })
+
+                                                </td>
+                                                <td width="35%">
+                                                    @{ Html.EnableClientValidation(false); }
+                                                    @Html.HiddenFor(m => Model.DEV[i].Id, new { @class = "DEVID" })
+                                                    @Html.HiddenFor(m => Model.DEV[i].DEVId, new { @class = "DEVDEVID" })
+                                                    @{ Html.EnableClientValidation(true); }
+                                                    @Html.HiddenFor(m => Model.DEV[i].LID, new { @class = "LID" })
+                                                    @Html.TextBoxFor(m => Model.DEV[i].LName, new { @class = "form-control LName" })
+                                                    @Html.ValidationMessageFor(m => Model.DEV[i].LName, null, new { @class = "Lvalid" })
+                                                </td>
+                                                <td width="15%">
+
+                                                    @Html.TextBoxFor(m => Model.DEV[i].Debit, new { @class = "form-control Debit", @style = "text-align:right" })
+                                                    @Html.ValidationMessageFor(m => Model.DEV[i].Debit, null, new { @class = "Dvalid" })
+                                                </td>
+                                                <td width="15%">
+
+                                                    @Html.TextBoxFor(m => Model.DEV[i].Credit, new { @class = "form-control Credit", @style = "text-align:right" })
+                                                    @Html.ValidationMessageFor(m => Model.DEV[i].Credit, null, new { @class = "Cvalid" })
+                                                </td>
+                                                <td width="20%">
+                                                    @Html.TextBoxFor(m => Model.DEV[i].LGroup, new { @class = "form-control LGroup", @readonly = "" })
+                                                    @Html.ValidationMessageFor(m => Model.DEV[i].LGroup, null, new { @class = "Gvalid" })
+                                                </td>
+                                                <td width='2%' align='center' style='background-color:#F9F9F9 !important; box-shadow:none !important'>
+                                                    <img src='../../Images/icons-181e6a17.png' src='Delete' class='del_ExpenseRow input-non-active btn btn-danger remove' />
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+
+                                        <td colspan="3" style="text-align:center; padding:5px; font-weight:700;">Total</td>
+                                        @*<td><span id="DebitTotal" Name="DebitTotal" style="float:right; padding:5px; font-weight:700;"></span></td>
+                                            <td><span id="CreditTotal" Name="CreditTotal" style="float: right; padding: 5px; font-weight: 700;"></span></td>*@
+                                        <td>
+                                            @Html.TextBoxFor(model => model.DebitTotal, new { @class = "form-control", @style = "text-align:right", @readonly = "" })
+                                            @Html.ValidationMessageFor(model => model.DebitTotal)
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => model.CreditTotal, new { @class = "form-control", @style = "text-align:right", @readonly = "" })
+                                            @Html.ValidationMessageFor(model => model.CreditTotal)
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <button class="btn btn-md btn-primary"
+                                id="addBtn" type="button">
+                            Add new Row
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xs-12 Bank" id="Bank">
+                    @if (Model.DEVBD != null)
+                    {
+                        for (var i = 0; i < Model.DEVBD.Count; i++)
+                        {
+
+                            <div class="col-xs-4">
+                                <div class="box">
+                                    <div class="box-header">
+                                        @Model.DEVBD[i].LName
+                                        @{ Html.EnableClientValidation(false); }
+                                        @Html.HiddenFor(m => Model.DEVBD[i].Id, new { @class = "BDID" })
+                                        @Html.HiddenFor(m => Model.DEVBD[i].DEVId, new { @class = "BDDEVID" })
+                                        @{ Html.EnableClientValidation(true); }
+                                        @Html.HiddenFor(m => Model.DEVBD[i].LID, new { @class = "ledgerID" })
+                                        @Html.HiddenFor(m => Model.DEVBD[i].LName, new { @class = "ledgerName" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="black_txt_010">Mode :</label>
+
+                                        @Html.DropDownListFor(model => model.DEVBD[i].ModeOfPayment, new SelectList(ViewBag.ModeOfPaymentddl, "Value", "Text", Model.DEVBD[i].ModeOfPayment), "--Select a Mode of Payment--", new { @class = "form-control Mode" })
+
+
+                                        @Html.ValidationMessageFor(m => Model.DEVBD[i].ModeOfPayment, null, new { @class = "Mvalid" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="black_txt_010">Cheque No/Neft No :</label>
+
+                                        @Html.TextBoxFor(model => model.DEVBD[i].ChequeNo, new { @class = "form-control ChequeNo", @placeholder = "Enter Cheque No." })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="black_txt_010">Cheque Date/Neft Date :</label>
+
+                                        <div class="input-group date dp3" data-date-format="@Session["DateFormatLower"]" id="dp3"> @Html.TextBoxFor(model => model.DEVBD[i].ChequeDateString, new { @class = "form-control ChequeDateString" }) <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="black_txt_010">Cheque Detail/Neft Detail :</label>
+
+                                        @Html.TextBoxFor(model => model.DEVBD[i].ChequeDetail, new { @class = "form-control ChequeDetail", @placeholder = "Enter Cheque Details." })
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        @*</div>
+            </div>*@
+    </section>
+</aside>
+
+}
+
+
+

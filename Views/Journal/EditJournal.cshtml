@@ -1,0 +1,669 @@
+﻿@model XenERP.Models.JournalModelView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+<script src="../../Scripts/PurchaseCostingDetail.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Scripts/jquery-ui-1.10.3.js" type="text/javascript"></script>
+@*<link rel="stylesheet" href="http://code.jquery.com//ui/1.11.3/themes/smoothness/jquery-ui.css">*@
+<script type="text/javascript" src="http://code.jquery.com//jquery-1.10.2.js"></script>
+<script src="../../Scripts/jquery-ui-1.11.3.js" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+    var rowadd = 0;
+    $(document).on('click', '.del', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+        var tdebit = 0;
+        $j(".Debit").each(function () {
+
+
+            var rate = $(this).val() || 0;
+            tdebit += parseFloat(rate);
+
+        });
+        $j("#tdebit").text(tdebit.toFixed(2));
+
+        var tcredit = 0;
+
+        $j(".Credit").each(function () {
+
+
+            var rate = $(this).val() || 0;
+            tcredit += parseFloat(rate);
+
+        });
+        $j("#tcredit").text(tcredit.toFixed(2));
+    });
+    //    $('#dataTable').on('click', '.del', function (e) {
+    //       // alert(e.closest('tr'));
+    //        e.closest('tr').remove();
+    //       // $lastChar = $lastChar - 2;
+    //    });
+    function addRow(tableID) {
+        rowadd++;
+        var table = document.getElementById(tableID);
+        var rowCount = table.rows.length;
+
+        var row = table.insertRow(rowCount);
+        var MyRows = $('table#dataTable').find('tr');
+
+
+        //        for (var i = 1; i < MyRows.length; i++) {
+        //            var calc = $(MyRows[i]).find('td:eq(5)');
+        //            
+        //            var calval = calc.find('.add-component-calculator');
+        //           
+        //            calval.remove();
+        //        }
+        var cell1 = row.insertCell(0);
+        var element1 = document.createElement("input");
+        element1.type = "text";
+        element1.name = "txtparticular";
+        element1.id = "Particular" + rowCount;
+        element1.className = "Particular form-control";
+        cell1.appendChild(element1);
+
+        var cell2 = row.insertCell(1);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtnarrative";
+        element2.id = "narrative" + rowCount;
+        element2.className = "narrative form-control";
+        cell2.appendChild(element2);
+
+        var cell3 = row.insertCell(2);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtledgerid";
+        element3.className = "LedgerId form-control";
+        element3.id = "LedgerId" + rowCount;
+        cell3.appendChild(element3);
+
+        var cell4 = row.insertCell(3);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "txtDebit";
+        element4.className = "Debit form-control righttext";
+        element4.id = "Debit" + rowCount;
+        cell4.appendChild(element4);
+
+
+        var cell5 = row.insertCell(4);
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.name = "txtCredit";
+        element5.className = "Credit form-control righttext";
+        element5.id = "Credit" + rowCount;
+        cell5.appendChild(element5);
+
+
+
+        //        var cell6 = row.insertCell(5);
+        //        var element6 = document.createElement("input");
+        //        element6.type = "button";
+        //        element6.id = "btncalculate";
+        //        element6.name = "button[]";
+        //        element6.title = "Calculate this row";
+        //        element6.className = "add-component-calculator";
+        //        cell6.appendChild(element6);
+
+        var cell7 = row.insertCell(5);
+        var element7 = document.createElement("input");
+        element7.type = "hidden";
+        element7.name = "txtLID";
+        element7.className = "LId";
+        element7.id = "LId" + rowadd;
+        cell7.appendChild(element7);
+        cell7.className = "display-non-div";
+
+        var cell8 = row.insertCell(6);
+        var element8 = document.createElement("img");
+        //  element8.s = "../../Images/icons-181e6a17.png";
+        element8.setAttribute("src", "../../Images/icons-181e6a17.png");
+        element8.name = "txtnarrative";
+        element8.id = "del" + rowCount;
+        element8.className = "del del_ExpenseRow";
+        cell8.appendChild(element8);
+    }
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 1;
+    $(document).ready(function () {
+
+
+        if ('@ViewBag.JournalDetails' != '') {
+
+            var arrayinv = '@Html.Raw(Json.Encode(ViewBag.JournalDetails))';
+            var arrinv = JSON.parse(arrayinv);
+
+            for (var i = 0; i < arrinv.length; i++) {
+                var table = document.getElementById('dataTable');
+                var rowCount = table.rows.length;
+                var row = table.insertRow(rowCount);
+
+                var cell1 = row.insertCell(0);
+                var element1 = document.createElement("input");
+                element1.type = "text";
+                element1.name = "txtparticular";
+                element1.id = "Particular" + rowCount;
+                element1.className = "Particular form-control";
+                element1.value = arrinv[i].Particulars;
+                cell1.appendChild(element1);
+
+                var cell2 = row.insertCell(1);
+                var element2 = document.createElement("input");
+                element2.type = "text";
+                element2.name = "txtnarrative";
+                element2.id = "narrative" + rowCount;
+                element2.className = "narrative form-control";
+                element2.value = arrinv[i].Narrative;
+                cell2.appendChild(element2);
+
+                var cell3 = row.insertCell(2);
+                var element3 = document.createElement("input");
+                element3.type = "text";
+                element3.name = "txtledgerid";
+                element3.className = "LedgerId form-control";
+                element3.id = "LedgerId" + rowCount;
+                element3.value = arrinv[i].LedgerId;
+                cell3.appendChild(element3);
+
+                var cell4 = row.insertCell(3);
+                var element4 = document.createElement("input");
+                element4.type = "text";
+                element4.name = "txtDebit";
+                element4.className = "Debit form-control righttext";
+                element4.id = "Debit" + rowCount;
+                element4.value = arrinv[i].Debit;
+                cell4.appendChild(element4);
+
+
+                var cell5 = row.insertCell(4);
+                var element5 = document.createElement("input");
+                element5.type = "text";
+                element5.name = "txtCredit";
+                element5.className = "Credit form-control righttext";
+                element5.id = "Credit" + rowCount;
+                element5.value = arrinv[i].Credit;
+                cell5.appendChild(element5);
+
+
+
+                //        var cell6 = row.insertCell(5);
+                //        var element6 = document.createElement("input");
+                //        element6.type = "button";
+                //        element6.id = "btncalculate";
+                //        element6.name = "button[]";
+                //        element6.title = "Calculate this row";
+                //        element6.className = "add-component-calculator";
+                //        cell6.appendChild(element6);
+
+                var cell7 = row.insertCell(5);
+                var element7 = document.createElement("input");
+                element7.type = "hidden";
+                element7.name = "txtLID";
+                element7.className = "LId";
+                element7.id = "LId" + rowadd;
+                element7.value = arrinv[i].LID;
+                cell7.appendChild(element7);
+                cell7.className = "display-non-div";
+
+                var cell8 = row.insertCell(6);
+                var element8 = document.createElement("img");
+                element8.setAttribute("src", "../../Images/icons-181e6a17.png");
+                element8.name = "txtnarrative";
+                element8.id = "del" + rowCount;
+                element8.className = "del del_ExpenseRow";
+                cell8.appendChild(element8);
+            }
+
+            $j("#tdebit").text('@Html.Raw(Json.Encode(Model.TotalDebit))');
+            $j("#tcredit").text('@Html.Raw(Json.Encode(Model.TotalCredit))');
+        }
+    });
+</script>
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $("#dataTable").on("keypress", '.Particular', function (event) {
+            var id = $(this).attr('id');
+            $('#' + id).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Journal/getParticulars',
+                        data: {
+                            query: request.term
+                        },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.Particular,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $('#' + id).val('');
+                        alert("Item not found");
+                        var coltd = $("#" + id).closest('td');
+                        var coltr = coltd.closest('tr');
+
+                    }
+                },
+
+                select: function (event, ui) {
+                    var ctd = $('#' + id).closest('td');
+                    var ctr = ctd.closest('tr');
+                    $('#' + id).val(ui.item.label);
+                    $.get('/Journal/chkParticularDetails', { 'query': ui.item.label }, function (data, status) {
+                        if (data == '') {
+                            var ctd = $('#' + id).closest('td');
+                            var ctr = ctd.closest('tr');
+                            ctr.find('.Particular').val('');
+                            ctr.find('.LedgerId').val('');
+                            ctr.find('.LID').val('');
+                        }
+                        else {
+                            //var ctd = $('#Product' + rowadd).closest('td');
+                            var ctd = $('#' + id).closest('td');
+                            var ctr = ctd.closest('tr');
+                            ctr.find('.Particular').val(data.Particular);
+                            ctr.find('.LedgerId').val(data.Code);
+                            ctr.find('.LId').val(data.Id);
+                        }
+
+                    });
+                    return false;
+                },
+                minLength: 1
+            });
+        });
+    });
+ 
+</script>
+<style>
+    .my-table-style
+    {
+        margin: 0;
+    }
+    .righttext
+    {
+      text-align:right;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+    });
+</script>
+<script type="text/javascript">
+    var $j = jQuery.noConflict();
+    $j(document).ready(function () {
+
+        $j("#btnsave").on("click", function () {
+            $('#errordiv').html('');
+            $('#errordiv').append("<i class='fa fa-ban'></i><button id='btnerror' class='close'  type='button'>×</button><b>Error!</b><br />");
+            var totaldebit = 0;
+            var totalcredit = 0;
+            var cntr = 0;
+            var MyRows = $j('table#dataTable').find('tr');
+
+            for (var i = 1; i < MyRows.length; i++) {
+                var ledgername = $(MyRows[i]).find('td:eq(0)');
+                var debit = $(MyRows[i]).find('td:eq(3)');
+                var credit = $(MyRows[i]).find('td:eq(4)');
+                var lid = $(MyRows[i]).find('td:eq(5)');
+                var ledgernameval = ledgername.find('.Particular');
+                var debitval = debit.find('.Debit');
+                var creditval = credit.find('.Credit');
+                var lidval = lid.find('.LID');
+
+                var dval = debitval.val() || 0;
+                var cval = creditval.val() || 0;
+                totalcredit += parseFloat(cval);
+                totaldebit += parseFloat(dval);
+                
+
+                if (ledgernameval.val() == '') {
+                    cntr++;
+                    $('#errordiv').css("display", "block");
+                    ledgernameval.addClass('input-red-shadow');
+                    $('#errordiv').append(cntr + '   Ledger Name cannot be empty<br/>');
+
+                }
+                if (dval == 0 && cval == 0) {
+                    cntr++;
+                    $('#errordiv').css("display", "block");
+                    debitval.addClass('input-red-shadow');
+                    creditval.addClass('input-red-shadow');
+                    $('#errordiv').append(cntr + '  Both debit credit cannot be empty<br/>');
+                }
+            }
+            if (parseFloat(totalcredit) != parseFloat(totaldebit)) {
+                alert(parseFloat(totalcredit));
+                alert(parseFloat(totaldebit));
+                cntr++;
+                $('#errordiv').css("display", "block");
+                $('#errordiv').append(cntr + ' Total Debit and Credit must be equal<br/>');
+                return false;
+            }
+            if (cntr > 0) {
+                return false;
+            }
+
+        });
+
+        $j("#dataTable").on("change", '.Debit', function (event) {
+            var id = $j(this).attr('id');
+            var comptd = $j('#' + id).closest('td');
+            var comptr = comptd.closest('tr');
+            var num = $j("#" + id).val();
+            var credit = 0;
+            if (num != null) {
+                comptr.find('.Credit').val(credit);
+                //    return false;
+            }
+            var tdebit = 0;
+            $j(".Debit").each(function () {
+
+
+                var rate = $(this).val() || 0;
+                tdebit += parseFloat(rate);
+
+            });
+            $j("#tdebit").text(tdebit.toFixed(2));
+        });
+
+        $j("#dataTable").on("change", '.Credit', function (event) {
+            var id = $j(this).attr('id');
+            var comptd = $j('#' + id).closest('td');
+            var comptr = comptd.closest('tr');
+            var num = $j("#" + id).val();
+            var credit = 0;
+            if (num != null) {
+                comptr.find('.Debit').val(credit);
+                // return false;
+            }
+
+
+            var tcredit = 0;
+
+            $j(".Credit").each(function () {
+
+
+                var rate = $(this).val() || 0;
+                tcredit += parseFloat(rate);
+
+            });
+            $j("#tcredit").text(tcredit.toFixed(2));
+        });
+
+        $j(document).on("click", '.add-component-calculator', function () {
+            var sum = 0;
+            var sum1 = 0;
+            // iterate through each td based on class and add the values
+            $j(".Debit").each(function () {
+                var value = $j(this).val();
+                // add only if the value is number
+                if (!isNaN(value) && value.length != 0) {
+                    sum += parseFloat(value);
+                }
+            });
+
+            $j(".Credit").each(function () {
+                var value = $j(this).val();
+                if (!isNaN(value) && value.length != 0) {
+                    sum1 += parseFloat(value);
+                }
+            });
+
+            if (sum > sum1) {
+                addRow("dataTable")
+                var comptd1 = $j('#btncalculate').closest('td');
+                var comptr1 = comptd1.closest('tr');
+                var match = (sum - sum1);
+                comptr1.find('.Credit').val(match);
+                comptr1.find('.Debit').val(0);
+            }
+
+            if (sum < sum1) {
+                addRow("dataTable")
+                var comptd1 = $j('#btncalculate').closest('td');
+                var comptr1 = comptd1.closest('tr');
+                var match = (sum1 - sum);
+                comptr1.find('.Debit').val(match);
+                comptr1.find('.Credit').val(0);
+            }
+
+        });
+
+        function messageBox1(str) {
+            $j("<div>" + str + "</div>").dialog({
+                resizable: false,
+                autoOpen: true,
+                hide: "puff",
+                show: "slide",
+                height: 150,
+                position: {
+                    my: "center",
+                    at: "center"
+                },
+                title: "Success",
+                buttons: {
+                    OK: function () { $j(this).dialog("close"); }
+                }
+
+            });
+        }
+    });
+</script>
+
+
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side"> 
+
+          <section class="content-header">
+                    <h1> Journal<small>Description</small> </h1>
+                    <ol class="breadcrumb">
+                       <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                       <li><a href="#">Forms</a></li>
+                       <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+             <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+                                </ul>
+             </div>
+
+             @if (ViewBag.Message != null)
+             {
+             <div id="suc" class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          @ViewBag.Message
+             </div>
+             }
+
+             @if (ViewBag.Error != null)
+             {
+                <div id="err" class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+             }
+               <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+ </div>
+                <!-- Main content -->
+                <section class="content">  
+
+
+                    <div class="row">
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                     </div>
+                                <div class="box-body">
+                    
+         @Html.HiddenFor(d => d.Id)
+                                    @if (ViewBag.BranchId == 0)
+                                    {
+                                        <div class="form-group">
+                                            <label class="black_txt_010">
+                                                Choose Branch :<span style="color:Red;">*</span>
+                                            </label>
+
+
+                                            @Html.DropDownListFor(model => model.BId, new SelectList(ViewBag.branchList, "Id", "Name"), "-----Select a Branch----", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.BId)
+
+
+                                        </div>
+                                    }
+                                      <div class="form-group">
+                                          <label class="black_txt_010">Narration:</label>
+                                               @Html.TextBoxFor(model => model.Narration, new { @class = "form-control" })
+                                    </div>
+                                    @*<div class="form-group">
+                                        <label class="black_txt_010">
+                                            Unit
+                                        </label>
+
+
+                                        @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.Branch, "Id", "Name"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.BranchId)
+
+
+                                    </div>*@
+                    </div>
+                    </div>   <!-- /.row -->
+                    </div>
+                   
+
+
+             <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"> </div>
+                                <div class="box-body">
+                             
+                               
+                                   <div class="form-group">
+                                                <label class="black_txt_010"> Created Date:</label>
+
+                                                 <div class="input-group date" data-date-format="@Session["DateFormatLower"]"  id="dp3">
+                                               @* <input type="text" readonly="readonly" class = "form-control" id="FromDate"  />*@
+                                                @Html.TextBoxFor(model => model.JournalDate, new { @class = "form-control", @readonly = "readonly" })
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> 
+                                                </div>
+                                            </div>
+                                    </div>
+                                    </div>
+
+                                </div>
+
+                      
+
+                         <div class="col-xs-12">
+                         <div class="box-body">
+                         <div class="box-body table-responsive no-padding">
+                         <div class="form-group">
+                          <h3>Journal Details</h3>
+                          </div>
+
+
+                         <div class="form-group">
+
+                          <table class="my-table-style" id="dataTable" width="100%" border="0">
+
+                          <tr class="my-table-header">
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Particulars</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Narrative</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Ledger ID</label>
+                          </td>
+
+                          
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Debit</label>
+                          </td>
+                       
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Credit</label>
+                          </td>
+                        <td></td>
+                           </tr>
+                          
+                           </table>
+
+                            <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                         
+                             </div>
+                             <div class="form-group">
+                             <table class="my-table-style"  width="100%" border="0">
+                             <tr>
+                            
+                            <td align="center" colspan="3" width="60%">  <b> &nbsp;</b>
+                            </td>
+                             <td  style="text-align:center;" width="20%">
+                            Total Debit
+                             </td>
+                              <td style="text-align:center;" width="20%">
+                           Total Credit
+                             </td>
+                             <td style="text-align:center;" width="10%">
+                            
+                             </td>
+                           </tr>
+                             <tr>
+                            
+                            <td align="center" colspan="3" width="60%">  <b> Grand Total:</b>
+                            </td>
+                             <td  style="text-align:right;" width="20%">
+                             <span style="text-align:right;"  id="tdebit" />
+                             </td>
+                              <td style="text-align:right;" width="20%">
+                             <span style="text-align:right;" id="tcredit" />
+                             </td>
+                             <td style="text-align:center;" width="10%">
+                            
+                             </td>
+                           </tr>
+                             </table>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                </section><!-- /.content -->
+        </aside>
+}

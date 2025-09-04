@@ -1,0 +1,678 @@
+﻿@model XenERP.Models.Product
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#productimg").change(function () {
+            readURL(this);
+        });
+
+    });
+</script>
+<style type="text/css">
+
+.tree
+    {
+      
+        height:auto;
+        padding: 19px;
+        margin-bottom: 20px;
+        background-color: #fbfbfb;
+        border: 1px solid #999;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+    .tree li
+    {
+        list-style-type: none;
+        margin: 0 0 0 70px;
+        padding: 10px 5px 0 5px;
+        position: relative;
+    }
+    .tree li::before, .tree li::after
+    {
+        content: '';
+        left: -36px;
+        position: absolute;
+        right: auto;
+    }
+    .tree li::before
+    {
+        border-left: 1px solid #999;
+        bottom: 50px;
+        height: 100%;
+        top: 0;
+        width: 1px;
+    }
+    .tree li::after
+    {
+        border-top: 1px solid #999;
+        height: 20px;
+        top: 25px;
+        width: 41px;
+    }
+    .tree li span
+    {
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border: 1px solid #999;
+        border-radius: 5px;
+        display: inline-block;
+        padding: 3px 8px;
+        text-decoration: none;
+    }
+   
+       
+    .tree li.parent_li > span
+    {
+        cursor: pointer;
+    }
+    .tree > ul > li::before, .tree > ul > li::after
+    {
+        border: 0;
+    }
+    .tree li:last-child::before
+    {
+        height: 30px;
+    }
+    .tree li.parent_li > span:hover, .tree li.parent_li > span:hover + ul li span
+    {
+        background: #eee;
+        border: 1px solid #94a0b4;
+        color: #000;
+    }
+    .icon-minus-sign
+    {
+            background: url("../../Images/minusTree.png") no-repeat;
+            margin: 0;
+            padding: 0 6px 0 9px;
+    }
+    .icon-plus-sign
+    {
+            background: url("../../Images/plusTree.png") no-repeat;
+            margin: 0;
+            padding: 0 6px 0 9px;
+    }
+
+
+</style>
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    
+
+        $(document).on('click', '.tree li.parent_li > span', function (e) {
+
+
+            var children = $(this).parent('li.parent_li').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Expand this tree').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Collapse this tree').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+            }
+            e.stopPropagation();
+        });
+
+    });
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#Discount").val('0');
+
+        $("#GroupId").change(function () {
+
+            if ($("#GroupId").val() == '') {
+                $("#parentcode").val('');
+                $("#parentname").val('');
+                $("#result").html('');
+            }
+            else {
+
+                $.get("/Product/GetParentgroup", { id: $("#GroupId").val() }, function (data) {
+
+
+                    if (data != null) {
+
+                        //                    $("#parentname").css("display", "block");
+                        $("#parentcode").val(data.Code);
+                        $("#parentname").val(data.Name);
+                        $.get('/Product/getRoot', { "MemberID": $("#GroupId").val() }, function (data) {
+
+                            $("#result").html(data);
+
+                        });
+                    }
+
+                    if (data == null || data == "") {
+                        $("#parentcode").val('');
+                        $("#parentname").val('');
+                        $("#result").html('');
+                    }
+
+                });
+            }
+        });
+
+    });
+ </script>
+
+
+ @using (Html.BeginForm("CreateProduct", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+          {
+    @Html.ValidationSummary(true)
+        
+     <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                    Product   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                              
+        @if (ViewBag.Message != null)
+        {
+                                          <div class="alert alert-success alert-dismissable" >
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                       
+                                     @ViewBag.Message. <a href="@Url.Action("EditSalesPurchaseProduct", "Product", new { id = @ViewBag.ProductId })"> Copy to Sales Product?</a> 
+                                    </div> 
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+         
+
+             
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    
+
+ 
+
+
+ <div class="box box-primary  table-responsive no-padding" id="group">
+        <div class="box-header">
+            <i class="fa fa-th"></i>
+            <h3 class="box-title">
+                Product group tree view</h3>
+            <div class="pull-right box-tools">
+                <button class="btn btn-default btn-sm" data-widget='collapse' data-toggle="tooltip"
+                    title="Collapse">
+                    <i class="fa fa-minus"></i>
+                </button>
+                <button class="btn btn-default btn-sm" data-widget='remove' data-toggle="tooltip"
+                    title="Remove">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+
+
+<div class='box-body pad'>
+
+   
+          <div class="col-md-12"><div class="tree" id="result"></div></div>
+
+</div>
+
+
+       
+        
+    </div>
+    
+</div>
+
+ <section>
+                <!-- Main content -->
+             
+                 
+
+
+                        <!-- left column -->
+                        @*<div class="col-md-6">*@
+                            <!-- general form elements -->
+                         
+                               
+                                <!-- form start -->
+                           
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                           @*
+                                    @{
+      List<SelectListItem> listItems = new List<SelectListItem>();
+      listItems.Add(new SelectListItem
+      {
+          Text = "Raw Materials",
+          Value = "1"
+      });
+      listItems.Add(new SelectListItem
+      {
+          Text = "Accessories",
+          Value = "2",
+          // Selected = true
+      });
+      listItems.Add(new SelectListItem
+      {
+          Text = "Finished Goods",
+          Value = "3"
+      });
+}       *@
+                                       
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Product  Category :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DropDownListFor(model => model.CategoryId, new SelectList(ViewBag.category, "Id", "CategoryName"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.CategoryId)
+                 	
+                                    </div>    
+
+           
+
+              
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Product  Group :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DropDownListFor(model => model.GroupId, new SelectList(ViewBag.group, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.GroupId)
+                 	
+                                    </div>
+                                
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Code :<span style="color:Red;">*</span></label>
+                  <div class="clr"></div>
+
+                  @Html.HiddenFor(d => d.Id)
+                  <input type="text" id="parentcode" class="form-control parentname" name="parentcode" readonly="readonly" />
+                                         @Html.TextBoxFor(model => model.Code, new { @class = "form-control Code", @placeholder = "Enter  Code" })
+                                          <span style='color:red;margin-right:65%; display:inline-block;'>&nbsp;</span>
+                                 @Html.ValidationMessageFor(model => model.Code) 
+                                      
+                                     <div class="clr"></div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Name :<span style="color:Red;">*</span></label>
+                  <div class="clr"></div>
+
+                 
+                                        <input type="text" id="parentname" class="form-control parentname" name="parentname" readonly="readonly" />
+                                     
+                                       
+                                         @Html.TextBoxFor(model => model.Name, new { @class = "form-control Code", @placeholder = "Enter  Name" })
+                                          <span style='color:red;margin-right:65%; display:inline-block;'>&nbsp;</span>
+                                 @Html.ValidationMessageFor(model => model.Name) 
+                                      
+                                     <div class="clr"></div>
+                                    </div>
+
+                            
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description :</label>
+
+                  
+                   @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Enter Description" })
+                 @Html.ValidationMessageFor(model => model.Description)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                          
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               Primary Unit:<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DropDownListFor(model => model.UnitIdSecondary, new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.UnitIdSecondary)                	
+<b>Example: piece, pound, meter.</b>          
+                                     
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               Unit Formula :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.UnitFormula, new { @class = "form-control", @placeholder = "Enter Unit Formula", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.UnitFormula)
+                                                     
+                                     
+                                    </div>
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+               Secondary Unit:<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DropDownListFor(model => model.UnitId, new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.UnitId)                	
+<b>Example: piece, pound, meter.</b>          
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Purchase Price :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.PurchasePrice, new { @class = "form-control", @placeholder = "Enter Purchase Price", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.PurchasePrice)
+                                                     
+                                     
+                                    </div>
+
+                                      
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+         Sales Price :</label>
+
+                  
+                  
+                  @Html.TextBoxFor(model => model.SalesPrice, new { @class = "form-control", @placeholder = "Enter Sales Price", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.SalesPrice)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+@*
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+               Sales Price :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.SalesPrice, new { @class = "form-control", @placeholder = "Enter Sales Price", @maxlength = "20", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.SalesPrice)
+                                                     
+                                     
+                                    </div>*@
+                                    
+                                    
+                                    @*
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+            IsSalesProduct :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                  
+                   @Html.CheckBoxFor(model => model.IsSalesProduct, new { @class = "form-control"})
+                 @Html.ValidationMessageFor(model => model.IsStockProduct)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    
+                                    
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+            IsStockProduct :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                  
+                   @Html.CheckBoxFor(model => model.IsStockProduct, new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.IsStockProduct)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    
+                                    *@
+
+                                    
+
+                                     
+              
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>
+                                      <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">             </div>
+
+
+                                     <div class="box-body">
+                                    <div class="box-body table-responsive">
+
+                                    
+                                  
+
+@*
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+                Sales Tax :</label>
+
+                  
+                   @Html.DropDownListFor(model => model.SalesTax, new SelectList(ViewBag.tax, "TaxId", "Name"), new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.SalesTax)
+                                                     
+                                     
+                                    </div>*@
+
+
+
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+            Product Image :</label>
+
+  
+<input  type="file"  id="productimg" onchange="readURL(this);" name="productimg" accept="image/*" />   
+     <img  style="width:122px;height:37px;" id="blah" src="#" alt="Image" />            
+        @Html.ValidationMessageFor(model => model.Productimage)                                    
+                                     
+                                    </div>
+
+
+                                    
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Weight :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Weight, new { @class = "form-control", @placeholder = "Enter Weight", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.Weight)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Height :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Height, new { @class = "form-control", @placeholder = "Enter Height", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.Height)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Colour :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Colour, new { @class = "form-control", @placeholder = "Enter Colour" })
+                 @Html.ValidationMessageFor(model => model.Colour)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Depth :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Depth, new { @class = "form-control", @placeholder = "Enter Depth", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.Depth)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+
+                                       <div class="form-group">
+                                          <label class="black_txt_010">
+                       Cubic Total :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.CubicTotal, new { @class = "form-control", @placeholder = "Enter Cubic Total", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.CubicTotal)
+                                                     
+                                     
+                                    </div>
+
+                                        <div class="form-group">
+                                            <label class="black_txt_010">
+                                                HSN Code :
+                                            </label>
+
+
+                                            @Html.TextBoxFor(model => model.HSNCode, new { @class = "form-control", @placeholder = "Enter HSN Code" })
+                                            @Html.ValidationMessageFor(model => model.HSNCode)
+
+
+                                        </div>
+
+
+
+                                   @*
+
+                                       <div class="form-group">
+                                          <label class="black_txt_010">
+                       Copy to Sales Product :</label>
+
+                  
+                   @Html.CheckBoxFor(model => model.IsSalesProduct, new { @class = "form-control", @placeholder = "Enter Cubic Total", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.CubicTotal)
+                                                     
+                                     
+                                    </div>
+*@
+
+
+                                     
+                                  
+
+                                    </div>
+
+
+                                    </div>
+
+
+
+
+
+
+
+
+                                        </div>
+                                        
+                                </div>
+                                
+                                   
+                 
+                   
+                </section><!-- /.content -->
+
+        
+      
+
+
+
+
+ </aside>
+     
+          }
+

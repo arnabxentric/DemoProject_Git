@@ -1,0 +1,388 @@
+﻿@model IEnumerable<XenERP.Models.ChicksRequired_ModelView>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1040;
+        display: none;
+        overflow: auto;
+        overflow-y: scroll;
+    }
+
+    .modal-content {
+        background-color: #ffffff;
+        width: 330px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        //$('#example1').dataTable({
+        //    "bPaginate": true,
+        //    "bLengthChange": true,
+        //    "bFilter": true,
+        //    "bSort": false,
+        //    "bInfo": true,
+        //    "bAutoWidth": true,
+        //    "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+
+        //        if (aData[6] == "Already Received") {
+        //            $('td', nRow).css('border-color', 'Red');
+        //        }
+        //        else {
+        //            $('td', nRow).css('border-color', 'Green');
+        //        }
+        //    }
+        //});
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+        $("#example1").on('click', '.vew', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+
+            window.location.href = "/HariChicksRequire/ChicksDemandView?id=" + id;
+
+        });
+
+       
+
+        $("#btnsubmit").on('click', function () {
+            var frmDt = $("#FromDate").val();
+            var topDt = $("#ToDate").val();
+            if (frmDt == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please enter from date');
+                return false;
+            }
+            if (topDt == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please enter to date');
+                return false;
+            }
+            $("#loading").fadeIn();
+            window.location.href = "/HariUnitIssue/FarmerIssueListSearch?DateFrom=" + frmDt + "&&DateTo=" + topDt;
+        });
+
+        $("#example1").on('click', '.pluspng', function () {
+
+            var ctd = $(this).closest('td');
+            var ctr = ctd.parent('tr');
+            ctr.find(".pluspng").css("display", "none");
+            ctr.find(".minuspng").css("display", "inline");
+            var nextTr = ctr.next('tr');
+            //  nextTr.css("display", "block");
+            nextTr.find(".detailDiv").css("display", "block");
+
+        });
+        $("#example1").on('click', '.minuspng', function () {
+            var ctd = $(this).closest('td');
+            var ctr = ctd.parent('tr');
+            ctr.find(".pluspng").css("display", "inline");
+            ctr.find(".minuspng").css("display", "none");
+            var nextTr = ctr.next('tr');
+            //   nextTr.css("display", "none");
+            nextTr.find(".detailDiv").css("display", "none");
+
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Chicks Required For Farmer  <small>List</small> </h1>
+
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                <img src="~/Images/newLoad.gif" />
+            </p>
+        </div>
+    </div>
+
+
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+            <div class="col-xs-12" style="text-align:center">
+                <a href="@Url.Action("CreateChicksRequired", "HariChicksRequire")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Chicks Requirement</a>
+            </div>
+
+            <div class="box">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header">  </div>
+                        <div class="box-body">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;From Date:</span>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">
+                                            <input type="text" readonly="readonly" class="form-control" id="FromDate" />
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <span class="r-txt"> &nbsp; &nbsp; &nbsp; &nbsp;To Date:</span>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">
+                                            <input readonly="readonly" type="text" class="form-control" id="ToDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+
+                                    <td>
+                                        <div>
+                                            <div id="btnshow">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnsubmit" class="btn btn-primary" value="Show" /></div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">SlNo.</th>
+                        <th style="text-align:center">Branch Name</th>
+                        <th style="text-align:center">Demand On</th>
+                        <th style="text-align:center">Total Chicks</th>
+                        <th style="text-align:center">Total Farmers</th>
+                       
+                        <th></th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+
+                        <tr align="center">
+
+                            <td>
+                                @Slno
+
+                            </td>
+
+
+                            <td align="center">
+                                <img class="pluspng" src="~/Images/pluspng.png" />
+                                <img class="minuspng" src="~/Images/minuspng.png" style="display:none" />
+                                @item.BranchName
+                                @Html.HiddenFor(m => item.Id, new { @class = "id" })
+                            </td>
+
+                            <td align="center"> @Html.DisplayFor(modelItem => item.DemandOnDate)</td>
+                            <td align="center"> @Html.DisplayFor(modelItem => item.TotalDemandChicks)</td>
+                            <td align="center"> @Html.DisplayFor(modelItem => item.TotalFarmer)</td>
+                   
+                            <td style="text-align:center"><button class="btn btn-warning btn-sm vew">View</button></td>
+
+
+
+
+
+                        </tr>
+
+
+                        var SlNo1 = 0;
+                        <tr>
+                            <td colspan="5" style="padding:0px 0px 0px 0px;">
+                                <div id="demo_@Slno" class="detailDiv" style="display:none">
+                                    <table border="1" width="100%">
+                                        <tr>
+                                            <th style="text-align:center">SlNo.</th>
+
+                                            <th style="text-align:center">
+                                                Farmer
+                                            </th>
+
+                                            <th style="text-align:center">
+                                                Supervisor
+                                            </th>
+
+                                            <th style="text-align:center">
+                                                Last Placement Dt
+                                            </th>
+                                            <th style="text-align:center">
+                                                Last Chicks
+                                            </th>
+                                            @*<th style="text-align:center">
+                                                FCR
+                                            </th>*@
+
+                                            @*<th style="text-align:center">
+                                                EPEF
+                                            </th>*@
+
+                                            @*<th style="text-align:center">
+                                                Cost Per KG
+                                            </th>*@
+
+                                            @*<th style="text-align:center">
+                                                Mortality %
+                                            </th>*@
+
+                                            <th style="text-align:center">
+                                                Category
+                                            </th>
+
+                                            <th style="text-align:center">
+                                                Chicks Required
+                                            </th>
+
+                                            <th style="text-align:center">
+                                                Chicks Assign
+                                            </th>
+
+                                            <th style="text-align:center">
+                                                Status
+                                            </th>
+
+
+                                        </tr>
+                                        @foreach (var item1 in item.frmDet)
+                                        {
+                                            SlNo1++;
+                                    <tr>
+                                        <td style="border-color:black"> @SlNo1</td>
+
+                                        <td style="border-color:black;text-align:center">@item1.FarmerName</td>
+                                        <td style="border-color:black;text-align:center">@item1.SupervisorName</td>
+                                        <td style="border-color:black;text-align:center">@item1.LstPlcDt</td>
+                                        <td style="border-color:black;text-align:center">@item1.LstChkPlc</td>
+                                        @*<td style="border-color:black;text-align:center">@item1.FCR</td>*@
+                                        @*<td style="border-color:black;text-align:center">@item1.EPEF</td>*@
+                                        @*<td style="border-color:black;text-align:center">@item1.ProductionCostKg</td>*@
+                                        @*<td style="border-color:black;text-align:center">@item1.MortalityPercentage</td>*@
+                                        <td style="border-color:black;text-align:center">@item1.FarmerCategory</td>
+                                        <td style="border-color:black;text-align:center">@item1.ReqChk</td>
+                                        <td style="border-color:black;text-align:center">@item1.ApproveChicks</td>
+                                        <td style="border-color:black;text-align:center">@item1.ApproveStatus</td>
+                                    </tr>
+
+
+                                        }
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+    <div class="modal fade ignore" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="example-modal ">
+            <div class="modal-warning">
+                <div class="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">ALERT !!!</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h4 class="msg1"></h4>
+                            <input type="hidden" id="StoreId" value="" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+        </div>
+
+    </div>
+</aside>

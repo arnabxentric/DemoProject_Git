@@ -1,0 +1,631 @@
+﻿@model XenERP.Models.ContraModelView
+@{
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+}
+@*
+@{
+    Layout = null;
+}
+*@
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../Scripts/custom.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script language="javascript">
+
+    $(document).ready(function () {
+
+
+        $("#CTBAmount").keypress(function (event) {
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+            console.log($(this).val());
+        });
+
+
+
+        $("#BTCAmount ").keypress(function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+
+
+
+        $("#BTBAmount").keypress(function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+
+
+        $("#btnsubmit").click(function () {
+
+
+            if ($('input:radio[name=Cont]:checked').val() == "1") {
+
+
+
+                if ($("#ToId").val() == "") {
+                    alert("Please choose a Bank");
+                    return false;
+
+                }
+
+
+                if ($("#CTBAmount").val() == "") {
+                    alert("Please enter Amount");
+                    return false;
+
+                }
+
+
+
+
+
+            }
+
+
+
+            if ($('input:radio[name=Cont]:checked').val() == "2") {
+                
+                if ($("#BankFromId").val() == "") {
+                    alert("Please choose a Bank Account");
+                    return false;
+
+                }
+
+                if ($("#chequeDate").val() == "") {
+                    alert("Please enter cheque Date");
+                    return false;
+
+                }
+
+                if ($("#chequeNoBTC").val() == "") {
+                    alert("Please enter ChequeNo");
+                    return false;
+
+                }
+
+                if ($("#BTCAmount").val() == "") {
+                    alert("Please enter To Amount");
+                    return false;
+
+                }
+
+                if ($("#chequeNoBTC").val() == "") {
+                    alert("Please enter ChequeNo");
+                    return false;
+
+                }
+
+
+
+            }
+
+            if ($('input:radio[name=Cont]:checked').val() == "3") {
+
+             
+                if ($("#BankToFromId").val() == "") {
+                    alert("Please select a Bank");
+                    return false;
+
+                }
+
+
+                if ($("#BankCashToId").val() == "") {
+
+                    alert("Please select a Bank");
+                    return false;
+
+                }
+
+
+                if ($('#BTB').css('opacity', 1).find('input:text#chequeDate').val() == "") {
+
+                        alert("Please enter chequedffd Date");
+                        return false;
+
+                }
+
+                if ($("#chequeNoBTB").val() == "") {
+                    alert("Please enter ChequeNo");
+                    return false;
+
+                }
+
+
+                if ($("#BTBAmount").val() == "") {
+                    alert("Please enter  Amount");
+                    return false;
+
+                }
+
+
+
+
+            }
+            console.log($("#CTBAmount").val());
+
+        });
+
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("input:radio[name='Cont']").change(function () {
+
+            var type = $("input:radio[name='Cont']:checked").val();
+
+            if (type == 1) {
+               
+
+                $('#CTB').show()
+                $('#BTC').hide()
+                $('#BTB').hide()
+            }
+            if (type == 2) {
+
+                $('#CTB').hide()
+                $('#BTC').show()
+                $('#BTB').hide()
+//                $('#BTB').css('opacity', 1).find('input:text#Remarks').val('');
+
+            }
+            if (type == 3) {
+
+                $('#CTB').hide()
+                $('#BTC').hide()
+                $('#BTB').show()
+//                $('#BTC').css('opacity', 1).find('input:text#Remarks').val('');
+
+            }
+
+            });
+
+            
+                 var Culture="@Session["DateCulture"]";
+
+
+
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+
+         $("#dp5").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+          $("#dp6").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+           $("#dp7").datepicker({ autoclose: true, todayHighlight: true,language:Culture });
+
+
+});
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+        $("#RPBankAmount,#RPCashAmount,#Totalpayment").on("keypress", function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+    });
+           
+       
+</script>
+@using (Html.BeginForm("CreateContra", "Contra"))
+{
+    @Html.ValidationSummary(true)
+        
+    <aside class="right-side">
+
+          <section  class="content-header">
+                    <h1>
+                     Contra Voucher   <small>Entry</small>                    
+                    </h1>
+
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+
+                </section>
+
+
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    
+
+
+
+          
+                <section class="content">
+            
+                    <div class="row top-mar">
+                     
+                           
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+
+           
+
+
+     <table width="" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                 <strong> &nbsp; Ledger Name  </strong>
+                </td>
+                <td>
+              
+                  <div>
+                           &nbsp;  <input type="radio" checked="checked"   name="Cont" id="Cash1" value="1" /> <strong>  &nbsp;Cash To Bank  </strong>
+                          &nbsp; <input type="radio" name="Cont"  id="Cash2" value="2" /><strong>  &nbsp;Bank To Cash  </strong>
+                         &nbsp;  <input type="radio" name="Cont"  id="Cash3" value="3" /><strong>  &nbsp;Bank To Bank  </strong>
+                                               
+         </div>
+             
+                </td>               
+               
+            </tr>
+
+
+            </table>
+
+
+
+              <div id="CTB">
+             <div class="form-group">
+    <label class="black_txt_010">
+                   To Bank :<span style="color:Red;">*</span></label>
+         @Html.DropDownList("ToId", new SelectList(ViewBag.FromBank, "LID", "ledgerName"), "-----Select a Bank----", new { @class = "form-control" })
+
+      
+                                                     
+                                     
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               Amount:<span style="color:Red;">*</span></label>
+                                         @Html.TextBoxFor(model => model.CTBAmount, new { @class = "form-control", @placeholder = "Enter Amount" })
+                                         @Html.ValidationMessageFor(model => model.CTBAmount)
+                @*
+    <input type="text" id="CTBAmount" maxlength="15" name="CTBAmount"  placeholder="Enter Amount" class="form-control" />
+
+    @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", @placeholder = "Enter Amount. " })  *@
+                @Html.ValidationMessageFor(model => model.Remarks)
+                                                     
+                                     
+                                    </div>
+                                      <div class="form-group">
+                                          <label class="black_txt_010">
+       Contra Date :<span style="color:Red;">*</span></label>
+       
+
+                  
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp5" >@Html.TextBoxFor(model => model.dateCTB, new { @class = "form-control" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+             
+                                                     
+                                     
+                                    </div>
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+               Remarks:</label>
+
+                     <input type="text" id="RemarksCTB" name="RemarksCTB"  placeholder="Enter Remarks" class="form-control" />
+
+         @*      @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Enter Remarks " })  *@
+                @Html.ValidationMessageFor(model => model.Remarks)
+                                                     
+                                     
+                                    </div>
+
+                    </div>
+
+
+
+              <div id="BTC" style="display:none;opacity:1">
+
+                                 <div class="form-group">
+                                          <label class="black_txt_010">
+               From Bank:<span style="color:Red;">*</span></label>
+
+                  
+                                                          @Html.DropDownList("BankFromId", new SelectList(ViewBag.FromBank, "LID", "ledgerName"), "-----Select a Bank----", new { @class = "form-control" })
+                       
+                                     
+                                    </div>
+                                      <div class="form-group">
+                                          <label class="black_txt_010">
+       Cheque Date :<span style="color:Red;">*</span></label>
+       
+
+                  
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3" >@Html.TextBoxFor(model => model.chequeDateBTC, new { @class = "form-control"})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+             
+                                                     
+                                     
+                                    </div>
+
+  <div class="form-group">
+                                          <label class="black_txt_010">
+       Contra Date :<span style="color:Red;">*</span></label>
+       
+
+                  
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp6" >@Html.TextBoxFor(model => model.dateBTC, new { @class = "form-control"})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+             
+                                                     
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               Cheque Number:<span style="color:Red;">*</span></label>
+
+                  <input type="text" id="chequeNoBTC"  maxlength="50" name="chequeNoBTC" class="form-control" placeholder="Enter Cheque Number" />
+                               
+                                     
+                                    </div>
+
+
+
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+               Amount:<span style="color:Red;">*</span></label>
+                                            @Html.TextBoxFor(model => model.BTCAmount, new { @class = "form-control", @placeholder = "Enter Amount" })
+                                            @Html.ValidationMessageFor(model => model.BTCAmount)
+        @*   <input type="text" id="BTCAmount" maxlength="10" name="BTCAmount" placeholder="Enter Amount" class="form-control" />
+
+    @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", @placeholder = "Enter Amount. " })  *@
+              
+                                                     
+                                     
+                                    </div>
+
+                                             <div class="form-group">
+                                          <label class="black_txt_010">
+               Remarks:</label>
+                  <input  id="RemarksBTC" name="RemarksBTC"  placeholder="Enter Remarks" class="form-control" />
+
+             @*     
+               @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Enter Remarks " })  *@
+                @Html.ValidationMessageFor(model => model.Remarks)
+                                                     
+                                     
+                                    </div>
+                                    </div>
+
+
+              <div id="BTB" style="display:none;opacity:1">
+    
+       <div class="form-group">
+                                      
+      <label class="black_txt_010">
+
+
+
+
+               From Bank:<span style="color:Red;">*</span></label>
+
+                  
+                                                          @Html.DropDownList("BankToFromId", new SelectList(ViewBag.FromBank, "LID", "ledgerName"), "-----Select a Bank----", new { @class = "form-control" })
+
+                                                     
+                                     
+                                    </div>
+
+
+
+    <div class="form-group">
+                                      
+      <label class="black_txt_010">
+               To Bank:<span style="color:Red;">*</span></label>
+
+                  
+                                                          @Html.DropDownList("BankCashToId", new SelectList(ViewBag.FromBank, "LID", "ledgerName"), "-----Select a Bank----", new { @class = "form-control" })
+
+              
+                                                     
+                                     
+                                    </div>
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+       Cheque Date :<span style="color:Red;">*</span></label>
+       
+
+                  
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4" >@Html.TextBoxFor(model => model.chequeDateBTB, new { @class = "form-control"})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+             
+                                                     
+                                     
+                                    </div>
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+       Contra Date :<span style="color:Red;">*</span></label>
+       
+
+                  
+                                  <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp7" >@Html.TextBoxFor(model => model.dateBTB, new { @class = "form-control"})  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+             
+                                                     
+                                     
+                                    </div>
+
+
+ 
+
+
+                                    
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               Cheque Number:<span style="color:Red;">*</span></label>
+               <input type="text" id="chequeNoBTB" maxlength="50" name="chequeNoBTB" class="form-control" placeholder="Enter Cheque Number" />
+
+                  
+         
+              
+                                                     
+                                     
+                                    </div>
+
+
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+               Amount:<span style="color:Red;">*</span></label>
+
+                                            @Html.TextBoxFor(model => model.BTBAmount, new { @class = "form-control", @placeholder = "Enter Amount" })
+                                            @Html.ValidationMessageFor(model => model.BTBAmount)
+                  
+  @*<input type="text" id="BTBAmount" name="BTBAmount"  maxlength="10" placeholder="Enter Amount" class="form-control" />*@
+                  
+     
+          
+                                                     
+                                     
+                                    </div>
+
+                                             <div class="form-group">
+                                          <label class="black_txt_010">
+               Remarks:</label>
+
+                    <input type="text" id="RemarksBTB" name="RemarksBTB"  placeholder="Enter Remarks" class="form-control" />
+
+          
+                @Html.ValidationMessageFor(model => model.Remarks)
+                                                     
+                                     
+                                    </div>
+    </div>
+
+                                    
+     
+
+
+                                    
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>       
+                    </div>    
+                        
+                </section><!-- /.content -->
+
+        
+      
+      
+
+
+
+ </aside>
+
+              
+}

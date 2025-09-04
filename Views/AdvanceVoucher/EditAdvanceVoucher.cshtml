@@ -1,0 +1,214 @@
+﻿@model XenERP.Models.AdvanceVoucher
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/JqueryValidation.js"></script>
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../Reports/js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $(".select2").select2();
+
+    });
+</script>
+
+
+<script type="text/javascript">
+         $(document).ready(function () {
+
+             $("#Amount").on("keypress", function (event) {
+
+
+
+                 if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                     return true;
+                 }
+
+                 if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+                     event.preventDefault();
+                     return false;
+                 }
+                 if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                     event.preventDefault();
+                 }
+
+             });
+
+             //$("#BranchId").change(function () {
+
+             //    $.get("/PoultryDetailedReport/GetFarmerName", { brnchId: $('#BranchId option:selected').val() }, function (data) {
+
+             //        $("#FarmId").empty();
+             //        var options = $("#FarmId");
+             //            options.append(new Option("---Select FarmerName-----", "-1"));
+             //            $.each(data, function () {
+             //                options.append(new Option(this.FarmerName, this.Id));
+             //            });
+
+
+             //        });
+
+             //});
+
+             $("#FarmId").change(function () {
+
+                 var v = $("#FarmId option:selected").val();
+                // var fd = $('#Date').val();
+
+                 if (v != "") {
+                 $.get("/PoultryDailyEntry/GetFlockNameNew", { data: v }, function (data) {
+
+                     $("#FlockId").empty();
+                     var options = $("#FlockId");
+                     options.append(new Option("---Select Flock Code-----", "-1"));
+                     $.each(data, function () {
+                         options.append(new Option(this.FlockCode, this.Id));
+                     });
+
+                 });
+                 } else {
+                     $("#FlockId").empty();
+                     var options = $("#FlockId");
+                     options.append(new Option("---Select Flock Code-----", "-1"));
+                 }
+
+
+             });
+
+
+         });
+
+</script>
+
+
+
+
+
+
+@using (Html.BeginForm("EditAdvanceVoucher", "AdvanceVoucher", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>AdvanceVoucher<small> Edit</small> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">AdvanceVoucher Edit</li>
+            </ol>
+        </section>
+
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+
+
+        @Html.HiddenFor(d => d.CompanyId)
+        @Html.HiddenFor(d => d.UserId)
+        @Html.HiddenFor(d => d.Id)
+        
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Date:<span style="color:Red;">*</span> </label>
+                        <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateString, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style="width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                        @Html.ValidationMessageFor(model => model.Date)
+                    </div>
+
+
+
+
+                    @*<div class="form-group">
+                        <label class="black_txt_010"> Branch Name :<span style="color:Red;">*</span> </label>
+                        @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.Branch, "Id", "Name"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Branch Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.BranchId)
+
+                    </div>*@
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Farmer Name :<span style="color:Red;">*</span> </label>
+                        @if (ViewBag.FarmName != null)
+                        {
+                            @ViewBag.FarmName
+                            @Html.HiddenFor(model=>model.FarmId)
+                        }
+                        else
+                        {
+                        @Html.DropDownListFor(model => model.FarmId, new SelectList(ViewBag.Farmer, "Id", "FarmName"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Farm Unit Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FarmId)
+                        }
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Flock Code :<span style="color:Red;">*</span> </label>
+                        @if (ViewBag.FlockCode != null)
+                        {
+                            @ViewBag.FlockCode
+                            @Html.HiddenFor(model => model.FlockId)
+                        }
+                        else
+                        {
+                        @Html.DropDownListFor(model => model.FlockId, new SelectList(ViewBag.Flock, "Id", "FlockCode"), "------None-----", new { @class = "form-control select2", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.FlockId)
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Amount  :<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Amount)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Remarks  : </label>
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.Remarks)
+                    </div>
+                   
+                        <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary">
+                  
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+    </aside>
+}

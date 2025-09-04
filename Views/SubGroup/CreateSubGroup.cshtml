@@ -1,0 +1,363 @@
+﻿@model XenERP.Models.GroupMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#groupName").attr("maxlength", 50);
+
+        $("#btnsubmit").click(function () {
+
+
+            if ($("#GroupType").val() == "") {
+                alert("Please select a Group Type");
+                return false;
+
+            }
+
+            if ($("#ParentGroupId").val() == "") {
+                alert("Please select a Group Name");
+                return false;
+
+            }
+
+            if ($("#gID").val() == "") {
+                alert("Please enter sub Group Code");
+                return false;
+
+            }
+
+
+            if ($("#groupName").val() == "") {
+                alert("Please enter sub Group Name");
+                return false;
+
+            }
+
+
+
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $("#gID").attr("maxlength", 3);
+        $("#gID").attr("minlength", 3);
+        $("#groupName").attr("maxlength", 100);
+
+
+        $("#gID").change(function () {
+
+            if ($("#gID").val() <= 100) {
+
+                alert("Please enter Group code between 101 to 999");
+                $("#gID").val('');
+                $("#gID").focus();
+                return false;
+
+            }
+
+            else {
+
+
+
+                $.get("/SubGroup/CheckgroupId", { id: $("#groupID").val(), parentid: $("#ParentGroupId").val() }, function (data) {
+
+
+
+                    if (data == true) {
+                        alert("Group Code already exists");
+                        $("#gID").val('')
+                        $("#gID").focus()
+                        return false;
+                    }
+                    else {
+
+                    }
+                });
+            }
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#groupName").change(function () {
+
+
+
+
+
+
+
+            $.get("/SubGroup/Checkgroupname", { name: $("#groupName").val(), parentid: $("#ParentGroupId").val() }, function (data) {
+
+
+
+                if (data == true) {
+                    alert("Sub Group Name already exists");
+                    $("#groupName").val('')
+                    $("#groupName").focus()
+                    return false;
+                }
+                else {
+
+                }
+            });
+
+        });
+    });
+
+</script>
+@*<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+        $.get("/GroupMaster/GetGrouptype", { id: $("#GrouptypeId").val() }, function (data) {
+
+
+            $("#Grouptypename").val(data);
+        });
+
+        $("#GrouptypeId").change(function () {
+
+
+            $.get("/GroupMaster/GetGrouptype", { id: $("#GrouptypeId").val() }, function (data) {
+
+
+                $("#GroupTypename").val(data);
+            });
+
+        });
+    });
+
+</script>*@
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#gID").attr("maxlength", 3);
+        $("#gID").attr("minlength", 3);
+        $("#groupName").attr("maxlength", 100);
+
+
+        $("#gID").keydown(function (e) {
+
+            // Allow: backspace, delete, tab, escape, enter and .
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+            // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+            // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+
+        });
+
+    });
+        
+</script>
+@*<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#GroupType").change(function () {
+
+            $('#GroupTypename').val($('#GroupType').find('option:selected').text());
+
+            $.post("/SubGroup/GetGroupName", { type: $("#GroupType").val() }, function (data) {
+                var select = $("#ParentGroupId");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "--Select--"
+                }));
+
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Id,
+                        text: itemData.Name
+                    }));
+                });
+            });
+        });
+
+
+
+    });
+
+</script>*@
+@using (Html.BeginForm("CreateSubGroup", "SubGroup"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                    Sub Group   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                   
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit"  class="btn btn-primary" value="Save" /></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                       
+                                       
+
+                                        
+                                           
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Name :<span style="color:Red;">*</span></label>
+
+             
+             <input type="hidden" name="GroupTypename" id="GroupTypename" />
+
+                   @Html.DropDownListFor(model => model.ParentGroupId, new SelectList(ViewBag.Group, "GroupID", "GroupName"), "----Select a Group---", new { @class = "form-control" })
+                 @*  @Html.ValidationMessageFor(model => model.GroupType)      *@                              
+                            </div>
+
+                                                
+                                   @* <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Name :<span style="color:Red;">*</span></label>
+
+                  <input type="hidden" id="ParentGroupName" name="ParentGroupName" />
+
+                  <select id="ParentGroupId" name="ParentGroupId" class="form-control">                
+                  
+                  </select>
+
+
+                                     
+                                    </div>*@
+
+
+
+
+                                      
+
+                                    
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Sub Group Code :<span style="color:Red;">*</span></label>&nbsp;&nbsp;Sub Group Code shoud be a three digit number between 101 && 999. example: 101, 102, 451, 688 ... etc.
+
+                  
+                   @Html.TextBoxFor(model => model.gID, new { @class = "form-control", @placeholder = "Enter Sub Group Code",@maxlength="8" })
+                                 
+                                    </div>
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                Sub Group Name :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.groupName, new { @class = "form-control", @placeholder = "Enter Sub Group Name", @maxlength = "58" })
+                                  
+                                     
+                                    </div>
+
+                                   
+
+                                         
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+            
+
+
+
+
+
+
+
+
+                                         </div>
+                                         </div>
+                                      
+                                         
+
+
+                        </section>
+                        </aside>
+}

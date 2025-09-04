@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+@model IEnumerable<XenERP.Models.SalesInvoicePrintModelView>
+@{
+    int counter = 0;
+}
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Sales Invoice</title>
+<style>
+    .pgbreak{page-break-after: always;}
+    
+    table tr td,table tr th { padding:10px 0 !important;}
+    table tr td img { float:left;}
+    
+</style>
+</head>
+<body>
+
+@foreach (var item in Model)
+{
+    counter++;
+    <div>
+  @*  @if (counter % 2 != 0 && counter>1)
+    {
+        <p class="pgbreak" >&nbsp;</p>
+     <p style="page-break-before:always;"></p>
+
+
+<p><!-- pagebreak --></p> 
+    }*@
+@*<table cellpadding="0" cellspacing="0" style="width:100%;">
+<tr>
+<td style="vertical-align:top; width:100%;">
+<!-- 1st_Table -->
+
+<!-- 1st_Table -->
+</td>
+</tr>
+
+</table>*@
+
+<table cellpadding="0" cellspacing="0" style="width:100%; background-color:#f5f5f5; margin:5px 0; font-family:Arial, Helvetica, sans-serif;  border:2px solid #474747; padding:0 0;">
+  <tr>
+    <th colspan="5" style="text-align:center;  color:#000; padding:5px 0; font-size:14px;">RETAIL INVOICE</th>
+  </tr>
+  <tr>
+    <td colspan="5" style="text-align:center; color:#000; padding:5px 0; font-size:14px; font-weight:bold; line-height:25px; border-top:2px solid #474747;"><img src="../../Images/gimme-sm.png" /> Star Enterprise <br />
+      <span style="font-size:14px; font-weight:400; line-height:20px;">58, Diamond Harbour Road, P.O. Joka, Kolkata-700 104
+      Phone: 1-8008-33-22-11 </span></td>
+  </tr>
+  <tr>
+    <td style="padding:0px 5px !important;border-top:2px solid #474747; border-right:2px solid #474747; border-bottom:2px solid #474747; vertical-align:top;" width="60%"><table>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Name:</span> @item.CustomerName </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Address:</span> @item.Address </td>
+        </tr>
+         <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Contact No:</span> @item.ContactNo </td>
+        </tr>
+      </table></td>
+    <td colspan="5" style="padding:0px 5px !important;border-top:2px solid #474747; border-bottom:2px solid #474747; vertical-align:top;"><table>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Invoice No:</span> @item.InvoiceNO </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Date:</span> @item.InvoiceDate </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Sales Person:</span> @item.SalesPerson </td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td colspan="5"><table width="100%" cellpadding="0" cellspacing="0">
+   <tr>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">Item Name</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">Qty</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">MRP</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">Disc</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px;">Amt</td>
+        </tr>
+    @foreach (var itemdetail in item.salesInvoiceDetails)
+    {
+        <tr>
+          <td style="font-size:13px;width:50%; text-align:center; padding:1px 0;">@itemdetail.ItemName</td>
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Quantity</td>
+          @if (@itemdetail.TotalAmount != 0)
+          {
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Price</td>
+          }
+          else
+          {
+                <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Description</td>
+          }
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Discount</td>
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.TotalAmount</td>
+        </tr>
+    }
+        
+        <tr>
+          <td colspan="4" style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; 
+ border-top:2px solid #474747; padding:5px;">Net Total:</td>
+          <td colspan="1" style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; 
+ border-top:2px solid #474747; padding:5px;">@item.BCGrandTotal</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td style="vertical-align:top; padding:0 !important;" colspan="2"><table width="100%">
+        <tr>
+          <td colspan="2" style="padding:0 !important;"><span style="text-align:left; color:#000; padding:0px; font-size:13px; font-weight:500; line-height:16px;">(Rupees @item.GrandTotalInWords Only)</span></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:0 !important;"><span style="text-align:left; color:#000; padding:0px; font-size:13px; font-weight:500; line-height:16px;">Payment Mode: Cash/Credit</span></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:0 !important;"><span style="text-align:left; color:#000; padding:0px; font-size:13px; font-weight:500; line-height:16px;"><b>Note: Payment must be made within 10 days from the date of delivery.</b></span></td>
+        </tr>
+      </table></td>
+    <td colspan="5" rowspan="3" style="vertical-align:bottom; text-align:right;"><table width="100%">
+      </table></td>
+  </tr>
+</table>
+<br />
+
+<table cellpadding="0" cellspacing="0" style="width:100%; background-color:#f5f5f5; margin:5px 0; font-family:Arial, Helvetica, sans-serif;  border:2px solid #474747; padding:0 0;">
+  <tr>
+    <th colspan="5" style="text-align:center;  color:#000; padding:5px 0; font-size:14px;">RETAIL INVOICE</th>
+  </tr>
+  <tr>
+    <td colspan="5" style="text-align:center; color:#000; padding:5px 0; font-size:14px; font-weight:bold; line-height:25px; border-top:2px solid #474747;"><img src="../../Images/gimme-sm.png" /> Star Enterprise <br />
+      <span style="font-size:14px; font-weight:400; line-height:20px;">58, Diamond Harbour Road, P.O. Joka, Kolkata-700 104
+      Phone: 1-8008-33-22-11 </span></td>
+  </tr>
+  <tr>
+    <td style="padding:0px 5px !important;border-top:2px solid #474747; border-right:2px solid #474747; border-bottom:2px solid #474747; vertical-align:top;" width="60%"><table>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Name:</span> @item.CustomerName </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Address:</span> @item.Address </td>
+        </tr>
+         <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Contact No:</span> @item.ContactNo </td>
+        </tr>
+      </table></td>
+    <td colspan="5" style="padding:0px 5px !important;border-top:2px solid #474747; border-bottom:2px solid #474747; vertical-align:top;"><table>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Invoice No:</span> @item.InvoiceNO </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Date:</span> @item.InvoiceDate </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="font-size:14px; font-weight:400; line-height:20px; padding:0px 5px !important;"><span style="text-align:left; color:#000; font-size:14px; font-weight:bold; line-height:20px;">Sales Person:</span> @item.SalesPerson </td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td colspan="5"><table width="100%" cellpadding="0" cellspacing="0">
+   <tr>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">Item Name</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">Qty</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">MRP</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px 0;">Disc</td>
+          <td style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; padding:2px;">Amt</td>
+        </tr>
+    @foreach (var itemdetail in item.salesInvoiceDetails)
+    {
+        <tr>
+          <td style="font-size:13px;width:50%; text-align:center; padding:1px 0;">@itemdetail.ItemName</td>
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Quantity</td>
+          @if (@itemdetail.TotalAmount != 0)
+          {
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Price</td>
+          }
+          else
+          {
+                <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Description</td>
+          }
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.Discount</td>
+          <td style="font-size:13px; text-align:center; padding:1px;">@itemdetail.TotalAmount</td>
+        </tr>
+    }
+        
+        <tr>
+          <td colspan="4" style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; 
+ border-top:2px solid #474747; padding:5px;">Net Total:</td>
+          <td colspan="1" style="font-size:14px; font-weight:bold; text-align:center; border-bottom:2px solid #474747; 
+ border-top:2px solid #474747; padding:5px;">@item.BCGrandTotal</td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td style="vertical-align:top; padding:0 !important;" colspan="2"><table width="100%">
+        <tr>
+          <td colspan="2" style="padding:0 !important;"><span style="text-align:left; color:#000; padding:0px; font-size:13px; font-weight:500; line-height:16px;">(Rupees @item.GrandTotalInWords Only)</span></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:0 !important;"><span style="text-align:left; color:#000; padding:0px; font-size:13px; font-weight:500; line-height:16px;">Payment Mode: Cash/Credit</span></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding:0 !important;"><span style="text-align:left; color:#000; padding:0px; font-size:13px; font-weight:500; line-height:16px;"><b>Note: Payment must be made within 10 days from the date of delivery.</b></span></td>
+        </tr>
+      </table></td>
+    <td colspan="5" rowspan="3" style="vertical-align:bottom; text-align:right;"><table width="100%">
+      </table></td>
+  </tr>
+</table>
+
+
+</div>
+   
+     <p style="page-break-after:always;"></p>
+
+
+<p><!-- pagebreak --></p> 
+   
+}
+
+
+
+
+
+
+</body>
+</html>

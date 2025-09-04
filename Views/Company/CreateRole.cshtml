@@ -1,0 +1,178 @@
+﻿@model XenERP.Models.Role
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@{
+    
+    int slno = 0;    
+    
+}
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center#53A9BC;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/Home/Unitcancel";
+
+
+        });
+
+
+
+
+
+
+
+
+
+
+    });
+
+
+    $(function () {
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreateRole", "Company"))
+{
+    @Html.ValidationSummary(true)
+
+       
+       
+        
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Role   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+                  <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"> 
+                                    <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        @*<div class="col-md-6">*@
+                            <!-- general form elements -->
+                         
+                               
+                                <!-- form start -->
+                           
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+     
+
+                     
+@*
+
+                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+           Company :<span style="color:Red;">*</span></label>
+
+          @Html.HiddenFor(model => model.Id)
+
+                  @Html.DropDownListFor(model => model.CompanyId, new SelectList(ViewBag.companydet, "Id", "Name"), "--Select--", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.CompanyId)
+ 
+                                     
+                                    </div>*@
+
+      
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Role Name :<span style="color:Red;">*</span></label>
+
+
+
+                   @Html.TextBoxFor(model => model.RoleName, new { @class = "form-control", @placeholder = "Enter Role Name",@maxlength="60" })
+                 @Html.ValidationMessageFor(model => model.RoleName)
+ 
+                                     
+                                    </div>
+
+
+
+
+                                    
+                                   
+
+
+
+                                  
+                    
+                    
+                    
+                                    </div>
+                                    </div>
+                                    </div>
+                               
+                                
+                   
+                             
+                         
+                    </div>   <!-- /.row -->
+
+                 
+                   
+                </section><!-- /.content -->
+
+        
+      
+        </aside>
+        
+        
+        
+        
+}

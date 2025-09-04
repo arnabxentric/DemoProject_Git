@@ -1,0 +1,686 @@
+﻿@model IEnumerable<XenERP.Models.IssueModelView>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+   
+    var SlNo = 0;
+ 
+}
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+<script src="../../Scripts/PurchaseCostingDetail.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../Scripts/jquery-ui-1.10.3.js" type="text/javascript"></script>
+@*<link rel="stylesheet" href="http://code.jquery.com//ui/1.11.3/themes/smoothness/jquery-ui.css">*@
+<script type="text/javascript" src="http://code.jquery.com//jquery-1.10.2.js"></script>
+<script src="../../Scripts/jquery-ui-1.11.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $('#suc').html('');
+        $('#suc').css("display", "none");
+        $('#err').html('');
+        $('#err').css("display", "none");
+        $('#SupplierName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Issue/getSupplierDetails',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.SupplierName,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $('#SupplierName').val('');
+                    $('#SupplierCode').val('');
+                    $('#SupplierName').parents("td:first").removeClass("has-success");
+                    $('#SupplierCode').parents("td:first").removeClass("has-success");
+                }
+            },
+
+            select: function (event, ui) {
+                $('#SupplierId').val(ui.item.value);
+                $('#SupplierName').val(ui.item.label);
+                $.get('/Issue/chkSupplierDetails', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+                        $('#SupplierId').val('');
+                        $('#SupplierName').val('');
+                    }
+                    else {
+                        $('#SupplierId').val(data.Id);
+                        $('#SupplierCode').val(data.Code);
+                        $('#SupplierCode').parents("td:first").removeClass("has-success");
+
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#SupplierCode').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Issue/getSupplierDetails',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Code,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $('#SupplierName').val('');
+                    $('#SupplierCode').val('');
+                    $('#SupplierName').parents("td:first").removeClass("has-success");
+                    $('#SupplierCode').parents("td:first").removeClass("has-success");
+                }
+            },
+
+            select: function (event, ui) {
+                $('#SupplierId').val(ui.item.value);
+                $('#SupplierCode').val(ui.item.label);
+                $.get('/Issue/chkSupplierDetailsCode', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+                        $('#SupplierId').val('');
+                        $('#SupplierCode').val('');
+                    }
+                    else {
+                        $('#SupplierId').val(data.Id);
+                        $('#SupplierName').val(data.SupplierName);
+                        $('#SupplierName').parents("td:first").removeClass("has-success");
+
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#UnitFormula,#parentname,#secondname').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+
+
+    });
+</script>
+<script language="javascript" type="text/javascript">
+
+    //var rowadd = 0;
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+        document.getElementById("dataTable").deleteRow(id);
+
+
+    });
+
+    function addRow(tableID) {
+        var table = document.getElementById(tableID);
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell1 = row.insertCell(0);
+        var element1 = document.createElement("input");
+        element1.type = "text";
+        element1.name = "txtproduct";
+        element1.id = "Product" + rowCount;
+        element1.className = "Product";
+        // element1.required = "required";
+        cell1.appendChild(element1);
+
+        var cell2 = row.insertCell(1);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtwarehouse";
+        element2.id = "warehouse" + rowCount;
+        element2.className = "warehouse";
+        cell2.appendChild(element2);
+
+        var cell3 = row.insertCell(2);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtavailability";
+        element3.className = "Availability";
+        element3.id = "Availability" + rowCount;
+        element3.readOnly = true;
+        cell3.appendChild(element3);
+
+        var cell4 = row.insertCell(3);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "txtUnitFormula";
+        element4.className = "UFormula";
+        element4.readOnly = true;
+        element4.id = "UFormula" + rowCount;
+        cell4.appendChild(element4);
+
+
+        var cell5 = row.insertCell(4);
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.name = "txtquantityPU";
+        element5.className = "QuantityPU";
+        element5.id = "QuantityPU" + rowCount;
+        cell5.appendChild(element5);
+
+        var cell6 = row.insertCell(5);
+        var element6 = document.createElement("input");
+        element6.type = "text";
+        element6.name = "txtPU";
+        element6.className = "PU";
+        element6.id = "PU" + rowCount;
+        element6.readOnly = true;
+        cell6.appendChild(element6);
+        $("#PU").prop("readonly", true);
+
+
+        var cell7 = row.insertCell(6);
+        var element7 = document.createElement("input");
+        element7.type = "text";
+        element7.name = "txtquantitySU";
+        element7.className = "QuantitySU";
+        element7.id = "QuantitySU" + rowCount;
+        element7.readonly = "readonly";
+        cell7.appendChild(element7);
+
+
+        var cell8 = row.insertCell(7);
+        var element8 = document.createElement("input");
+        element8.type = "text";
+        element8.name = "txtSU";
+        element8.className = "SU";
+        element8.id = "SU" + rowCount;
+        element8.readOnly = true;
+        cell8.appendChild(element8);
+       
+
+
+
+        var cell9 = row.insertCell(8);
+        var element9 = document.createElement("input");
+        element9.type = "button";
+        element9.id = "btndelete";
+        element9.name = "button[]";
+        element9.title = "Delete this row";
+        element9.className = "add-component-deletebotton";
+        cell9.appendChild(element9);
+
+        var cell10 = row.insertCell(9);
+        var element10 = document.createElement("input");
+        element10.type = "hidden";
+        element10.name = "txtproductid";
+        element10.className = "productid";
+        element10.id = "productid" + rowCount;
+        cell10.appendChild(element10);
+        cell10.className = "display-non-div";
+
+        var cell11 = row.insertCell(10);
+        var element11 = document.createElement("input");
+        element11.type = "hidden";
+        element11.name = "txtWarehouseid";
+        element11.className = "WarehouseId";
+        element11.id = "WarehouseId" + rowCount;
+        cell11.appendChild(element11);
+        cell11.className = "display-non-div";
+
+    }
+</script>
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $("#dataTable").on("keypress", '.Product', function (event) {
+            var id = $(this).attr('id');
+            $('#' + id).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Issue/getProductDetails',
+                        data: {
+                            query: request.term
+                        },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.ProductName,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $('#' + id).val('');
+                        alert("Item not found");
+                        var coltd = $("#" + id).closest('td');
+                        var coltr = coltd.closest('tr');
+                        coltr.find('.Quantity').val('');
+                        coltr.find('.Price').val('');
+                        coltr.find('.Totalvalue').val('');
+                        coltr.find('.Availability').val('');
+                    }
+                },
+
+                select: function (event, ui) {
+                    var ctd = $('#' + id).closest('td');
+                    var ctr = ctd.closest('tr');
+                    var warid = ctr.find('.WarehouseId').val();
+                    $('#' + id).val(ui.item.label);
+                    $.get('/Issue/getStockDetails', { 'query': ui.item.label, warId: warid }, function (data, status) {
+                        if (data == '') {
+                            //$('#productId').val('');
+                            $('#' + id).val('');
+                        }
+                        else {
+                            //var ctd = $('#Product' + rowadd).closest('td');
+                            var ctd = $('#' + id).closest('td');
+                            var ctr = ctd.closest('tr');
+                            ctr.find('.productid').val(data.productId);
+                            ctr.find('.warehouse').val(data.warehouseName);
+                            ctr.find('.Availability').val(data.availability);
+                            ctr.find('.UFormula').val(data.UnitFormula);
+                            ctr.find('.PU').val(data.PrimaryUnit);
+                            ctr.find('.SU').val(data.Secondaryunit);
+                            ctr.find('.WarehouseId').val(data.warehouseId);
+                        }
+
+                    });
+                    return false;
+                },
+                minLength: 1
+            });
+        });
+    });
+</script>
+<style>
+    .my-table-style
+    {
+        margin: 0;
+    }
+    .my-table-style input[type="text"]
+    {
+        width: 122px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dataTable").on("keypress", '.warehouse', function (event) {
+            var id = $(this).attr('id');
+            $('#' + id).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Issue/getWarehouseDetails',
+                        data: { query: request.term },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.WareHouseName,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $('#' + id).val('');
+                        $('#' + id).parents("td:first").removeClass("has-success");
+                    }
+
+                },
+
+                select: function (event, ui) {
+                    // $('#' + id).val(ui.item.value);
+                    $('#' + id).val(ui.item.label);
+                    $.get('/Issue/chkWareHouseDetails', { 'query': ui.item.label }, function (data, status) {
+                        if (data == '') {
+                            $('#' + id).val('');
+                        }
+                        else {
+                            var ctd = $('#' + id).closest('td');
+                            var ctr = ctd.closest('tr');
+                            ctr.find('.warehouse').val(data.WareHouseName);
+                            ctr.find('.WarehouseId').val(data.Id);
+                        }
+
+                    });
+                    return false;
+                },
+                minLength: 1
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    var $j = jQuery.noConflict();
+    $j(document).ready(function () {
+
+        $j("#btnsave").on("click", function () {
+            var MyRows = $j('table#dataTable').find('tr');
+            for (var i = 1; i < MyRows.length; i++) {
+                var id = $j(MyRows[i]).find('.Product').attr('id');
+                //var id = $j('.Product').attr('id');
+                var comptd = $j('#' + id).closest('td');
+                var comptr = comptd.closest('tr');
+                var QID = comptr.find('.QuantityPU').val();
+                var SUID = comptr.find('.QuantitySU').val();
+                var num = $j('#' + id).val();
+                if (num == '') {
+                    messageBox1("Please Enter the Product Name.....");
+                    return false;
+                }
+                if (QID == '') {
+                    messageBox1("Please Enter the Quantity Primary Name.....");
+                    return false;
+                }
+                if (SUID == '') {
+                    messageBox1("Please Properly Enter the Quantity Primary Name.....");
+                    return false;
+                }
+            }
+        });
+
+        $j("#dataTable").on("change", '.QuantityPU', function (event) {
+            var id = $j(this).attr('id');
+            var comptd = $j('#' + id).closest('td');
+            var comptr = comptd.closest('tr');
+            var num = $j("#" + id).val();
+            var num2 = $j("#" + id).val();
+            var unit = comptr.find('.UFormula').val();
+            var avail = comptr.find('.Availability').val();
+            if (parseInt(num) > parseInt(avail)) {
+                messageBox1("You Are Out Of Stock");
+                var QPU = comptr.find('.QuantityPU');
+                var QSU = comptr.find('.QuantitySU');
+                QPU.val("");
+                QSU.val("");
+                return false;
+            }
+            else if (num != null && unit != null && unit != "") {
+                result = parseFloat(num, 2) / parseFloat(unit, 2);
+                comptr.find('.QuantitySU').val(result);
+            }
+        });
+
+        function messageBox1(str) {
+            $j("<div>" + str + "</div>").dialog({
+                resizable: false,
+                autoOpen: true,
+                hide: "puff",
+                show: "slide",
+                height: 150,
+                position: {
+                    my: "center",
+                    at: "center"
+                },
+                title: "Success",
+                buttons: {
+                    OK: function () { $j(this).dialog("close"); }
+                }
+
+            });
+        }
+    });
+</script>
+
+<script type="text/javascript" >
+    $(document).ready(function () {
+        $("#dataTable").on("keypress", '.QuantityPU', function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+
+
+    });
+
+</script>
+@using (Html.BeginForm(new { id = "issue" }))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side"> 
+
+          <section class="content-header">
+                    <h1> Issue Product<small>Description</small> </h1>
+                    <ol class="breadcrumb">
+                       <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                       <li><a href="#">Forms</a></li>
+                       <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+             <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" formaction="EditIssue"/></li>
+                                </ul>
+             </div>
+
+             @if (ViewBag.Message != null)
+             {
+             <div id="suc" class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          @ViewBag.Message
+             </div>
+             }
+
+             @if (ViewBag.Error != null)
+             {
+                <div id="err" class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+             }
+
+                <!-- Main content -->
+                <section class="content">  
+
+
+                    <div class="row">
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                     </div>
+                                <div class="box-body">
+                    
+         @Html.HiddenFor(d => d.FirstOrDefault().Id)
+            
+                                      <div class="form-group">
+                                          <label class="black_txt_010">Supplier Name :<span style="color:Red;">*</span></label>
+                                               @Html.TextBoxFor(model => model.FirstOrDefault().SupplierName, new { @class = "form-control", @placeholder = "Supolier Name" })
+                                          @Html.HiddenFor(model => model.FirstOrDefault().SupplierId)
+                                          @Html.ValidationMessageFor(model => model.FirstOrDefault().SupplierName)
+                                        
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">Supplier Code:</label>
+                                          @Html.TextBoxFor(model => model.FirstOrDefault().SupplierCode, new { @class = "form-control", @placeholder = "Supplier Code", @maxlength = "100" })
+                                          @Html.ValidationMessageFor(model => model.FirstOrDefault().SupplierCode)
+                                    </div>
+                               
+                    </div>
+                    </div>   <!-- /.row -->
+                    </div>
+                   
+
+
+             <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"> </div>
+                                <div class="box-body">
+                             
+                               
+                                     <div class="form-group">
+                                         <label class="black_txt_010"> Reason:</label>
+                                          @Html.TextAreaFor(model => model.FirstOrDefault().Remarks, new { @class = "form-control", @placeholder = "Enter Reason" })
+                                        
+                                    </div>
+
+                                      <div class="form-group">
+                                                <label class="black_txt_010"> Order Date:</label>
+                                                    <div class="input-group date" data-date-format="@Session["DateFormatLower"]"  id="dp3">
+                                                <input type="text" readonly="readonly" name="IssueDate"  class = "form-control" id="FromDate" value="@Model.FirstOrDefault().IssueDate"  />
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> 
+                                                </div>
+                                            </div>
+                                   
+                                    </div>
+                                    </div>
+                                </div>
+
+                                
+
+                         <div class="col-xs-12">
+                         <div class="box-body">
+                         <div class="box-body table-responsive no-padding">
+                         <div class="form-group">
+                          <h3>Issue Details</h3>
+                          </div>
+
+
+                         <div class="form-group">
+
+                          <table class="my-table-style" id="dataTable" width="100%" border="0">
+
+                          <tr class="my-table-header">
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Product Name</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Warehouse Name</label>
+                          </td>
+
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Availability</label>
+                          </td>
+
+                          
+                           <td  style="text-align:center;">
+                          <label class="black_txt_010">Unit Formula</label>
+                          </td>
+                       
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Quantity Primary</label>
+                          </td>
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Primary Unit</label>
+                          </td>
+
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Quantity Secondary</label>
+                           </td>
+
+                            <td style="text-align:center;">
+                          <label class="black_txt_010">Secondary Unit</label>
+                          </td>
+                          <td></td>
+                           </tr>
+
+                           @foreach (var item in Model.FirstOrDefault().issueDetails)
+                           {
+                               SlNo = SlNo + 1;
+                               var PID = "Product" + SlNo;
+                               var ProductId = "productid" + SlNo;
+                               var QuantitySU = "QuantitySU" + SlNo;
+                               var warHouse="warehouse"+SlNo;
+                               var warId="WarehouseId"+SlNo;
+                           <tr>
+                               <td><input type='text' name='txtproduct' class = "Product" id='@PID' value='@item.ProductName'/> </td>
+                                <td><input type='text' name='txtwarehouse' class = "warehouse" id='@warHouse' value='@item.WarehouseName'/> </td>
+                                   <td><input type='text' name='txtavailability' class = "Availability" id="Availability" value='@item.AvailableItem' readonly="readonly"/> </td>
+                                      <td><input type='text' name='txtUnitFormula' class = "UFormula" id="UFormula" value='@item.UnitFormula' readonly="readonly"/> </td>
+                                         <td><input type='text' name='txtquantityPU' class = "QuantityPU" id="QuantityPU" value='@item.QuantityPU'/> </td>
+                                            <td><input type='text' name='txtPU' class = "PU" id="PU" value='@item.primaryUnit' readonly="readonly"/> </td>
+                                               <td><input type='text' name='txtquantitySU' class = "QuantitySU" id='@QuantitySU' value='@item.QuantitySU' readonly="readonly"/> </td>
+                                                  <td><input type='text' name='txtSU' class = "SU" id="SU" value='@item.secondaryUnit' readonly="readonly"/> </td>
+                                                     <td><input type='button' name='button[]' class = "add-component-deletebotton" id="btndelete"/> 
+                                                       <input type='hidden' name='txtproductid' class = "productid" id='@ProductId' value="@item.ProductId"/> 
+                                                          <input type='hidden' name='txtWarehouseid' class = "WarehouseId" id='@warId' value="@item.WareHouseId"/> 
+                                                        </td>
+                                                     
+                                               
+                                                      
+                           </tr>
+                           }
+                           </table>
+
+                            <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+
+                             </div>
+
+
+
+                             <div class="form-group">
+                             <table>
+                             <tr>
+                             <td>
+                             <te
+                             </td>
+                             </tr>
+                             </table>
+                            </div>
+                            </div>
+                            </div>
+                </section><!-- /.content -->
+        </aside>
+}

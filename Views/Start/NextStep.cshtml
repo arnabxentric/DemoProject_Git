@@ -1,0 +1,92 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    
+    var compid=Session["companyid"];
+    ViewBag.Title = "Xpert | Setup Guide";
+}
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+</head>
+<body class="skin-black">
+    <!-- header logo: style can be found in header.less -->
+   @* <header class="header">
+           @* <a href="../../index.html" class="logo">
+                <!-- Add the class icon to your logo image or logo icon to add the margining -->
+                AdminLTE
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+         
+        </header>*@
+    <div class="wrapper row-offcanvas row-offcanvas-left">
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Setup Guide  
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+            <!-- Right side column. Contains the navbar and content of the page -->
+        
+
+                <!-- Main content -->
+                <section class="content">
+                <!--3-7-2014-->
+                 <div class="container2">
+                 	<div class="setup-steps">
+                    	<ul>
+                      
+                        	<li class="selected">Start</li>
+                            <li>Organization Settings</li>
+                            <li>Financial Settings</li>
+                            @*<li>Currencies</li>
+                             <li>Tax Rates</li>*@
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+                    
+               
+                    	<div class="setup-title">
+                        	Set your conversion date
+                        </div>
+                        <div class="setup-content">
+                        	<div id="Setup">
+                            Testing
+                            </div>
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("CreateCompany", "Start")"><span>Next</span></a></span></div>
+
+
+                              
+                    @*   <a id="setcompany"><span>Next</span></a>*@
+                       
+                            </div>
+                        </div>
+                  
+                 </div>
+					<!--3-7-2014 END -->
+                </section><!-- /.content -->
+            </aside>
+        <!-- /.right-side -->
+    </div>
+    
+</body>
+</html>

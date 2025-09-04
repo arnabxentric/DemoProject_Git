@@ -1,0 +1,17 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Checkboxdropdown</title>
+</head>
+<body>
+    <div>
+       @Html.ListBox("ListBox1", new MultiSelectList(new [] {"Cricket", "Chess"})) 
+    </div>
+</body>
+</html>

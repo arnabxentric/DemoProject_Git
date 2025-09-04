@@ -1,0 +1,540 @@
+﻿@model XenERP.Models.User
+@{
+    Layout = null;
+}
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+    <title>Xpert | Register</title>
+
+
+    <link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+    <link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+  <script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/JqueryValidation.js" type="text/javascript"></script>
+    <script src="../../js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+    <script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+    <script src="../../js/AdminLTE/app.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery.validate.unobtrusive.js" type="text/javascript"></script>
+    <script src="../../Scripts/spin.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+
+        function check(x) {
+
+            alert("hi");
+
+            var level = 0;
+            var p1 = /[a-z]/;
+            var p2 = /[A-Z]/;
+            var p3 = /[0-9]/;
+            var p4 = /[\!\@@\#\$\%\^\&\*\(\)\-\_\=\+\[\{\]\}\|\\\;\:\'\"\,\<\.\>\/\?\`\~]/;
+            if (x.length >= 8)
+                level++;
+            if (p1.test(x))
+                level++;
+            if (p2.test(x))
+                level++;
+            if (p3.test(x))
+                level++;
+            if (p4.test(x))
+                level++;
+            prog_bar(level, 0, 5, 200, 5, "#0066FF", "#99FFFF");
+        }
+
+        function prog_bar(cur_val, min_val, max_val, width, height, border, fill) {
+            var str = "", res = 0;
+            if (cur_val >= min_val && cur_val <= max_val) {
+                if (min_val < max_val) {
+                    res = ((cur_val - min_val) / (max_val - min_val)) * 100;
+                    res = Math.floor(res);
+                }
+                else {
+                    res = 0;
+                }
+            }
+            else {
+                res = 0;
+            }
+            if (res <= 40)
+                fill = "#FF0000";
+            else if (res <= 80)
+                fill = "#FFFF00";
+            else
+                fill = "#3F9F3F";
+            str = str + "<div style=\"border:" + border + " solid thin; width:" + width + "px; height:" + height + "px;\">";
+            str = str + "<div style=\"background-color:" + fill + "; width:" + res + "%; height:" + height + "px;\">";
+            str = str + "</div></div>";
+            if (res <= 40)
+                str = str + "Weak";
+            else if (res <= 60)
+                str = str + "Good";
+            else if (res <= 80)
+                str = str + "Strong";
+            else
+                str = str + "Excellent";
+            document.getElementById("prog_bar").innerHTML = str;
+        }
+    
+</script>
+
+    <link href="//quickbooks-s3.intuitstatic.com/assets/showroom_visual/favicon-820030dd7b74f143954126fca2c43bc8.ico"
+        rel="shortcut icon" type="image/x-icon" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow" />
+    <meta name="is_promo_active" content="true" />
+    <meta name="is_periodic_day_promo" content="false" />
+    <meta name="is_second_periodic_day_promo" content="true" />
+    <meta name="airStreamTest" content="" />
+    <link href="//quickbooks-s3.intuitstatic.com/assets/showroom_visual/v0_all-ea05e6824f3c002107c6d0e06d2a9423.css"
+        media="all" rel="stylesheet" type="text/css" />
+    <link href="//quickbooks-s3.intuitstatic.com/assets/sui/merged/v1_group2-98c9038f2fff1342c10ca5377a083dfa.css"
+        media="screen" rel="stylesheet" type="text/css" />
+    <link href="//quickbooks-s3.intuitstatic.com/assets/sui/core_new/merged/v1_group3-a94bd2800b6907663ca26a1538eecf1d.css"
+        media="screen" rel="stylesheet" type="text/css" />
+    
+     @* <script type="text/javascript">
+
+          $(document).ready(function () {
+              $("#loader").hide();
+              $("#btnsave").on("click", function () {
+
+                  if ($('form').valid()) {
+                      alert('valid');
+
+                      $("#btnsave").hide();
+                      $("#loader").show();
+                  }
+
+                  else {
+                    //  alert('not valid');
+                      $("#btnsave").show();
+                      $("#loader").hide();
+                  }
+              });
+          });
+        </script>
+*@
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            $.get("/Home/GetCountryCode/", { country: $("#CountryId").val() }, function (data) {
+
+                if (data != null) {
+
+                    var id = "+" + data;
+
+
+                    $("#CountMobId").val(id);
+                    $("#CountId").text(id);
+                }
+            });
+
+
+            $("#CountryId").on("change", function () {
+
+
+                $.get("/Home/GetCountryCode/", { country: $("#CountryId").val() }, function (data) {
+
+                    if (data != null) {
+
+                        var id = "+" + data;
+                        $("#CountMobId").val(id);
+                        $("#CountId").text(id);
+                    }
+
+
+                });
+
+            });
+        });
+</script>
+
+
+
+
+
+
+
+
+</head>
+<body>
+    <iframe width="1" height="1" frameborder="0" style="display: none"></iframe>
+    <div id="headerContainer">
+        <div id="navigationContainer">
+            <div class="logo">
+                <a href="#" class="">
+                    <img src="../../Images/xpert.png" /></a>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var SUI_FLOW = 'core';
+        var PPC_FLOW = 'false';
+    </script>
+    <div id="mainBody">
+        <div id="contentContainer">
+            <div id="suiContainer" style="overflow: hidden;">
+                <div class="clip-section" id="clipSectionDiv">
+                    <input id="newLoginError" name="newLoginError" type="hidden" value="0" />
+                    <input id="existingLoginError" name="existingLoginError" type="hidden" value="0" />
+                    <div class="slide-container" style="margin-left: 0px">
+                        <div id="coreSuiregistrationForm" class="coreSuiform">
+                            <script type="text/javascript">
+                                if (typeof (wa) == "undefined") { wa = {}; }
+                                wa.eventList = 'fmsstep1';
+                                wa.funnelName = 'qbo core';
+                                wa.aryProducts = [
+            ["qbo"]
+        ];
+                            </script>
+                            <!-- left column starts here -->
+                            <div id="leftColumn">
+                                <!-- Core Sui Registration Page Starts here -->
+                                <h1>
+                                    Start Your Free Trial
+                                </h1>
+                                <div id="formContent">
+                                  
+                                    @using (Html.BeginForm())
+                                    {
+                                        @Html.ValidationSummary(true)
+
+
+
+                                        <ul class="form-fields">
+                                            <!--new login-->
+                                            <li id="firstNameLI">
+                                              <div class="form-group has-error">
+                                                <label for="userFirstName">
+                                                    First Name</label>
+                                     
+                                                @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", @placeholder = "Enter First Name", @onkeypress = "return Character(event)",@maxlength="80"})
+                                                @Html.ValidationMessageFor(model => model.FirstName)
+
+                                                    
+                                                </div>
+                                                <div class="opt-test-sui-error">
+                                                </div>
+                                            </li>
+                                            <div class="clear">
+                                            </div>
+                                            <li id="lastNameLI">
+                                               <div class="form-group has-error">
+                                                <label for="userLastName">
+                                                    Last Name</label>
+                                           
+                                                                                           @Html.HiddenFor(model => model.Id)
+                                                @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", @placeholder = "Enter Last Name", @onkeypress = "return Character(event)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.LastName)
+                                                </div>
+                                                <div class="opt-test-sui-error">
+                                                </div>
+                                                <label for="firstLastNameSuiErrorDiv" class="error" style="color: #fff; display: none;">
+                                                </label>
+                                            </li>
+                                            <div class="clear">
+                                            </div>
+
+                                              <li id="emailLI" class="new-user-account">
+                                               <div class="form-group has-error">
+                                                <label for="userEmail">
+                                                    Country</label>
+                                                @Html.DropDownListFor(model => model.CountryId, new SelectList(ViewBag.countrycode, "Id", "Country"), new { @class = "form-control" })<br />
+                                                @Html.ValidationMessageFor(model => model.CountryId)</div>
+                                                <div class="opt-test-sui-error">
+                                                </div>
+                                            </li>
+                                            <li id="emailLttI" class="new-user-account">
+                                               <div class="form-group relative has-error">
+                                                <label for="userEmail">
+                                                    Mobile Number</label>
+                                                    <label id="CountId" class="cont-code"></label>
+                                              
+                                               <input type="hidden" id="CountMobId"  name="CountMobId" />
+
+                                                @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control cont-mob", @placeholder = "Enter Mobile Number", @onkeypress = "return Numeric(event)" })
+                                       
+                                                @Html.ValidationMessageFor(model => model.PhoneNumber)
+                                                </div>
+                                                <div class="opt-test-sui-error">
+                                                </div>
+                                            </li>
+                                            <div class="clear">
+                                            </div>
+                                            <li id="emailtttLI" class="new-user-account">
+                                               <div class="form-group has-error">
+                                                <label for="userEmail">
+                                                    Email ID</label>
+                                               
+                                                @Html.TextBoxFor(model => model.UserEmailAddress, new { @class = "form-control", @placeholder = "Enter Email Id", @type = "email", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.UserEmailAddress)
+                                                </div>
+                                                <div class="opt-test-sui-error">
+                                                </div>
+                                            </li>
+                                            <div class="clear">
+                                            </div>
+                                          
+                                            <div class="clear">
+                                            </div>
+                                            <li id="userIdLI">
+                                               <div class="form-group has-error">
+                                                <label for="userId">
+                                                    User ID</label>
+                                                @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", @placeholder = "Enter User ID ", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.UserName)</div>
+                                                <div class="opt-test-sui-error">
+                                                </div>
+                                            </li>
+                                            <div class="clear">
+                                            </div>
+                                            <li id="passwordLI">
+                                               <div class="form-group has-error">
+                                                <label for="userPassword">
+                                                    Password</label>
+                                                @Html.EditorFor(model => model.Password, new { @class = "form-control", @placeholder = "Enter Password", @onkeyup = "check(this.value)", @maxlength = "80" })
+                                                @Html.ValidationMessageFor(model => model.Password)
+                                                  <div id="prog_bar" class="meter"></div>
+                                                </div>
+                                             
+                                            </li>
+                                            <div class="clear">
+                                            </div>
+                                            <div class="clear">
+                                            </div>
+                                        </ul>
+                                       @* <div id="itemTermsOfService" class="subtext">
+                                            By clicking Sign Up below, you acknowledge you have read and agree to the <a target="_blank"
+                                                href="https://qbo.intuit.com/c1/Terms_Of_Service.html">Terms of Service.</a>
+                                        </div>*@
+
+                                        <div class="clear">
+                                        </div>
+                                        <!-- these ie_offset and terms_error divs used by seo sui to fix ie layout issue -->
+                                        <div id="ie_offset">
+                                            <div id="terms_error">
+                                            </div>
+                                        </div>
+                                        <div class="clear">
+                                        </div>
+                                        <div>
+                                           @* <div class="action-container" id="loader">
+                                                <img src="../../Images/ajax-loader(1).gif" />
+                                            </div>*@
+                                            <div id="btnshow">
+                                                &nbsp; &nbsp; &nbsp; &nbsp;
+                                                <br />
+                                                <input name="" type="submit" id="btnsave" value="SignUp" class="login-btn" />
+                                            </div>
+                                        </div>
+                                        <div class="clear">
+                                    </div>
+                                          <a class="new-or-existing" href="@Url.Action("Login", "home")">Already have an Xpert User ID?
+                                    </a>
+                                  
+        
+                                    }
+                                    <div id="blank-submit">
+                                    </div>
+                                    <div class="clear">
+                                    </div>
+                                    <div id="respectAndProtect" style="display: none;">
+                                        We respect &amp; protect your privacy</div>
+                                </div>
+                                <!-- Core Sui Registration Page Ends here -->
+                            </div>
+                            <!-- left column ends here -->
+                            <div class="clear">
+                            </div>
+                        </div>
+                        <div id="coreSuiloginForm" class="coreSuiform">
+                            <!-- left column starts here -->
+                            <div id="leftColumn">
+                                <h1>
+                                    Start Your <span data-wa-link="Free_30_day_Trial">Free</span> Trial
+                                </h1>
+                                <div id="formContent">
+                                    <a class="new-or-existing" onclick="switchSUIForm();">Need to create a new Xpert user
+                                        ID?</a>
+                                    <form accept-charset="UTF-8" action="/start/billing_info" data-wa-form-analysis="true"
+                                    data-wa-ignore-form-abandon="true" id="existingUserSignInForm" method="post" name="existingUserSignInForm"
+                                    style="visibility: hidden">
+                                    <div style="margin: 0; padding: 0; display: inline">
+                                        <input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token"
+                                            type="hidden" value="EcO8+TgDJpk3Fi7Fe5XH5XCV5mWWze6/qVctJy2gqYc=" /></div>
+                                    <input type='hidden' value="USS-TAN" name="bc" id="existingUserBC" />
+                                    <input type="hidden" value="" name="zonCode" />
+                                    <input type="hidden" value="existing_user" name="userType" />
+                                    <input type='hidden' value='false' name='isBuyNowFlow' id='isExistingUserBuyNowFlow' />
+                                    <input type='hidden' value='false' name='isPulseBuyNowFlow' />
+                                    <input type="hidden" value="Sign Up" name="get_sui_cta_text" id="get_sui_cta_text" />
+                                    <ul class="form-fields">
+                                        <!--existing login-->
+                                        <li id="existingLoginLI">
+                                            <label for="existingUserId">
+                                                User ID</label>
+                                            <input type="text" id="existingUserId" name="existingUserId" class="requiredIfVisible"
+                                                maxlength="256" value="">
+                                            <div class="opt-test-sui-error">
+                                            </div>
+                                            <div class="clear">
+                                            </div>
+                                        </li>
+                                        <li id="existingPasswordLI">
+                                            <label for="existingUserPassword">
+                                                Password</label>
+                                            <input type="password" id="existingUserPassword" name="existingUserPassword" class="requiredIfVisible"
+                                                maxlength="32" value="">
+                                            <div class="clear">
+                                            </div>
+                                            <div class="opt-test-sui-error">
+                                                Forgot your <span id="forgot_login"><a tabindex="-1" href="javascript:help_login_name();">
+                                                    User ID</a></span> or <span id="forgot_password"><a tabindex="-1" href="javascript:help_password();">
+                                                        Password?</a></span>
+                                            </div>
+                                            <!--a style="font-size:10px;margin-left:159px;" href="javascript:checkUserCredentials();">
+            Check User ID and Password combination</a-->
+                                        </li>
+                                        <div class="clear">
+                                        </div>
+                                    </ul>
+                                    <div id="itemTermsOfService" class="subtext">
+                                        By clicking Sign Up below, you acknowledge you have read and agree to the <a target="_blank"
+                                            href="https://qbo.intuit.com/c1/Terms_Of_Service.html">Terms of Service.</a>
+                                    </div>
+                                    <div class="clear">
+                                    </div>
+                                    <div id="ie_offset">
+                                        <div id="terms_error">
+                                        </div>
+                                    </div>
+                                    <div class="clear">
+                                    </div>
+                                    <div class="action-container">
+                                        @*   <a href="javascript:void(0);" class="action-button sbsg-button sbsg-button-big "
+                                            id="existingUserSubmitButton" onclick="submitExistingUserSigninForm('USS-TAN');"
+                                            name="submit-button">Sign Up</a> 
+                                            *@ @*               <input name="" type="submit" id="btnsave" value="Sign Up" class="btn btn-primary" />
+                                            <span class="secure-server">Secure Server</span>*@
+                                    </div>
+                                    <div id="blank-submit">
+                                    </div>
+                                    <div class="clear">
+                                    </div>
+                                    </form>
+                                    <div class="clear">
+                                    </div>
+                                    <div id="respectAndProtect" style="display: none">
+                                        We respect &amp; protect your privacy</div>
+                                </div>
+                            </div>
+                            <!-- left column ends here -->
+                            <div class="clear">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- right column starts here -->
+                <div id="rightColumn">
+                    <div class="features">
+                        <div class="list">
+                            <div class="risk-free-new feature-image-new">
+                            </div>
+                            <div class="feature-text-new green-text">
+                                No credit card<br>
+                                needed
+                            </div>
+                            <div class="clear">
+                            </div>
+                        </div>
+                        <div class="list">
+                            <div class="quick-setup-new feature-image-new">
+                            </div>
+                            <div class="feature-text-new orange-text">
+                                Quick and<br>
+                                easy setup
+                            </div>
+                            <div class="clear">
+                            </div>
+                        </div>
+                        <div class="list">
+                            <div class="on-your-side-new feature-image-new">
+                            </div>
+                            <div class="feature-text-new blue-text">
+                                Live expert help<br>
+                                6am-6pm, PT
+                            </div>
+                        </div>
+                        <div class="clear">
+                        </div>
+                    </div>
+                    <div class="privacy-policy">
+                        <div class="ref-code">
+                            <div id="referralCodeContainer">
+                                <div id="refCodeLI">
+                                    <input tabindex="17" maxlength="40" class="half-width" style="display: none;" name="referralCodeInput"
+                                        id="referralCodeInput" type="text">
+                                    <div class="clear">
+                                    </div>
+                                    <div id="grouponMsg" style="display: none;">
+                                        Enter the remainder of your Groupon promo code</div>
+                                    <div id="validRefCodeMsg" style="display: none;">
+                                        <strong style="color: green">Code confirmed.</strong><br>
+                                        Your current order will be changed to reflect this offer.
+                                    </div>
+                                    <div class="opt-test-sui-error" id="refCodeError">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Interstitial with Payroll start -->
+    <!-- Interstitial with Payroll end -->
+    <!-- ppc 14 day trial -->
+    <div class="footer-legal-container1">
+      
+        <center><div class="i">
+            <div class="spain8">
+                <p class="footeri-legal-copy">
+                    <span class="fooiter-legal-copyright">&copy;<strong>2014 Xpert, Inc. All rights reserved.</strong></span>
+ @*                  
+<strong><a id="tosid" class="footer-liinks1" target="_blank" href="https://qbo.intuit.com/c1/v28.128/Terms_Of_Service.html">Terms of Use</a>
+  |  
+<a id="privacyid" class="footer-links1" target="_blank" href="http://smallbusiness.intuit.com/small-business/privacy/">Privacy</a>
+  |  
+<a id="helplinkid" class="footer-links1" target="_blank" href="http://accountants.intuit.com/support/accounting/qboa/document.jsp?product=QBOA&id=INF21567">Help</a></strong>
+            *@    </p>
+            </div>
+        </div></center>
+    </div>
+</body>
+</html>

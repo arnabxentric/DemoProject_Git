@@ -1,0 +1,777 @@
+﻿@model IEnumerable<XenERP.Models.AccountsBook_GroupWise_DateRange_Result>
+
+@{
+
+    var SlNo = 0;
+    decimal? tdebit = 0;
+    decimal? tcredit = 0;
+    decimal? topeningdr = 0;
+    decimal? topeningcr = 0;
+    decimal? tclosingdr = 0;
+    decimal? tclosingcr = 0;
+    decimal? total = 0;
+    int? groupid = 0;
+    decimal? groupdropening = 0;
+    decimal? groupcropening = 0;
+    decimal? groupdr = 0;
+    decimal? groupcr = 0;
+    decimal? groupdrclosing = 0;
+    decimal? groupcrclosing = 0;
+
+    var SlNo1 = 0;
+    decimal? tdebit1 = 0;
+    decimal? tcredit1 = 0;
+    decimal? topeningdr1 = 0;
+    decimal? topeningcr1 = 0;
+    decimal? tclosingdr1 = 0;
+    decimal? tclosingcr1 = 0;
+    decimal? total1 = 0;
+    int? groupid1 = 0;
+    decimal? groupdropening1 = 0;
+    decimal? groupcropening1 = 0;
+    decimal? groupdr1 = 0;
+    decimal? groupcr1 = 0;
+    decimal? groupdrclosing1 = 0;
+    decimal? groupcrclosing1 = 0;
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<aside class="right-side">
+    <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">
+            <div class="box-body table-responsive divContent">
+                <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                    <thead>
+                        <tr>
+                            <th colspan="8">
+
+                                <h3>@ViewBag.GroupName</h3>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th>SlNo.</th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.LedgerName)
+                            </th>
+
+                            <th>
+                                Debit Opening
+                            </th>
+                            <th>
+                                Credit Opening
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Debit)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Credit)
+                            </th>
+                            <th>
+                                Debit Closing
+                            </th>
+                            <th>
+                                Credit Closing
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            SlNo = SlNo + 1;
+                            tdebit += item.Debit;
+                            tcredit += item.Credit;
+                            if (item.GroupId != groupid)
+                            {
+                                if (SlNo != 1)
+                                {
+
+
+                                <tr>
+                                    <td colspan="2" align="right"><b>*****</b></td>
+                                    @if (groupdropening >= groupcropening)
+                                    {
+                                        var groupopening = groupdropening - groupcropening;
+                                        <td align="right">
+                                            @groupopening
+                                        </td>
+                                        <td align="right">
+                                            0
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        var groupopening = groupcropening - groupdropening;
+                                        <td align="right">
+                                            0
+                                        </td>
+                                        <td align="right">
+                                            @groupopening
+                                        </td>
+                                    }
+                                   @*@if (groupdr >= groupcr)
+                                    {
+                                        var groupdebit = groupdr - groupcr;*@
+                                        <td align="right">
+                                            @groupdr
+                                        </td>
+                                        <td align="right">
+                                            @groupcr
+                                        </td>
+                                    @*}
+                                    else
+                                    {
+                                        var groupcredit = groupcr - groupdr;
+                                        <td align="right">
+                                            0
+                                        </td>
+                                        <td align="right">
+                                            @groupcredit
+                                        </td>
+                                    }*@
+                                    @if (groupdrclosing >= groupcrclosing)
+                                    {
+                                        var groupclosing = groupdrclosing - groupcrclosing;
+                                        <td align="right">
+                                            @groupclosing
+                                        </td>
+                                        <td align="right">
+                                            0
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        var groupclosing = groupcrclosing - groupdrclosing;
+                                        <td align="right">
+                                            0
+                                        </td>
+                                        <td align="right">
+                                            @groupclosing
+                                        </td>
+                                    }
+                                </tr>
+
+                                    groupdropening = 0;
+                                    groupcropening = 0;
+                                    groupdr = 0;
+                                    groupcr = 0;
+                                    groupdrclosing = 0;
+                                    groupcrclosing = 0;
+                                   
+                                }
+                            }
+
+                            <tr>
+                                <td> @SlNo</td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LedgerName)
+                                </td>
+                                @if (item.DRCR == "DR")
+                                {
+                                    topeningdr += item.Opening;
+                                    groupdropening += item.Opening;
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Opening)
+                                    </td>
+                                    <td align="right">
+                                        0
+                                    </td>
+                                }
+                                else
+                                {
+                                    topeningcr += item.Opening;
+                                    groupcropening += item.Opening;
+                                    <td align="right">
+                                        0
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Opening)
+                                    </td>
+                                }
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.Debit)
+                                </td>
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.Credit)
+                                </td>
+
+
+
+                                @if (item.ClosingDRCR == "DR")
+                                {
+                                    tclosingdr += item.Closing;
+                                    groupdrclosing += item.Closing;
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Closing)
+                                    </td>
+                                    <td align="right">
+                                        0
+                                    </td>
+                                }
+                                else
+                                {
+                                    tclosingcr += item.Closing;
+                                    groupcrclosing += item.Closing;
+                                    <td align="right">
+                                        0
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Closing)
+                                    </td>
+                                }
+
+
+                            </tr>
+
+                            groupdr += item.Debit;
+                            groupcr += item.Credit;
+                            groupid = item.GroupId;
+                        }
+
+                        <tr>
+                            <td colspan="2"> <b> Total </b> </td>
+                            <td align="right">
+                                <b> @topeningdr </b>
+                            </td>
+                            <td align="right">
+                                <b> @topeningcr </b>
+                            </td>
+                            <td align="right">
+                                <b>  @tdebit </b>
+                            </td>
+                            <td align="right">
+                                <b>  @tcredit </b>
+                            </td>
+                            <td align="right">
+                                <b>  @tclosingdr </b>
+                            </td>
+                            <td align="right">
+                                <b>  @tclosingcr </b>
+                            </td>
+
+
+                        </tr>
+
+                        @* <tr>
+                                  <td colspan="2"> Closing Balance</td>
+                                   @if (topeningcr >= topeningdr)
+                            {
+                                var balance = topeningcr - topeningdr;
+                                total = topeningcr;
+
+
+                                    <td align="right">
+                                        @balance
+                                    </td>
+                                    <td align="right">
+                                        &nbsp;
+                                    </td>
+
+
+
+                            }
+                            else
+                            {
+                                var balance = topeningdr - topeningcr;
+                                total = topeningdr;
+
+
+                                    <td align="right">
+                                         &nbsp;
+                                    </td>
+                                    <td align="right">
+                                       @balance
+                                    </td>
+
+
+
+                            }
+
+                            @if (tcredit >= tdebit)
+                            {
+                                var balance = tcredit - tdebit;
+                                total = tcredit;
+
+
+                                    <td align="right">
+                                        @balance
+                                    </td>
+                                    <td align="right">
+                                        &nbsp;
+                                    </td>
+
+
+
+                            }
+                            else
+                            {
+                                var balance = tdebit - tcredit;
+                                total = tdebit;
+
+
+                                    <td align="right">
+                                         &nbsp;
+                                    </td>
+                                    <td align="right">
+                                       @balance
+                                    </td>
+
+
+
+                            }
+                              @if (tclosingcr >= tclosingdr)
+                            {
+                                var balance = tclosingcr - tclosingdr;
+                                total = tclosingcr;
+
+
+                                    <td align="right">
+                                        @balance
+                                    </td>
+                                    <td align="right">
+                                        &nbsp;
+                                    </td>
+
+
+
+                            }
+                            else
+                            {
+                                var balance = tclosingdr - tclosingcr;
+                                total = tclosingdr;
+
+
+                                    <td align="right">
+                                         &nbsp;
+                                    </td>
+                                    <td align="right">
+                                       @balance
+                                    </td>
+
+
+
+                            }
+                            </tr>*@
+                        @*  <tr>
+                              <td colspan="4">Net Total</td>
+
+                                <td align="right">
+                                    @total
+                                </td>
+                                <td align="right">
+                                   @total
+                                </td>
+                                <td align="right">
+                                    &nbsp;
+                                </td>
+                                <td align="right">
+                                   &nbsp;
+                                </td>
+
+                            </tr>*@
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+
+<div id="printdiv" style="display:none;">
+    <div align="center">
+        <span style="font-size:x-large;font-weight:bolder">HI-BREED INTERNATIONAL SALES & SERVICE</span><br />
+
+        <span style="font-size:medium;font-weight:normal">SUB TRIAL GROUPWISE Report For @ViewBag.GroupName @ViewBag.DateRange</span>
+
+    </div>
+    <table class="invoice" width="100%" border="0" cellspacing="2" cellpadding="2">
+        <thead>
+            @*<tr>
+                <th colspan="9">
+                    <h3>URBAN HI-BREED FARM LTD.  </h3>
+                    <h4>SUB TRIAL GROUPWISE Report For @ViewBag.GroupName @ViewBag.DateRange</h4>
+                </th>
+            </tr>*@
+
+            <tr>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">SlNo.</th>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    Code
+                </th>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    @Html.DisplayNameFor(model => model.LedgerName)
+                </th>
+
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    Debit Opening
+                </th>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    Credit Opening
+                </th>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    @Html.DisplayNameFor(model => model.Debit)
+                </th>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    @Html.DisplayNameFor(model => model.Credit)
+                </th>
+                <th style="border-left:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    Debit Closing
+                </th>
+                <th style="border-left:2px solid;border-right:2px solid;border-top:2px solid;border-bottom:2px solid;">
+                    Credit Closing
+                </th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                SlNo1 = SlNo1 + 1;
+                tdebit1 += item.Debit;
+                tcredit1 += item.Credit;
+                if (item.GroupId != groupid1)
+                {
+                    if (SlNo1 != 1)
+                    {
+
+
+                        <tr>
+                            <td colspan="3" align="right"><b>*****</b></td>
+                            @if (groupdropening1 >= groupcropening1)
+                            {
+                                var groupopening = groupdropening1 - groupcropening1;
+                                <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                    @groupopening
+                                </td>
+                                            <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                                0
+                                            </td>
+                            }
+                            else
+                            {
+                                var groupopening = groupcropening1 - groupdropening1;
+                                <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                    0
+                                </td>
+                                            <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                                @groupopening
+                                            </td>
+                            }
+                            @if (groupdr1 >= groupcr1)
+                            {
+                                var groupdebit = groupdr1 - groupcr1;
+                                <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                    @groupdebit
+                                </td>
+                                            <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                                0
+                                            </td>
+                            }
+                            else
+                            {
+                                var groupcredit = groupcr1 - groupdr1;
+                                <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                    0
+                                </td>
+                                            <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                                @groupcredit
+                                            </td>
+                            }
+                            @if (groupdrclosing1 >= groupcrclosing1)
+                            {
+                                var groupclosing = groupdrclosing1 - groupcrclosing1;
+                                <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                    @groupclosing
+                                </td>
+                                            <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                                0
+                                            </td>
+                            }
+                            else
+                            {
+                                var groupclosing = groupcrclosing1 - groupdrclosing1;
+                                <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                    0
+                                </td>
+                                            <td align="right" style="border-top:2px solid;border-bottom:2px solid;">
+                                                @groupclosing
+                                            </td>
+                            }
+                        </tr>
+                                    <tr><td colspan="9">&nbsp;</td></tr>
+
+                        groupdropening1 = 0;
+                        groupcropening1 = 0;
+                        groupdr1 = 0;
+                        groupcr1 = 0;
+                        groupdrclosing1 = 0;
+                        groupcrclosing1 = 0;
+
+                    }
+                }
+
+
+                <tr>
+                    <td style="border-bottom:none" ;> @SlNo1</td>
+                    <td style="border-bottom:none" ;>
+                        @Html.DisplayFor(modelItem => item.Lid)
+                    </td>
+                    <td style="border-bottom:none" ;>
+                        @Html.DisplayFor(modelItem => item.LedgerName)
+                    </td>
+                    @if (item.DRCR == "DR")
+                    {
+                        topeningdr1 += item.Opening;
+                        groupdropening1 += item.Opening;
+                        <td align="right" style="border-bottom:none" ;>
+                            @Html.DisplayFor(modelItem => item.Opening)
+                        </td>
+                                    <td align="right" style="border-bottom:none" ;>
+                                        0
+                                    </td>
+                    }
+                    else
+                    {
+                        topeningcr1 += item.Opening;
+                        groupcropening1 += item.Opening;
+                        <td align="right" style="border-bottom:none" ;>
+                            0
+                        </td>
+                                    <td align="right" style="border-bottom:none" ;>
+                                        @Html.DisplayFor(modelItem => item.Opening)
+                                    </td>
+                    }
+
+                    <td align="right" style="border-bottom:none" ;>
+                        @Html.DisplayFor(modelItem => item.Debit)
+                    </td>
+                    <td align="right" style="border-bottom:none" ;>
+                        @Html.DisplayFor(modelItem => item.Credit)
+                    </td>
+
+
+
+                    @if (item.ClosingDRCR == "DR")
+                    {
+                        tclosingdr1 += item.Closing;
+                        groupdrclosing1 += item.Closing;
+
+                        <td align="right" style="border-bottom:none" ;>
+                            @Html.DisplayFor(modelItem => item.Closing)
+                        </td>
+                                    <td align="right" style="border-bottom:none" ;>
+                                        0
+                                    </td>
+                    }
+                    else
+                    {
+                        tclosingcr1 += item.Closing;
+                        groupcrclosing1 += item.Closing;
+
+                        <td align="right" style="border-bottom:none" ;>
+                            0
+                        </td>
+                                    <td align="right" style="border-bottom:none" ;>
+                                        @Html.DisplayFor(modelItem => item.Closing)
+                                    </td>
+                    }
+
+
+                </tr>
+
+                groupdr1 += item.Debit;
+                groupcr1 += item.Credit;
+                groupid1 = item.GroupId;
+            }
+
+            <tr>
+                <td colspan="3"> <b> Total </b> </td>
+                <td align="right">
+                    <b> @topeningdr1 </b>
+                </td>
+                <td align="right">
+                    <b> @topeningcr1 </b>
+                </td>
+                <td align="right">
+                    <b>  @tdebit1 </b>
+                </td>
+                <td align="right">
+                    <b>  @tcredit1 </b>
+                </td>
+                <td align="right">
+                    <b>  @tclosingdr1 </b>
+                </td>
+                <td align="right">
+                    <b>  @tclosingcr1 </b>
+                </td>
+
+
+            </tr>
+
+            @* <tr>
+                      <td colspan="2"> Closing Balance</td>
+                       @if (topeningcr >= topeningdr)
+                {
+                    var balance = topeningcr - topeningdr;
+                    total = topeningcr;
+
+
+                        <td align="right">
+                            @balance
+                        </td>
+                        <td align="right">
+                            &nbsp;
+                        </td>
+
+
+
+                }
+                else
+                {
+                    var balance = topeningdr - topeningcr;
+                    total = topeningdr;
+
+
+                        <td align="right">
+                             &nbsp;
+                        </td>
+                        <td align="right">
+                           @balance
+                        </td>
+
+
+
+                }
+
+                @if (tcredit >= tdebit)
+                {
+                    var balance = tcredit - tdebit;
+                    total = tcredit;
+
+
+                        <td align="right">
+                            @balance
+                        </td>
+                        <td align="right">
+                            &nbsp;
+                        </td>
+
+
+
+                }
+                else
+                {
+                    var balance = tdebit - tcredit;
+                    total = tdebit;
+
+
+                        <td align="right">
+                             &nbsp;
+                        </td>
+                        <td align="right">
+                           @balance
+                        </td>
+
+
+
+                }
+                  @if (tclosingcr >= tclosingdr)
+                {
+                    var balance = tclosingcr - tclosingdr;
+                    total = tclosingcr;
+
+
+                        <td align="right">
+                            @balance
+                        </td>
+                        <td align="right">
+                            &nbsp;
+                        </td>
+
+
+
+                }
+                else
+                {
+                    var balance = tclosingdr - tclosingcr;
+                    total = tclosingdr;
+
+
+                        <td align="right">
+                             &nbsp;
+                        </td>
+                        <td align="right">
+                           @balance
+                        </td>
+
+
+
+                }
+                </tr>*@
+               @*<tr>
+                  <td colspan="4">Net Total</td>
+
+                    <td align="right">
+                        @total
+                    </td>
+                    <td align="right">
+                       @total
+                    </td>
+                    <td align="right">
+                        &nbsp;
+                    </td>
+                    <td align="right">
+                       &nbsp;
+                    </td>
+
+                </tr> *@
+        </tbody>
+    </table>
+
+
+
+</div>

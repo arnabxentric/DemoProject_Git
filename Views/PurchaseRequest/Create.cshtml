@@ -1,0 +1,1158 @@
+﻿@model XenERP.Models.PurchaseRequestModelView
+@using XenERP.Models
+@{
+    ViewBag.Title = "Purchase Request";
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+@*
+    <script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+            <script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>*@
+
+@*<script src="../../Scripts/custom.js" type="text/javascript"></script>*@
+<script src="../../Scripts/PurchaseRequest.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnsupppdf").click(function () {
+
+            var id = $("#Id").val();
+
+
+            var url = "/PurchaseRequest/PrintPurchaseOrderPDF?id=" + id;
+
+            window.location.href = url;
+
+        });
+
+
+        
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+       
+
+
+        $("form").on("submit", function (event) {
+
+            var isValid = $(this).valid();
+
+            if (isValid) {
+                var result = checkproductcount();
+
+                if (result == false) {
+                    $('#errordiv').css("display", "block");
+                    $('#errordiv').append('You must add atleast one line item');
+                    return false;
+                }
+
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+            }
+
+            else {
+
+                //                $("#btnsave").show();
+            }
+
+
+        });
+
+
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+        if ('@ViewBag.podmvList' != '') {
+            //   alert('@ViewBag.podmvList');
+            var array = '@Html.Raw(Json.Encode(ViewBag.podmvList))';
+            var arr = JSON.parse(array);
+            //  alert(arr.length);
+            for (var i = 0; i < arr.length; i++) {
+                //                if (arr[i].ItemId == 0 && arr[i].Description == '' && arr[i].Quantity == 0 && arr[i].Price == 0 && arr[i].Discount == 0 && arr[i].TaxId == 0) {
+                //                    $add_rowEdit(arr[i].ItemId, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].Price, arr[i].Discount, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                //                }
+                //                else {
+                // alert(arr[i].ItemId);
+                $add_rowEdit(arr[i].ItemId, arr[i].ItemCode, arr[i].BarCode, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].SecUnitId, arr[i].SecUnitName, arr[i].SecUnitFormula, arr[i].UnitFormula, arr[i].UnitIdSecondary, arr[i].UnitSecondaryName, arr[i].TotalQuantity, arr[i].Price, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available, arr[i].BarCode, arr[i].TaxType);
+                // alert('a');
+                //             }
+            }
+
+            var cntr = 0;
+            var cntrdate = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+
+
+                var descriptionval = description.find('.descriptionhide');
+                var productval = product.find('.producthide');
+                var quantityval = quantity.find('.quantityhide');
+                var ofval = of.find('.ofhide');
+                var unitpriceval = unitprice.find('.unitpricehide');
+                var taxval = tax.find('.taxhide');
+
+                if (!(productval.val() == ''  && quantityval.val() == 0 )) {
+                    if (productval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        productval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Product not selected <br/>');
+                    }
+
+                    if (quantityval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        quantityval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Quantity cannot be empty<br/>');
+                    }
+                    if (ofval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        ofval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Of cannot be empty<br/>');
+                    }
+
+                   
+
+
+                }
+            }
+        }
+        else {
+            for (var i = 0; i < 2; i++) {
+                $add_row();
+            }
+
+        }
+
+    });
+</script>
+<script type="text/javascript">
+    var tid = '';
+    $(document).ready(function () {
+        $('#example1').on('click', 'tr', function (e) {
+            $('#showtotal').css("display", "none");
+
+
+
+            var counter = 0;
+            var totalamount = 0;
+            var totaltax = 0;
+
+            var productresults = [];
+            var subtotal = 0;
+
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var code = $(MyRows[i]).find('td:eq(1)');
+                var barcode = $(MyRows[i]).find('td:eq(2)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+                var amount = $(MyRows[i]).find('td:eq(12)');
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var taxhide = $(MyRows[i]).find('td:eq(14)');
+                var uomhide = $(MyRows[i]).find('td:eq(15)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(16)');
+                var requesthide = $(MyRows[i]).find('td:eq(17)');
+                var taxtypehide = $(MyRows[i]).find('td:eq(18)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var codeval = code.find('#productcode').val();
+                var barcodeval = barcode.find('#barcode').val();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('');
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (codeval != null) {
+                    code.html('');
+                    code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                    code.find('.productcodehide').val(codeval);
+                }
+                if (barcodeval != null) {
+                    barcode.html('');
+                    barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                    barcode.find('.barcodehide').val(barcodeval);
+                }
+
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+
+
+            }
+          
+            var taxtype = $(this).find('.taxtype').val();
+            var rtype = parseFloat(taxtype) || 0;
+           
+            if ((tid == this.id && counter != 1) || (tid != this.id) && (taxtype<=1 ) ) {
+
+                tid = this.id;
+
+
+
+                var product = $(this).find('td.products_0');
+                var productval = $(this).find('.product').val();
+                var code = $(this).find('td.productcode_0');
+                var codetext = code.find('.productcodehide').val();
+                var barcode = $(this).find('td.barcode_0');
+                var barcodetext = barcode.find('.barcodehide').val();
+                var description = $(this).find('td.description_0');
+                var descriptiontext = description.find('.descriptionhide').val();
+                var quantity = $(this).find('td.quantity_0');
+                var quantitytext = quantity.find('.quantityhide').val();
+                var unitprice = $(this).find('td.unitprice_0');
+                var unitpricetext = unitprice.find('.unitpricehide').val();
+                var tax = $(this).find('td.taxes_0');
+                var taxval = $(this).find('.tax').val();
+                var uom = $(this).find('td.uom_0');
+                var uomval = $(this).find('.uom').val();
+                var uomtext = $(this).find('.uomhide').val();
+                var baseuom = $(this).find('td.baseuom_0');
+                var baseuomval = $(this).find('.baseuom').val();
+                var baseuomtext = $(this).find('.baseuomhide').val();
+                var secuomval = $(this).find('.secuom').val();
+                var secuomtext = $(this).find('.secuomhide').val();
+                var of = $(this).find('td.of_0');
+                var oftext = of.find('.ofhide').val();
+
+                if (productval != '') {
+                    var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+
+                    dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+                    if (!(secuomval == null || secuomval == '')) {
+
+                        dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+                    }
+                    dropDownUOM += '</select>';
+
+                    uom.html('');
+                    uom.html(dropDownUOM);
+                    uom.find('#drpUom').val(uomval);
+                }
+
+
+
+                product.html('');
+                product.html(dropDownProduct);
+                code.html('');
+                code.html("<input id='productcode' style='text-align:left;' class ='form-control'  type='text' value=''/> ");
+                barcode.html('');
+                barcode.html("<input id='barcode' style='text-align:left;' class ='form-control'  type='text' value=''/> ");
+                description.html('');
+                description.html("<div class='textarea-panel'><textarea id='description' class ='form-control '  style='width: 100%; height: 200%;'  value=''/> </div>");
+                quantity.html('');
+                quantity.html("<input id='quantity' style='text-align:right;' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                unitprice.html('');
+                unitprice.html("<input id='unitprice' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                of.html('');
+                of.html("<input id='of' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                tax.html('');
+                tax.html(dropDownTax);
+
+                //   if (productval != 'null') {
+                product.find('#drpProduct').val(productval);
+                //  }
+                code.find('#productcode').val(codetext);
+                barcode.find('#barcode').val(barcodetext);
+                description.find('#description').val(descriptiontext);
+                quantity.find('#quantity').val(quantitytext);
+                unitprice.find('#unitprice').val(unitpricetext);
+                of.find('#of').val(oftext);
+                // if (taxval != 'null') {
+                tax.find('#drpTax').val(taxval);
+
+                //   }
+
+
+            }
+
+            e.stopPropagation();
+
+
+
+        })
+     .on('click', '#description,#drpProduct,#drpUom,#quantity,#unitprice,#drpTax,#taxhide,#amounthide,#of,#productcode,#barcode', function (e) {
+
+         e.stopPropagation();
+     })
+
+         .on('change', '#drpProduct', function (e) {
+
+             var pid = $('#drpProduct').val();
+             var trObj = $(this).closest('tr');
+
+             if (pid == '') {
+
+                 var qty = trObj.find('#quantity').val('');
+                 var up = trObj.find('#unitprice').val('');
+                 var as = trObj.find('.availabilityhide').val('');
+                 var tx = trObj.find('#drpTax').val($('').val());
+                 var am = trObj.find('.amounthide').val('');
+                 var uom = trObj.find('td.uom_0');
+
+                 var pcode = trObj.find('#productcode').val('');
+                 trObj.find('.baseuom').val('');
+                 trObj.find('.baseuomhide').val('');
+                 trObj.find('.ofhide').val('');
+                 trObj.find('#of').val('');
+                 trObj.find('.secuom').val('');
+                 trObj.find('.secuomhide').val('');
+                 trObj.find('.secofhide').val('');
+                 uom.html('');
+                 uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                 uom.find('.uomhide').val('');
+                 trObj.find('.uom').val('');
+                 trObj.find('.totalquantityhide').val('');
+             }
+             else if (pid != 'addnew') {
+                 $.get('/Product/getSelectedProduct', { 'id': pid }, function (data, status) {
+                     var pcode = trObj.find('#productcode').val(data.Name);
+                     var qty = trObj.find('#quantity').val(1);
+                     var up = trObj.find('#unitprice').val(data.PurchasePrice);
+                     var as = trObj.find('.availabilityhide').val(data.Availability);
+
+                     var tx = trObj.find('#drpTax').val(1);
+                     trObj.find('.uom').val(data.UnitIdSecondary);
+                     trObj.find('.uomhide').val(data.UnitNameSecondary);
+                     trObj.find('.baseuom').val(data.UnitId);
+                     trObj.find('.baseuomhide').val(data.UnitName);
+                     trObj.find('.ofhide').val(data.UnitFormula);
+                     trObj.find('.secuom').val(data.UnitIdSecondary);
+                     trObj.find('.secuomhide').val(data.UnitNameSecondary);
+                     trObj.find('.secofhide').val(1);
+                     trObj.find('#of').val(1);
+                     var uom = trObj.find('td.uom_0');
+                     var uomval = trObj.find('.uom').val();
+                     var uomtext = trObj.find('.uomhide').val();
+                     var baseuom = trObj.find('td.baseuom_0');
+                     var baseuomval = trObj.find('.baseuom').val();
+                     var baseuomtext = trObj.find('.baseuomhide').val();
+                     var secuomval = trObj.find('.secuom').val();
+                     var secuomtext = trObj.find('.secuomhide').val();
+
+                     var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+                     if (!(secuomval == null || secuomval == '')) {
+                         dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+
+                     }
+                     dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+
+                     dropDownUOM += '</select>';
+                     uom.html('');
+                     uom.html(dropDownUOM);
+                     trObj.find('.totalquantityhide').val(qty.val());
+                     var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                     var am = trObj.find('.amounthide').val(parseFloat(amount));
+                 });
+             }
+             else {
+                 $('#myModal').modal('show');
+                 var pcode = trObj.find('#productcode').val('');
+                 var qty = trObj.find('#quantity').val('');
+                 var up = trObj.find('#unitprice').val('');
+                 var as = trObj.find('.availabilityhide').val('');
+                 var tx = trObj.find('#drpTax').val($('').val());
+                 var am = trObj.find('.amounthide').val('');
+                 trObj.find('.uom').val('');
+                 trObj.find('.uomhide').val('');
+             }
+
+             e.stopPropagation();
+         })
+        //          .on('change', '#productcode', function (e) {
+        //              e.stopPropagation();
+        //          })
+         .on('keydown.autocomplete', '#productcode', function (e) {
+
+             $(this).autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '/Product/getProductsAuto',
+                         data: { query: request.term },
+                         dataType: 'json',
+                         type: 'POST',
+                         success: function (data) {
+
+                             response($.map(data, function (item) {
+
+                                 return {
+                                     label: item.Code,
+                                     value: item.Id
+                                 }
+                             }));
+                         }
+                     })
+                 },
+                 change: function (event, ui) {
+                     var trObj = $(this).closest('tr');
+                     if (ui.item == null || ui.item == undefined) {
+                         var qty = trObj.find('#quantity').val('');
+                         var up = trObj.find('#unitprice').val('');
+                         var as = trObj.find('.availabilityhide').val('');
+                         var tx = trObj.find('#drpTax').val($('').val());
+                         var am = trObj.find('.amounthide').val('');
+                         var uom = trObj.find('td.uom_0');
+                         trObj.find('.baseuom').val('');
+                         trObj.find('.baseuomhide').val('');
+                         trObj.find('.ofhide').val('');
+                         trObj.find('#of').val('');
+                         trObj.find('.secuom').val('');
+                         trObj.find('.secuomhide').val('');
+                         trObj.find('.secofhide').val('');
+                         uom.html('');
+                         uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                         uom.find('.uomhide').val('');
+                         trObj.find('.uom').val('');
+                         trObj.find('.totalquantityhide').val('');
+                     }
+                 },
+                 select: function (event, ui) {
+                     // $('#SupplierName').val(ui.item.label);
+                     $('#drpProduct').val(ui.item.value);
+                     $('#productcode').val(ui.item.label);
+                     var trObj = $(this).closest('tr');
+                     $.get('/Product/getSelectedProductAuto', { 'query': ui.item.value }, function (data, status) {
+                         if (data == '') {
+
+
+                             var qty = trObj.find('#quantity').val('');
+                             var up = trObj.find('#unitprice').val('');
+                             var as = trObj.find('.availabilityhide').val('');
+                             var tx = trObj.find('#drpTax').val($('').val());
+                             var am = trObj.find('.amounthide').val('');
+                             var uom = trObj.find('td.uom_0');
+
+
+                             trObj.find('.baseuom').val('');
+                             trObj.find('.baseuomhide').val('');
+                             trObj.find('.ofhide').val('');
+                             trObj.find('#of').val('');
+                             trObj.find('.secuom').val('');
+                             trObj.find('.secuomhide').val('');
+                             trObj.find('.secofhide').val('');
+                             uom.html('');
+                             uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                             uom.find('.uomhide').val('');
+                             trObj.find('.uom').val('');
+                             trObj.find('.totalquantityhide').val('');
+                         }
+                         else {
+
+                             var pname = trObj.find('#productcode').val(data.Name);
+                             var pcode = trObj.find('#drpProduct').val(data.Id);
+                             var qty = trObj.find('#quantity').val(1);
+                             var up = trObj.find('#unitprice').val(0);
+                             var as = trObj.find('.availabilityhide').val(data.Availability);
+
+                             var tx = trObj.find('#drpTax').val(1);
+                             trObj.find('.uom').val(data.UnitIdSecondary);
+                             trObj.find('.uomhide').val(data.UnitNameSecondary);
+                             trObj.find('.baseuom').val(data.UnitId);
+                             trObj.find('.baseuomhide').val(data.UnitName);
+                             trObj.find('.ofhide').val(data.UnitFormula);
+                             trObj.find('.secuom').val(data.UnitIdSecondary);
+                             trObj.find('.secuomhide').val(data.UnitNameSecondary);
+                             trObj.find('.secofhide').val(1);
+                             trObj.find('#of').val(1);
+                             var uom = trObj.find('td.uom_0');
+                             var uomval = trObj.find('.uom').val();
+                             var uomtext = trObj.find('.uomhide').val();
+                             var baseuom = trObj.find('td.baseuom_0');
+                             var baseuomval = trObj.find('.baseuom').val();
+                             var baseuomtext = trObj.find('.baseuomhide').val();
+                             var secuomval = trObj.find('.secuom').val();
+                             var secuomtext = trObj.find('.secuomhide').val();
+
+                             var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+                             if (!(secuomval == null || secuomval == '')) {
+                                 dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+
+                             }
+                             dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+
+                             dropDownUOM += '</select>';
+
+                             uom.html('');
+                             uom.html(dropDownUOM);
+                             trObj.find('.totalquantityhide').val(qty.val());
+                             var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                             var am = trObj.find('.amounthide').val(parseFloat(amount));
+
+                         }
+                     });
+                     return false;
+                 },
+                 minLength: 1,
+                 autoFocus: true
+             });
+             e.stopPropagation();
+         })
+          .on('keypress', '#quantity, #unitprice,#of', function (event) {
+
+              if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                  return true;
+              }
+
+              if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                  event.preventDefault();
+                  return false;
+
+              }
+              if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                  event.preventDefault();
+              }
+              event.stopPropagation();
+
+          })
+          .on('change', '#quantity, #unitprice,#of', function (event) {
+
+              var trObj = $(this).closest('tr');
+              var qtyem = trObj.find('#quantity');
+              var upem = trObj.find('#unitprice');
+              var ofem = trObj.find('#of');
+
+
+              var amem = trObj.find('.amounthide');
+              var qty = qtyem.val();
+              var up = upem.val();
+              var of = ofem.val();
+
+              if (qty == '.' || qty == '') {
+                  qty = 0;
+                  qtyem.val(0);
+
+              }
+              if (up == '.' || up == '') {
+                  up = 0;
+                  upem.val(0);
+              }
+              if (of == '.' || of == '' || of == 0) {
+                  of = 1;
+                  ofem.val(1);
+              }
+              var totqty = parseFloat(qty);
+              trObj.find('.totalquantityhide').val(totqty);
+              var pq = parseFloat(qty) * parseFloat(up) ;
+
+              var am = pq;
+
+              amem.val(am.toFixed(2));
+              event.stopPropagation();
+          })
+          .on('click', '.del_ExpenseRow', function (e) {
+
+              var gettr = $(this).closest('tr');
+              var getstatus = gettr.find('.taxtype').val();
+              var rtype = parseFloat(getstatus) || 0;
+            
+              if (rtype <= 1 ) {
+                  $(this).closest('tr').remove();
+              }
+              //  e.stopPropagation();
+
+          })
+          .on('change', '#drpUom', function (e) {
+
+              var uid = $('#drpUom').val();
+              var trObj = $(this).closest('tr');
+
+              var scm = trObj.find('.secuom').val();
+              var soh = trObj.find('.secofhide');
+              if (uid == scm) {
+
+                  //  alert(soh);
+                  var qty = trObj.find('#quantity');
+                  var up = trObj.find('#unitprice');
+
+                  //  trObj.find('#totalquantityhide').val();
+
+                  trObj.find('#of').val(soh.val());
+                  var totamount = parseFloat(qty.val());
+                  trObj.find('.totalquantityhide').val(totamount);
+                  var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                  var am = trObj.find('.amounthide').val(parseFloat(amount));
+              }
+              else {
+                  var qty = trObj.find('#quantity');
+                  trObj.find('#of').val(1);
+                  trObj.find('.totalquantityhide').val(qty.val());
+                  var up = trObj.find('#unitprice');
+                  var amount = parseFloat(qty.val()) * parseFloat(up.val()) / parseFloat(soh.val());
+                  trObj.find('.amounthide').val(parseFloat(amount).toFixed(2));
+              }
+              e.stopPropagation();
+          });
+    });
+</script>
+<script type="text/javascript">
+    $(document).click(function (e) {
+      
+        var MyRows = $('table#example1').find('tr');
+        for (var i = 0; i < MyRows.length; i++) {
+            var product = $(MyRows[i]).find('td:eq(0)');
+            var code = $(MyRows[i]).find('td:eq(1)');
+            var barcode = $(MyRows[i]).find('td:eq(2)');
+            var description = $(MyRows[i]).find('td:eq(3)');
+            var quantity = $(MyRows[i]).find('td:eq(4)');
+            var uom = $(MyRows[i]).find('td:eq(5)');
+            var of = $(MyRows[i]).find('td:eq(6)');
+            var baseuom = $(MyRows[i]).find('td:eq(7)');
+            var unitprice = $(MyRows[i]).find('td:eq(10)');
+            var tax = $(MyRows[i]).find('td:eq(11)');
+            var amount = $(MyRows[i]).find('td:eq(12)');
+            var producthide = $(MyRows[i]).find('td:eq(13)');
+            var taxhide = $(MyRows[i]).find('td:eq(14)');
+            var uomhide = $(MyRows[i]).find('td:eq(15)');
+            var baseuomhide = $(MyRows[i]).find('td:eq(16)');
+
+            var productval = product.find('#drpProduct').val();
+            var productdtext = product.find('#drpProduct option:selected').text();
+            var codeval = code.find('#productcode').val();
+            var barcodeval = barcode.find('#barcode').val();
+            var descriptionval = description.find('#description').val();
+            var quantityval = quantity.find('#quantity').val();
+            var unitpriceval = unitprice.find('#unitprice').val();
+            var taxval = tax.find('#drpTax').val();
+            var taxdtext = tax.find('#drpTax option:selected').text();
+            var uomval = uom.find('#drpUom').val();
+            var uomdtext = uom.find('#drpUom option:selected').text();
+            var ofval = of.find('#of').val();
+            if (productval != null) {
+                counter = 1;
+                product.html('');
+                product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                if (productval == '' || productval == 'addnew') {
+                    product.find('.producthide').val('');
+                }
+                else {
+                    product.find('.producthide').val(productdtext);
+                }
+
+                producthide.find('.product').val(productval);
+            }
+            if (codeval != null) {
+                code.html('');
+                code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                code.find('.productcodehide').val(codeval);
+            }
+            if (barcodeval != null) {
+                barcode.html('');
+                barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                barcode.find('.barcodehide').val(barcodeval);
+            }
+
+            if (descriptionval != null) {
+                description.html('');
+                description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                description.find('.descriptionhide').val(descriptionval);
+            }
+            if (quantityval != null) {
+                quantity.html('');
+                quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                quantity.find('.quantityhide').val(quantityval);
+            }
+
+            if (taxval != null) {
+                tax.html('');
+                tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                if (taxval == '') {
+                    tax.find('.taxhide').val('');
+                }
+                else {
+                    tax.find('.taxhide').val(taxdtext);
+                }
+
+                taxhide.find('.tax').val(taxval);
+            }
+
+            if (uomval != null) {
+                uom.html('');
+                uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                if (uomval == '') {
+                    uom.find('.uomhide').val('');
+                }
+                else {
+                    uom.find('.uomhide').val(uomdtext);
+                }
+
+                uomhide.find('.uom').val(uomval);
+            }
+            if (ofval != null) {
+                of.html('');
+                of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                of.find('.ofhide').val(ofval);
+            }
+            if (unitpriceval != null) {
+                unitprice.html('');
+                unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                unitprice.find('.unitpricehide').val(unitpriceval);
+
+            }
+
+
+        }
+      
+
+
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        dropDownProduct = '<select id="drpProduct" class="form-control">';
+
+        dropDownProduct += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        dropDownProduct += '<option  value="' + 'addnew' + '" ><a data-toggle="modal" data-target="#myModal" href="#">ADD NEW</a> </option>';
+        $.get('/Product/getProducts', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownProduct += '<option value="' + data[count].Id + '">' + data[count].Code + '</option>';
+            };
+            //   dropDownProduct += '<option  value="' + '900' + '" >' + '<a href="' + '#myModal' + '">ADD NEW</a>' + '</option>';
+            // dropDownProduct += '<option  value="' + '900' + '" >' + 'ffffff' + '</option>';
+            dropDownProduct += '</select>';
+        });
+
+
+        dropDownTax = '<select id="drpTax" class="form-control">';
+        dropDownTax += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        $.get('/Tax/getTaxes', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownTax += '<option value="' + data[count].TaxId + '">' + data[count].Name + '(' + data[count].Rate + "%)" + '</option>';
+            };
+            dropDownTax += '</select>';
+        });
+
+        checkproductcount = function () {
+            var result = false;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var product = producthide.find('.product');
+                if (parseInt(product.val()) > 0) {
+                    result = true;
+                    return result;
+                }
+
+            }
+            return result;
+        };
+
+
+      
+        taxComponents = [];
+        if ('@ViewBag.Taxcomponents' != '') {
+
+            var arrtC = '@Html.Raw(Json.Encode(ViewBag.Taxcomponents))';
+            // alert(arrtC);
+            taxComponents = JSON.parse(arrtC);
+            //   alert(taxComponents);
+            taxComponents = $.makeArray(taxComponents);
+            //     alert(taxComponents);
+            //   alert(taxComponents[0].TaxName);
+        }
+        taxSingle = [];
+        if ('@ViewBag.TaxSingle' != '') {
+
+            var arrtC1 = '@Html.Raw(Json.Encode(ViewBag.TaxSingle))';
+            // alert(arrtC);
+            taxSingle = JSON.parse(arrtC1);
+            //   alert(taxComponents);
+            taxSingle = $.makeArray(taxSingle);
+            //     alert(taxComponents);
+            //   alert(taxComponents[0].TaxName);
+        }
+    });
+    $(document).ready(function () {
+        $('#example1').on('mouseover', 'tr', function (e) {
+            var codename = e.target.name;
+            if (codename == "productcodehide") {
+
+                if ($('.productcodehide').val() != '') {
+                    var pc = $(this).find('.productcodehide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+
+                    if (width < 240) {
+                        width = 240;
+                    }
+                    pc.css({ 'background-color': '#000', 'width': width, 'position': 'absolute', 'z-index': '9999', 'color': '#3333FF' });
+
+
+                }
+
+            }
+            else if (codename == "producthide") {
+
+                if ($('.producthide').val() != '') {
+                    var pc = $(this).find('.producthide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+                    if (width < 116) {
+                        width = 116;
+                    }
+                    pc.css({ 'background-color': 'white', 'width': width, 'position': 'absolute', 'z-index': '9999', 'color': '#3333FF' });
+
+
+                }
+
+            }
+
+        });
+        $('#example1').on('mouseout', 'tr', function (e) {
+            var codename = e.target.name;
+            if (codename == "productcodehide") {
+
+                if ($('.productcodehide').val() != '') {
+                    var pc = $(this).find('.productcodehide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+
+                    pc.css({ 'background-color': 'white', 'width': '240px', 'z-index': '0', 'color': '#000000' });
+
+
+                }
+
+            }
+            else if (codename == "producthide") {
+
+                if ($('.producthide').val() != '') {
+                    var pc = $(this).find('.producthide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+
+                    pc.css({ 'background-color': 'white', 'width': '116px', 'z-index': '0', 'color': '#000000' });
+
+
+                }
+
+            }
+        });
+        $.fn.textWidth = function (text, font) {
+            if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').hide().appendTo(document.body);
+            $.fn.textWidth.fakeEl.text(text || this.val() || this.text()).css('font', font || this.css('font'));
+            return $.fn.textWidth.fakeEl.width();
+        };
+
+    });
+</script>
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+@using (Html.BeginForm())
+{
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                 Purchase Request
+                <small>Entry/Edit Form</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#"></a></li>
+                <li class="active"> </li>
+            </ol>
+        </section>
+        <div class="nav-tabs-custom">
+
+
+            <ul class="nav nav-tabs">
+                @if (Model.Id != 0)
+                {
+
+                   
+                        <li class="pull-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Request No.: @Model.RequestNo (@Model.Status)  </li>
+                  
+                }
+
+
+                @if (Model.Status == "Request" && Model.Id != 0)
+                {
+
+                    <li class="pull-right"><input type="submit" id="btnPlace" class="btn btn-primary" value="Save" /></li>
+                                <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+
+
+                }
+                else if (Model.Status == "PurchaseOrder" && Model.Id != 0)
+                {
+                    <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+                }
+                else if (Model.Status == "TransferOrder" && Model.Id != 0)
+                {
+                    <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+                }
+                else
+                {
+                    <li class="pull-right"><input type="submit" id="btnPlace" class="btn btn-primary" value="Save" /></li>
+                                @* <li class="pull-right"><input type="submit" id="btnPark" class="btn btn-primary" value="Save As Draft" /></li>*@
+                }
+
+            </ul>
+
+
+
+        </div>
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <b>Purchase Request</b><br />
+                @ViewBag.Message. &nbsp;<a href='/PurchaseRequest/Create'> Enter a new Purchase Request?</a>
+            </div>
+        }
+
+        @if (ViewBag.ErrorTag != null)
+        {
+            <div class="alert alert-danger alert-dismissable" id="errordiv1">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                <b>Error!</b><br />
+
+                @ViewBag.ErrorTag
+
+            </div>
+        }
+
+        <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+        </div>
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+        <!-- Main content -->
+        <section class="content">
+            @* <div class="form-group row"> <div class="col-xs-8"> <label class="control-label">Effective Date</label> <div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="mm-dd-yyyy"> <input class="form-control" type="text" readonly="" value="12-02-2012"> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div> </div> </div>*@
+
+            @* <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+
+                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+
+                    </li>
+                </ul>
+
+                         </div>    *@
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+
+                        <div class="table-responsive">
+                            <table id="example2" class="table table2">
+                                @Html.HiddenFor(model => model.Id)
+                                @Html.HiddenFor(model => model.RequestNo)
+                               
+                                @Html.HiddenFor(model => model.Status)
+                               
+                                <tbody>
+                                    <tr>
+                                       
+
+                                        <td> @Html.Label("Request Date")</td>
+                                        <td>
+                                           @Html.TextBoxFor(model => model.RequestDate, new { @class = "form-control", @readonly = "" }) 
+                                            @Html.ValidationMessageFor(model => model.RequestDate)
+                                        </td>
+
+                                        <td></td>
+                                        <td>@Html.Label("Remarks")</td>
+                                        <td> @Html.TextAreaFor(model => model.Comments, new { @class = "form-control", @placeholder = "Enter Remarks" })</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td> @Html.Label("Expected Receive Date")</td>
+                                        <td>
+                                            <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.ExpectedDate, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                            @Html.ValidationMessageFor(model => model.ExpectedDate)
+                                        </td>
+                                        <td></td>
+                                       
+                                    </tr>
+                                 
+                                </tbody>
+
+                            </table>
+
+                        </div><!-- /.box-body -->
+                    </div><!-- /.box -->
+
+                    <div class="box">
+
+                        <div class="box-body table-responsive">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
+                                        @* <th>Bar Code</th>*@
+                                        <th>Description</th>
+                                        <th>Qty</th>
+                                        @*<th>UOM</th>
+                                            <th>Of</th>*@
+                                        <th>Unit</th>
+                                        @*  <th>Total Qty</th>*@
+                                        @*<th>Unit Price</th>*@
+                                        @*<th>Tax</th>*@
+
+                                        @*<th>Amount</th>*@
+                                        
+                                        <th class='display-non-div'></th>
+                                        <th class='display-non-div'></th>
+                                        @* <th style='display:none;padding:0px;'></th>*@
+                                        <th>Status</th>
+                                        <th align='center'>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @* <tr>
+                                            <td>Trident</td>
+                                            <td>Internet
+                                                Explorer 4.0</td>
+                                            <td>Win 95+</td>
+                                            <td> 4</td>
+                                            <td>X</td>
+                                        </tr>*@
+                                </tbody>
+                            </table>
+
+                            @*  <input type="button" value="Add Row" id="add_ExpenseRow" />*@
+                            @*<button type="button" class="btn btn-primary btn-sm" id="add_ExpenseRow">Add New Line</button>*@
+
+                            <img src="../../Images/add-a-new-line.jpg" id="add_ExpenseRow" style="margin-top:10px !important;" />
+                        </div><!-- /.box -->
+
+
+                    </div>
+                </div>
+               </div>
+             
+
+
+                <!-- /.box-body -->
+            
+
+
+
+
+        </section><!-- /.content -->
+    </aside>
+
+}

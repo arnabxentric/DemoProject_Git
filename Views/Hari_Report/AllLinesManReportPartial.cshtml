@@ -1,0 +1,336 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FlockReceivedInFarmModelView>
+
+@{
+    Layout = null;
+    var SlNo = 0;
+    decimal SubTotal = 0;
+    decimal Discount = 0;
+    decimal TotAmt = 0;
+    int totalcartons = 0;
+    decimal AddTotal = 0;
+    decimal DiscountTotal = 0;
+}
+<!--for graph   -->
+<!--for graph   -->
+
+<style>
+    .modal-content {
+        background-color: #b2b266;
+        width: 1300px;
+        /*margin: 130px auto 0 auto;*/
+        text-align: center;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<style>
+    .table-responsive {
+        min-height: 0.01%;
+        overflow-x: auto;
+    }
+
+    table.chompa td table.pompa td {
+        width: 100%;
+    }
+
+    /*.input_width {
+        width: 100%;
+    }
+
+    table.chompa td  {
+        width: 100%;
+    }
+
+    table.chompa td {
+        width: 100%;
+    }*/
+</style>
+
+
+@*<script type="text/javascript">
+        $(document).ready(function () {
+
+            var count = 0;
+            $('#datatable-buttons tr').each(function () {
+                count++;
+            });
+
+            if (count <= 2) {
+
+                $("#alertModal").css("display", "block");
+                $(".close").click(function () {
+                    $("#alertModal").css("display", "none");
+
+                })
+
+            }
+
+
+        })
+
+
+    </script>*@
+
+<script type="text/javascript">
+    $(function () {
+
+
+           var table =$('#example4').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true,
+            "scrollY": 450,
+            "scrollX": true
+        });
+
+        new $.fn.dataTable.FixedHeader(table);
+    });
+
+
+    $(".chompa").on('click', '.AccoDet', function () {
+
+
+        var UM = $(this).val();
+        var ctd = $(this).closest('td');
+        var ctr = ctd.closest('tr');
+        var fl = parseInt(ctr.find(".AccoDethid").val());
+        ctr.find(".imgLoader").show();
+
+
+
+
+        $.get("/Hari_Report/FarmerDailyEntryDetailsPartial", { FlockId: fl }, function (data) {
+
+
+            $("#FarmerDetails").css("display", "block");
+            $("#FarmerDetails").html(data);
+            ctr.find(".imgLoader").hide();
+            $("#myModal").modal('show');
+        });
+
+        //$.get("/PoultryDetailedReport/AllDailyReportPartialModalLMUnit", { From: 0, To: 0, flockid: fl }, function (data) {
+
+
+        //    $("#FlockDetails").css("display", "block");
+        //    $("#FlockDetails").html(data);
+
+
+        //});
+
+        //$.get("/PoultryDetailedReport/SalesReportModalPartial", { flockid: fl }, function (data) {
+
+
+        //    $("#SalesDetails").css("display", "block");
+        //    $("#SalesDetails").html(data);
+        //    ctr.find(".imgLoader").hide();
+        //    $("#myModal").modal('show');
+        //});
+
+
+
+
+    });
+
+
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+
+<aside class="right-side">
+
+    <h1>
+        Weekly Chick and Feed Status
+    </h1>
+
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+
+            <div class="table-responsive">
+                @*<table id="datatable-buttons" class="table table-bordered table-striped chompa">*@
+                <table id="example4" width="100%" class="table table-bordered table-striped dataTable chompa " aria-describedby="example2_info">
+                    <thead>
+                        <tr>
+
+                            <th>
+                                SlNo.
+                            </th>
+
+                            <th>
+                                Farmer Name
+                            </th>
+
+                            <th>
+                                Flock Code
+                            </th>
+
+                            <th>
+                                Breed Name
+                            </th>
+
+                            <th>
+                                Placement Date
+                            </th>
+
+                            <th>
+                                No Of Chicks Placed
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+                            SlNo = SlNo + 1;
+
+                            <tr>
+
+                                <td>
+                                    @SlNo
+                                    <input type="hidden" value="@SlNo" class="hiddenSL" />
+                                </td>
+
+                                <td>
+
+                                    @Html.DisplayFor(modelItem => item.FarmerName)
+
+                                </td>
+
+                                <td>
+                                    @*<a href='@Url.Action("AllDailyReportPartial", "PoultryDetailedReport", new {From = 0,To = 0, flockid = item.FlockId })' class="AccoDet">@item.FlockCode</a>*@
+                                    <input type="button" value="@item.FlockCode" class="AccoDet" />
+                                    <input type="hidden" value="@item.FlockId" class="AccoDethid" />
+                                    <img src="~/Images/ajax-loader(1).gif" alt="Loader" width="20px" height="20px" style="display:none;" class="imgLoader" />
+                                </td>
+
+
+                                <td align="right"></td>
+
+
+                                <td align="right">
+
+                                    @Html.DisplayFor(modelItem => item.DateOfReceiveString)
+                                </td>
+
+                                <td align="right">
+                                    @Html.DisplayFor(modelItem => item.ChicksReceived)
+
+                                </td>
+
+
+                            </tr>
+
+                            @*<tr>
+                                    <td colspan="6"><div id="demo_@SlNo"></div></td>
+                                </tr>*@
+
+
+                        }
+                    </tbody>
+
+
+
+                </table>
+
+
+
+            </div>
+        </div>
+
+
+
+    </div>
+</aside>
+
+<div id="myModal" class="modal fade" width="100%">
+
+    <div class="modal-dialog" width="100%" style="margin-left:10px">
+        <div class="modal-content" style="background-color:white">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color:black">&times;</button>
+                <h3 class="modal-title"><b>Flock Details:</b></h3>
+            </div>
+
+            <div class="modal-body" width="100%">
+                <div id="FarmerDetails">
+                </div>
+                <div id="FlockDetails">
+                </div>
+                <div id="SalesDetails">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@*<div id="alertModal" class="modal">
+
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Notice</h2>
+            </div>
+            <div class="modal-body">
+                <p>Data not found for this date</p>
+
+            </div>
+            <div class="modal-footer">
+                <h3></h3>
+            </div>
+        </div>
+
+    </div>*@

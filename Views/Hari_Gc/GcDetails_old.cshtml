@@ -1,0 +1,626 @@
+﻿@model XenERP.Models.GC_ModelView
+
+
+@{
+    ViewBag.Title = "FarmerReportInformationDetails";
+}
+
+@{
+    Layout = null;
+}
+
+
+
+
+<script src="~/Reports/Scripts/jQuery.print.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var v = $("#murgirozon").val();
+        var w = $("#avgprice").val();
+        //  alert(v);
+        $("#TotalWeightOfChicksClosing").val(v);
+
+        //   alert(w);
+        //   $("#TotalWeightOfChicks").val(v);
+        $("#AvgSaleRate").val(w)
+
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#btnPrint').click(function () {
+            $('#print1').print();
+
+        });
+
+        $('#btnPDF').click(function () {
+            var Id = $("#Id").val();
+            window.location.href = "/FarmerReport/PrintFarmerReportPDF?id=" + Id;
+
+        });
+    });
+</script>
+
+
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <title>HI-BREED AVIAN RESEARCH & INTEGRATOR @Model.BranchName DIVISION</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 2px;
+            font-size: 18px;
+        }
+
+        .table_outer {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+            .table_outer table tr td {
+                font-size: 18px;
+            }
+    </style>
+
+
+
+
+</head>
+
+
+<body>
+    <div class="nav-tabs-custom">
+
+        <ul class="nav nav-tabs">
+            <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+            <li class="pull-right"> <input name="" type="button" id="btnPrint" value="Print" class="btn btn-primary" /></li>
+            <li class="pull-right"> <input name="" type="button" id="btnPDF" value="PDF Print" class="btn btn-primary" /></li>
+
+        </ul>
+
+    </div>
+
+    <div class="table_outer" id="print1">
+        <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:10px;">
+            <tr>
+                <th colspan="8" style="text-decoration:underline; font-size:18px;">
+                    HI-BREED AVIAN RESEARCH & INTEGRATOR <br>@Model.BranchName DIVISION
+                </th>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    FARMER's NAME
+                </td>
+                <td colspan="3">
+                    @Model.FarmerName
+                    @Html.HiddenFor(m => m.FarmerName)
+                    @Html.HiddenFor(m => m.FarmerId)
+                </td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    ADDRESS
+                </td>
+                <td colspan="3">
+                    @Model.Address
+                    @Html.HiddenFor(m => m.Address)
+                </td>
+                <td colspan="3"></td>
+            </tr>
+
+            <tr>
+                <td colspan="1">
+                    Lot No
+                </td>
+                <td colspan="3">
+                    @Model.LotNo
+                    @Html.TextBoxFor(m => m.LotNo)
+                </td>
+                <td colspan="3"></td>
+            </tr>
+
+            <tr>
+                <td colspan="1">
+                    SUPERVISOR's NAME
+                </td>
+                <td colspan="3">
+                    @Model.SupervisorName
+                    @Html.HiddenFor(m => m.SupervisorName)
+                </td>
+                <td colspan="3"></td>
+            </tr>
+
+            <tr>
+                <td>
+                    DATE OF PLACEMENT
+                </td>
+                <td>
+                    @Model.DateOfPlacement
+                    @Html.HiddenFor(m => m.DateOfPlacement)
+                </td>
+                <td>
+                    FLOCK END ON
+                </td>
+                <td>
+                    @Model.FlockEndDate
+                    @Html.HiddenFor(m => m.FlockEndDate)
+                </td>
+                <td>GROWING STAGE</td>
+                <td colspan="2">
+                    @Model.GrowingStage
+                    @Html.HiddenFor(m => m.GrowingStage)
+                </td>
+            </tr>
+
+            <tr>
+                <td>NO OF CHICKS</td>
+                <td>
+                    @Model.NoOfChicks
+                    @Html.HiddenFor(m => m.NoOfChicks)
+                </td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+
+            </tr>
+            <tr>
+                <td>MORTALITY OF BIRDS</td>
+                <td style="text-decoration:underline;">
+                    @Model.MortalityOfBirds
+                    @Html.HiddenFor(m => m.MortalityOfBirds)
+                </td>
+                <td>TOTAL WEIGHT</td>
+                <td colspan="2" style="text-decoration:underline;">% Of Mortality</td>
+                <td colspan="2">AVERAGE WEIGHT</td>
+
+            </tr>
+            <tr>
+
+
+
+                <td>NO OF BIRDS SOLD</td>
+                <td style="text-decoration:underline;">
+                    @Model.TotalNoOfBirdSale
+                    @Html.HiddenFor(m => m.TotalNoOfBirdSale)
+                </td>
+                <td>
+                    @Model.TotalNoOfSaleBirdWt
+                    @Html.HiddenFor(m => m.TotalNoOfSaleBirdWt)
+                </td>
+                <td colspan="2">
+                    <b>@Model.MortalityPercentage</b>
+                    @Html.HiddenFor(m => m.MortalityPercentage)
+                </td>
+                <td colspan="2">
+                    @Model.AvgWeight
+                    @Html.HiddenFor(m => m.AvgWeight)
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>Shortage OF Birds</td>
+                <td>
+                @Model.SortageOfBird
+                    @Html.HiddenFor(m => m.SortageOfBird)
+                </td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+
+            </tr>
+            <tr>
+                <td>Excess OF Birds</td>
+                <td>
+                @Model.ExcessOfBirds
+                    @Html.HiddenFor(m => m.ExcessOfBirds)
+                </td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+
+            </tr>
+
+            <tr>
+                <td>FEED RECEIVE IN KG</td>
+                <td>
+                @Model.FeedReceived
+                    @Html.HiddenFor(m => m.FeedReceived)
+                </td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2">FCR</td>
+
+            </tr>
+            <tr>
+                <td>FEED RETURNED IN KG</td>
+                <td>
+                @Model.FeedReturned
+                    @Html.HiddenFor(m => m.FeedReturned)
+                </td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2">
+                <b>@Model.FCR</b>
+                    @Html.HiddenFor(m => m.FCR)
+                </td>
+
+            </tr>
+            <tr>
+                <td>FEED CONSUMED IN KG</td>
+                <td>
+                @Model.FeedConsumed
+                    @Html.HiddenFor(m => m.FeedConsumed)
+                </td>
+                <td></td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+
+            </tr>
+
+            <tr>
+                <td colspan="1"></td>
+                <td style="text-decoration:underline;">RATE</td>
+                <td colspan="1" style="text-decoration:underline;">AMOUNT</td>
+            </tr>
+            <tr>
+                <td colspan="1">CHICKS COST/PC</td>
+                <td>
+                @Model.ChicksRate
+                    @Html.HiddenFor(m => m.ChicksRate)
+                </td>
+                <td colspan="1">
+                @Model.ChicksCostAmount
+                    @Html.HiddenFor(m => m.ChicksCostAmount)
+                </td>
+                <td colspan="4"></td>
+
+            </tr>
+            <tr>
+                <td colspan="1">FEED COST/KG</td>
+                <td>
+                @Model.FeedRate
+                    @Html.HiddenFor(m => m.FeedRate)
+                </td>
+                <td colspan="1">
+                @Model.FeedCostAmount
+                    @Html.HiddenFor(m => m.FeedCostAmount)
+                </td>
+                <td colspan="2">STANDARD COST/KG</td>
+                <td colspan="2">
+                @Model.StandardCostRate
+                    @Html.HiddenFor(m => m.StandardCostRate)
+                </td>
+
+            </tr>
+            <tr>
+                <td colspan="1">MEDICINE COST</td>
+                <td>
+                @Model.MedicineRate
+                    @Html.HiddenFor(m => m.MedicineRate)
+                </td>
+                <td colspan="1">
+                @Model.MedicineCostAmount
+                    @Html.HiddenFor(m => m.MedicineCostAmount)
+                </td>
+                <td colspan="2">PRODUCTION COST/KG</td>
+                <td colspan="2">
+                <b>@Model.ProductionCostRate</b>
+                    @Html.HiddenFor(m => m.ProductionCostRate)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">ADDITIONAL MEDICINE COST</td>
+                <td></td>
+                <td style="text-decoration:underline;">
+                <b>@Model.AdditionalMedicineCost</b>
+                    @Html.HiddenFor(m => m.AdditionalMedicineCost)
+                </td>
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+            </tr>
+
+
+
+            <tr>
+                <td colspan="1">OVERHEAD COST/BIRD</td>
+                <td>
+                @Model.OverHeadCostRate
+                    @Html.HiddenFor(m => m.OverHeadCostRate)
+                </td>
+                <td colspan="1">
+                @Model.OverHeadCostAmount
+                    @Html.HiddenFor(m => m.OverHeadCostAmount)
+                </td>
+                <td colspan="2">AVERAGE SALE RATE/KG</td>
+                <td colspan="2">
+                @Model.AvgSaleRate
+                    @Html.HiddenFor(m => m.AvgSaleRate)
+                 </td>
+
+            </tr>
+            <tr>
+                <td colspan="1">TOTAL PRODUCTION COST</td>
+                <td></td>
+                <td colspan="1" style="text-decoration:underline;">
+                @Model.TotalProductionCost
+                    @Html.HiddenFor(m => m.TotalProductionCost)
+                </td>
+                <td style="border:none;"></td>
+                <td style="border:none;"></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-decoration:underline; font-weight:bold;">COMPUTATION OF GROWING CHARGE:</td>
+            </tr>
+            <tr>
+                <td colspan="1">Growing Charge /Kg (Fixed)</td>
+                <td>
+                @Model.FixedGrowingChargeRate
+                    @Html.HiddenFor(m => m.FixedGrowingChargeRate)
+                </td>
+                <td>
+                @Model.FixedGrowingChargeAmount
+                    @Html.HiddenFor(m => m.FixedGrowingChargeAmount)
+                </td>
+
+                @if (Model.BranchId == 15)
+                {
+                    <td rowspan="8" colspan="3">
+                        <div>
+                            <h3>Growing Charge Rate Calculation</h3>
+
+                            if Standard Cost - Production Cost > 3
+                            <br />
+                            then Rate= 3 X 0.5 + (Stand Cost - Prod Cost - 3) X 0.75
+                            <br />
+                            else (Stand Cost - Prod Cost) X 0.5
+                            <br />
+                            and same  for negative value
+                            <br />
+                            here, Stand Cost = @Model.StandardCostRate
+                            <br />
+                            Prod Cost = @Model.ProductionCostRate
+                            <br />
+                            so, Stand Cost - Prod Cost = @(Model.StandardCostRate - Model.ProductionCostRate)
+                            <br />
+                            @if ((Model.StandardCostRate - Model.ProductionCostRate) > 3)
+                            {
+                                <label>Rate = 3 X 0.5 + @(Model.StandardCostRate - Model.ProductionCostRate - 3) X 0.75 </label>
+                            }
+                            else if ((Model.StandardCostRate - Model.ProductionCostRate) <= 3 && (Model.StandardCostRate - Model.ProductionCostRate) >= -3)
+                            {
+                                <label> Rate =@(Model.StandardCostRate - Model.ProductionCostRate) X 0.5</label>
+                            }
+                            else if ((Model.StandardCostRate - Model.ProductionCostRate) < -3)
+                            {
+
+                                <label> Rate = -3 X 0.5 + @(Model.StandardCostRate - Model.ProductionCostRate + 3) X 0.75</label>
+                            }
+
+                        </div>
+                    </td>
+                }
+
+
+            </tr>
+            <tr>
+                <td colspan="1">Growing Charge /Kg</td>
+                <td>
+                @Model.GrowingChargeRate
+                    @Html.HiddenFor(m => m.GrowingChargeRate)
+                </td>
+                <td>
+                @Model.TotalGrowingCharge
+                    @Html.HiddenFor(m => m.TotalGrowingCharge)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">Total Growing Charge</td>
+                <td></td>
+                @{
+                    var Totgrch = Model.FixedGrowingChargeAmount + Model.TotalGrowingCharge;
+                }
+                <td>@Totgrch</td>
+            </tr>
+
+            <tr>
+                <td colspan="1">Rate Bonus more than Rs. @Model.RateBonusValue</td>
+                <td></td>
+                <td>@Model.RateBonusMoreThan</td>
+            </tr>
+
+            @{
+                var TotPay = Totgrch + Model.RateBonusMoreThan;
+
+            }
+
+            <tr>
+                <td colspan="1">Total</td>
+                <td></td>
+                <td>@TotPay </td>
+            </tr>
+
+            <tr>
+                <td colspan="1">SHORTAGE OF BIRDS DEDUCTION</td>
+                <td>@Model.ShortageBirdDeductionRate</td>
+                <td>@Model.ShortageBirdDeductionAmount</td>
+            </tr>
+            @{
+                var NetGrowingCharge = TotPay - Model.ShortageBirdDeductionAmount;
+
+            }
+
+
+
+            <tr>
+                <td colspan="1">Net Growing Charge</td>
+                <td></td>
+                <td>@NetGrowingCharge </td>
+
+            </tr>
+            <tr>
+                <td colspan="1">TDS Deduction</td>
+                <td></td>
+                <td>@Model.TDS_Deduction </td>
+
+            </tr>
+
+            <tr>
+                <td colspan="1">Amount due for Ready Bird purchase</td>
+                <td>@Model.ReadyBirdPurchaseRate</td>
+                <td> @Model.ReadyBirdPurchaseAmount </td>
+
+            </tr>
+            <tr>
+                <td colspan="1">Due Amount Paid for Ready Bird Purchase</td>
+                <td></td>
+                <td> @Model.ReadyBirdPurchaseAmountDue </td>
+
+            </tr>
+            <tr>
+                <td colspan="1">Advance Deduction</td>
+                <td></td>
+                <td> @Model.AdvanceDeduction </td>
+            </tr>
+            <tr>
+                <td colspan="1">Adjustment</td>
+                <td></td>
+                <td style="text-decoration:underline;"><b>@Model.Adjustment</b></td>
+
+            </tr>
+            <tr>
+                <td colspan="1">Amount of payment</td>
+                <td></td>
+                <td style="text-decoration:underline;"><b>@Model.NetAmountPayment</b></td>
+            </tr>
+
+            <tr>
+                <td colspan="1">Payment & R/O</td>
+                <td></td>
+                <td><b>@decimal.Round(Convert.ToDecimal(Model.NetAmountPayment), 0, MidpointRounding.AwayFromZero) </b></td>
+            </tr>
+
+
+        </table>
+
+        <p style="page-break-after: always;">&nbsp; </p>
+
+
+        <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:15px;">
+
+
+            <tr>
+                <th colspan="8" style="text-decoration:underline; font-size:18px;">
+                    Sale Report
+                </th>
+            </tr>
+
+            <tr>
+                <td style="text-decoration:underline;">DATE</td>
+                <td style="text-decoration:underline;">Invoice No</td>
+                <td style="text-decoration:underline;">Name of the Party</td>
+                <td style="text-decoration:underline;">No. of Bird</td>
+                <td style="text-decoration:underline;">Total Weight</td>
+                <td style="text-decoration:underline;">Average Weight</td>
+                <td style="text-decoration:underline;">Rate</td>
+                <td style="text-decoration:underline;">Amount</td>
+
+            </tr>
+
+
+
+            @foreach (var sell in Model.BirdSalesList)
+            {
+                <tr>
+                    <td>@sell.SaleDate</td>
+                    <td>@sell.InvoiceNo</td>
+                    <td>@sell.NameOfParty</td>
+                    <td>@sell.NoOfBird</td>
+                    <td>@sell.TotalWeight</td>
+                    <td>@decimal.Round(Convert.ToDecimal(Model.AvgWeight), 3, MidpointRounding.AwayFromZero)</td>
+                    <td>@sell.Rate</td>
+                    <td>@sell.Amount</td>
+
+                </tr>
+
+            }
+
+            <tr>
+                <td style="text-decoration:underline">Total</td>
+                <td></td>
+                <td></td>
+                <td style="text-decoration:underline;">@Model.BirdSalesList.Sum(s => s.NoOfBird)</td>
+                <td style="text-decoration:underline;">@Model.BirdSalesList.Sum(s => s.TotalWeight)</td>
+                <td style="text-decoration:underline;">@Model.BirdSalesList.Sum(s => s.AvgWeight)</td>
+                <td style="text-decoration:underline;">@Model.BirdSalesList.Sum(s => s.Rate)</td>
+                <td style="text-decoration:underline;">@Model.BirdSalesList.Sum(s => s.Amount)</td>
+
+
+            </tr>
+
+
+        </table>
+        <p style="page-break-after: always;">&nbsp;</p>
+
+
+        <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:15px;">
+
+            <tr>
+                <th colspan="8" style="text-decoration:underline; font-size:18px;">
+                    Medicine Report
+                </th>
+            </tr>
+            <tr>
+                <td style="text-decoration:underline;">Medicine Name</td>
+                <td style="text-decoration:underline;">Rate</td>
+                <td style="text-decoration:underline;">Consumption</td>
+                <td style="text-decoration:underline;">Amount</td>
+
+            </tr>
+
+            @foreach (var ml in Model.MedicineConsumptionList)
+            {
+                <tr>
+                    <td>@ml.MedicineName</td>
+                    <td>@ml.Rate </td>
+                    <td>@ml.Consumption</td>
+                    <td>@ml.Amount</td>
+                </tr>
+            }
+
+            <tr>
+                <td style="text-decoration:underline; font-size:18px;">
+                    Total
+                </td>
+                <td style="text-decoration:underline; font-size:18px;"></td>
+                <td style="text-decoration:underline; font-size:18px;"></td>
+                <td style="text-decoration:underline; font-size:18px;">
+                    @Model.MedicineConsumptionList.Sum(s => s.Amount)
+                </td>
+            </tr>
+        </table>
+
+
+
+
+    </div>
+</body>
+
+</html>

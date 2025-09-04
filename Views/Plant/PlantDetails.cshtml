@@ -1,0 +1,150 @@
+﻿@model XenERP.Models.Plant
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnsubmit").on("click", function () {
+            location.href = "/Plant/ShowAllPlant";
+        });
+    });
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Plant <small>Details</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+            </div>
+        }
+        
+
+      @if (ViewBag.Error != null)
+      { 
+             <div class="alert alert-danger alert-dismissable">
+             <i class="fa fa-ban"></i>
+             <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+             <b>Error!</b>
+              @ViewBag.Error </div>
+      }
+      
+
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                <li class="pull-right"><input type="button" id="btnsubmit" class="btn btn-primary" value="Back" /></li>
+                                </ul>
+                            <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                            <div class="row">         
+                            <div class="col-md-6">
+                            <div class="box box-primary">
+                            <div class="box-header"></div>
+                            <div class="box-body">
+                            <div class="form-group">
+                                   <label class="black_txt_010">  Code :</label>
+                                     @Html.HiddenFor(d => d.Id)
+                                     @Html.HiddenFor(d => d.Userid)
+                                     @Html.DisplayFor(model => model.Code, new { @class = "form-control", @placeholder = "Enter Supplier Code" })
+                             </div>
+
+                                    
+                             <div class="form-group">
+                                          <label class="black_txt_010">  Name:</label>
+                                    @Html.DisplayFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Supplier Name" })
+                             </div>
+
+
+                             <div class="form-group">
+                                          <label class="black_txt_010">Contact Name:</label>
+                                    @Html.DisplayFor(model => model.ContactName, new { @class = "form-control", @placeholder = "Enter Organization Name" })
+                             </div>
+
+                                    
+                             <div class="form-group">
+                                          <label class="black_txt_010">     Mobile Number:</label>
+                                    @Html.DisplayFor(model => model.MobileNumber, new { @class = "form-control", @placeholder = "Enter GST/VAT No" })
+                             </div>
+
+                             </div>
+                             </div>
+                             </div>
+
+
+
+
+
+                              <div class="col-md-6">
+                              <div class="box box-primary">
+                              <div class="box-header">  </div>
+                              <div class="box-body">
+                              <div class="form-group">
+                                   <label class="black_txt_010"> Address:</label>
+                                    @Html.DisplayFor(model => model.Address, new { @class = "form-control", @placeholder = " PAN No." })
+                              </div>
+                                    
+                              <div class="form-group">
+                                    <label class="black_txt_010">  Town:</label>
+                                    @Html.DisplayFor(model => model.Town, new { @class = "form-control", @placeholder = "Enter Service Tax No" })
+                              </div>
+                                    
+                             <div class="form-group">
+                                    <label class="black_txt_010"> State:</label>
+                                    @Html.DisplayFor(model => model.State, new { @class = "form-control", @placeholder = "Enter Service Tax No" })
+                             </div>
+                                               
+                              <div class="form-group">
+                                    <label class="black_txt_010">Country:</label>
+                                         @try
+                                         {
+                                             XenERP.Models.Repository.TaxRepository cur2 = new XenERP.Models.Repository.TaxRepository();
+
+                                             var group = cur2.GetCountry(Convert.ToInt32(Model.CountryId));
+                                         
+                                             @group.Country1  
+                                         }
+                                         catch { }
+                              </div>
+
+                                    
+                              <div class="form-group">
+                                          <label class="black_txt_010"> ZIP Code:</label>
+                                          @Html.DisplayFor(model => model.PIN, new { @class = "form-control" })
+                              </div>
+
+                              </div>
+                              </div>
+                              </div>
+                              </div>   
+                              </div>
+                              </div>
+                              </div>
+                              </div>
+                        </section>
+                        </aside>
+}

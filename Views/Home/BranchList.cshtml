@@ -1,0 +1,144 @@
+﻿
+@model XenERP.Models.LoginModelView
+@{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+@{
+
+    ViewBag.Title = "Xpert | Factory List";
+}
+@{
+
+
+    var compid = Session["companyid"];
+    var role = Session["RoleId"];
+
+    int SlNo = 0;
+
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 30px;
+        line-height: 1.428571429;
+        color: #333;
+        background-color: #fff;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+
+<aside class="right-side">
+    <section class="content-header">
+        <h1>
+            Factory <small>List</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li>  <div class="companyname underline"><a href="@Url.Action("Logout", "Home")"> <h5>LogOut</h5></a></div></li>
+
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+    <div class="box">
+        <div class="box-body table-responsive">
+            <table width="100%" id="" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <th>
+
+                            SlNo.
+                        </th>
+                        <th>
+                            Unit
+                        </th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @*<tr>
+                            <td width="25%">1</td>
+
+
+                            <td width="45%">
+                                <a href="@Url.Action("DashBoard", "DashBoard", new { id = 0 })">HEAD OFFICE</a>
+                            </td>
+
+                        </tr>*@
+
+                    @foreach (var item in Model.BranchListShow)
+                    {
+                        SlNo = SlNo + 1;
+
+
+
+                        <tr>
+                            <td width="25%">@SlNo</td>
+
+
+                            <td width="45%">
+                                <a href="@Url.Action("DashBoard", "DashBoard", new { id = item.Id })"> @Html.DisplayFor(modelItem => item.Name)</a>
+                            </td>
+
+
+                        </tr>
+                    }
+                </tbody>
+
+
+            </table>
+
+        </div>
+
+
+    </div>
+
+</aside>

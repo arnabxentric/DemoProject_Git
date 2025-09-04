@@ -1,0 +1,272 @@
+﻿@model XenERP.Models.CreatePlantModelView
+@using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+<script src="../../Scripts/PurchaseCostingDetail.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+ <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+ <style>
+     #CountryId {
+          width: 100%;
+}
+
+
+ </style>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+      $('#EmployeeCode').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/Employee/getEmployee',
+                data: { query: request.term },
+                dataType: 'json',
+                type: 'POST',
+                success: function (data) {
+                    response($.map(data, function (item) {
+
+                        return {
+                            label: item.ProductName,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        change: function (event, ui) {
+
+            if (ui.item == null || ui.item == undefined) {
+                $('#EmployeeId').val('');
+                $('#EmployeeCode').val('');
+                $('#EmployeeCode').parents("td:first").removeClass("has-success");
+            }
+        },
+        select: function (event, ui) {
+            $('#EmployeeId').val(ui.item.value);
+            $('#EmployeeCode').val(ui.item.label);
+
+            $.get('/Employee/checkEmployee', { 'query': ui.item.label }, function (data, status) {
+                if (data == '') {
+                    $('#EmployeeId').val('');
+                    $('#EmployeeCode').val('');
+                }
+                else {
+
+                    $('#EmployeeCode').val(data.Code);
+                    $('#ManagerName').val(data.Name);
+                    $('#EmployeeId').val(data.Id);
+                    $('#MobileNumber').val(data.MobileNo);
+                    $('#EmployeeCode').parents("td:first").removeClass("has-success");
+                    $('#ManagerName').parents("td:first").removeClass("has-success");
+                    $('#MobileNumber').parents("td:first").removeClass("has-success");
+                }
+
+            });
+            return false;
+        },
+        minLength: 1
+    });
+
+    $('#ManagerName').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/Employee/getEmployeeName',
+                data: { query: request.term },
+                dataType: 'json',
+                type: 'POST',
+                success: function (data) {
+                    response($.map(data, function (item) {
+
+                        return {
+                            label: item.Name,
+                            value: item.Code
+                        }
+                    }));
+                }
+            })
+        },
+        change: function (event, ui) {
+
+            if (ui.item == null || ui.item == undefined) {
+                $('#EmployeeId').val('');
+                $('#ManagerName').val('');
+                $('#ManagerName').parents("td:first").removeClass("has-success");
+
+            }
+        },
+        select: function (event, ui) {
+            $('#EmployeeId').val(ui.item.value);
+            $('#ManagerName').val(ui.item.label);
+
+            $.get('/Employee/checkEmployeeName', { 'query': ui.item.value }, function (data, status) {
+                if (data == '') {
+                    $('#EmployeeId').val('');
+                    $('#ManagerName').val('');
+                }
+                else {
+
+                    $('#EmployeeCode').val(data.Code);
+                    $('#ManagerName').val(data.Name);
+                    $('#EmployeeId').val(data.Id);
+                    $('#MobileNumber').val(data.MobileNo);
+                    $('#EmployeeCode').parents("td:first").removeClass("has-success");
+                    $('#ManagerName').parents("td:first").removeClass("has-success");
+                    $('#MobileNumber').parents("td:first").removeClass("has-success");
+                   
+                }
+
+            });
+            return false;
+        },
+        minLength: 1
+    });
+});
+</script>
+@using (Html.BeginForm("CreatePlant", "Plant"))
+{
+    @Html.ValidationSummary(true)
+      <aside class="right-side"> 
+
+          <section class="content-header">
+                    <h1> Plant<small>Plant Description</small> </h1>
+                    <ol class="breadcrumb">
+                       <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                       <li><a href="#">Forms</a></li>
+                       <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+             <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+                                </ul>
+             </div>
+
+                <!-- Main content -->
+                <section class="content">  
+                    <div class="row">
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                     </div>
+                                <div class="box-body">
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          @ViewBag.Message
+             </div>
+        }
+        
+        @if (ViewBag.Error != null)
+        { 
+               <div class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+         }
+      
+         @Html.HiddenFor(d => d.Id)
+              @Html.HiddenFor(d => d.EmployeeId)
+            
+                                      <div class="form-group">
+                                          <label class="black_txt_010"> Plant Code :<span style="color:Red;">*</span></label>
+                                          @Html.TextBoxFor(model => model.Code, new {@class ="form-control ",@placeholder = "Enter Plant Code",@maxlength = "8"})
+                                          @Html.ValidationMessageFor(model => model.Code)
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Plant Name :<span style="color:Red;">*</span> </label>
+                                          @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Plant Name", @maxlength = "100" })
+                                          @Html.ValidationMessageFor(model => model.Name)
+                                    </div>
+
+                                     <div class="form-group">
+                                         <label class="black_txt_010"> Description :</label>
+                                          @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Enter Description", @maxlength = "1008" })
+                                          @Html.ValidationMessageFor(model => model.Description)
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Manager Code :<span style="color:Red;">*</span> </label>
+                                          @Html.TextBoxFor(model => model.EmployeeCode, new { @class = "form-control", @placeholder = "Enter Description", @maxlength = "1008" })
+                                           @Html.ValidationMessageFor(model => model.EmployeeCode)
+                                         
+                                    </div>
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010"> Manager Name :<span style="color:Red;">*</span> </label>
+
+                                        @Html.TextBoxFor(model => model.ManagerName, new { @class = "form-control" , @placeholder = "Enter Description", @maxlength = "1008" })
+                                        @Html.ValidationMessageFor(model => model.ManagerName)
+
+                                    </div>
+
+
+                                    <div class="form-group">
+                                         <label class="black_txt_010">Mobile Phone :</label>
+                                         <div class="clr"></div>
+                                         @Html.TextBoxFor(model =>model.MobileNumber, new { @class  = "form-control", @placeholder = "Mobile Number", @maxlength = "10", @onkeypress = "return Numeric(event)"})
+                                         @Html.ValidationMessageFor(model => model.MobileNumber)
+                                    </div>
+
+                    </div>
+                    </div>   <!-- /.row -->
+                    </div>
+
+
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"> </div>
+                                <div class="box-body">
+                                <div class="box-body table-responsive">
+
+                                <div class="form-group">
+                                       <label class="black_txt_010"> Address :</label> 
+                                        @Html.TextAreaFor(model => model.Address, new  { @class = "form-control", @placeholder = "Enter Address",  @maxlength = "1008" })
+                                        @Html.ValidationMessageFor(model => model.Address) 
+                                 </div>
+
+                                 <div class="form-group">
+                                         <label class="black_txt_010">City/Town :</label>
+                                          @Html.TextBoxFor(model => model.Town, new {  @class = "form-control", @placeholder = "Enter City", @maxlength = "58"})
+                                          @Html.ValidationMessageFor(model => model.Town)
+                                 </div>
+
+                                 <div class="form-group">
+                                          <label class="black_txt_010">  State/Region :</label>
+                                          @Html.TextBoxFor(model => model.State, new {  @class = "form-control",  @placeholder = "Enter State", @maxlength = "58" })
+                                          @Html.ValidationMessageFor(model => model.State)
+                                   </div>
+
+                                   
+                                   
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010"> Country :</label>
+                                         @Html.DropDownListFor(model => model.CountryId, new SelectList(ViewBag.Country, "CountryId", "Country1"), "-----Select----", new { @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group">
+                                            <label class="black_txt_010"> Postal Code :</label>
+                                           @Html.TextBoxFor(model => model.PIN, new { @class = "form-control",@placeholder = "Enter ZIP Code No.", @maxlength = "15", @onkeypress = "return Numeric(event)" })
+                                           @Html.ValidationMessageFor(model => model.PIN)
+                                    </div>
+
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+                </section><!-- /.content -->
+        </aside>
+}

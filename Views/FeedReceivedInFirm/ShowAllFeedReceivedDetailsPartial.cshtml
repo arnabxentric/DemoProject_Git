@@ -1,0 +1,150 @@
+﻿@model IEnumerable<XenERP.Models.ModelView.FeedReceivedFromFarmModelView>
+
+using XenERP.Models
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+}
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Feed Receipt Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+        @* <div class="col-xs-12"><a href="@Url.Action("CreateFeedReceived", "FeedReceived")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Create New Feed Receipt</a></div><br /><br />*@
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Challan No</th>
+                        <th>Farmer Name</th>
+                        <th>Flock Code</th>
+                        <th>Date Of Issue</th>
+                        <th>Feed Name</th>
+                        <th>Quantity</th>
+                        @*@if (Session["PoultryEditId"] != null)
+                            {*@
+                        @*<th></th>*@
+                        <th></th>
+                        @*}*@
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+                            <td align="center"><a href='@Url.Action("FeedReceivedInformationDetails", "FeedReceivedInFirm", new { id = item.Id })' class="AccoDet">@item.ChallanNo</a> @Html.HiddenFor(m => item.Id, new { @class = "AcId" })</td>
+
+                            <td> @Html.DisplayFor(modelItem => item.FarmerName)</td>
+                            <td> @Html.DisplayFor(modelItem => item.FlockCode)</td>
+                            <td> @Html.DisplayFor(modelItem => item.DateOfReceiptString)</td>
+                            <td align="right">
+                                @foreach (var fl in item.feedreceivedfromfirmDetails)
+                                {
+                                    <table id="#example5" class="chompa">
+                                        @if (fl.ProductName != null)
+                                        {
+
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => fl.ProductName)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                }
+                            </td>
+
+                            <td align="right">
+                                @foreach (var fl in item.feedreceivedfromfirmDetails)
+                                {
+                                    <table id="#example5" class="chompa">
+                                        @if (fl.Quantity != null)
+                                        {
+
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => fl.Quantity)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                }
+                            </td>
+
+
+                            @*@if (Session["PoultryEditId"] != null)
+                                {*@
+                            @*<td> @Html.ActionLink("Edit", "EditFeedReceived", "FeedReceivedInFirm", new { id = item.Id }, null)  </td>*@
+                            <td> @Html.ActionLink("Delete", "DeleteFeedReceived", "FeedReceivedInFirm", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+                            @*}*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

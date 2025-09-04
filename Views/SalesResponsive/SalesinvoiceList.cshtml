@@ -1,0 +1,191 @@
+﻿@model IEnumerable<XenERP.Models.SalesInvoiceModelView>
+@using System.Globalization;
+
+@using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true,
+            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+
+                if (aData[6] == "Already Received") {
+                    $('td', nRow).css('border-color', 'Red');
+                }
+                else {
+                    $('td', nRow).css('border-color', 'Green');
+                }
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#example1").on('click', '.edit', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+
+            window.location.href = "/HariUnitIssue/FarmerIssueEdit?Id=" + id;
+
+        });
+
+        $("#example1").on('click', '.del', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+
+            window.location.href = "/HariUnitIssue/DeleteFarmerIssue?Id=" + id;
+
+        });
+
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Sales Invoice <small>List</small> </h1>
+
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+
+            <div class="col-xs-12" style="text-align:center">
+                <a href="@Url.Action("CreateSalesInvoice", "SalesResponsive")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Sales Invoice</a>
+            </div>
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Hand Challan No</th>
+                        <th>Date</th>
+                        <th>Customer Name</th>
+                        <th width="450px">
+                            <table border="0" class="chompa">
+                                <tr>
+                                    <th width="150px">Item</th>
+                                    <th width="100px">Quantity</th>
+                                    <th width="100px">Rate</th>
+                                    <th width="100px">Total</th>
+                                </tr>
+                            </table>
+                        </th>
+
+                        @*<th></th>*@
+                        <th></th>
+                        @*<th></th>*@
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+
+                            <td align="center">
+                                @item.ReferenceNo
+                                @Html.HiddenFor(m => item.SalesInvoiceId, new { @class = "id" })
+                            </td>
+
+                            <td> @Html.DisplayFor(modelItem => item.InvoiceDate)</td>
+                            <td> @Html.DisplayFor(modelItem => item.CustomerName)</td>
+                            <td width="450px">
+                                @foreach (var fd in item.salesInvoiceItemDetails)
+                                {
+                                    <table id="#example5" class="chompa table-bordered">
+
+
+                                        <tr>
+                                            <td width="150px">
+                                                @Html.DisplayFor(modelItem => fd.ItemName)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.Quantity)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.Rate)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.TotalPrice)
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>
+
+
+
+                            @*<td style="text-align:center"><button class="btn btn-primary btn-sm edit ">Edit</button></td>*@
+                            @if (item.Status == "False")
+                            {
+                                <td style="text-align:center">
+
+                                    @Html.ActionLink("Delete", "DeleteInvoiceConfirmed", new { Id = item.SalesInvoiceId }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })
+
+                                </td>
+                            }
+
+                            else
+                            {
+                                <td></td>
+                            }
+                            @*<td style="text-align:center"><button class="btn btn-warning btn-sm prnt">Print</button></td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

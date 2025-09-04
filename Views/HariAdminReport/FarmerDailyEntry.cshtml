@@ -1,0 +1,333 @@
+﻿@model XenERP.Models.HariDailyEntryModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+
+<script src="~/Scripts/jquery.validate.js"></script>
+<style>
+    .my-table-header {
+        background: #55b4b4;
+        color: #0e0505;
+    }
+
+    .HandCursor {
+        cursor: pointer;
+    }
+
+    .display-non-div {
+        display: none !important;
+    }
+
+    .add-component-deletebotton {
+        background: url(../Images/icon-delete.png) no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+        border: medium none;
+        height: 15px;
+        width: 15px;
+    }
+</style>
+
+<style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1040;
+        display: none;
+        overflow: auto;
+        overflow-y: scroll;
+    }
+
+    .modal-content {
+        background-color: #ffffff;
+        width: 330px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+
+
+
+@*===========SELECT2 ASSAIGN==============*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".select2").select2();
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#BranchId').on('change', function () {
+            $('#recDetails').css('display', 'none');
+            var rvwId = $(this).val();
+            $("#loading").fadeIn();
+
+
+            if (rvwId == '') {
+                $("#FarmerId").empty();
+                $("#FarmerId").append($('<option/>', {
+                    value: "",
+                    text: "----Select Farmer ----"
+                }));
+
+            }
+            else {
+                $("#FarmerId").empty();
+                $("#FarmerId").append($('<option/>', {
+                    value: "",
+                    text: "----Select Farmer ----"
+                }));
+                $.post("/HariAdminReport/GetFarmerName", { branchId: rvwId }, function (data) {
+                    var select = $("#FarmerId");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "----Select Farmer----"
+                    }));
+
+                    $.each(data, function (index, itemData) {
+
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+
+                    $("#loading").fadeOut(2000);
+
+                });
+
+            }
+        });
+
+
+        $('#FarmerId').on('change', function () {
+            $('#recDetails').css('display', 'none');
+            var rvwId = $(this).val();
+            $("#loading").fadeIn();
+
+
+            if (rvwId == '') {
+                $("#FlockId").empty();
+                $("#FlockId").append($('<option/>', {
+                    value: "",
+                    text: "----Select Flock Code ----"
+                }));
+
+            }
+            else {
+                $("#FlockId").empty();
+                $("#FlockId").append($('<option/>', {
+                    value: "",
+                    text: "----Select Flock Code ----"
+                }));
+                $.post("/HariAdminReport/GetFlockDetails", { farmerId: rvwId }, function (data) {
+                    var select = $("#FlockId");
+                    $("#LinesManName").val(data[0].LineMan);
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "----Select Flock Code----"
+                    }));
+
+                    $.each(data, function (index, itemData) {
+
+                        select.append($('<option/>', {
+                            value: itemData.Id,
+                            text: itemData.Value
+                        }));
+                    });
+
+                    $("#loading").fadeOut(2000);
+
+                });
+
+            }
+        });
+
+        $("#FlockId").on('change', function () {
+            var flockId = $(this).val();
+            $("#loading").fadeIn();
+            $.ajax({
+                url: '/HariAdminReport/FarmerDailyEntryDetails',
+                type: 'post',
+                data: JSON.stringify({ flockId: flockId }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (data) {
+
+                    if (data.length == 0) {
+
+                        $("#myModal").modal('show');
+                        $('.msg1').html('There are no feed or medicine againest this flock');
+                        return false;
+                        @*// window.location.href = "@System.Configuration.ConfigurationManager.AppSettings["GoldLoneDomain"].ToString()";*@
+                        }
+                    else {
+                        $('#recDetails').css('display', 'block');
+                        $('#recDetails').html('');
+                        $('#recDetails').html(data);
+                        $("#loading").fadeOut(2000);
+                    }
+
+                }
+            });
+        });
+
+
+    });
+</script>
+
+
+
+
+    @*@Html.ValidationSummary(true)*@
+
+    <aside class="right-side">
+
+        <section class="content-header" style="text-align:center">
+            <h4><b>Daily Entry</b> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>
+        </section>
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    <img src="~/Images/newLoad.gif" />
+                </p>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-12">
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010"> Branch :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.Branch, "Value", "Text"), "------None-----", new { @class = "form-control select2" })
+                            @Html.ValidationMessageFor(model => model.FarmerId)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> Flock Code  :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(modelItem => Model.FlockId, new SelectList(string.Empty, "value", "text"), "----Select Flock Code----", new { @class = "form-control select2" })
+                            @Html.ValidationMessageFor(model => model.FlockId)
+                        </div>
+                    
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010"> Farmer Name  :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(modelItem => Model.FarmerId, new SelectList(string.Empty, "value", "text"), "----Select Flock Code----", new { @class = "form-control select2" })
+                            @Html.ValidationMessageFor(model => model.FarmerId)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> Linesman Name  :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.LinesManName, new { @class = "form-control", @readonly = "readonly" })
+                     
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-12">
+            <div id="recDetails">
+
+            </div>
+        </div>
+
+
+        <div class="modal fade ignore" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+            <div class="example-modal ">
+                <div class="modal-warning">
+                    <div class="">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">ALERT !!!</h4>
+                            </div>
+                            <div class="modal-body">
+                                <h4 class="msg1"></h4>
+                                <input type="hidden" id="StoreId" value="" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+            </div>
+
+        </div>
+    </aside>
+

@@ -1,0 +1,46 @@
+﻿@model IEnumerable<XenERP.Models.BatchPrint>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        
+
+
+
+
+@@font-face {
+    font-family: 'rupee_foradianregular';
+    src: url('../fonts/rupee_foradian-webfont.eot');
+    src: url('../fonts/rupee_foradian-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/rupee_foradian-webfont.woff2') format('woff2'),
+         url('../fonts/rupee_foradian-webfont.woff') format('woff'),
+         url('../fonts/rupee_foradian-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+        
+        
+    </style>
+</head>
+<body>
+@foreach (var item in Model)
+{
+     
+    <div class="print_block" style="width:167px; height:66px; padding:5px 5px 5px 20px;">
+        <span style="display:block; font-family:Arial; font-size:12px; color:#000; font-weight:bold;">Batch No. : @item.NO</span>
+        <span style="display:block; font-family:Arial; font-size:12px; color:#000; font-weight:bold;">M.R.P.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : <strong style="font-family: 'rupee_foradianregular';">`</strong> @item.MRP</span>
+        <span style="display:block; font-family:Arial; font-size:12px; color:#000; font-weight:bold;">Pkg. Dt. &nbsp;&nbsp; : @item.Date</span>
+    </div>
+     @*<p style="page-break-after:always;"></p>*@
+}
+</body>
+</html>

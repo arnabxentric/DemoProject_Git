@@ -1,0 +1,197 @@
+﻿@model XenERP.Models.ModelView.DiseaseModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/JqueryValidation.js"></script>
+<script type="text/javascript">
+         $(document).ready(function () {
+
+             $("#FarmUnitId").change(function () {
+                 var v = $("#FarmUnitId").val();
+
+                 //$.get("/Farm/GetUnitCode", { data: v }, function (data) {
+                 //    $("#FarmCode").val(data);
+                 //});
+                 //$.get("/Farm/GetChallanNo", {BranchId : v}, function (data) {
+                 //    $("#FarmCode").val(data);
+
+                 //});
+
+             });
+         });
+
+</script>
+
+
+
+
+
+
+
+
+@using (Html.BeginForm("Create", "Desease", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>Farm<small>Create</small> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>
+        </section>
+
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.BranchId)
+        @Html.HiddenFor(d => d.CompanyId)
+        @Html.HiddenFor(d => d.UserId)
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+
+
+                
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">DiseaseName:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.DiseasesName, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.DiseasesName)
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label class="black_txt_010">Description:<span style="color:Red;"></span> </label>
+                        @Html.TextBoxFor(model => model.DiseasesDescription, new { @class = "form-control", @placeholder = "Enter Farm Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.DiseasesDescription)
+                    </div>
+
+                 
+
+                    <div class="form-group" id="imgdivFarm">
+                    </div>
+                    <div class="form-group">
+                        <label class="black_txt_010"> Farms Image:</label>
+                        <input type="file" id="farmimg" name="farmimg" />
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+
+
+
+
+
+            <div class="box box-primary">
+                <div class="box-header">  </div>
+                <div class="box-body">
+                   
+                  
+                    <div class="form-group">
+                      
+
+
+                       
+                        <table>
+                         @for (var i = 0; i < Model.SymptomLists.Count(); i++)
+                          {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(it => it.SymptomLists[i].SymptomId)
+                                    @Html.DisplayFor(it => it.SymptomLists[i].Symptom)
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(it => it.SymptomLists[i].Checked, new { Style = "vertical-align:3px}" })
+                                </td>
+                            </tr>
+                         }
+ 
+                        </table>
+
+                      
+
+
+
+
+
+                    </div>
+                  
+
+                    <div class="form-group">
+                        <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary">
+                    </div>
+            </div>
+
+
+
+             </div>
+        </div>
+
+
+
+        <div id="myModal" class="modal fade">
+
+            <div class="modal-dialog">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <form>
+
+                            <div class="form-group showImage">
+
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+}

@@ -1,0 +1,734 @@
+﻿@model XenERP.Models.ProductionModelView
+
+@*@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}*@
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+ <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#suc').html('');
+        $('#suc').css("display", "none");
+        $('#err').html('');
+        $('#err').css("display", "none");
+        $('#productName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Production/getProductDetails',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.ProductName,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $('#productName').val('');
+                    $('#productCode').val('');
+                    $('#PrimaryUnit').val('');
+                    $('#SecondaryUnit').val('');
+                    $('#UnitFormula').val('');
+                    $('#primary').val('');
+                    $('#secondary').val('');
+                    $('#productName').parents("td:first").removeClass("has-success");
+                    $('#productCode').parents("td:first").removeClass("has-success");
+                    $('#PrimaryUnit').parents("td:first").removeClass("has-success");
+                    $('#SecondaryUnit').parents("td:first").removeClass("has-success");
+                    $('#UnitFormula').parents("td:first").removeClass("has-success");
+                    $('#primary').parents("td:first").removeClass("has-success");
+                    $('#secondary').parents("td:first").removeClass("has-success");
+                }
+            },
+
+            select: function (event, ui) {
+                $('#ProductId').val(ui.item.value);
+                $('#productName').val(ui.item.label);
+                $.get('/Production/chkProductDetails', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+                        $('#ProductId').val('');
+                        $('#productName').val('');
+                    }
+                    else {
+                        $('#ProductId').val(data.Id);
+                        $('#productCode').val(data.Code);
+                        $('#PrimaryUnit').val(data.PrimaryUnit);
+                        $('#SecondaryUnit').val(data.Secondaryunit);
+                        $('#UnitFormula').val(data.UnitFormula);
+                        $('#primary').val(data.PrimaryUnit);
+                        $('#secondary').val(data.Secondaryunit);
+                        $('#productCode').parents("td:first").removeClass("has-success");
+                        $('#PrimaryUnit').parents("td:first").removeClass("has-success");
+                        $('#SecondaryUnit').parents("td:first").removeClass("has-success");
+                        $('#UnitFormula').parents("td:first").removeClass("has-success");
+                        $('#primary').parents("td:first").removeClass("has-success");
+                        $('#secondary').parents("td:first").removeClass("has-success");
+
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#PlantName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Production/getPlantDetails',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.PlantName,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $('#productId').val('');
+                    $('#PlantName').val('');
+                    $('#PlantName').parents("td:first").removeClass("has-success");
+                }
+            },
+
+            select: function (event, ui) {
+                $('#PlantId').val(ui.item.value);
+                $('#PlantName').val(ui.item.label);
+                $.get('/Production/chkPlantDetails', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+                        $('#productId').val('');
+                        $('#PlantName').val('');
+                    }
+                    else {
+                        $('#PlantId').val(data.id);
+                        $('#PlantName').val(data.plantName);
+                        $('#PlantMnager').val(data.managerName);
+                        $('#productCode').parents("td:first").removeClass("has-success");
+                        $('#PrimaryUnit').parents("td:first").removeClass("has-success");
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#parentname').change(function () {
+            $('#err').html('');
+            $('#err').css("display", "none");
+            var num = $('#parentname').val();
+            var num2 = $('#secondname').val();
+            var unit = $('#UnitFormula').val();
+            if (num != null && unit != null && unit != "") {
+                result = parseFloat(num, 2) / parseFloat(unit, 2);
+                $("#secondname").val(result);
+            }
+            if (unit == "") {
+                $('#err').html('');
+                $('#err').css("display", "block");
+                $('#err').append('Please Enter The Unit Formula.....<button type="button" id="close1" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><br/>');
+                $('#close1').click(function () {
+                    $('#err').html('');
+                    $('#err').css("display", "none");
+                });
+            }
+        });
+        $('#secondname').change(function () {
+            var num = $('#parentname').val();
+            var num2 = $('#secondname').val();
+            var unit = $('#UnitFormula').val();
+            if (num != null && unit != null && unit != "") {
+                result = parseFloat(num2, 2) * parseFloat(unit, 2);
+                $("#parentname").val(result);
+            }
+            if (unit == "") {
+                $('#err').html('');
+                $('#err').css("display", "block");
+                $('#err').append('Please Enter The Unit Formula.....<button type="button" id="close1" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><br/>');
+                $('#close1').click(function () {
+                    $('#err').html('');
+                    $('#err').css("display", "none");
+                });
+            }
+        });
+
+        $('#UnitFormula,#parentname,#secondname').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 0;
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+
+    });
+
+    function addRow(tableID) {
+
+        rowadd++;
+
+        var table = document.getElementById(tableID);
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell1 = row.insertCell(0);
+        var element1 = document.createElement("select");
+        element1.className = "Item form-control";
+        element1.id = "Item" + rowadd;
+        element1.name = "txtItem";
+        var option1 = document.createElement("option");
+        option1.innerHTML = "Select";
+        option1.value = "";
+        element1.add(option1, null);
+        cell1.appendChild(element1);
+
+        var cell2 = row.insertCell(1);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtproduct";
+        element2.id = "Product" + rowadd;
+        element2.className = "Product form-control";
+        cell2.appendChild(element2);
+
+
+
+        var cell3 = row.insertCell(2);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtquantityPU";
+        element3.className = "QuantityPU form-control";
+        element3.id = "QuantityPU" + rowadd;
+        cell3.appendChild(element3);
+
+
+        var cell4 = row.insertCell(3);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "txtquantitySU";
+        element4.className = "QuantitySU form-control";
+        element4.id = "QuantitySU" + rowadd;
+        cell4.appendChild(element4);
+
+        var cell5 = row.insertCell(4);
+        var element5 = document.createElement("label");
+        element5.name = "lblavgCost";
+        element5.className = "lblavgCost";
+        element5.id = "lblavgCost" + rowadd;
+        cell5.appendChild(element5);
+
+
+
+        var cell6 = row.insertCell(5);
+        var element6 = document.createElement("label");
+        element6.name = "lbltotalCost";
+        element6.className = "lbltotalCost";
+        element6.id = "lbltotalCost" + rowadd;
+        cell6.appendChild(element6);
+
+
+        var cell7 = row.insertCell(6);
+        var element7 = document.createElement("input");
+        element7.type = "button";
+        element7.id = "btndelete";
+        element7.name = "button[]";
+        element7.title = "Delete this row";
+        element7.className = "add-component-deletebotton";
+        cell7.appendChild(element7);
+
+        var cell8 = row.insertCell(7);
+        var element8 = document.createElement("input");
+        element8.type = "hidden";
+        element8.name = "txtproductid";
+        element8.className = "productid";
+        element8.id = "productid" + rowadd;
+        cell8.appendChild(element8);
+        cell8.className = "display-non-div";
+
+        var cell9 = row.insertCell(8);
+        var element9 = document.createElement("input");
+        element9.type = "text";
+        element9.name = "txtavgCost";
+        element9.className = "avgCost";
+        element9.id = "avgCost" + rowadd;
+        element9.readOnly = true;
+        cell9.appendChild(element9);
+        cell9.className = "display-non-div";
+
+
+        var cell10 = row.insertCell(9);
+        var element10 = document.createElement("input");
+        element10.type = "text";
+        element10.name = "txttotalCost";
+        element10.className = "totalCost";
+        element10.id = "totalCost" + rowadd;
+        element10.readOnly = true;
+        cell10.appendChild(element10);
+        cell10.className = "display-non-div";
+
+        $("#Item" + rowadd).append($("<option />").val(1).text("Raw Material"));
+        $("#Item" + rowadd).append($("<option />").val(2).text("Medicine"));
+
+        $("<div>Test message</div>").dialog();
+    }
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 1;
+    $(document).ready(function () {
+
+        var table = document.getElementById('dataTable');
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell1 = row.insertCell(0);
+        var element1 = document.createElement("select");
+        element1.className = "Item form-control";
+        element1.id = "Item" + rowadd;
+        element1.name = "txtItem";
+        var option1 = document.createElement("option");
+        option1.innerHTML = "Select";
+        option1.value = "";
+        element1.add(option1, null);
+        cell1.appendChild(element1);
+
+        var cell2 = row.insertCell(1);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtproduct";
+        element2.id = "Product" + rowadd;
+        element2.className = "Product form-control";
+        cell2.appendChild(element2);
+
+
+
+        var cell3 = row.insertCell(2);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtquantityPU";
+        element3.className = "QuantityPU form-control";
+        element3.id = "QuantityPU" + rowadd;
+        cell3.appendChild(element3);
+
+
+        var cell4 = row.insertCell(3);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "txtquantitySU";
+        element4.className = "QuantitySU form-control";
+        element4.id = "QuantitySU" + rowadd;
+        cell4.appendChild(element4);
+
+        var cell5 = row.insertCell(4);
+        var element5 = document.createElement("label");
+        element5.name = "lblavgCost";
+        element5.className = "lblavgCost";
+        element5.id = "lblavgCost" + rowadd;
+        cell5.appendChild(element5);
+
+
+
+        var cell6 = row.insertCell(5);
+        var element6 = document.createElement("label");
+        element6.name = "lbltotalCost";
+        element6.className = "lbltotalCost";
+        element6.id = "lbltotalCost" + rowadd;
+        cell6.appendChild(element6);
+
+
+        var cell7 = row.insertCell(6);
+        var element7 = document.createElement("input");
+        element7.type = "button";
+        element7.id = "btndelete";
+        element7.name = "button[]";
+        element7.title = "Delete this row";
+        element7.className = "add-component-deletebotton";
+        cell7.appendChild(element7);
+
+        var cell8 = row.insertCell(7);
+        var element8 = document.createElement("input");
+        element8.type = "hidden";
+        element8.name = "txtproductid";
+        element8.className = "productid";
+        element8.id = "productid" + rowadd;
+        cell8.appendChild(element8);
+        cell8.className = "display-non-div";
+
+        var cell9 = row.insertCell(8);
+        var element9 = document.createElement("input");
+        element9.type = "text";
+        element9.name = "txtavgCost";
+        element9.className = "avgCost";
+        element9.id = "avgCost" + rowadd;
+        element9.readOnly = true;
+        cell9.appendChild(element9);
+        cell9.className = "display-non-div";
+
+
+        var cell10 = row.insertCell(9);
+        var element10 = document.createElement("input");
+        element10.type = "text";
+        element10.name = "txttotalCost";
+        element10.className = "totalCost";
+        element10.id = "totalCost" + rowadd;
+        element10.readOnly = true;
+        cell10.appendChild(element10);
+        cell10.className = "display-non-div";
+
+        $("#Item" + rowadd).append($("<option />").val(1).text("Raw Material"));
+        $("#Item" + rowadd).append($("<option />").val(2).text("Medicine"));
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#err').on('click', '#btnerror', function () {
+            $('#err').css("display", "none");
+
+            // e.stopPropagation();
+        });
+
+
+
+        $("#dataTable").on("keypress", '.Product', function (event) {
+            var id = $(this).attr('id');
+            var ctd = $('#' + id).closest('td');
+            var ctr = ctd.closest('tr');
+            var cat = ctr.find('.Item').val();
+            alert(cat);
+            if (cat == '') {
+                $('#err').css("display", "block");
+                $('#err').html('');
+                $('#err').append("<i class='fa fa-ban'></i><button id='btnerror' class='close'  type='button'>×</button><b>Error!</b><br />");
+                $('#err').append('Please Select a category');
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                return false;
+
+            }
+            
+
+
+            $('#Product' + rowadd).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Production/getProductDetails',
+                        data: {
+                            query: request.term,
+                            qid: cat
+                        },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.ProductName,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $('#' + id).val('');
+                        alert("Item not found");
+                        var coltd = $("#" + id).closest('td');
+                        var coltr = coltd.closest('tr');
+                        coltr.find('.Quantity').val('');
+                        coltr.find('.Price').val('');
+                        coltr.find('.Totalvalue').val('');
+                        coltr.find('.Availability').val('');
+                    }
+                },
+
+
+                select: function (event, ui) {
+                    $('#productid' + rowadd).val(ui.item.value);
+                    $('#Product' + rowadd).val(ui.item.label);
+                    $.get('/Production/chkProductDetails', { 'query': ui.item.label }, function (data, status) {
+                        if (data == '') {
+                            //$('#productId').val('');
+                            $('#Product' + rowadd).val('');
+                        }
+                        else {
+                            $('#Product' + rowadd).val(data.ProductName);
+                            $('#productid' + rowadd).val(data.Id);
+                            var ctd = $('#Product' + rowadd).closest('td');
+                            var ctr = ctd.closest('tr');
+                            ctr.find('.UFormula').val(data.UnitFormula);
+                            ctr.find('.PU').val(data.PrimaryUnit);
+                            ctr.find('.SU').val(data.Secondaryunit);
+                        }
+
+                    });
+                    return false;
+                },
+                minLength: 1
+            });
+
+
+        });
+
+        $("#dataTable").on("change", '.QuantityPU', function (event) {
+            var id = $(this).attr('id');
+            var comptd = $('#' + id).closest('td');
+            var comptr = comptd.closest('tr');
+            var num = $("#" + id).val();
+            var num2 = $("#" + id).val();
+            var unit = comptr.find('.UFormula').val();
+            if (num != null && unit != null && unit != "") {
+                result = parseFloat(num, 2) / parseFloat(unit, 2);
+                $("#QuantitySU" + rowadd).val(result);
+            }
+        });
+        $("#dataTable").on("change", '.QuantitySU', function (event) {
+            var id = $(this).attr('id');
+            var comptd = $('#' + id).closest('td');
+            var comptr = comptd.closest('tr');
+            var num = $("#" + id).val();
+            var num2 = $("#" + id).val();
+            var unit = comptr.find('.UFormula').val();
+            if (num != null && unit != null && unit != "") {
+                result = parseFloat(num2, 2) * parseFloat(unit, 2);
+                $("#QuantityPU" + rowadd).val(result);
+            }
+
+        });
+
+    });
+</script>
+
+<style type="text/css">
+    .bgfade
+    {
+        
+        background-color: LightGray;        
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+      <aside class="right-side"> 
+
+          <section class="content-header">
+                    <h1> Production<small>Production Description</small> </h1>
+                    <ol class="breadcrumb">
+                       <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                       <li><a href="#">Forms</a></li>
+                       <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+             <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" formaction="ProductionDetails"/></li>
+                                </ul>
+             </div>
+             <div id="suc" class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          @ViewBag.Message
+             </div>
+                <div id="err" class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+
+                <!-- Main content -->
+                <section class="content">  
+                                <div class="row">
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"></div>
+                                <div class="box-body">
+         
+      
+         @Html.HiddenFor(d => d.Id)
+                                      <div class="form-group">
+                                          <label class="black_txt_010"> Product Name :<span style="color:Red;">*</span></label>
+                                               @Html.TextBoxFor(model => model.productName, new { @class = "form-control", @placeholder = "Product Name" })
+                                          @Html.HiddenFor(model=>model.ProductId)
+                                                 @Html.ValidationMessageFor(model => model.productName)
+                                        
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Product Code :</label>
+                                          @Html.TextBoxFor(model => model.productCode, new { @class = "form-control", @placeholder = "Product Code", @maxlength = "100", @readonly = "readonly" })
+                                          @Html.ValidationMessageFor(model => model.productCode)
+                                    </div>
+
+                                     <div class="form-group">
+                                         <label class="black_txt_010"> Primary Unit :</label>
+                                          @Html.TextBoxFor(model => model.PrimaryUnit, new { @class = "form-control", @placeholder = "Primary Unit", @readonly = "readonly" })
+                                          @Html.ValidationMessageFor(model => model.PrimaryUnit)
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Secondary Unit:</label>
+                                          @Html.TextBoxFor(model => model.SecondaryUnit, new { @class = "form-control", @placeholder = "Secondary Unit", @readonly = "readonly" })
+                                          @Html.ValidationMessageFor(model => model.SecondaryUnit)
+                                         
+                                    </div>
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010"> Unit Formula :<span style="color:Red;">*</span> </label>
+                                    @Html.TextBoxFor(model => model.UnitFormula, new{ @class = "form-control", @placeholder = "Unit Formula" })
+                                      @Html.ValidationMessageFor(model => model.UnitFormula)
+                                  
+                                    </div>
+                    </div>
+                    </div>   <!-- /.row -->
+                    </div>
+
+
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"> </div>
+                                <div class="box-body">
+                                <div class="box-body table-responsive">
+
+                               
+                                 <div class="form-group">
+                                 <label class="black_txt_010"> Quantity Primary Unit :</label>
+                                 <div class="clr"></div>
+                  <input type="text" id="parentname"  class="form-control parentname" name="parentname" value="@Model.primary"/>
+                 
+                                   @Html.TextBoxFor(model => model.primary, new { @class = "form-control Code", @placeholder = "Primary Unit", @readonly = "readonly" })
+                               
+             <center> &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;   &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                     </center>  
+                                     <div class="clr"></div>
+                                    </div>
+
+                                    
+                                 <div class="form-group">
+                                 <label class="black_txt_010"> Quantity Secondary Unit :</label>
+                                 <div class="clr"></div>
+                  <input type="text" id="secondname"  class="form-control parentname" name="secondname" value="@Model.secondary" />
+                                   @Html.TextBoxFor(model => model.secondary, new { @class = "form-control Code", @placeholder = "Secondary Unit", @readonly = "readonly" })
+                                      
+             <center> &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;   &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                     </center>  
+                                     <div class="clr"></div>
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Plant Name :<span style="color:Red;">*</span></label>
+                                               @Html.TextBoxFor(model => model.PlantName, new { @class = "form-control" ,@placeholder="Plant Name"})
+                                         @Html.HiddenFor(model=>model.PlantId)
+                                                 @Html.ValidationMessageFor(model => model.PlantName)
+                                        
+                                    </div>
+                                
+
+                             
+                                    <div class="form-group">
+                                            <label class="black_txt_010"> Plant Manager :</label>
+                                           @Html.TextBoxFor(model => model.PlantMnager, new { @class = "form-control", @placeholder = "Plant Manager.", @maxlength = "58", @readonly = "readonly" })
+                                           @Html.ValidationMessageFor(model => model.PlantMnager)
+                                    </div>
+
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+
+
+                         <div class="col-xs-12">
+                         <div class="box-body">
+                         <div class="box-body table-responsive no-padding">
+                         <div class="form-group">
+                          <h3>Item Details</h3>
+                          </div>
+                         <div class="form-group">
+                          <table class="my-table-style" id="dataTable" width="100%" border="0">
+                          <tr class="my-table-header">
+
+                            <td  style="text-align:center;">
+                             <label class="black_txt_010">Category</label>
+                           </td>
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Product Name</label>
+                          </td>
+
+                         
+
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Quantity(In KGs)</label>
+                          </td>
+
+                         
+
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Quantity(In Bags)</label>
+                           </td>
+
+                            <td style="text-align:center;width:15%;">
+                          <label class="black_txt_010">Average Cost(per Kg)</label>
+                          </td>
+
+                          
+                            <td style="text-align:center;width:15%;">
+                          <label class="black_txt_010">Total Cost</label>
+                          </td>
+
+                         
+                           <td></td>
+                           </tr>
+                           </table>
+                            <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                             </div>
+                            </div>
+                            </div>
+                            </div>
+                </section><!-- /.content -->
+        </aside>
+}

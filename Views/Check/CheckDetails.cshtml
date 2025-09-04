@@ -1,0 +1,176 @@
+﻿@model IEnumerable<XenERP.Models.CheckMaster>
+@using XenERP.Models
+@{
+    InventoryEntities db = new InventoryEntities();
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = db.Users.ToList();
+}
+
+@{
+
+    int Slno = 0;
+}
+@{
+    ViewBag.Title = "CheckDetails";
+}
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    th {
+        text-align: center;
+    }
+</style>
+
+<style>
+    .modal-content {
+        background-color: #b2b266;
+        width: 330px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(".edit").click(function () {
+
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.AcId').val();
+            $("#myModalEdit").modal('show');
+            $("#StoreIdEdit").val(id);
+          
+        });
+
+        $("#editconf").click(function () {
+            var id = $("#StoreIdEdit").val();
+            window.location.href = "/Check/EditCheck?id=" + id;
+        });
+
+        $(".dlt").click(function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.AcId').val();
+            $("#myModalDelete").modal('show');
+            $("#StoreId").val(id);
+        });
+
+        $("#delete").click(function () {
+            var id = $("#StoreId").val();
+            window.location.href = "/Check/DeleteCheck?id=" + id;
+
+        });
+    });
+</script>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+<aside class="right-side">
+    <div class="box">
+        <div class="col-xs-12"><a href="@Url.Action("CreateCheck", "Check")" class="btn btn-success"> <i class="fa fa-fw fa-plus-square"></i>New Check</a></div><br /><br />
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped">
+
+                <thead>
+                    <tr>
+                        <th width="46px">SlNo.</th>
+                        <th> Check Name</th>                       
+                        <th width="117px"></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        //var userDetails = user.Where(r => r.Id == item.UserId).FirstOrDefault();
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>                          
+                            <td align="center"><a href='@Url.Action("ShowAllCheck", "Check", new { id = item.Id })' class="AccoDet">@item.CheckName</a> </td>                            
+                            <td>
+                                @Html.HiddenFor(m => item.Id, new { @class = "AcId" })
+                                <button class="btn btn-primary btn-sm edit ">Edit</button>
+                                <button class="btn btn-danger btn-sm dlt">Delete</button>
+
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>  
+    
+    
+    <div class="modal fade ignore" id="myModalEdit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Edit Check</h4>
+                </div>
+                <div class="modal-body">
+                    <h4>Are You Sure To Edit Your Check?</h4>
+                    <input type="hidden" id="StoreIdEdit" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-inverse pull-left" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info" id="editconf">Edit</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+
+    <div class="modal fade ignore" id="myModalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Delete Check</h4>
+                </div>
+                <div class="modal-body">
+                    <h4>Are You Sure To Delete Your Check?</h4>
+                    <input type="hidden" id="StoreIdDelete" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-inverse pull-left" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info" id="delete">Delete</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+ 
+    
+      
+</aside>

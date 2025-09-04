@@ -1,0 +1,283 @@
+﻿@model XenERP.Models.TrialBalanceDrillDownModelView
+
+@{
+
+    var SlNo = 0;
+    decimal? tdebit = 0;
+    decimal? tcredit = 0;
+    decimal? topeningdr = 0;
+    decimal? topeningcr = 0;
+    decimal? tclosingdr = 0;
+    decimal? tclosingcr = 0;
+    decimal? total = 0;
+    Layout = null;
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+        .ui-autocomplete-loading {
+            background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+        }
+
+        .marginleft10 {
+            margin-left: 10px !important;
+        }
+
+        .screenlet-title-bar {
+            color: #0099cc;
+            font-size: 14pt;
+            font-weight: bold;
+            height: 24px;
+        }
+
+        .ErrorControl {
+            background: none repeat scroll;
+            border: 1px solid Red;
+            padding: 4px;
+            width: 96%;
+        }
+
+        /*thead { display: table-header-group; }
+    tfoot { display: table-row-group; }*/
+        thead, tfoot {
+            display: table-row-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+</style>
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />
+@*<aside>*@
+@*<div class="box box-primary" width="90%">
+
+    <div class="box-body table-responsive divContent" width="90%">*@
+<table border="1" width="90%">
+    <thead>
+        <tr>
+            <th colspan="8" style="text-align:center">
+
+                <span style="font-size:x-large;font-weight:bolder">@ViewBag.CompanyName Factory: @ViewBag.BranchName</span><br />
+                <span style="font-size:large;font-weight:bolder"> 22, R.N. Mukherjee Road, 5th Floor, Kolkata-700 001</span><br />
+                <span style="font-size:large;font-weight:bolder"> @ViewBag.GSTNO</span><br />
+                <span style="font-size:large;font-weight:bolder">Trial Balance For The Year End @ViewBag.FinancialYear</span>
+            </th>
+        </tr>
+
+        <tr>
+            <th style="padding: 20px; text-align:center;" rowspan="2"> <strong> SlNo. </strong></th>
+
+            <th style="padding:20px;text-align:center;border-left:thick;border-top:thick;border-bottom:thick; " rowspan="2">
+                <strong>  Group Name </strong>
+            </th>
+
+
+
+            <th style="padding: 8px; text-align:center;" colspan="2">
+                <strong> Opening Balance </strong>
+            </th>
+
+            <th style="padding: 8px; text-align:center;" colspan="2">
+
+                <strong>Transactions </strong>
+            </th>
+
+            <th style="padding: 8px; text-align:center;" colspan="2">
+                <strong>  Closing Balance </strong>
+            </th>
+
+
+
+        </tr>
+        <tr>
+
+
+
+
+            <th style="padding:8px;">
+                <strong>  Debit  </strong>
+            </th>
+            <th style="padding:8px;">
+                <strong> Credit  </strong>
+            </th>
+            <th style="padding:8px;">
+
+                <strong>  Debit </strong>
+            </th>
+            <th style="padding:8px;">
+
+                <strong>   Credit </strong>
+            </th>
+            <th style="padding:8px;">
+                <strong>  Debit </strong>
+            </th>
+            <th style="padding:8px;">
+                <strong>  Credit </strong>
+            </th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TrialGroups.Where(d => d.OpeningDebit != 0 || d.OpeningCredit != 0 || d.Debit != 0 || d.Credit != 0 || d.ClosingDebit != 0 || d.ClosingCredit != 0))
+        {
+            SlNo = SlNo + 1;
+            topeningdr += item.OpeningDebit;
+            topeningcr += item.OpeningCredit;
+            tdebit += item.Debit;
+            tcredit += item.Credit;
+            tclosingdr += item.ClosingDebit;
+            tclosingcr += item.ClosingCredit;
+
+
+            <tr>
+                <td style="padding:8px;" align="center"><strong> @SlNo </strong></td>
+
+                <td style="padding:8px;">
+
+                    @Html.DisplayFor(modelItem => item.LedgerName)
+
+                </td>
+
+
+                <td align="right" style="padding:8px;">
+                    @Html.DisplayFor(modelItem => item.OpeningDebit)
+                </td>
+                <td align="right" style="padding:8px;">
+                    @Html.DisplayFor(modelItem => item.OpeningCredit)
+                </td>
+
+
+                <td align="right" style="padding:8px;">
+                    @Html.DisplayFor(modelItem => item.Debit)
+                </td>
+                <td align="right" style="padding:8px;">
+                    @Html.DisplayFor(modelItem => item.Credit)
+                </td>
+
+
+
+
+                <td align="right" style="padding:8px;">
+                    @Html.DisplayFor(modelItem => item.ClosingDebit)
+                </td>
+                <td align="right" style="padding:8px;">
+                    @Html.DisplayFor(modelItem => item.ClosingCredit)
+                </td>
+
+
+
+            </tr>
+            if (Model.TrialLedgers.Where(d => d.GroupId == item.GroupId  && (d.OpeningDebit != 0 || d.OpeningCredit != 0 || d.Debit != 0 || d.Credit != 0 || d.ClosingDebit != 0 || d.ClosingCredit != 0)).Count() > 0)
+            {
+                var SlNo1 = 0;
+                <tr>
+                    <td colspan="8" style="padding:5px 5px 5px 5px;">
+                        <div id="demo_@SlNo" class="detailDiv">
+                            <table border="1" width="100%">
+                                <!--<tr>
+                                    <td style="text-align:center" width="5%">SlNo.</td>
+
+                                    <td style="text-align:center" width="20%">
+                                        @Html.DisplayFor(modelItem => item.LedgerName)
+                                    </td>
+
+                                    <td style="text-align:center" width="10%">
+                                        Dr Opening
+                                    </td>
+                                    <td style="text-align:center" width="10%">
+                                        Cr Opening
+                                    </td>
+                                    <td style="text-align:center" width="10%">-->
+                                        @*@Html.DisplayNameFor(model => model.Debit)*@
+                                        <!--Debit
+                                    </td>
+                                    <td style="text-align:center" width="10%">-->
+                                        @*@Html.DisplayNameFor(model => model.Credit)*@
+                                        <!--Credit
+                                    </td>
+                                    <td style="text-align:center" width="10%">
+                                        Dr Closing
+                                    </td>
+                                    <td style="text-align:center" width="10%">
+                                        Cr Closing
+                                    </td>
+
+
+                                </tr>-->
+                                @foreach (var ledger in Model.TrialLedgers.Where(d => d.GroupId == item.GroupId && (d.OpeningDebit != 0 || d.OpeningCredit != 0 || d.Debit != 0 || d.Credit != 0 || d.ClosingDebit != 0 || d.ClosingCredit != 0)))
+                                {
+                                    SlNo1++;
+                                    <tr>
+                                        <td style="text-align:center"> @SlNo1</td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => ledger.LedgerName)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => ledger.OpeningDebit)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => ledger.OpeningCredit)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => ledger.Debit)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => ledger.Credit)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => ledger.ClosingDebit)
+                                        </td>
+                                        <td align="right">
+                                            @Html.DisplayFor(modelItem => ledger.ClosingCredit)
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        }
+
+        <tr>
+            <td colspan="2">  Total</td>
+            <td align="right">
+                @topeningdr
+            </td>
+            <td align="right">
+                @topeningcr
+            </td>
+            <td align="right">
+                @tdebit
+            </td>
+            <td align="right">
+                @tcredit
+            </td>
+            <td align="right">
+                @tclosingdr
+            </td>
+            <td align="right">
+                @tclosingcr
+            </td>
+
+
+        </tr>
+
+    </tbody>
+</table>
+@*</div>
+    </div>*@
+
+@*</aside>*@

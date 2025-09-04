@@ -1,0 +1,284 @@
+﻿@model XenERP.Models.Genral.currencyratess
+        @{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+
+@{
+    
+    var compid=Session["companyid"];
+    ViewBag.Title = "Xpert | New Currency Rate";
+}
+
+
+
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+@* <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js" type="text/javascript"></script>*@
+
+
+
+    
+
+
+    <script language="javascript">
+
+
+        $(document).ready(function () {
+
+            $("#purchase").attr("maxlength", "5");
+            $("#sell").attr("maxlength", "5");
+            $(".taxpercent").attr("maxlength", "8");
+
+
+            $("#Purchaseprice").change(function () {
+
+                if ($("#Purchaseprice").val() <= 0) {
+
+                    alert(" Please enter Purchase Rate greater than 0");
+                    $("#Purchaseprice").val('')
+                    return false;
+                }
+
+            });
+
+
+            $("#Sellprice").change(function () {
+
+                if ($("#Sellprice").val() <= 0) {
+
+                    alert(" Please enter Sell Rate greater than 0");
+                    $("#Sellprice").val('')
+                    return false;
+                }
+
+            });
+
+
+            $("#Currencyselection").change(function () {
+
+
+                var curid = $("#Currencyselection").val();
+
+
+                $.post("/Tax/Getcurrency", { id: curid }, function (data) {
+
+
+                    $("#currencyrate").text(data.Currencyname);
+
+                    $("#currencyrate2").text(data.Currencyname);
+
+                });
+
+
+
+                $.post("/Tax/CheckCurrency", { id: $("#Currencyselection").val() }, function (data) {
+
+                    if (data == true) {
+
+
+                        alert("Currency already exists");
+                        $("#Currencyselection").val("")
+
+                        return false;
+                    }
+
+
+                });
+
+
+
+            });
+
+
+
+
+
+        });
+    </script>
+
+    
+   @* <script language="javascript">
+
+
+        $(document).ready(function () {
+
+
+
+
+            $("#btnsubmit").on("click", function () {
+
+                alert("hi");
+
+                $.get("/Tax/CheckCurrency", { id: $("#Currencyselection").val() }, function (data) {
+
+                    if (data == true) {
+
+
+                        alert("Currency already exists");
+                        return false;
+                    }
+
+
+                });
+            });
+        });
+
+        </script>*@
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+       
+        
+        <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                        Currency Rate   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+                
+                   <section class="content">
+                <!--3-7-2014-->
+               
+
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Start")"><span>Organization Settings</span></a></li>                           
+                        	<li><a href="@Url.Action("CreateFinancial", "Start")"><span>Financial Settings</span></a></li>                      
+                            <li  class="selected">Currencies</li>
+                             <li>Tax Rates</li>
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+					<!--3-7-2014 END -->
+                </section>
+
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+
+
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                        <!-- left column -->
+                        <div class="col-md-6">
+                            <!-- general form elements -->
+                            <div class="box box-primary">
+                               
+
+ <div class="box-header">
+                
+                                       </div>
+                                <!-- form start -->
+                                <form role="form">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                          <label class="black_txt_010">
+                     Base Currency:<span style="color:Red;">*</span></label>
+                  <input   class="form-control" name="basecurrency" id="basecurrency" value="@ViewBag.Basecurrency" disabled="disabled" type="text" />
+                                    
+                                      
+                                     
+                                    </div>
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                 Currency Selection:<span style="color:Red;">*</span></label>
+               @Html.DropDownListFor(model => model.Currencyselection, new SelectList(ViewBag.currency, "Currencyid", "Currencyname"), "-----------------------------Select--------------------------", new { @class = "form-control" })
+                                    
+                                   @Html.ValidationMessageFor(model => model.Currencyselection)
+    
+                                     
+                                    </div>
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                     Buy <label id="currencyrate"></label>   Rate:<span style="color:Red;">*</span></label>
+@*                  <input  class="form-control"name="basecur" id="purchase" placeholder="Enter Buy Rate" type="email" /><br />
+*@
+                   @Html.TextBoxFor(model => model.Purchaseprice, new { @class = "form-control", @placeholder = "Enter Buy Rate" })
+                 @Html.ValidationMessageFor(model => model.Purchaseprice)
+
+                                  <span style="color:Red">   <label id="currencyratebuy"></label> </span>
+                                      
+                                     
+                                    </div>
+
+
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                     Sell <label id="currencyrate2"></label>  Rate:<span style="color:Red;">*</span></label>
+    @Html.TextBoxFor(model => model.Sellprice, new { @class = "form-control", @placeholder = "Enter Buy Rate" })
+                 @Html.ValidationMessageFor(model => model.Sellprice)
+
+                                                             <span style="color:Red">   <label id="currencyratesell"></label> </span>
+                                      
+                                     
+                                    </div>
+
+
+
+
+
+
+
+
+                                    </div>
+                                </form>
+                         
+                    </div>   <!-- /.row -->
+
+
+                      <form >
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                           
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("ShowAllCurrencyrate", "Start")"><span>Back To List</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+                </section>
+        
+        
+        </aside>
+        
+        
+        
+        
+    }

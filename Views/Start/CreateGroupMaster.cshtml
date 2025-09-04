@@ -1,0 +1,316 @@
+﻿@model XenERP.Models.GroupMaster
+@{
+     if (ViewBag.set == 0)
+    {
+        Layout = "~/Views/Shared/_Layoutstart.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+
+    }
+
+@{
+    
+    var compid=Session["companyid"];
+    ViewBag.Title = "Xpert | New Group Master";
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#groupID").attr("maxlength", 3);
+
+        $("#groupName").attr("maxlength", 100);
+
+        $("#btnsubmit").click(function () {
+
+
+            if ($("#GroupType").val() == "") {
+                alert("Please select a Group Type");
+                return false;
+
+            }
+
+            if ($("#ParentGroupId").val() == "") {
+                alert("Please select a Group Name");
+                return false;
+
+            }
+
+            if ($("#groupID").val() == "") {
+                alert("Please enter  Group ID");
+                return false;
+
+            }
+
+
+            if ($("#groupName").val() == "") {
+                alert("Please enter  Group Name");
+                return false;
+
+            }
+
+
+
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#groupID").attr("maxlength", 3);
+
+        $("#groupName").attr("maxlength", 100);
+
+
+        $("#groupID").change(function () {
+
+            if ($("#groupID").val() <= 100) {
+
+                alert("Please enter Group code between 101 to 999");
+                $("#groupID").val('');
+                $("#groupID").focus();
+                return false;
+
+            }
+
+            else {
+
+
+
+                $.get("/GroupMaster/CheckgroupId", { id: $("#groupID").val(), parentid: $("#GroupType").val() }, function (data) {
+
+                    if (data == true) {
+                        alert("Group Id already exists");
+                        $("#groupID").val('')
+                        $("#groupID").focus()
+                        return false;
+                    }
+                    else {
+
+                    }
+                });
+            }
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#groupName").change(function () {
+
+
+            $.get("/GroupMaster/Checkgroupname", { name: $("#groupName").val(), parentid: $("#GroupType").val() }, function (data) {
+
+
+
+                if (data == true) {
+                    alert("Group Name already exists");
+                    $("#groupName").val('')
+                    $("#groupName").focus()
+                    return false;
+                }
+                else {
+
+                }
+            });
+
+        });
+    });
+
+</script>
+@using (Html.BeginForm("CreateGroupMaster", "Start"))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Group   <small>Master Entry</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+
+
+                
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Company")"><span>Organization Settings</span></a></li>                           
+                        	@*<li><a href="@Url.Action("CreateFinancial", "Financial")"><span>Financial Settings</span></a></li>                      
+                            <li><a href="@Url.Action("ShowAllCurrencyrate", "Tax")"><span>Currencies</span></a></li>*@
+                             <li><a href="@Url.Action("TaxDetails", "Tax")"><span> Tax Rates</span></a></li>
+                               <li class="selected">Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    @*<li class="active"><a href="#tab_1" data-toggle="tab">Details</a></li>
+                                    <li><a href="#tab_2" data-toggle="tab">Address</a></li>
+                                      <li><a href="#tab_3" data-toggle="tab">Contact</a></li>
+                                        <li><a href="#tab_4" data-toggle="tab">Logo</a></li>
+                                    *@
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" /></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                       
+                                       
+
+                                        
+                                           
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Type :<span style="color:Red;">*</span></label>
+
+                  @Html.HiddenFor(d => d.gID)
+
+                  <input type="hidden" id="Grouptypename" name="Grouptypename" />
+
+
+                   @Html.DropDownListFor(model => model.GroupType, new SelectList(ViewBag.Grouptype, "groupID", "groupName"), new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.GroupType)
+
+                                      
+                                     
+                                    </div>
+
+                                    
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Code :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.groupID, new { @class = "form-control", @placeholder = "Enter Group Code" })
+                 @Html.ValidationMessageFor(model => model.groupID)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Group Name :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.groupName, new { @class = "form-control", @placeholder = "Enter Group Name" })
+                 @Html.ValidationMessageFor(model => model.groupName)
+
+                                      
+                                     
+                                    </div>
+
+                                   
+
+                                         
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+
+
+
+
+
+
+
+
+
+                                         </div>
+                                         </div>
+                                         </div>
+                                         
+
+                        </section>
+                          <form>
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("TaxDetails", "Start")"><span>Back To List</span></a></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("Finish", "Start")"><span>Next</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+                        </aside>
+}

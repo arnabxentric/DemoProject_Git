@@ -1,0 +1,307 @@
+﻿@model XenERP.Models.ContraModelView
+@using XenERP.Models
+@{
+    ViewBag.Title = "PrintReceiveVoucherPDF";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+    Company company = ViewBag.company;
+    //int serial = 0;
+    Layout = null;
+    //var ChkDetails = ViewBag.ModeOfPay + "(ChequeNo-" + Model.chequeNo + "," + Model.chequeDetails + ")";
+    //var NeftDetails = ViewBag.ModeOfPay + "(NeftRtgsNo-" + Model.NeftRtgsNo + ")";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style type="text/css" media="print">
+        @@page {
+            size: auto; /* auto is the initial value */
+            margin: 0; /* this affects the margin in the printer settings */
+        }
+    </style>
+    <script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#printMe').click(function () {
+                window.print();
+            });
+        });
+        function printDiv(divName) {
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+</head>
+<body>
+    <input type="button" onclick="printDiv('printableArea')" value='Print' />
+    <div id="printableArea">
+        <div>
+            <table width="100%">
+                <tr>
+                    <td style="text-align:center;">
+                        <img src="../../Images/logo2.png" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align:center;font-family:fantasy;font-size:large;">
+                        HI-BREED AVIAN RESEARCH &amp; INTEGRATOR
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;font-family: 'Brush Script MT';font-size:medium;">
+                        22, R. N. Mukherjee Road, 5th Floor, Kolkata-700 001
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-family:'Brush Script MT';font-size:medium;">
+                        Phone: (033) 4007 0525,90510 40404
+                    </td>
+                </tr>
+                <tr>
+                    <td><hr /></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:large;font-weight:900;">
+                        @ViewBag.ContraType Contra Voucher For @ViewBag.Branch Unit
+                    </td>
+
+                </tr>
+                <tr>
+                    <td style="text-align:left;padding-right:10px;font-family: Verdana, Geneva, Tahoma, sans-serif;font-size:large;">
+                        Voucher No : @ViewBag.VoucherNo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date : @ViewBag.Date
+                    </td>
+                </tr>
+                @*<tr>
+                    <td style="text-align:right;padding-right:30px;font-family: 'Brush Script MT';font-size:larger;">
+                        Date : @ViewBag.Date
+                    </td>
+                </tr>*@
+                <tr>
+                    <td align="center">
+                        <table border="1" width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td colspan="2" style="padding:2px 2px 2px 15px;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:900;">
+                                    Amount :<span style="font-family:Lucida Handwriting;"> &#x20b9; @ViewBag.TotalAmount </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding:2px;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                    Particulars
+                                </td>
+                            </tr>
+                            @if (ViewBag.ContraType == "Cash To Bank")
+                            {
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        From    <span style="font-family:'Segoe Print';">@ViewBag.From </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        To Bank :  <span style="font-family:'Segoe Print';">@ViewBag.To</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+
+                            }
+                            else if (ViewBag.ContraType == "Bank To Cash")
+                            {
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        From Bank :  <span style="font-family:'Segoe Print';">@ViewBag.From</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        To    <span style="font-family:'Segoe Print';">@ViewBag.To </span>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        From Bank :  <span style="font-family:'Segoe Print';">@ViewBag.From</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        To Bank :  <span style="font-family:'Segoe Print';">@ViewBag.To</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td colspan="2" style="padding:2px 2px 2px 15px;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;"> In Words :&nbsp; <span style="font-family: Lucida Handwriting;">@ViewBag.TotalAmtInWord Rupees only</span> </td>
+
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="padding:5px 10px;width:33%;"><span> &nbsp;</span></td>
+
+                                <td colspan="2" style="padding:5px 10px;width:66%;text-align:right;padding-right:20px 20px 20px 30px;"><span style="font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:large;font-weight:600;">For</span> <span style="font-family: 'Lucida Handwriting;'; font-size: medium; font-weight: 600;"> HI-BREED AVIAN RESEARCH &amp; INTEGRATOR </span></td>
+                            </tr>
+                            @*<tr>
+                                <td style="padding:3px 10px;width:33%;"><span> &nbsp;</span></td>
+                                <td style="padding:3px 10px;width:33%;"><span> &nbsp;</span></td>
+                                <td style="padding:3px 10px;width:33%;"><span> &nbsp; </span></td>
+                            </tr>*@
+                            <tr>
+                                <td style="padding:5px 10px;width:33%;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:small;font-weight:600;"><span>Payee's Sign</span></td>
+                                <td style="padding:5px 10px;width:33%;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:small;font-weight:600;"><span>Approved By</span></td>
+                                <td style="padding:5px 10px;width:33%;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:small;font-weight:600;"><span>Unit Manager</span></td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <hr />
+
+        <div>
+            <table width="100%">
+                <tr>
+                    <td style="text-align:center;">
+                        <img src="../../Images/logo2.png" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="text-align:center;font-family:fantasy;font-size:large;">
+                        HI-BREED AVIAN RESEARCH &amp; INTEGRATOR
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;font-family: 'Brush Script MT';font-size:medium;">
+                        22, R. N. Mukherjee Road, 5th Floor, Kolkata-700 001
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-family:'Brush Script MT';font-size:medium;">
+                        Phone: (033) 4007 0525,90510 40404
+                    </td>
+                </tr>
+                <tr>
+                    <td><hr /></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:large;font-weight:900;">
+                        @ViewBag.ContraType Contra Voucher For @ViewBag.Branch Unit
+                    </td>
+
+                </tr>
+                <tr>
+                    <td style="text-align:left;padding-right:10px;font-family: Verdana, Geneva, Tahoma, sans-serif;font-size:large;">
+                        Voucher No : @ViewBag.VoucherNo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date : @ViewBag.Date
+                    </td>
+                </tr>
+                @*<tr>
+                <td style="text-align:right;padding-right:30px;font-family: 'Brush Script MT';font-size:larger;">
+                    Date : @ViewBag.Date
+                </td>
+            </tr>*@
+                <tr>
+                    <td align="center">
+                        <table border="1" width="100%" style="border-collapse: collapse;">
+                            <tr>
+                                <td colspan="2" style="padding:2px 2px 2px 15px;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:900;">
+                                    Amount :<span style="font-family:Lucida Handwriting;"> &#x20b9; @ViewBag.TotalAmount </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding:2px;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                    Particulars
+                                </td>
+                            </tr>
+                            @if (ViewBag.ContraType == "Cash To Bank")
+                            {
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        From    <span style="font-family:'Segoe Print';">@ViewBag.From </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        To Bank :  <span style="font-family:'Segoe Print';">@ViewBag.To</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+
+                            }
+                            else if (ViewBag.ContraType == "Bank To Cash")
+                            {
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        From Bank :  <span style="font-family:'Segoe Print';">@ViewBag.From</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        To    <span style="font-family:'Segoe Print';">@ViewBag.To </span>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        From Bank :  <span style="font-family:'Segoe Print';">@ViewBag.From</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding:2px 2px 2px 15px;text-align:left;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;">
+                                        To Bank :  <span style="font-family:'Segoe Print';">@ViewBag.To</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td colspan="2" style="padding:2px 2px 2px 15px;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:medium;font-weight:600;"> In Words :&nbsp; <span style="font-family: Lucida Handwriting;">@ViewBag.TotalAmtInWord Rupees only</span> </td>
+
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="padding:5px 10px;width:33%;"><span> &nbsp;</span></td>
+
+                                <td colspan="2" style="padding:5px 10px;width:66%;text-align:right;padding-right:20px 20px 20px 30px;"><span style="font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:large;font-weight:600;">For</span> <span style="font-family: 'Lucida Handwriting;'; font-size: medium; font-weight: 600;"> HI-BREED AVIAN RESEARCH &amp; INTEGRATOR </span></td>
+                            </tr>
+                            @*<tr>
+                            <td style="padding:3px 10px;width:33%;"><span> &nbsp;</span></td>
+                            <td style="padding:3px 10px;width:33%;"><span> &nbsp;</span></td>
+                            <td style="padding:3px 10px;width:33%;"><span> &nbsp; </span></td>
+                        </tr>*@
+                            <tr>
+                                <td style="padding:5px 10px;width:33%;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:small;font-weight:600;"><span>Payee's Sign</span></td>
+                                <td style="padding:5px 10px;width:33%;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:small;font-weight:600;"><span>Approved By</span></td>
+                                <td style="padding:5px 10px;width:33%;text-align:center;font-family:Verdana, Geneva, Tahoma, sans-serif;font-size:small;font-weight:600;"><span>Unit Manager</span></td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

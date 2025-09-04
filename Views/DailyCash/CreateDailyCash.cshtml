@@ -1,0 +1,457 @@
+﻿@model XenERP.Models.ModelView.DailyCashModelView
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+
+
+<script language="javascript" type="text/javascript">
+    var rowadd = 1;
+
+    $(document).ready(function () {
+
+   
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+        var table = document.getElementById('TableforCheque');
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        //-----Code By Ayan---------------
+
+        var cell0 = row.insertCell(0);
+        var element0 = document.createElement("input");
+        element0.type = "text";
+        element0.name = "BankName" + rowadd;
+        element0.id = "BankName" + rowadd;
+        element0.className = "BankName";
+
+
+        //var elementH0 = document.createElement("input");
+        //elementH0.type = "hidden";
+        //elementH0.name = "Id" + index;
+        //elementH0.id = "Id" + index;       
+        //elementH0.className = "Id";
+
+        cell0.appendChild(element0);
+        //cell0.appendChild(elementH0);
+
+        var cell1 = row.insertCell(1);
+        var element1 = document.createElement("input");
+        element1.type = "text";
+        element1.name = "ChequeNo" + rowadd;
+        element1.className = "ChequeNo";
+        element1.id = "ChequeNo" + rowadd;
+        cell1.appendChild(element1);
+
+
+        var cell2 = row.insertCell(2);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "Amount" + rowadd;
+        element2.className = "Amount";
+        element2.id = "Amount" + rowadd;
+        cell2.appendChild(element2);
+
+  
+
+        var cell3 = row.insertCell(3);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "PartyName" + rowadd;
+        element3.className = "PartyName";
+        element3.id = "PartyName" + rowadd;
+        cell3.appendChild(element3);
+
+
+
+        var cell4 = row.insertCell(4);
+        var element4 = document.createElement("input");
+        element4.type = "button";
+        element4.id = "btndelete";
+        element4.name = "button[]";
+        element4.title = "Delete this row";
+        element4.className = "add-component-deletebotton";
+        cell4.appendChild(element4);
+
+
+
+    });
+
+
+    function addRow(tableID) {
+
+        rowadd++;
+        var table = document.getElementById(tableID);
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+
+        //------------Code By Ayan--------------------
+
+
+        var cell0 = row.insertCell(0);
+        var element0 = document.createElement("input");
+        element0.type = "text";
+        element0.name = "BankName" + rowadd;
+        element0.id = "BankName" + rowadd;
+        element0.className = "BankName";
+
+
+        //var elementH0 = document.createElement("input");
+        //elementH0.type = "hidden";
+        //elementH0.name = "Id" + index;
+        //elementH0.id = "Id" + index;      
+        //elementH0.className = "Id";
+
+
+
+
+        cell0.appendChild(element0);
+        //cell0.appendChild(elementH0);
+
+        var cell1 = row.insertCell(1);
+        var element1 = document.createElement("input");
+        element1.type = "text";
+        element1.name = "ChequeNo" + rowadd;
+        element1.className = "ChequeNo";
+        element1.id = "ChequeNo" + rowadd;
+        cell1.appendChild(element1);
+
+
+        var cell2 = row.insertCell(2);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "Amount" + rowadd;
+        element2.className = "Amount";
+        element2.id = "Amount" + rowadd;
+        cell2.appendChild(element2);
+
+    
+
+        var cell3 = row.insertCell(3);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "PartyName" + rowadd;
+        element3.className = "PartyName";
+        element3.id = "PartyName" + rowadd;
+        cell3.appendChild(element3);
+
+
+
+        var cell4 = row.insertCell(4);
+        var element4 = document.createElement("input");
+        element4.type = "button";
+        element4.id = "btndelete";
+        element4.name = "button[]";
+        element4.title = "Delete this row";
+        element4.className = "add-component-deletebotton";
+        cell4.appendChild(element4);
+
+
+    };
+
+    
+
+</script>
+
+
+<script language="javascript" type="text/javascript">
+    var rowadd = 0;
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+        document.getElementById("TableforCheque").deleteRow(id);
+    });
+
+
+</script>
+
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {
+       
+        $("#TwoThousand,#FiveHundred,#TwoHundred,#OneHundred,#Fifty,#Twenty,#Ten,#Five,#Two,#One").keyup(function () {
+            var cham = 0;
+            var twothousand = parseFloat($("#TwoThousand").val()) || 0;
+            var fivehundred = parseFloat($("#FiveHundred").val()) || 0;
+            var twohundred = parseFloat($("#TwoHundred").val()) || 0;
+            var onehundred = parseFloat($("#OneHundred").val()) || 0;
+            var fifty = parseFloat($("#Fifty").val()) || 0;
+            var twenty = parseFloat($("#Twenty").val()) || 0;
+            var ten = parseFloat($("#Ten").val()) || 0;
+            var five = parseFloat($("#Five").val()) || 0;
+            var two = parseFloat($("#Two").val()) || 0;
+            var one = parseFloat($("#One").val()) || 0;
+
+            var cashAm = twothousand * 2000 + fivehundred * 500 + twohundred * 200 + onehundred * 100 + fifty * 50 + twenty * 20 + ten * 10 + five * 5 + two * 2 + one * 1;
+            $("#CurrencyTotal").text("Total Cash:  Rs " + cashAm.toFixed(2) + "  ");
+
+            $(".Amount").each(function () {
+                var um = $(this).val();
+                var ca = parseFloat(um) || 0;
+                cham += ca;
+            });
+
+
+
+            $("#ChequeTotal").text("Total Cheque:  Rs " + cham.toFixed(2) + "  ");
+            var tam = cashAm + cham;
+
+
+            $("#TotalAmount").text("Total Amount:   Rs " + tam + " ");
+
+
+
+        });
+
+        $("#TableforCheque").on('keyup', '.Amount', function () {
+
+           
+            var cham = 0;
+            var twothousand = parseFloat($("#TwoThousand").val()) || 0;
+            var fivehundred = parseFloat($("#FiveHundred").val()) || 0;
+            var twohundred = parseFloat($("#TwoHundred").val()) || 0;
+            var onehundred = parseFloat($("#OneHundred").val()) || 0;
+            var fifty = parseFloat($("#Fifty").val()) || 0;
+            var twenty = parseFloat($("#Twenty").val()) || 0;
+            var ten = parseFloat($("#Ten").val()) || 0;
+            var five = parseFloat($("#Five").val()) || 0;
+            var two = parseFloat($("#Two").val()) || 0;
+            var one = parseFloat($("#One").val()) || 0;
+
+            var cashAm = twothousand * 2000 + fivehundred * 500 + twohundred * 200 + onehundred * 100 + fifty * 50 + twenty * 20 + ten * 10 + five * 5 + two * 2 + one * 1;
+            $("#CurrencyTotal").text("Total Cash:    Rs" + cashAm.toFixed(2) + " ");
+
+            $(".Amount").each(function () {
+                var um = $(this).val();
+                var ca = parseFloat(um) || 0;
+                cham += ca;
+            });
+
+
+            $("#ChequeTotal").text("Total Cheque:    Rs" + cham.toFixed(2) + " ");
+            var tam = cashAm + cham;
+
+
+            $("#TotalAmount").text("Total Amount:    Rs" + tam + "  ");
+
+        });
+      
+    });
+
+</script>
+
+
+
+@using (Html.BeginForm("CreateDailyCash", "DailyCash", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h4>Cash<small>Create</small> </h4>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Create</li>
+            </ol>
+        </section>
+
+
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.BranchId)
+        @Html.HiddenFor(d => d.CompanyId)
+        @Html.HiddenFor(d => d.UserId)
+
+            <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Unit Code :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.FarmUnit, "Id", "Code"), "------None-----", new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.BranchId)
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Date Of Entry:<span style="color:Red;">*</span> </label>
+                            <div class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateString, new { @class = "form-control" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                            @*<div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">  <input readonly="readonly" type="text" class="form-control" id="ToDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>*@
+                            @Html.ValidationMessageFor(model => model.Date)
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> 2000 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.TwoThousand, new { @class = "form-control", @placeholder = "Enter No Of Notes", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.TwoThousand)
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> 500 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.FiveHundred, new { @class = "form-control", @placeholder = "Enter No Of Notes", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.FiveHundred)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> 200 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.TwoHundred, new { @class = "form-control", @placeholder = "Enter No Of Notes", @maxlength = "200" })
+                            @Html.ValidationMessageFor(model => model.TwoHundred)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> 100 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.OneHundred, new { @class = "form-control", @placeholder = "Enter No Of Notes", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.OneHundred)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> 50 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Fifty, new { @class = "form-control", @placeholder = "Enter No Of Notes", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.Fifty)
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label class="black_txt_010">  20 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Twenty, new { @class = "form-control", @placeholder = "Enter No Of Notes", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.Twenty)
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> 10 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Ten, new { @class = "form-control", @placeholder = "Enter No Of Notes/Coins", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.Ten)
+
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010"> 5 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Five, new { @class = "form-control", @placeholder = "Enter No Of Notes/Coins", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.Five)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> 2 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.Two, new { @class = "form-control", @placeholder = "Enter No Of Notes/Coins", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.Two)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> 1 Rs:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.One, new { @class = "form-control", @placeholder = "Enter No Of Notes/Coins", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.One)
+                        </div>
+
+                        <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+            </div>
+           
+
+            <div class="col-md-12">
+                    <h3>Cheque Details</h3>
+                    <div class="form-group">
+                        <div class="table-responsive">
+                            <table class="my-table-style table" id="TableforCheque">
+                                <tr class="my-table-header">
+
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">Bank</label>
+                                    </td>
+
+
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">Cheque No</label>
+                                    </td>
+
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">Amount</label>
+                                    </td>
+
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">PartyName</label>
+                                    </td>
+
+                                    <td style="text-align: center;">
+                                        <label class="black_txt_010">Action</label>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+
+
+                        <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('TableforCheque')" />
+                      
+                    </div>
+                </div>
+           
+
+        <div class="table-responsive pull-right" style="width:200">
+            <table class="pull-right" id="DailyCashTotal" style="width:200;  border-color:White">
+
+                <tr class="my-table-footer">
+                    <td class="my-table-footer" style="text-align:center;">
+                        <label id="CurrencyTotal" class="my-table-footer"></label>
+                    </td>
+                </tr>
+                <tr class="my-table-footer">
+
+                    <td class="my-table-footer" style="text-align:center;">
+                        <label class="black_txt_010" id="ChequeTotal"></label>
+                    </td>
+                </tr>
+                <tr class="my-table-footer">
+                    <td class="my-table-footer" style="text-align:center;">
+                        <label class="black_txt_010" id="TotalAmount"></label>
+                    </td>
+                </tr>
+
+
+            </table>
+        </div>           
+
+
+</aside>
+}

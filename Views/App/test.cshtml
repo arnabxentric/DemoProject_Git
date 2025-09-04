@@ -1,0 +1,106 @@
+﻿<script type="text/javascript">
+ footersubmitbutton.addEventListener("click", function(e) {
+                    var div1= $(this).closest('div');
+                    var div2= div1.parent('div');                    
+                    var moddiv = div2.find('.modal-body');
+
+                    //---taking cat id------
+                    var catdiv = moddiv.find('.CategoryDiv');
+                    var ctid =  catdiv.find('.CategoryId');
+                    var categoryid = $(ctid).val();
+                    alert(ctid);
+
+                 //---taking cat id------
+
+             var feeddiv = moddiv.find('.FeedDiv');
+                    var fdid =  feeddiv.find('.FeedId');
+                    var feedid = $(fdid).val();
+
+
+                    //---taking uom id------
+
+             var uomdiv = moddiv.find('.UOMDiv');
+                    var umid =  uomdiv.find('.UOMId');
+                    var uomid = $(umid).val();
+
+
+
+               //---taking unit of id------
+
+             var unitdiv = moddiv.find('.UnitOfDiv');
+                    var unid =  unitdiv.find('.UnitOf');
+                    var unitid = $(unid).val();
+
+
+               //---taking quantity-----
+
+             var quantitydiv = moddiv.find('.QuantityDiv');
+                    var quantity =  quantitydiv.find('.Quantity');
+                    var unid = $(unitid).val();
+
+ 
+               //---taking lastopeningquantity------
+
+             var lastopeningquantitydiv = moddiv.find('.LastOpeningQuantityDiv');
+                    var lastquantity =  lastopeningquantitydiv.find('.LastOpeningQuantity');
+                    var lastopeningquantity = $(lastquantity).val();
+
+ 
+
+
+               //---taking Left Quantity------
+
+             var leftquantitydiv = moddiv.find('.LeftQuantityDiv');
+                    var lftqnt =  leftquantitydiv.find('.LeftQuantity');
+                    var leftquantity = $(lftqnt).val();
+
+ 
+
+              //---taking consumed Quantity------
+
+             var consumedquantitydiv = moddiv.find('.ConsumedQuantityDiv');
+                    var conqnt =  consumedquantitydiv.find('.ConsumedQuantity');
+                    var consumedquantity = $(conqnt).val();
+
+
+
+              //---taking Total consumed Quantity------
+
+             var totalconsumedquantitydiv = moddiv.find('.TotalConsumedQuantityDiv');
+                    var totconqnt =  totalconsumedquantitydiv.find('.TotalConsumedQuantity');
+                    var totalconsumedquantity = $(totconqnt).val();
+
+
+
+              //---taking Price Rate------
+
+             var priceratediv = moddiv.find('.PriceRateDiv');
+                    var prrate =  priceratediv.find('.PriceRate');
+                    var pricerate = $(prrate).val();
+
+               //---taking Feedback ------
+
+             var feedbackdiv = moddiv.find('.FeedbackDiv');
+                    var fdbk =  feedbackdiv.find('.Feedback');
+                    var feedback = $(fdbk).val();            
+
+
+
+        var db = window.openDatabase("TestMurgi", "1.0", "MurgiApp", 200000);
+
+     db.transaction(function populateDB(tx){tx.executeSql('insert into DailyEntryDetails (CategoryId,ItemId,UOMId,UNITOF,ReceivedQuantity,LastOpeningQuantity,
+      ConsumedQuantity,LeftQuantity,TotalConsumedQuantity,Price,Feedback) values (?,?,?,?,?,?,?,?,?,?,?)',
+
+      [ categoryid,feedid,uomid,unitid,quantity,lastopeningquantity,consumedquantity,leftquantity,totalconsumedquantity,pricerate,feedback ]) }, errorCB,successTableEntry);
+
+                  var div3 = div2.parent('div');
+                  var div4 = div3.parent('div');
+
+
+                  //this.prop('disabled', true);
+                 $(div4).modal('toggle');
+
+            });
+
+
+            </script>

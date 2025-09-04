@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>checknet | Example</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="../../css/checknet.css" rel="stylesheet" type="text/css" />
+        <link href="../../css/global.css" rel="stylesheet" type="text/css" />
+         <script src="../../Scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
+  <script src="../../Scripts/jquery.checknet-1.6.min.js" type="text/javascript"></script>
+   
+    
+        <script>
+            $(document).ready(function () {
+                alert("hi");
+                $.fn.checknet();
+            });
+        </script>
+
+    </head>
+    <body>
+        <header id="siteHead">
+            <hgroup>
+                <h1>checknet</h1>
+                <h2 id="tagLine">Demo of Tom's "checknet" jQuery plugin. </h2>
+            </hgroup>
+        </header>
+        <section id="userForm">
+            <p id="introText">Below is a generic example form. If the connection to the internet is lost, you will see a warning at the top of the page and the submit button will be disabled. </p>
+            <form action="http://tomriley.net/checknet/index.html" id="theForm">
+                <label for="textInput1">
+                    Text input 1<br>
+                    <input type="text" name="textInput1" value="" id="textInput1"/>
+                </label>
+                <label for="textInput2">
+                    Text input 2<br/>
+                    <input type="text" name="textInput2" value="" id="textInput2"/>
+                </label>
+                <input type="submit" name="submitBtn" value="Submit button" id="submitBtn"/>
+            </form>
+        </section>
+    
+</body></html>

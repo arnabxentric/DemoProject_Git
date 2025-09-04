@@ -1,0 +1,286 @@
+﻿@model IEnumerable<XenERP.Models.HariDailyEntryModelView>
+
+@using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+    InventoryEntities db = new InventoryEntities();
+    long Branchid = Convert.ToInt64(Session["BranchId"]);
+    var access = Convert.ToBoolean(Session["EditAccess"]);
+    var today = DateTime.Today;
+    var rol = Convert.ToInt64(Session["RoleId"]);
+
+    if (access == true)
+    {
+        today = today.AddYears(-2);
+    }
+
+    else
+    {
+        today = today.AddDays(-3);
+
+    }
+}
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(".select2").select2();
+        $("#example1").on('click', '.edit', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+            window.location.href = "/HariDailyEntry/EditDailyEntry?Id=" + id;
+
+        });
+
+        $('#FarmerId').on('change', function () {
+            $('#recDetails').css('display', 'none');
+            var rvwId = $(this).val();
+
+
+            if (rvwId == '') {
+                $("#FlockId").empty();
+                $("#FlockId").append($('<option/>', {
+                    value: "",
+                    text: "----Select Flock Code ----"
+                }));
+
+            }
+            else {
+                $("#FlockId").empty();
+                $("#FlockId").append($('<option/>', {
+                    value: "",
+                    text: "----Select Flock Code ----"
+                }));
+                $.post("/HariDailyEntry/GetFlockDetails", { farmerId: rvwId }, function (data) {
+                    var select = $("#FlockId");
+
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "----Select Flock Code----"
+                    }));
+
+                    $.each(data, function (index, itemData) {
+
+                        select.append($('<option/>', {
+                            value: itemData.Id,
+                            text: itemData.Value
+                        }));
+                    });
+
+                });
+
+            }
+        });
+
+        $("#btnsubmit").on('click', function () {
+            var frmr = $("#FarmerId").val();
+            var flkId = $("#FlockId").val();
+            if (frmr == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please select Farmer Name');
+                return false;
+            }
+            if (flkId == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please select Flock Code');
+                return false;
+            }
+            $("#loading").fadeIn();
+            window.location.href = "/HariDailyEntry/DailyEntryListSearch?FlockId=" + flkId;
+        });
+    });
+</script>
+
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Daily Entry Of Farmer <small>List</small> </h1>
+
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                <img src="~/Images/newLoad.gif" />
+            </p>
+        </div>
+    </div>
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+            @if (rol != 5 )
+            {
+                <div class="col-xs-12" style="text-align:center">
+                    <a href="@Url.Action("CreateDailyEntry", "HariDailyEntry")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Entry</a>
+                </div>
+            }
+
+            <div class="box">
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header">  </div>
+                        <div class="box-body">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;Farmer Name:</span>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        @Html.DropDownListFor(model => model.FirstOrDefault().FarmerId, new SelectList(ViewBag.FarmerName, "Value", "Text"), "------None-----", new { @class = "form-control select2" })
+
+
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        <span class="r-txt"> &nbsp; &nbsp; &nbsp; &nbsp;Flock Code:</span>
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td>
+                                        @Html.DropDownListFor(modelItem => Model.FirstOrDefault().FlockId, new SelectList(string.Empty, "value", "text"), "----Select Flock Code----", new { @class = "form-control select2" })
+
+
+                                    </td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+                                    <td> &nbsp; &nbsp; &nbsp;</td>
+
+                                    <td>
+                                        <div>
+                                            <div id="btnshow">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnsubmit" class="btn btn-primary" value="Show" /></div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Date</th>
+                        <th>FarmerName</th>
+                        <th>Flock Code</th>
+                        <th>Mortality</th>
+                        <th>Present Bird</th>
+                        <th>Issue Details</th>
+                        <th></th>
+
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+
+                            <td align="center">
+                                @item.DateOfEntry
+                                @Html.HiddenFor(m => item.Id, new { @class = "id" })
+                            </td>
+
+                            <td> @Html.DisplayFor(modelItem => item.FarmerName)</td>
+                            <td> @Html.DisplayFor(modelItem => item.FlockCode)</td>
+                            <td> @Html.DisplayFor(modelItem => item.TodayMortality)</td>
+                            <td> @Html.DisplayFor(modelItem => item.LastOpeningBird)</td>
+
+                            <td width="450px">
+                                @foreach (var fd in item.issDet)
+                                {
+                                    <table id="#example5" class="chompa table-bordered">
+
+
+                                        <tr>
+                                            <td width="350px">
+                                                @Html.DisplayFor(modelItem => fd.Item)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemIssuedQuantity)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemUnitType)
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>
+
+                            @if (item.EntryDate > today)
+                            {
+
+                                <td style="text-align:center"><button class="btn btn-primary btn-sm edit ">Edit</button></td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

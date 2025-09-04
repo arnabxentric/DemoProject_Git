@@ -1,0 +1,223 @@
+﻿@model XenERP.Models.ModelView.ChickIssuedHOModelView
+
+@{
+    ViewBag.Title = "FarmInformationDetails";
+}
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+
+
+
+@*<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+    <script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>*@
+
+
+@using (Html.BeginForm())
+{
+
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Chick<small> Details</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Farm Details</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+            </ul>
+        </div>
+        <section class="content">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    @ViewBag.Message
+                </div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissable">
+                    <i class="fa fa-ban"></i>
+                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                    <b>Error!</b>
+                    @ViewBag.Error
+                </div>
+            }
+
+
+            @Html.HiddenFor(d => d.Id)
+
+            <section class="content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Chick Information</h4>
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Unit Name : </label>
+                                    @Html.DisplayFor(model => model.UnitCode, new { @class = "form-control" })
+                                </div>
+                             
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Date Of Despatch: </label>
+                                    @Html.DisplayFor(model => model.DateOfDespatchString, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Delivery Truck No: </label>
+                                    @Html.DisplayFor(model => model.DeliveryTruckNo, new { @class = "form-control" })
+                                </div>
+                               
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Hatchery Name: </label>
+                                    @Html.DisplayFor(model => model.HatcheryName, new { @class = "form-control" })
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Chick Information</h4>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Chick Placed: </label>
+                                    @Html.DisplayFor(model => model.ChicksPlaced_HO_, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Quality Of Chichen : </label>
+                                    @Html.DisplayFor(model => model.QualityofChicken, new { @class = "form-control" })
+                                </div>
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Chicks Weight : </label>
+                                    @Html.DisplayFor(model => model.ChicksWeight, new { @class = "form-control" })
+                                </div>
+
+                                 <div class=" form-group ">
+                                    <label class="black_txt_010">Delivery Challan No: </label>
+                                    @Html.DisplayFor(model => model.DeliveryChallanNo, new { @class = "form-control" })
+                                </div>
+
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Delivery Man Name: </label>
+                                    @Html.DisplayFor(model => model.DeliveryManName, new { @class = "form-control" })
+                                </div>
+
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Linesupervisor Name: </label>
+                                    @Html.DisplayFor(model => model.LineSupervisorName, new { @class = "form-control" })
+                                </div>
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">ChallanNo: </label>
+                                    @Html.DisplayFor(model => model.ChallanNo, new { @class = "form-control" })
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="Row">
+
+                    <div class="form-group">
+                        <h3>Chick Details</h3>
+                    </div>
+                    <div class="form-group">
+                        <div class="table-responsive">
+                            <table class="my-table-style table" id="dataTable">
+                                <tr class="my-table-header">
+
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">Chick Category</label>
+                                    </td>
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">Available Chicks</label>
+                                    </td>
+
+                                    <td class="my-table-header" style="text-align:center;">
+                                        <label class="black_txt_010">Issued Chicks</label>
+                                    </td>
+
+                                    <td style="text-align:center;">
+                                        <label class="black_txt_010">Price</label>
+                                    </td>
+
+                                  
+
+
+                                    @{ int H = 0;
+
+                                    }
+
+                                    @for (int i = 0; i < Model.chicksdetailslist.Count(); i++)
+                                    {
+
+                                        H = H + i;
+
+
+                                    <tr>
+
+                                        <td style="text-align:center;">
+                                            @Html.DisplayFor(model => Model.chicksdetailslist[i].ChickName, new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Category" + i, @Name = "CategoryName" + i })
+
+                                        </td>
+
+                                        <td style="text-align:center;">
+                                            @Html.DisplayFor(model => Model.chicksdetailslist[i].AvailableChicks, new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Feed" + i, @Name = "FeedName" + i })
+
+                                        </td>
+
+                                        <td style="text-align:center;">
+                                            @Html.DisplayFor(model => Model.chicksdetailslist[i].IssuedChicks, new { @class = "form-control", @id = "FeedDesc" + i, @Name = "FeedDesc" + i })
+                                        </td>
+
+                                        <td style="text-align:center;">
+                                            @Html.DisplayFor(model => Model.chicksdetailslist[i].Price, new { @class = "form-control FeedQuantity", @id = "FeedQuantity" + i, @Name = "FeedQuantity" + i })
+                                        </td>                                   
+
+
+                                    </tr>
+                                 }
+
+                                </table>
+
+                                @Html.Hidden("IdToHold", H)
+                            </div>
+                            @* <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('dataTable')" />*@
+                        </div>
+
+                    </div>
+            </section>
+
+        </section>
+    </aside>
+}
+
+
+
+

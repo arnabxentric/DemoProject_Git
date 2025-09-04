@@ -1,0 +1,540 @@
+﻿@model IEnumerable<XenERP.Models.AccountsBook_LedgerWise_DateRange_Result>
+
+@{
+    Layout = null;
+    var SlNo = 0;
+    decimal? tdebit = 0;
+    decimal? tcredit = 0;
+    decimal? total = 0;
+    string openingDate = "";
+    decimal openingbal = 0;
+    string DRCR = "DR";
+    decimal? balancerow = 0;
+}
+
+<link href="~/Content/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet" />
+
+<script src="~/Content/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="~/Content/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="~/Content/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="~/Content/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/Content/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="~/Content/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="~/Content/vendors/jszip/dist/jszip.min.js"></script>
+<script src="~/Content/vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="~/Content/vendors/pdfmake/build/vfs_fonts.js"></script>
+<script src="~/Content/vendors/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var fd = $('#FromDate').val();
+        var td = $('#ToDate').val();
+        var branch = '@ViewBag.Branch';
+        var company = '@ViewBag.Company';
+        var ledger = '@ViewBag.LedgerName';
+        //var rh = $('#rh_Name').val() || "All";
+        //var rv = $('#rv_Name').val() || "All";
+        //var act = $('#act_Val').val() || "All";
+        //var sts = $('#sts_Val').val() || "All";
+        //var blk = $('#blk_Name').val() || "All";
+        var handleDataTableButtons = function () {
+            if ($("#datatable-buttons").length) {
+
+                $("#datatable-buttons").DataTable({
+                    dom: "Bfrtip",
+                    buttons: [
+
+                      {
+                          extend: "copy",
+                          className: "btn-sm"
+                      },
+                      {
+                          extend: "csv",
+                          className: "btn-sm"
+                      },
+                      {
+                          extend: "excelHtml5",
+                          className: "btn-sm",
+                          title: "HI-BREED INTERNATIONAL SALES & SERVICE",
+                          exportOptions: {
+                              columns: ':visible'
+                          },
+                          customize: function (xlsx) {
+                              var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                              $('row c[r^="C"]', sheet).attr('s', '2');
+                          }
+                      },
+                      {
+                          extend: "pdfHtml5",
+                          className: "btn-sm",
+                          exportOptions: {
+                              columns: ':visible'
+                          },
+                          title: "HI-BREED INTERNATIONAL SALES && SERVICE  (" + branch + " UNIT)                                " + company,
+                          message: "Ledger: " + ledger + "    From Date :    " + fd + "      " + "To:    " + td + " "  //+" "+"Rifgt Violation: "+rv+" "+"Activity: "+act+" "+"Status: "+sts+" "+"Block: "+blk
+
+                      },
+                      {
+                          extend: "print",
+                          className: "btn-sm",
+                          exportOptions: {
+                              columns: ':visible'
+                          },
+                          title: "HI-BREED INTERNATIONAL SALES && SERVICE  (" + branch + " UNIT)                                " + company,
+                          message: "Ledger: " + ledger + "    From Date :    " + fd + "     " + "To:   " + td + " "  //+" "+"Rifgt Violation: "+rv+" "+"Activity: "+act+" "+"Status: "+sts+" "+"Block: "+blk
+                      },
+                      'colvis'
+
+                    ],
+                    responsive: true,
+                    "bSort": false
+                });
+            }
+        };
+
+        TableManageButtons = function () {
+            "use strict";
+            return {
+                init: function () {
+                    handleDataTableButtons();
+                }
+            };
+        }();
+
+        $('#datatable').dataTable();
+
+        $('#datatable-keytable').DataTable({
+            keys: true
+        });
+
+        $('#datatable-responsive').DataTable();
+
+        $('#datatable-scroller').DataTable({
+            ajax: "js/datatables/json/scroller-demo.json",
+            deferRender: true,
+            scrollY: 380,
+            scrollCollapse: true,
+            scroller: true
+        });
+
+        $('#datatable-fixed-header').DataTable({
+            fixedHeader: true
+        });
+
+        var $datatable = $('#datatable-checkbox');
+
+        $datatable.dataTable({
+            'order': [[1, 'asc']],
+            'columnDefs': [
+              { orderable: false, targets: [0] }
+            ]
+        });
+        $datatable.on('draw.dt', function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_flat-green'
+            });
+        });
+
+        TableManageButtons.init();
+    });
+</script>
+<!--for graph   -->
+<!--for graph   -->
+
+<aside class="right-side">
+    <div class="box box-primary">
+        <div class="box-header">
+            <h4 class="pull-left">Ledger Report</h4>
+        </div>
+        <div class="box-body">
+            <div class="box-body table-responsive divContent">
+                <table id="datatable-buttons" class="table table-bordered table-striped">
+                    <thead>
+                        @*<tr>
+                                <th colspan="8">
+
+                                    <h3>@ViewBag.LedgerName</h3>
+                                </th>
+                            </tr>*@
+
+                        <tr>
+                            <th>SlNo.</th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.RPdate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.LedgerName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.RPType)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.VoucherNo)
+                            </th>
+                            @*<th style="width:10%;">
+                                Invoice No.
+                            </th>*@
+                            <th style="width:10%;">
+                                @Html.DisplayNameFor(model => model.Remarks)
+                            </th>
+                            @*<th style="width:10%;">
+                                Branch
+                            </th>*@
+
+                            <th style="width:10%;">
+                                @Html.DisplayNameFor(model => model.ChequeNo)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Debit)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Credit)
+                            </th>
+                            <th>
+                                BalanceAmount
+                            </th>
+                            <th>
+                                Link
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+
+
+                            if (SlNo == 0)
+                            {
+
+                                openingDate = ViewBag.FirstDate;
+
+                                if (item.DRCR == "DR")
+                                {
+                                    openingbal = item.OpeningBalance ?? 0;
+
+                                }
+                                else
+                                {
+                                    openingbal = item.OpeningBalance ?? 0;
+                                    DRCR = "CR";
+                                }
+
+                                <tr>
+                                    <td> @SlNo</td>
+                                    <td style="text-align:left;">
+                                        @openingDate
+                                    </td>
+                                    <td>
+                                        Opening Balance
+                                    </td>
+                                    @*<td></td>
+                                    <td></td>*@
+
+                                    @if (DRCR == "DR")
+                                    {
+                                        tdebit += openingbal;
+                                        <td align="right">
+                                            @openingbal
+                                        </td>
+                                        <td align="right"></td>
+
+                                        balancerow += openingbal;
+                                    }
+                                    else
+                                    {
+                                        tcredit += openingbal;
+                                        <td align="right"></td>
+                                        <td align="right">
+                                            @openingbal
+                                        </td>
+
+                                        balancerow -= openingbal;
+                                    }
+                                    <td align="right">
+                                        @balancerow
+                                    </td>
+                                    <td></td>
+                                </tr>
+
+                                tdebit += item.Debit;
+                                tcredit += item.Credit;
+                                balancerow += (item.Debit - item.Credit);
+                    <tr>
+
+
+                        <td> @SlNo</td>
+                        <td style="text-align:left;">
+                            @String.Format(@Session["DateFormatUpper"].ToString(), item.RPdate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LedgerName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RPType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.VoucherNo)
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.RefNo)
+                        </td>*@
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Remarks)
+                        </td>
+
+                        @if (item.RPType == "Payment" || item.RPType == "Receive" || item.RPType == "Contra")
+                        {
+                            @*<td> @Html.DisplayFor(modelItem => item.BranchName)</td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ChequeNo)
+                            </td>
+                        }
+                        else
+                        {
+                            @*<td>@Html.DisplayFor(modelItem => item.BranchName)</td>*@
+                            <td> </td>
+                        }
+
+                        <td align="right">
+                            @Html.DisplayFor(modelItem => item.Debit)
+                        </td>
+                        <td align="right">
+                            @Html.DisplayFor(modelItem => item.Credit)
+                        </td>
+                        <td align="right">
+                            @balancerow
+                        </td>
+                        <td align="center">
+                            @if (item.RPType == "Receive" || item.RPType == "Payment")
+                            {
+                                @Html.ActionLink("Details", "EditReceiveVoucher", "Voucher", new { id = item.Id }, new { target = "_blank" })
+                            }
+                            else if (item.RPType == "Contra")
+                            {
+                                @Html.ActionLink("Details", "EditContra", "Contra", new { id = item.Id }, new { target = "_blank" })
+                            }
+                            else if (item.RPType == "Journal")
+                            {
+                                @Html.ActionLink("Details", "EditJournal", "Journal", new { id = item.Id }, new { target = "_blank" })
+                            }
+                            else if (item.RPType == "Sales")
+                            {
+                                @Html.ActionLink("Details", "Create", "SalesInvoice", new { id = item.Id }, new { target = "_blank" })
+                            }
+                            else if (item.RPType == "Purchase")
+                            {
+                                @Html.ActionLink("Details", "Create", "PurchaseInvoice", new { id = item.Id }, new { target = "_blank" })
+                            }
+                            else if (item.RPType == "Sales Return")
+                            {
+                                @Html.ActionLink("Details", "Create", "SalesReturn", new { id = item.Id }, new { target = "_blank" })
+                            }
+                            else if (item.RPType == "Purchase Return")
+                            {
+                                @Html.ActionLink("Details", "Create", "PurchaseReturn", new { id = item.Id }, new { target = "_blank" })
+
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Details", "Create", "PurchaseReturn", new { id = item.Id }, new { target = "_blank" })
+                            }
+                        </td>
+
+                    </tr>
+
+                                SlNo = SlNo + 1;
+
+
+
+                            }
+                            else
+                            {
+
+                                tdebit += item.Debit;
+                                tcredit += item.Credit;
+                                balancerow += (item.Debit - item.Credit);
+                                <tr>
+
+
+                                    <td> @SlNo</td>
+                                    <td style="text-align:left;">
+                                        @String.Format(@Session["DateFormatUpper"].ToString(), item.RPdate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LedgerName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RPType)
+                                    </td>
+                                    @*<td>
+                                        @Html.DisplayFor(modelItem => item.VoucherNo)
+                                    </td>*@
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Debit)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Credit)
+                                    </td>
+                                    <td align="right">
+                                        @balancerow
+                                    </td>
+                                    <td align="center">
+                                        @if (item.RPType == "Receive" || item.RPType == "Payment")
+                                        {
+                                            @Html.ActionLink("Details", "EditReceiveVoucher", "Voucher", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                        else if (item.RPType == "Contra")
+                                        {
+                                            @Html.ActionLink("Details", "EditContra", "Contra", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                        else if (item.RPType == "Journal")
+                                        {
+                                            @Html.ActionLink("Details", "EditJournal", "Journal", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                        else if (item.RPType == "Sales")
+                                        {
+                                            @Html.ActionLink("Details", "Create", "SalesInvoice", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                        else if (item.RPType == "Purchase")
+                                        {
+                                            @Html.ActionLink("Details", "Create", "PurchaseInvoice", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                        else if (item.RPType == "Sales Return")
+                                        {
+                                            @Html.ActionLink("Details", "Create", "SalesReturn", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                        else if (item.RPType == "Purchase Return")
+                                        {
+                                            @Html.ActionLink("Details", "Create", "PurchaseReturn", new { id = item.Id }, new { target = "_blank" })
+
+                                        }
+                                        else
+                                        {
+                                            @Html.ActionLink("Details", "Create", "PurchaseReturn", new { id = item.Id }, new { target = "_blank" })
+                                        }
+                                    </td>
+
+                                </tr>
+                                SlNo = SlNo + 1;
+                            }
+                        }
+
+                        <tr>
+                            <td> Current Total</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td align="right">
+                                @tdebit
+                            </td>
+                            <td align="right">
+                                @tcredit
+                            </td>
+                            <td></td>
+                            <td></td>
+
+                        </tr>
+
+                        @*<tr>
+
+                            <td style="text-align:left;">
+                                Opening Balance
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            @if (DRCR == "DR")
+                            {
+                                tdebit += openingbal;
+                                <td align="right">
+                                    @openingbal
+                                </td>
+                                <td align="right"></td>
+
+                            }
+                            else
+                            {
+                                tcredit += openingbal;
+                                <td align="right"></td>
+                                <td align="right">
+                                    @openingbal
+                                </td>
+                            }
+                            <td></td>
+                            <td></td>
+                        </tr>*@
+
+                        @if (tcredit >= tdebit)
+                        {
+                            var balance = tcredit - tdebit;
+                            total = tcredit;
+                            <tr>
+                                <td> Closing Balance</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td align="right">
+                                    @balance
+                                </td>
+                                <td align="right">
+                                    &nbsp;
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            var balance = tdebit - tcredit;
+                            total = tdebit;
+                            <tr>
+                                <td>Closing Balance</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td align="right">
+                                    &nbsp;
+                                </td>
+                                <td align="right">
+                                    @balance
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>Net Total</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td align="right">
+                                @total
+                            </td>
+                            <td align="right">
+                                @total
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</aside>

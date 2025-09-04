@@ -1,0 +1,44 @@
+﻿@model XenERP.Models.ExpensesHeadMaster
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("CreateExpensesHead", "ExpensesHead"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>ExpenseHead<small>Add</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+
+        @Html.HiddenFor(d => d.Id)
+
+        <div class="col-md-6">
+            <div class="box box-primary">
+                <div class="box-header"></div>
+                <div class="box-body">
+
+                    <div class="form-group">
+                        <label class="black_txt_010"> Expenses Head  :<span style="color:Red;">*</span> </label>
+                        @Html.TextBoxFor(model => model.ExpenseHead, new { @class = "form-control", @placeholder = "Enter Expenses Head ", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => model.ExpenseHead)
+                    </div>
+                    <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary">
+                </div>
+              
+            </div>
+        </div>
+        
+
+
+    </aside>
+}

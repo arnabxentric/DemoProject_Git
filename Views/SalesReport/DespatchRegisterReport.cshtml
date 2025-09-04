@@ -1,0 +1,369 @@
+﻿@model IEnumerable<XenERP.Models.SalesDeliveryDetail>
+@{
+
+    var SlNo = 0;
+    var SlNo1 = 0;
+    long oldinvoice = 0;
+    long oldinvoice1 = 0;
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .invoice th,
+    td {
+        padding: 3px 2px 3px 2px;
+        text-align: center;
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+</style>
+<aside class="right-side">
+
+    <div class="box box-primary">
+        <div class="box-header">
+
+        </div>
+        <div class="box-body">
+
+            <div class="box-body table-responsive divContent">
+                
+                    <table id="example1" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    SlNo.
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Challan No.
+                                </th>
+                                <th>
+                                    Warehouse
+                                </th>
+
+                                <th>
+                                    Party Name
+                                </th>
+
+                                <th>
+                                    Product Description
+                                </th>
+
+                                <th colspan="2">
+                                    Quantiy
+                                </th>
+
+
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                        {
+                            //if (item.Dis == null)
+                            //{
+                            //    item.Dis = 0;
+                            //}
+                            decimal totalQuantity = item.Quantity * item.UnitFormula;
+
+                            //var amount = (decimal)(item.BCGrandTotal + item.TotalDeductAmount + item.Dis - item.TotalAddAmount);
+
+
+
+                            //SubTotal += (decimal)amount;
+                            //AddTotal += (decimal)item.TotalAddAmount;
+                            //Discount = (decimal)(item.TotalDeductAmount + item.Dis);
+                            //DiscountTotal += (decimal)(item.TotalDeductAmount + item.Dis);
+
+                            //TotAmt += item.BCGrandTotal;
+
+
+                                <tr>
+                                    @if (item.SalesDeliveryId != oldinvoice)
+                                {
+                                    SlNo = SlNo + 1;
+
+                                        <td>
+                                            <b> @SlNo </b>
+                                        </td>
+                                        <td>
+                                            <b> @String.Format("{0:dd/MM/yyyy}", item.SalesDelivery.ReceiptDate)</b>
+                                        </td>
+                                        <td align="left">
+                                            <b> @Html.DisplayFor(modelItem => item.SalesDelivery.NO)</b>
+                                        </td>
+                                        <td align="left">
+                                            <b> @Html.DisplayFor(modelItem => item.SalesDelivery.Warehouse.Name)</b>
+                                        </td>
+                                        <td align="left">
+                                            <b>  @Html.DisplayFor(modelItem => item.SalesDelivery.Customer.Name)</b>
+
+                                        </td>
+                                }
+                                else
+                                {
+                                        <td></td>
+                                        <td></td>
+                                        <td align="left"></td>
+
+                                        <td align="left"></td>
+                                        <td align="left"></td>
+                                }
+                                    <td align="left">
+                                        @Html.DisplayFor(modelItem => item.Product.Description)
+                                    </td>
+
+                                    <td align="right">
+                                        @Math.Round(item.Quantity, 0) &nbsp; @item.UOM1.Code
+
+                                    </td>
+                                    <td align="right">
+                                        @Math.Round(totalQuantity, 0) &nbsp; @item.UOM.Code
+                                    </td>
+                                </tr>
+
+                            oldinvoice = item.SalesDeliveryId;
+                        }
+                        </tbody>
+                        @*<tfoot>
+                    <tr>
+
+                        <td></td>
+                        <td>
+
+                            Grand Total
+
+
+                        </td>
+
+
+
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="right">
+                            @Math.Round(SubTotal, 2)
+
+                        </td>
+
+                        <td align="right">
+                            @Math.Round(DiscountTotal, 2)
+
+                        </td>
+                        <td align="right">
+                            @Math.Round(TotAmt, 2)
+
+                        </td>
+
+
+
+
+                    </tr>
+                </tfoot>*@
+
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+</aside>
+<div id="printdiv" style="display:none;">
+    <div align="center">
+        <span style="font-size:x-large;font-weight:bolder">HI-BREED INTERNATIONAL SALES && SERVICE</span><br />
+        
+        <span style="font-size:medium;font-weight:normal">Despatch Register @ViewBag.DateRange</span>
+       
+    </div>
+    <table id="example1" cellspacing="0" cellpadding="0" class="invoice"  border="1">
+        <thead>
+            <tr>
+
+                <th width="5%" style="text-align:center">
+                    SlNo.
+                </th>
+
+                <th width="10%" style="text-align:center">
+                    Date
+                </th>
+
+                <th width="10%" style="text-align:center">
+                    Challan No.
+                </th>
+                <th width="5%" style="text-align:center">
+                  Warehouse
+                </th>
+                <th width="15%" style="text-align:center">
+                    Party Name
+                </th>
+
+                <th width="30%" style="text-align:center">
+                    Product Description
+                </th>
+
+                <th colspan="2" width="20%" style="text-align:center">
+                    Quantity
+                </th>
+
+
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                //if (item.Dis == null)
+                //{
+                //    item.Dis = 0;
+                //}
+                decimal totalQuantity = item.Quantity * item.UnitFormula;
+
+                //var amount = (decimal)(item.BCGrandTotal + item.TotalDeductAmount + item.Dis - item.TotalAddAmount);
+
+
+
+                //SubTotal += (decimal)amount;
+                //AddTotal += (decimal)item.TotalAddAmount;
+                //Discount = (decimal)(item.TotalDeductAmount + item.Dis);
+                //DiscountTotal += (decimal)(item.TotalDeductAmount + item.Dis);
+
+                //TotAmt += item.BCGrandTotal;
+
+
+                <tr>
+                    @if (item.SalesDeliveryId != oldinvoice1)
+                    {
+                        SlNo1 = SlNo1 + 1;
+
+                        <td style="text-align:center">
+                            <b> @SlNo1 </b>
+                        </td>
+                        <td style="text-align:center">
+                            <b> @String.Format("{0:dd/MM/yyyy}", item.SalesDelivery.ReceiptDate)</b>
+                        </td>
+                                        <td style="text-align:center">
+                                            <b> @Html.DisplayFor(modelItem => item.SalesDelivery.NO)</b>
+                                        </td>
+                                        <td align="left">
+                                            <b> @Html.DisplayFor(modelItem => item.SalesDelivery.Warehouse.Name)</b>
+                                        </td>
+                                        <td style="text-align:center">
+                                            <b>  @Html.DisplayFor(modelItem => item.SalesDelivery.Customer.Name)</b>
+
+                                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                        <td></td>
+                                        <td align="left"></td>
+
+                                        <td align="left"></td>
+                                        <td align="left"></td>
+                    }
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.Product.Description)
+                    </td>
+
+                    <td style="text-align:right">
+                        @Math.Round(item.Quantity, 0) &nbsp; @item.UOM1.Code
+
+                    </td>
+                    <td style="text-align:right">
+                        @Math.Round(totalQuantity, 0) &nbsp; @item.UOM.Code
+                    </td>
+                </tr>
+
+                oldinvoice1 = item.SalesDeliveryId;
+            }
+        </tbody>
+
+
+    </table>
+
+</div>

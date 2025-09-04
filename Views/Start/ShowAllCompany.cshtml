@@ -1,0 +1,173 @@
+﻿@model IEnumerable<XenERP.Models.Company>
+@{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+
+@{
+
+    ViewBag.Title = "Xpert | Company List";
+}
+
+@{
+    
+    decimal? totalpurchaserate = 0;
+    var compid = Session["companyid"];
+
+    int SlNo = 0;
+    decimal? totalsellrate = 0;
+ }
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btnsubmit").on("click", function () {
+
+
+            location.href = "/Start/CreateCompany";
+
+
+        });
+
+
+
+    });
+    </script>
+
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Company <small>List</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+      
+                  
+
+    <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    <th>
+                    
+                    SlNo.
+                    </th>
+                        <th>
+                         Company Name
+                        </th>
+                        <th>
+                           Created Date
+                        </th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        SlNo = SlNo + 1;
+
+                        <tr>
+                        <td>@SlNo</td>
+
+                       
+                            <td style="text-align:right;">
+                               <a href="@Url.Action("DashBoard", "DashBoard", new {id=@item.Id })"> @Html.DisplayFor(modelItem => item.Name)</a>
+                            </td>
+                            
+                            <td>
+                             @Html.DisplayFor(modelItem => item.CreatedDate)
+                            
+                            </td>
+
+
+                           
+                        </tr>
+                    }
+                </tbody>
+                
+
+            </table>
+
+            </div>
+            </div>
+
+
+
+                  
+
+                                          <form >
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                   @*         <p class="directions">*@<b style="text-align:center;">To create a New Company, Click Here</b>  <input type="button" id="btnsubmit" class="btn btn-primary" value="Create" /> @*</p>*@
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              
+
+
+
+<b>If you have any queries, please send us your name and contact number details to accountingguru.support@veersoftsolutions.com Or call us at +91-80-65680793</b>
+
+                            </div>
+                        </div>
+                    </form>
+                    
+
+            </aside>

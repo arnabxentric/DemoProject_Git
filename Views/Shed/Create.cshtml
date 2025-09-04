@@ -1,0 +1,69 @@
+﻿@model XenERP.Models.ShedMaster
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "Shed"))
+{
+    @Html.ValidationSummary(true)
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Shed Master<small> Add</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                        </div>
+                        <div class="box-body">
+
+                            @if (ViewBag.Message != null)
+                            {
+                                <div class="alert alert-success alert-dismissable">
+                                    <i class="fa fa-check"></i>
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                    @ViewBag.Message
+                                </div>
+                            }
+
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger alert-dismissable">
+                                    <i class="fa fa-ban"></i>
+                                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                                    <b>Error!</b>
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            @Html.HiddenFor(d => d.Id)
+
+
+                            <div class="form-group">
+                                <label class="black_txt_010"> Shed No :<span style="color:Red;">*</span> </label>
+                                @Html.TextBoxFor(model => model.ShedNo, new { @class = "form-control", @placeholder = "Enter Shed No", @maxlength = "100" })
+                                @Html.ValidationMessageFor(model => model.ShedNo)
+                            </div>
+
+                        </div>
+                    </div>   <!-- /.row -->
+                </div>
+
+        </section><!-- /.content -->
+    </aside>
+}

@@ -1,0 +1,248 @@
+﻿@model IEnumerable<XenERP.Models.CurrencyRate>
+@{
+    Layout = "~/Views/Shared/_LayoutStart.cshtml";
+}
+
+@{
+
+    ViewBag.Title = "Xpert | Currency List";
+}
+
+@{
+    
+    decimal? totalpurchaserate = 0;
+    var compid = Session["companyid"];
+
+    int SlNo = 0;
+    decimal? totalsellrate = 0;
+ }
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Currency Rate <small>List</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+                  	<div id="Next" class="setup-steps">
+                    	<ul>
+                      
+                        
+                        	<li><a href="@Url.Action("Next", "Start")"><span>Start</span></a></li>  
+                        	<li><a href="@Url.Action("EditCompany", "Start", new { id = compid })"><span>Organization Settings</span></a></li>                           
+                        	<li><a href="@Url.Action("CreateFinancial", "Start")"><span>Financial Settings</span></a></li>                      
+                            <li  class="selected">Currencies</li>
+                             <li>Tax Rates</li>
+                              <li>Chart of Accounts</li>
+                               <li>Done</li>
+                        </ul>
+                    </div>
+
+                        <div class="butom-new"><a href="@Url.Action("Createcurrencyrate","Start")"><img src="../../Images/symbol-Add.png" />Add Currency</a> </div>
+
+
+
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+
+
+      
+                  
+
+    <div class="box">
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                    <th>
+                    
+                    SlNo.
+                    </th>
+                        <th>
+                            Base Currency
+                        </th>
+                        <th>
+                           Foreign Currency
+                        </th>
+                        <th>
+                          Purchase Rate
+                        </th>
+                           <th>
+                          Sell Rate
+                        </th>
+                             <th>
+                          Created Date
+                        </th>
+
+                          <th>
+                          Last Modified Date
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        SlNo = SlNo + 1;
+
+                        totalpurchaserate = totalpurchaserate + item.PurchaseRate;
+
+
+                        totalsellrate = totalsellrate + item.SellRate;
+                        
+                        
+                        <tr>
+                        <td>@SlNo</td>
+
+                        <td>
+                          @{
+                                
+                                
+                    @ViewBag.Basecurrency
+                                }
+
+                        
+                        </td>
+                            <td>
+
+                            @{
+                                
+                                
+                        XenERP.Models.Repository.TaxRepository cur = new XenERP.Models.Repository.TaxRepository();
+
+                        var currency = cur.GetCurency(Convert.ToInt32(item.CurrencyId));
+                        
+                    @currency.ISO_4217   @Html.Raw(",")@currency.Country  @Html.Raw(",")@currency.Currency1
+                        
+                        
+                                }
+
+                     
+                            </td>
+                            <td style="text-align:right;">
+                                @Html.DisplayFor(modelItem => item.PurchaseRate)
+                            </td>
+                               <td style="text-align:right;">
+                                @Html.DisplayFor(modelItem => item.SellRate)
+                            </td>
+
+                            <td>
+                             @Html.DisplayFor(modelItem => item.CreatedDate)
+                            
+                            </td>
+
+                             <td>
+                             @Html.DisplayFor(modelItem => item.ModifiedOn)
+                            
+                            </td>
+
+                           
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                <tr>
+                
+                <td>
+                
+                </td>
+                <td>
+                
+                </td>
+
+              <td style="text-align:right;">
+                <b>Net Total:</b>
+                </td>
+                  <td style="text-align:right;">
+               
+
+                  <b>@String.Format("{0:F}", @totalpurchaserate)</b>
+                </td>
+
+                <td style="text-align:right;">
+             <b>  @String.Format("{0:F}", @totalsellrate) </b>
+                
+                </td>
+
+                </tr>
+                
+                </tfoot>
+
+            </table>
+
+            </div>
+            </div>
+
+
+
+                  
+
+                                          <form >
+                    	
+                        <div class="setup-content">
+                        
+                            
+                            <div class="clr"></div>
+                            <p class="directions"> Click the 'Next' button to begin. </p>
+                            <div class="clr"></div>
+                            <div style="clear:both;" class="buttons setup-buttons">
+                              <div class="float-left"><span class="medium grey button"><a href="@Url.Action("CreateFinancial", "Start")"><span>Back</span></a></span></div>
+                              <div style="float:right;" class="float-right"><span class="medium blu button"><a href="@Url.Action("TaxDetails", "Start")"><span>Next</span></a></span></div>
+                       
+                            </div>
+                        </div>
+                    </form>
+                    
+
+            </aside>

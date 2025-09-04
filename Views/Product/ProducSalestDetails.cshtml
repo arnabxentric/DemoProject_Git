@@ -1,0 +1,274 @@
+﻿@model XenERP.Models.Product
+
+ @{
+     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/Product/ShowAllSalesProduct";
+
+
+        });
+
+
+
+    });
+    </script>
+     
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                    Sales Product   <small>Details</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+                
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="button" id="btncancel" class="btn btn-primary" value="BackToList" /></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                       
+                                      
+
+ 
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Code :</label>
+
+                  @Html.HiddenFor(d => d.Id)
+                   @Html.DisplayFor(model => model.Code, new { @class = "form-control", @placeholder = "Enter Code" })
+                 @Html.ValidationMessageFor(model => model.Code)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description :</label>
+
+                  
+                   @Html.DisplayFor(model => model.Description, new { @class = "form-control", @placeholder = "Enter Description" })
+                 @Html.ValidationMessageFor(model => model.Description)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Unit:</label>
+                   
+                              @{
+                        try
+                        {
+
+                            XenERP.Models.Repository.TaxRepository cur = new XenERP.Models.Repository.TaxRepository();
+
+                            var currency = cur.GetUnit(Convert.ToInt32(Model.UnitId));
+                        
+                    @currency.Code  
+                        }
+                        catch { }
+                        
+                        
+                        
+                                }
+                  @*
+                   @Html.DropDownListFor(model => model.UnitId, new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.UnitId)
+                         *@                            
+                                     
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Sales Price :</label>
+
+                  
+                   @Html.DisplayFor(model => model.SalesPrice, new { @class = "form-control", @placeholder = "Enter Purchase Price  " })
+                 @Html.ValidationMessageFor(model => model.PurchasePrice)
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+
+                                    
+
+           
+          
+                                    </div>
+
+                                                                        </div>
+                                    </div>
+                                  
+
+
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>  
+<div class="form-group">
+                                          <label class="black_txt_010">
+         Sales Tax :</label>
+
+
+          @{
+                                
+                        try
+                        {
+                            XenERP.Models.Repository.TaxRepository cur2 = new XenERP.Models.Repository.TaxRepository();
+
+                            var group = cur2.GetTax(Convert.ToInt32(Model.PurchaseTax));
+                        
+                    @group.Name  
+                        }
+                        catch { }
+                        
+                        
+                                }
+                  
+
+
+                
+                                    </div>
+
+
+
+
+
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+            Product Image :</label>
+
+     <img  style="width:122px;height:68px;" id="productimg"  name="productimg" src="@Url.Content("~/Productimages/" + Model.Productimage)" id="blah" alt="Image not found" /> 
+        @Html.ValidationMessageFor(model => model.Productimage)                                    
+                                     
+                                    </div>
+
+
+                                    
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Weight :</label>
+
+                  
+                   @Html.DisplayFor(model => model.Weight, new { @class = "form-control", @placeholder = "Enter Weight" })
+                 @Html.ValidationMessageFor(model => model.Weight)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Height :</label>
+
+                  
+                   @Html.DisplayFor(model => model.Height, new { @class = "form-control", @placeholder = "Enter Height" })
+                 @Html.ValidationMessageFor(model => model.Height)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Colour :</label>
+
+                  
+                   @Html.DisplayFor(model => model.Colour, new { @class = "form-control", @placeholder = "Enter Colour" })
+                 @Html.ValidationMessageFor(model => model.Colour)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Depth :</label>
+
+                  
+                   @Html.DisplayFor(model => model.Depth, new { @class = "form-control", @placeholder = "Enter Depth" })
+                 @Html.ValidationMessageFor(model => model.Depth)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+
+                                       <div class="form-group">
+                                          <label class="black_txt_010">
+Cubic Total :</label>
+
+                  
+                   @Html.DisplayFor(model => model.CubicTotal, new { @class = "form-control", @placeholder = "Enter Cubic Total" })
+                 @Html.ValidationMessageFor(model => model.CubicTotal)
+                                                     
+                                      
+       </div>
+
+                                         </div>
+                                    </div>
+                                    </div>
+
+
+
+                         
+                                        </div>   
+                                        
+                                
+
+                                </div>
+                                </aside>
+
+
+                               
+
+
+
+
+

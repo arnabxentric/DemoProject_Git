@@ -1,0 +1,415 @@
+﻿@model XenERP.Models.Hari_NewReportModelView
+
+
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+    int chk = 0;
+    long? OpenBird = Model.OpeningBird;
+    long? age = 0;
+    long? TotalMortality = 0;
+}
+
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+<style>
+  
+
+    .table th {
+        text-align: center;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+
+    $(function () {
+        $('#example2').dataTable({
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+
+    $(function () {
+        $('#example3').dataTable({
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+
+    $(function () {
+        $('#example5').dataTable({
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+
+    $(function () {
+        $('#example6').dataTable({
+            "bPaginate": false,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+
+
+
+
+<div class="box table-responsive">
+
+    <div class="box-body table-responsive">
+        <div class="box-header"><h3>Daily Entry Analysis Of Farmer <b>@Model.FarmerName</b>  Flock Code :- <b>@Model.FlockCode</b></h3>  </div>
+
+        <table id="example5" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @*<th>Farmer Name</th>
+                    <th>Flock Code</th>*@
+                    <th>Date</th>
+                    <th>Bird Age</th>
+                    <th>Opening Bird</th>
+                    <th>Avg Wt.</th>
+                    <th>Mortality</th>
+                    <th>Observation</th>
+                    <th>Closing Bird</th>
+                    <th>Total Mortality</th>
+                    <th>Feed Opening</th>
+                    <th>Feed Received</th>
+                    @*<th>Feed Consumed</th>*@
+
+                    @foreach (var item in Model.feedGrpList)
+                    {
+                        <th> @item.FeedName </th>
+                    }
+                    <th>Feed Closing</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item1 in Model.FarmerDailyConsumeList)
+                {
+
+
+                    Slno = Slno + 1;
+                    age = age + 1;
+                    TotalMortality = TotalMortality + item1.Mortality;
+                    <tr>
+                        @*<td>@Model.FarmerName</td>
+                        <td>@Model.FlockCode</td>*@
+
+                        <td align="center">
+                            @item1.EntryDate
+                        </td>
+                        <td align="right">
+                            @age
+                        </td>
+                        <td align="right">
+                            @OpenBird
+                        </td>
+                        <td align="right">
+                            @item1.AvgWt
+                        </td>
+
+                        <td align="right"> @Html.DisplayFor(modelItem => item1.Mortality)</td>
+                        <td align="right"> @Html.DisplayFor(modelItem => item1.Remarks)</td>
+                        <td align="right"> @(OpenBird - item1.Mortality)</td>
+                        <td align="right"> @TotalMortality</td>
+                        <td align="right"> @Html.DisplayFor(modelItem => item1.FeedOpeningQuantity)</td>
+                        <td align="right"> @Html.DisplayFor(modelItem => item1.FeedReceivedQuantity)</td>
+                        @*<td align="left"> @Html.DisplayFor(modelItem => item1.TotalConsumeQuantity)</td>*@
+
+                        @{
+
+                    //var list = Model.FarmerDailyConsumeList.Where(r => r.EntDt == item1.FirstOrDefault().EntDt).GroupBy(g => g.ProductId).ToList();
+                    OpenBird = (OpenBird - item1.Mortality);
+                        }
+
+                        @foreach (var item2 in Model.feedGrpList)
+                        {
+                            chk = 0;
+                            foreach (var item3 in item1.feedGrpList.GroupBy(g => g.FeedId))
+                            {
+                                if (item3.Key == item2.FeedId)
+                                {
+
+                                    <td align="right">@item3.Sum(s => s.ConsumeQuantity)</td>
+
+                                    chk++;
+                                }
+
+                            }
+
+                            if (chk == 0)
+                            {
+
+                                <td align="right">&#10005;</td>
+
+                            }
+                        }
+
+                        <td align="right"> @Html.DisplayFor(modelItem => item1.ClosingQuantity)</td>
+                    </tr>
+
+
+
+                }
+            </tbody>
+
+
+        </table>
+    </div>
+
+    <div class="box-body table-responsive">
+        <div class="box-header"> <h3>Medicine Entry Analysis </h3> </div>
+        <table id="example6" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    @*<th>Farmer Name</th>
+                    <th>Flock Code</th>*@
+                    <th>Date</th>
+                    @*<th>Bird Age</th>
+                    <th>Opening Bird</th>
+                    <th>Mortality</th>
+                    <th>Observation</th>
+                    <th>Closing</th>
+                    <th>Total Mortality</th>*@
+                    @foreach (var item in Model.feedGrpMedicineList)
+                    {
+                        <th> @item.FeedName </th>
+                    }
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.FarmerDailyMedicineConsumeList.GroupBy(g => g.EntDt))
+                {
+                    <tr>
+                        @*<td>@Model.FarmerName</td>
+                        <td>@Model.FlockCode</td>*@
+
+                        <td align="center">
+                            @item1.FirstOrDefault().EntryDate
+                        </td>
+
+                        @{
+
+                    var list = Model.FarmerDailyMedicineConsumeList.Where(r => r.EntDt == item1.FirstOrDefault().EntDt).GroupBy(g => g.ProductId).ToList();
+
+                        }
+
+                        @foreach (var item2 in Model.feedGrpMedicineList)
+                        {
+                            chk = 0;
+                            foreach (var item3 in list)
+                            {
+                                if (item3.Key == item2.FeedId)
+                                {
+
+                                    <td align="right">@item3.Sum(s => s.ConsumeQuantity)</td>
+
+                                    chk++;
+                                }
+
+                            }
+
+                            if (chk == 0)
+                            {
+
+                                <td align="right">&#10005;</td>
+
+                            }
+                        }
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="box-body table-responsive">
+        <div class="box-header"><h3>Total Product Recived And Isuued Analysis</h3>  </div>
+        <table id="example1" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Issued Quantity</th>
+                    <th>Received Quantity</th>
+                    <th>Consumed Quantity</th>
+                    <th>Return Quantity</th>
+                    <th>UOM</th>
+
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.FeedConsumeReturnList)
+                {
+                    <tr>
+                        <td>@item1.Feed</td>
+                        <td>@item1.IssuedQuantity</td>
+                        <td>@item1.ReceivedQuantity</td>
+                        <td>@item1.ConsumeQuantity</td>
+                        <td>@item1.RetunQuantity</td>
+                        <td>@item1.UOM</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+
+
+
+
+    </div><!-- /.box-body -->
+
+    @*<div class="box-body table-responsive">
+        <div class="box-header"><h3>Return Quantity Analysis</h3>   </div>
+        <table id="example2" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Return Date</th>
+                    <th>Challan No</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>UOM</th>
+
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.ReturnList)
+                {
+                    <tr>
+                        <td>@item1.ReturnDate</td>
+                        <td>@item1.ChallanNo</td>
+                        <td>@item1.FeedName</td>
+                        <td>@item1.ReturnQuantity</td>
+                        <td>@item1.UOM</td>
+                    </tr>
+
+                }
+
+                @if (Model.ReturnList.Count() > 0)
+                {
+                    <tr>
+                        <td>Total Return</td>
+                        <td></td>
+                        <td></td>
+                        <td>@Model.ReturnList.Sum(s => s.ReturnQuantity)</td>
+                        <td>@Model.ReturnList.FirstOrDefault().UOM</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+
+    </div>*@
+
+    @*<div class="box-body table-responsive">
+        <div class="box-header"><h3>Total Sales Analysis</h3>   </div>
+        <table id="example3" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Sale's Date</th>
+                    <th>Invoice No</th>
+                    <th>Party Name</th>
+                    <th>No Of Bird</th>
+                    <th>Total Weight</th>
+                    <th>Avg Weight</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item1 in Model.BirdSalesList)
+                {
+                    <tr>
+                        <td>@item1.SaleDate</td>
+                        <td>@item1.InvoiceNo</td>
+                        <td>@item1.NameOfParty</td>
+                        <td>@item1.NoOfBird</td>
+                        <td>@item1.TotalWeight</td>
+                        <td>@item1.AvgWeight</td>
+                        <td>@item1.Rate</td>
+                        <td>@item1.Amount</td>
+                    </tr>
+
+                }
+                @if (Model.BirdSalesList.Count() > 0)
+                {
+                    <tr>
+                        <td>Total Sales</td>
+                        <td></td>
+                        <td></td>
+                        <td>@Model.BirdSalesList.Sum(s => s.NoOfBird)</td>
+                        <td>@Model.BirdSalesList.Sum(s => s.TotalWeight)</td>
+                       
+                        <td>@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.TotalWeight) / Model.BirdSalesList.Sum(s => s.NoOfBird)), 2)</td>
+                        <td>@Math.Round(Convert.ToDecimal(Model.BirdSalesList.Sum(s => s.Amount) / Model.BirdSalesList.Sum(s => s.TotalWeight)), 2)</td>
+                        <td>@Model.BirdSalesList.Sum(s => s.Amount)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+
+
+    </div>*@
+
+</div>

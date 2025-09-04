@@ -1,0 +1,208 @@
+﻿@model XenERP.Models.UnitIssueModelView
+
+@{
+    // Layout = null;
+}
+
+
+@{
+    ViewBag.Title = "Farmer Issue";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+
+}
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Farmer Issue</title>
+    <style>
+        .breakhere {
+            page-break-after: always;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+    </style>
+
+    <style type="text/css" media="print">
+        @Page
+        {
+            size:  auto;   /* auto is the initial value */
+            margin: 0mm;  /* this affects the margin in the printer settings */
+        }
+
+        html
+        {
+            background-color: #FFFFFF;
+            margin: 0px;  /* this affects the margin on the html before sending to printer */
+        }
+
+        body
+        {
+            border: solid 1px blue ;
+            margin: 10mm 15mm 10mm 15mm; /* margin you want for the content */
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            //$("#print1").hide();
+            $('#btnprnt').click(function () {
+                var id = $("#Id").val();
+                var divElements = document.getElementById("print1").innerHTML;
+
+
+                document.body.innerHTML =
+                    "<html><head><title> Delivery Challan</title></head><body>" +
+                    divElements + "</body>";
+
+
+                //Print Page
+                window.print();
+                window.location.href = "/HariUnitIssue/FarmerIssueList";
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+
+    <aside class="right-side">
+
+        <div id="content">
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="widget-box">
+
+                        <input name="" type="button" value="Back" class="btn btn-info pull-left" onclick="window.history.back()" />
+                        <div style="text-align:center">
+                            <input name="" type="button" id="btnprnt" value="PRINT" class="btn btn-danger" />
+                        </div>
+
+                        <br />
+
+
+                        <div class="col-md-12" id="print1" style="padding:10px;border:5px solid gray;margin:0;">
+                            <br />
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                    <tr style="border:1px solid black; margin-bottom:5px;">
+                                        <td colspan="1">
+                                            <table width="100%">
+                                                <tr>
+
+                                                    <td style="text-align:center ;width:90%">
+                                                        <img src="~/Images/prolog.png" />
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td colspan="1">
+                                            <table width="100%">
+                                                <tr>
+
+                                                    <td style="text-align:center ;width:90%">
+
+                                                        <h4 style="margin:5px 0 0 0;font-family:Arial"><b>HI-BREED AVIAN RESEARCH & INTEGRATOR </b></h4>
+                                                        <b>@ViewBag.challan</b><br />
+                                                        Unit : <b>@Model.BranchName</b> <br />
+                                                        Contact No : <b>@Model.BranchContactNo</b><br />
+                                                        Challan Issuing Date : <b>@Model.IssueDateString</b>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td colspan="1">
+                                            <table width="100%">
+                                                <tr>
+
+                                                    <td style="text-align:center ;width:90%">
+                                                        <b>@Model.FarmerName </b>
+                                                        <br /><b>Contact No : @Model.FarmerContactNo</b>
+                                                        <br />Flock Code :<b>@Model.FlockCode</b>
+                                                        <br />Address :<b>@Model.Address </b>
+                                                        <br />Challan No :<b>@Model.HandChallanNo</b>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                <table width="100%" style="border:1px solid black; margin-bottom:5px;">
+                                    <thead>
+                                        <tr style=" border:1px solid black; margin-bottom:5px;">
+                                            <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Product</th>
+                                            <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Primary Quantity</th>
+                                            <th style="text-align:center; border:1px solid black; margin-bottom:5px;">Farmer Quantity</th>
+                                            @*<th style="text-align:center; border:1px solid black; margin-bottom:5px;">UOM</th>*@
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+                                        @for (int i = 0; i < Model.issDet.Count(); i++)
+                                        {
+                                            <tr style="border:1px solid black; margin-bottom:5px;">
+                                                <td style="border:1px solid black; margin-bottom:5px;">@Model.issDet[i].Item</td>
+                                                <td style="border:1px solid black; margin-bottom:5px;text-align:right">@Model.issDet[i].PrimaryIssuedToFarmer @Model.issDet[i].PrimaryUnitType </td>
+
+                                                <td style="border:1px solid black; margin-bottom:5px;text-align:right">@Model.issDet[i].ItemIssuedToFarmer @Model.issDet[i].ItemUnitType</td>
+                                            </tr>
+                                        }
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                                    <tr style=" border:1px solid black; margin-bottom:5px;">
+
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                            <br />
+                                            Farmer's Signature
+                                        </td>
+
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:center">
+                                            <br />
+                                            Delivery Man Signature
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="table_outer" style="padding:10px;border:2px solid gray;margin:0;">
+                                <table width="100%" style=" border:1px solid black; margin-bottom:5px;">
+                                    <tr style=" border:1px solid black; margin-bottom:5px;">
+
+                                        <td style="border:1px solid black; margin-bottom:5px; text-align:left">
+                                            Remarks :-
+                                        </td>
+
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        </aside>
+
+</body>
+</html>

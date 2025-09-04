@@ -1,0 +1,208 @@
+﻿@model IEnumerable<XenERP.Models.Taxrate>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    
+    decimal? TotalRate = 0;
+    
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc
+    {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+    table.dataTable thead .sorting_asc
+    {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btnback").on("click", function () {
+
+
+            location.href = "/Tax/TaxDetails";
+
+
+        });
+
+
+
+    });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    $(function () {
+       
+
+        $('#example1').dataTable({
+     
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Tax Rate <small>Details</small>            
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+            <div class="box">
+                                
+                           
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+        
+                    
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"> 
+                                    <input name="" type="button" id="btnback" value="BackToList" class="btn btn-primary" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>
+
+
+   <div class="box">
+                             
+                                <div class="box-body table-responsive">
+                                 <table id="example1" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                                        <thead>
+                                            <tr>
+                                             
+            <th>
+               Tax Name
+            </th>
+            <th>
+               Tax Component Name
+            </th>
+            <th>
+                Tax Rate
+            </th>
+           
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                             @foreach (var item in Model)
+                                             {
+                                                 TotalRate = TotalRate + @item.Taxrate1;    
+                                                 
+        <tr>
+           
+           <td>
+            @ViewBag.Name 
+           </td>
+            <td>
+            
+            @{
+                
+                                                 XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+
+
+                                                 long? id = item.TaxCompId;
+                                                 var taxcomp = rep.Gettaxrate(id);
+                                                 @taxcomp.Name
+                
+                
+                
+                 }
+
+               
+            </td>
+            <td>
+             @Html.DisplayFor(modelItem => item.Taxrate1)
+
+              
+            </td>
+           
+           
+            
+        </tr>
+                                      
+                                                 
+                                                 
+                                             }
+                                               </tbody>
+
+                                               <tfoot>
+                                               
+                                             <tr>
+                                             
+                                                <td>
+                                               </td>
+                                             
+                                                <td style="text-align:right;">
+                                             <b>Total Tax</b>
+                                               </td>
+                                               <td>
+                                                  
+                      <b> @String.Format("{0:F}", @TotalRate)</b> 
+                                              
+                                               </td>
+                                               </tr>
+                                               </tfoot>
+                                       
+                                    </table>
+                                   <table>
+                                   
+                                     
+                                   </table>
+                                </div>
+                               
+                                <!-- /.box-body -->
+                            </div>
+
+
+                         <a href="@Url.Action("TaxDetails")">Back to List</a>
+                       
+             
+            </aside>

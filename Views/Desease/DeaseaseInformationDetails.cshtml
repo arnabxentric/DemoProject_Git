@@ -1,0 +1,163 @@
+﻿@model XenERP.Models.DiseaseMaster
+
+@{
+    ViewBag.Title = "FarmInformationDetails";
+}
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(document).ready(function () {
+
+            $("#imgdivFarm,#imgdiv").on('mouseover', function () {
+                $(".showImage").empty();
+                var jk = $(this).find('img')
+                var pk = $(jk).clone();
+                $(pk).css({ width: '500px', height: '500px' });
+
+                $(".showImage").append(pk);
+                // $(".showImage").html(b);
+
+                //                  $(this).clone().appendTo($(".showImage"));
+                $("#myModal").modal('show');
+
+            });
+
+
+        });
+
+
+    });
+</script>
+
+
+
+
+@*<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+    <script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>*@
+
+
+@using (Html.BeginForm())
+{
+
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Disease<small> Details</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Disease Details</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <div class="col-xs-12">   <li class="pull-right">  <a href="@Url.Action("DiseaseShowAll", "Farm")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Close</a></li></div>
+                @* <li class="pull-right"> <input name="" type="button" id="btnclose" value="close" class="btn btn-primary" /></li>*@
+            </ul>
+        </div>
+        <section class="content">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    @ViewBag.Message
+                </div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissable">
+                    <i class="fa fa-ban"></i>
+                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                    <b>Error!</b>
+                    @ViewBag.Error
+                </div>
+            }
+
+
+            @Html.HiddenFor(d => d.Id)
+
+
+
+            <section class="content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="box box-primary">
+                            <div class="box-header"> </div>
+                            <div class="box-body">
+                                <h4 class="box-title">Disease Information</h4>
+
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Disease Name : </label>
+                                    @Html.DisplayFor(model => model.DiseasesName, new { @class = "form-control" })
+                                </div>
+                                <div class=" form-group ">
+                                    <label class="black_txt_010">Disease Description  : </label>
+                                    @Html.DisplayFor(model => model.DiseasesDescription, new { @class = "form-control" })
+                                </div>
+                                
+                                <div class=" form-group " id="imgdivFarm" style="height:150px;width:150px">
+                                    <label class="black_txt_010">Farms Image: </label>
+                                    <img src="~/img/@Model.DiseaseImagePath" alt="Image 1" height="150px" width="150px" />
+
+                                </div>
+
+                           
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    
+                </div>
+                <div id="myModal" class="modal fade">
+
+                    <div class="modal-dialog">
+
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                            </div>
+
+                            <div class="modal-body">
+
+                                <form>
+
+                                    <div class="form-group showImage">
+
+                                    </div>
+
+                                </form>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+        </section>
+    </aside>
+}
+
+
+
+

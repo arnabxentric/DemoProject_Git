@@ -1,0 +1,282 @@
+﻿@model IEnumerable<XenERP.Models.SalesInvoiceModelView>
+@{
+
+    var SlNo = 0;
+    decimal SubTotal = 0;
+    decimal Discount = 0;
+    decimal Freight = 0;
+    decimal TotalFreight = 0;
+    decimal TotAmt = 0;
+
+    decimal TaxTotal = 0;
+    decimal DiscountTotal = 0;
+}
+<style type="text/css">
+    body {
+        font-family: verdana, arial, sans-serif;
+        font-size: 10px;
+    }
+
+    .invoice th,
+    td {
+        padding: 3px 2px 3px 2px;
+        text-align: center;
+    }
+
+    .invoice th {
+        border-bottom: 2px solid #333333;
+    }
+
+    .invoice td {
+        border-bottom: 1px solid #999999;
+    }
+
+    .invoice table {
+        overflow: visible !important;
+    }
+
+    .invoice thead {
+        display: table-header-group;
+    }
+
+    .invoice tfoot {
+        display: table-row-group;
+    }
+
+    .invoice tr {
+        page-break-inside: avoid;
+    }
+</style>
+
+<!--for graph   -->
+<!--for graph   -->
+
+
+
+
+
+@*<table>
+<tr>
+<td>
+
+@if (ViewBag.branchname != null)
+{
+<b>@ViewBag.Name (@ViewBag.branchname) </b>
+}
+else
+{
+    @ViewBag.Name 
+}
+</td>
+</tr>
+
+
+
+<tr>
+<td>
+<b>Sales By Date</b>
+</td>
+</tr>
+
+<tr>
+<td>
+@try
+{
+
+    if (ViewBag.from != null)
+    {
+  @Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to);
+
+    }
+}
+catch
+{
+}
+</td>
+</tr>
+
+
+
+
+
+
+
+</table>*@
+
+<div align="center">
+    <span style="font-size:x-large;font-weight:bolder">HI-BREED INTERNATIONAL SALES && SERVICE</span><br />
+    <span style="font-size:medium;font-weight:normal"> 22, R.N. Mukherjee Road, 5th Floor, Kolkata-700 001</span><br />
+    <span style="font-size:medium;font-weight:normal">GST NO - 19AABFH7726D1ZG</span>
+    <br />
+    @if (ViewBag.from != null)
+    {
+    <span style="font-size:medium;font-weight:normal"> 
+    
+@Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to)
+
+    </span>
+    }
+    <br />
+    <br />
+    <div style="font-size:medium;font-weight:normal;text-align:left;padding-left:10px">
+        <b>Sales By Date </b>
+       
+    </div>
+</div>
+<br />
+
+
+    <table id="example1" cellspacing="0" cellpadding="0" class="invoice">
+        <thead>
+            <tr>
+
+                <th>
+                    SlNo.
+                </th>
+
+                <th>
+                    Date
+                </th>
+
+                <th>
+                    Bill No.
+                </th>
+
+                <th>
+                    Party Name
+                </th>
+
+                <th>
+                    Sub Total
+                </th>
+                <th>
+                    Freight
+                </th>
+
+                <th>
+                    Discount(Rs.)
+                </th>
+                <th>
+                    Tax
+                </th>
+
+                <th>
+                    Net Amount
+                </th>
+
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                SlNo = SlNo + 1;
+                var sub = item.SubTotal + item.RoundOff;
+                SubTotal += sub;
+                Freight = item.TotalAddAmount;
+                TotalFreight += item.TotalAddAmount;
+                Discount = ((decimal)item.TotalDeductAmount + (decimal)item.DisAmount);
+                DiscountTotal += Discount;
+                var tax = item.TaxProduct + item.TaxOther;
+                TaxTotal += tax;
+                TotAmt += item.BCGrandTotal;
+
+
+                <tr>
+
+                    <td>
+                        @SlNo
+                    </td>
+                    <td>
+
+                        @*                   @String.Format(@Session["DateFormatUpper"].ToString(), item.Date)*@
+
+                        @String.Format("{0:dd/MM/yyyy}", item.CreatedOn)
+                    </td>
+                    <td align="left">
+                        @Html.DisplayFor(modelItem => item.NO)
+
+                    </td>
+
+
+                    <td align="left">
+                        @Html.DisplayFor(modelItem => item.CustomerName)
+
+                    </td>
+
+                    <td align="right">
+                        @Math.Round(sub, 2)
+
+                    </td>
+                    <td align="right">
+                        @Math.Round(Freight, 2)
+
+                    </td>
+                    <td align="right">
+                        @Math.Round(Discount, 2)
+
+                    </td>
+                    <td align="right">
+                        @Math.Round(tax, 2)
+
+                    </td>
+                    <td align="right">
+                        @Math.Round(item.BCGrandTotal, 2)
+
+                    </td>
+
+
+
+
+                </tr>
+            }
+        </tbody>
+        @*<tfoot>*@
+            <tr>
+
+                <td></td>
+                <td>
+
+                    Grand Total
+
+
+                </td>
+
+
+
+                <td align="center"></td>
+                <td align="center"></td>
+                <td align="right">
+                    @Math.Round(SubTotal, 2)
+
+                </td>
+                <td align="right">
+                    @Math.Round(TotalFreight, 2)
+
+                </td>
+                <td align="right">
+                    @Math.Round(DiscountTotal, 2)
+
+                </td>
+                <td align="right">
+                    @Math.Round(TaxTotal, 2)
+
+                </td>
+                <td align="right">
+                    @Math.Round(TotAmt, 2)
+
+                </td>
+
+
+
+
+            </tr>
+        @*</tfoot>*@
+
+    </table>
+
+
+
+          

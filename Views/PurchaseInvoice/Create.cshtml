@@ -1,0 +1,4002 @@
+﻿@model XenERP.Models.PurchaseInvoiceModelView
+
+@using XenERP.Models
+@{
+    ViewBag.Title = "Purchase Invoice";
+    var todaydate = DateTime.Today.ToString("dd/MM/yyyy");
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    .col-lg-12export
+    {
+        min-height: 1px;
+        padding-left: 15px;
+        padding-right: 15px;
+        position: relative;
+    }
+
+
+    .ui-autocomplete-loading
+    {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .ErrorControl
+    {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad
+    {
+        width: 100% !important;
+    }
+
+    .multiselect {
+        width: 200px;
+        position:relative;
+    }
+    .selectBox {
+        position: relative;
+
+    }
+    .selectBox select {
+       background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    color: #555;
+    display: block;
+    font-size: 14px;
+    height: 34px;
+    line-height: 1.42857;
+    padding: 6px 12px;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    vertical-align: middle;
+    width: 100%;
+    }
+    .overSelect {
+        position: absolute;
+        left: 0; right: 0; top: 0; bottom: 0;
+    }
+    #checkboxes {
+        display: none;
+        border: 1px #dadada solid;
+        background:#FDF7F9;
+        position:absolute;
+        width:100%;
+        z-index:9999;
+
+     @* for scroll the list*@
+
+      @*  height:180px;
+        overflow-y:auto;*@
+    }
+    #checkboxes label {
+        display: block;
+        padding:0 5px;
+    }
+    #checkboxes label:hover {
+        background-color: #1e90ff;
+    }
+
+    .multiselect input[type="checkbox"]{margin-right:4px;}
+    .multiselect label{font-weight:normal;}
+
+
+</style>
+@*
+    <script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+            <script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+*@
+
+<script src="../../Scripts/PurchaseInvoice.js" type="text/javascript"></script>
+<script src="../../Scripts/PurchaseCostingDetail.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#SupplierCode').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Supplier/getSupplier',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Code,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#SupplierName").val("");
+                    $('#SupplierCode').val('');
+                    $('#SupplierName').val('');
+                    $('#SupplierCode').parents("td:first").removeClass("has-success");
+                    $('#SupplierName').parents("td:first").removeClass("has-success");
+                    $('#SupplierCode').parents("td:first").addClass("has-error");
+                    $('#SupplierId').val(0);
+                    $('#Currencyrate').val('');
+                    $('#TransactionCurrencyCode').val('');
+                    $('#tcc').text('Total In Supplier Currency');
+                    $('#TransactionCurrency').val('');
+                    //                    $('#DeliveryName').val('');
+                    //                    $('#StreetPoBox').val('');
+                    //                    $('#Suburb').val('');
+                    //                    $('#City').val('');
+                    //                    $('#StateRegion').val('');
+                    //                    $('#Country').val('');
+                    //                    $('#PostalCode').val('');
+
+                    $("table#example1").find("tr:gt(0)").remove();
+
+                    for (var i = 0; i < 2; i++) {
+                        $add_row();
+                    }
+                }
+            },
+            select: function (event, ui) {
+                $('#SupplierCode').val(ui.item.label);
+                $('#SupplierId').val(ui.item.value);
+
+                $.get('/Supplier/checkSupplier', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+
+                        $('#SupplierCode').val('');
+                        $('#SupplierName').val('');
+                        $('#SupplierCode').parents("td:first").addClass("has-error");
+                        $('#PaymentTermId').val('');
+                        $('#SupplierId').val(0);
+                        $('#Currencyrate').val('');
+                        $('#TransactionCurrencyCode').val('');
+                        $('#tcc').text('Total In Supplier Currency');
+                        $('#TransactionCurrency').val('');
+                        //                        $('#DeliveryName').val('');
+                        //                        $('#StreetPoBox').val('');
+                        //                        $('#Suburb').val('');
+                        //                        $('#City').val('');
+                        //                        $('#StateRegion').val('');
+                        //                        $('#Country').val('');
+                        //                        $('#PostalCode').val('');
+                    }
+                    else {
+                        $('#SupplierCode').parents("td:first").removeClass("has-error");
+                        $('#SupplierName').parents("td:first").removeClass("has-error");
+                        $('#SupplierCode').parents("td:first").addClass("has-success");
+                        $('#SupplierName').parents("td:first").addClass("has-success");
+                        $('#SupplierName').val(data.Name);
+
+                        $('#SupplierCode').val(data.Code);
+                        //  $('#SupplierId').val(data.Id);
+                        $('#Currencyrate').val(data.CurrencyPurchaseRate);
+                        $('#TransactionCurrencyCode').val(data.CurrencyCode);
+                        $('#tcc').text('In ' + data.CurrencyCode);
+                        $('#TransactionCurrency').val(data.CurrencyId);
+
+                        //                        $('#DeliveryName').val(data.ContactMobile);
+                        //                        $('#StreetPoBox').val(data.PoAddressName);
+                        //                        $('#Suburb').val(data.PoSuburb);
+                        //                        $('#City').val(data.PoCity);
+                        //                        $('#StateRegion').val(data.PoStateRegion);
+                        //                        $('#Country').val(data.PoCountry);
+                        //                        $('#PostalCode').val(data.PoPostalCode);
+
+
+                        var reference = $('#Reference').val();
+                        var supid = $("#SupplierId").val();
+
+                        if (reference == "") {
+                            $("table#example1").find("tr:gt(0)").remove();
+
+                            for (var i = 0; i < 2; i++) {
+                                $add_row();
+                            }
+
+                            $.ajax({
+                                url: "/PurchaseInvoice/GetYetToBeInvoicedPR",
+                                type: "POST",
+                                data: JSON.stringify({ id: supid }),
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function (data) {
+                                    $("#checkboxes").empty();
+                                    //                    $("#StockSubCategoryId").append("<option value=" + 0 + ">----All----</option>");
+                                    for (var i = 0; i < data.length; i++) {
+
+                                        $("#checkboxes").append("<label class='lblchk'> <input type='checkbox' class='checkmenu' name='chksub'  id='" + data[i].Id + "' value='" + data[i].Id + "'/>" + data[i].Name + "</label>");
+                                        //                        $("#StockSubCategoryId").append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
+                                        //alert(data[i].id);
+                                    }
+
+
+                                },
+                                error: function () {
+                                    //$(stateSelector).prop("disabled", true);
+                                }
+
+                            })
+                        }
+
+                    }
+                });
+                return false;
+            },
+            minLength: 1
+        });
+        $('#SupplierName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Supplier/getSupplierN',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+
+                        response($.map(data, function (item) {
+
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $("#SupplierName").val("");
+                    $('#SupplierCode').val('');
+                    $('#SupplierName').val('');
+                    $('#SupplierCode').parents("td:first").removeClass("has-success");
+                    $('#SupplierName').parents("td:first").removeClass("has-success");
+                    $('#SupplierName').parents("td:first").addClass("has-error");
+                    $('#SupplierId').val(0);
+                    $('#Currencyrate').val('');
+                    $('#TransactionCurrencyCode').val('');
+                    $('#TransactionCurrency').val('');
+                    //                    $('#DeliveryName').val('');
+                    //                    $('#StreetPoBox').val('');
+                    //                    $('#Suburb').val('');
+                    //                    $('#City').val('');
+                    //                    $('#StateRegion').val('');
+                    //                    $('#Country').val('');
+                    //                    $('#PostalCode').val('');
+                    // $('table#example11').find("tr").remove();
+                    // $('table#example2').find("tr").remove();
+                    $("table#example1").find("tr:gt(0)").remove();
+
+                    for (var i = 0; i < 2; i++) {
+                        $add_row();
+                    }
+                }
+            },
+            select: function (event, ui) {
+                $('#SupplierName').val(ui.item.label);
+                $('#SupplierId').val(ui.item.value);
+
+                $.get('/Supplier/checkSupplierN', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+
+                        $('#SupplierCode').val('');
+                        $('#SupplierName').val('');
+                        $('#SupplierName').parents("td:first").addClass("has-error");
+                        $('#PaymentTermId').val('');
+                        $('#SupplierId').val(0);
+                        $('#Currencyrate').val('');
+                        $('#TransactionCurrencyCode').val('');
+                        $('#tcc').text('Total In Supplier Currency');
+                        $('#TransactionCurrency').val('');
+                        //                        $('#DeliveryName').val('');
+                        //                        $('#StreetPoBox').val('');
+                        //                        $('#Suburb').val('');
+                        //                        $('#City').val('');
+                        //                        $('#StateRegion').val('');
+                        //                        $('#Country').val('');
+                        //                        $('#PostalCode').val('');
+                    }
+                    else {
+                        $('#SupplierCode').parents("td:first").removeClass("has-error");
+                        $('#SupplierName').parents("td:first").removeClass("has-error");
+                        $('#SupplierCode').parents("td:first").addClass("has-success");
+                        $('#SupplierName').parents("td:first").addClass("has-success");
+                        $('#SupplierName').val(data.Name);
+
+                        $('#SupplierCode').val(data.Code);
+                        //    $('#SupplierId').val(data.Id);
+                        $('#Currencyrate').val(data.CurrencyPurchaseRate);
+                        $('#TransactionCurrencyCode').val(data.CurrencyCode);
+                        $('#tcc').text('In ' + data.CurrencyCode);
+                        $('#TransactionCurrency').val(data.CurrencyId);
+                        //                        $('#DeliveryName').val(data.ContactMobile);
+                        //                        $('#StreetPoBox').val(data.PoAddressName);
+                        //                        $('#Suburb').val(data.PoSuburb);
+                        //                        $('#City').val(data.PoCity);
+                        //                        $('#StateRegion').val(data.PoStateRegion);
+                        //                        $('#Country').val(data.PoCountry);
+                        //                        $('#PostalCode').val(data.PoPostalCode);
+                        var supid = $("#SupplierId").val();
+                        var reference = $('#Reference').val();
+
+
+                        if (reference == "") {
+                            $("table#example1").find("tr:gt(0)").remove();
+
+                            for (var i = 0; i < 2; i++) {
+                                $add_row();
+                            }
+                            $.ajax({
+                                url: "/PurchaseInvoice/GetYetToBeInvoicedPR",
+                                type: "POST",
+                                data: JSON.stringify({ id: supid }),
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function (data) {
+                                    $("#checkboxes").empty();
+                                    //                    $("#StockSubCategoryId").append("<option value=" + 0 + ">----All----</option>");
+                                    for (var i = 0; i < data.length; i++) {
+
+                                        $("#checkboxes").append("<label class='lblchk'> <input type='checkbox' class='checkmenu' name='chksub'  id='" + data[i].Id + "' value='" + data[i].Id + "'/>" + data[i].Name + "</label>");
+                                        //                        $("#StockSubCategoryId").append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
+                                        //alert(data[i].id);
+                                    }
+
+
+                                },
+                                error: function () {
+                                    //$(stateSelector).prop("disabled", true);
+                                }
+
+                            })
+                        }
+                    }
+                });
+                return false;
+            },
+            minLength: 1
+        });
+    });
+</script>
+<script type="text/javascript">
+     $(document).ready(function () {
+         if ('@Model.Id' != 0) {
+             $('#NO').prop('readonly', true);
+         }
+         if ('@Model.ReceiptIds' != "") {
+             var arraypr = '@Model.ReceiptIds';
+             var menus = arraypr.split(',');
+             var arraypr1 = '@Model.OrderNo';
+             var menus1 = arraypr1.split(',');
+             for (var i = 0; i < menus.length; i++) {
+
+                 $("#checkboxes").append("<label> <input type='checkbox' class='checkmenu' name='chksub' checked id='" + menus[i] + "' value='" + menus[i] + "'/>" + menus1[i] + "</label>");
+                 //                        $("#StockSubCategoryId").append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
+                 //alert(data[i].id);
+             }
+         }
+         $("#receiveditems").click(function () {
+
+             var Menu = "";
+
+
+             $("input:checkbox[class=checkmenu]:checked").each(function () {
+                 if (Menu == "") {
+                     Menu = $(this).val();
+
+
+
+                 }
+
+                 else {
+
+                     Menu = Menu + "," + $(this).val();
+
+                 }
+
+             });
+
+             if (Menu == '') {
+                 return false;
+             }
+             $("table#example1").find("tr:gt(0)").remove();
+
+             $.get('/PurchaseReceipt/GetPRDetails', { 'PRNo': Menu }, function (data, status) {
+
+                 $('#Date').val(data.Date);
+                 $('#DespatchDate').val(data.ReceiptDate);
+                 $('#DeliveryName').val(data.DeliveryName);
+                 $('#StreetPoBox').val(data.StreetPoBox);
+                 $('#Suburb').val(data.Suburb);
+                 $('#City').val(data.City);
+                 $('#StateRegion').val(data.StateRegion);
+                 $('#Country').val(data.Country);
+                 $('#PostalCode').val(data.PostalCode);
+                 $('#SupplierName').val(data.SupplierName);
+                 $('#SupplierCode').val(data.SupplierCode);
+                 $('#SupplierId').val(data.SupplierId);
+                 $('#Currencyrate').val(data.Currencyrate);
+                 $('#TransactionCurrencyCode').val(data.TransactionCurrencyCode);
+                 $('#TransactionCurrency').val(data.TransactionCurrency);
+                 $('#WarehouseId').val(data.WarehouseId);
+                 $('#PaymentTermId').val(data.PaymentTermId);
+
+                 $('#PurchaseOrderNo').val(data.OrderNo);
+                 $('#PurchaseOrderId').val(data.ReferenceNo);
+                 $.each(data.pod, function (i, item) {
+
+                     $add_rowEdit(data.pod[i].ItemId, data.pod[i].ItemCode, data.pod[i].BarCode, data.pod[i].ItemName, data.pod[i].Description, data.pod[i].Quantity, data.pod[i].UnitId, data.pod[i].UnitName, data.pod[i].SecUnitId, data.pod[i].SecUnitName, data.pod[i].SecUnitFormula, data.pod[i].UnitFormula, data.pod[i].UnitIdSecondary, data.pod[i].UnitSecondaryName, data.pod[i].TotalQuantity, data.pod[i].Price, data.pod[i].TaxId, data.pod[i].TaxName, data.pod[i].TotalAmount, data.pod[i].Available);
+
+                 });
+             });
+         });
+         $(document).on("change", "input[name='chksub']", function () {
+             $("table#example1").find("tr:gt(0)").remove();
+             for (var i = 0; i < 2; i++) {
+                 $add_row();
+             }
+         });
+     });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //$.ajax({
+        //    url: "/PurchaseInvoice/GetYetToBeInvoicedPR",
+        //    type: "POST",
+        //    data: {},
+        //    dataType: "json",
+        //    contentType: "application/json",
+        //    success: function (data) {
+        //        $("#checkboxes").empty();
+        //        //                    $("#StockSubCategoryId").append("<option value=" + 0 + ">----All----</option>");
+        //        for (var i = 0; i < data.length; i++) {
+
+        //            $("#checkboxes").append("<label class='lblchk'> <input type='checkbox' class='checkmenu' name='chksub'  id='" + data[i].Id + "' value='" + data[i].Id + "'/>" + data[i].Name + "</label>");
+        //            //                        $("#StockSubCategoryId").append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
+        //            //alert(data[i].id);
+        //        }
+
+
+        //    },
+        //    error: function () {
+        //        //$(stateSelector).prop("disabled", true);
+        //    }
+
+        //})
+
+
+        $("#btnsupppdf").click(function () {
+
+            var id = $("#Id").val();
+
+
+            var url = "/PurchaseOrder/PrintPurchaseOrderPDF?id=" + id;
+
+            window.location.href = url;
+
+        });
+
+        if ('@ViewBag.InvoiceTotalList' != '') {
+            //   alert('@ViewBag.podmvList');
+            var arrayinv = '@Html.Raw(Json.Encode(ViewBag.InvoiceTotalList))';
+            var arrinv = JSON.parse(arrayinv);
+            //  alert(arr.length);
+            $("#example11 > tbody").html("");
+            for (var i = 0; i < arrinv.length; i++) {
+                var newRow12 = "<tr> \
+                    <td>" + arrinv[i].Name + "</td> \
+					<td>" + arrinv[i].Total.toFixed(2) + "</td> \
+                    </tr>"
+                $('#example11 tbody').append(newRow12);
+            }
+        }
+
+        $('#errordiv').on('click', '#btnerror', function () {
+            $('#errordiv').css("display", "none");
+
+            // e.stopPropagation();
+        });
+
+
+
+        $("#GroupId").change(function () {
+
+            $.get("/Product/GetParentgroup", { id: $("#GroupId").val() }, function (data) {
+
+
+                if (data != null) {
+
+                    $("#parentname").val(data);
+                }
+
+                if (data == null || data == "") {
+
+                }
+
+            });
+        });
+
+        $('#SalesPrice').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+        $('#btnProduct').click(function () {
+            var Code = $('#Code').val();
+
+            var SalesPrice = $('#SalesPrice').val();
+            if (Code == '' || SalesPrice == '') {
+                $('#errordiv1').html('');
+                $('#errordiv1').css("display", "block");
+
+                if (Code == '') {
+                    $('#Code').parents(".form-group:first").addClass("has-error");
+                    $('#errordiv1').append('Product Code cannot be blank <br/>');
+                }
+                else {
+                    $('#Code').parents(".form-group:first").removeClass("has-error");
+                }
+                if (Description == '') {
+                    $('#Description').parents(".form-group:first").addClass("has-error");
+                    $('#errordiv1').append('Enter Product Name cannot be blank <br/>');
+                }
+                else {
+                    $('#Code').parents(".form-group:first").removeClass("has-error");
+                }
+                if (SalesPrice == '') {
+                    $('#SalesPrice').parents(".form-group:first").addClass("has-error");
+                    $('#errordiv1').append('Enter Sales Price <br/>');
+                }
+                else {
+                    $('#SalesPrice').parents(".form-group:first").removeClass("has-error");
+                }
+                return false;
+            }
+            else {
+                $('#errordiv1').html('');
+                $('#errordiv1').css("display", "none");
+                var Description = $('#Description').val();
+                var UnitId = $('#UnitId').val();
+                var GroupId = $('#GroupId').val();
+                Code = $('#parentname').val() + '-' + Code;
+                //    var CategoryId = $('#CategoryId').val();
+
+
+                $('#btnProduct').css("display", "none");
+                $('#loader').css("display", "block");
+                $.post('/Product/Create', { 'Code': Code, 'Description': Description, 'UnitId': UnitId, 'GroupId': GroupId, 'SalesPrice': SalesPrice }, function (data, status) {
+                    if (data == "Duplicate") {
+                        $('#errordiv1').html('');
+                        $('#errordiv1').css("display", "block");
+                        $('#errordiv1').append('Product with this code already exists <br/>');
+                        $('#btnProduct').css("display", "block");
+                        $('#loader').css("display", "none");
+                        return false;
+                    }
+                    if (data != 'Failed') {
+                        dropDownProduct += '<option value="' + data.Id + '">' + data.Code + '</option>';
+
+                        var ctd = $('#drpProduct').closest('td'); //.attr('id');
+                        var ctr = ctd.closest('tr');
+                        // alert(ctd);
+                        ctd.html('');
+                        ctd.html(dropDownProduct);
+                        ctd.find('#drpProduct').val(data.Id);
+
+                        var qty = ctr.find('#quantity').val(1);
+                        var up = ctr.find('#unitprice').val(data.PurchasePrice);
+                        var as = ctr.find('.availabilityhide').val(data.Availability);
+                        var tx = ctr.find('#drpTax').val($('#TaxId').val());
+                        ctr.find('.uom').val(data.UnitId);
+                        ctr.find('.uomhide').val(data.UnitName);
+                        var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                        var am = ctr.find('.amounthide').val(parseFloat(amount));
+
+                        $('#myModal').modal('hide');
+                        $('#Code').val('');
+                        $('#Description').val('');
+                        $('#UnitId').val('');
+                        $('#GroupId').val('');
+
+                        $('#SalesPrice').val('');
+
+                        $('#btnProduct').css("display", "block");
+                        $('#loader').css("display", "none");
+                    }
+                    else {
+                        $('#errordiv1').html('');
+                        $('#errordiv1').css("display", "block");
+                        $('#errordiv1').append('Product create failed <br/>');
+                        $('#btnProduct').css("display", "block");
+                        $('#loader').css("display", "none");
+                        return false;
+                    }
+                });
+            }
+        });
+
+                $('#WarehouseId').change(function () {
+                    var wid = $('#WarehouseId').val();
+                    $.get('/Warehouse/getWarehouse', { 'id': wid }, function (data, status) {
+
+                        $('#DeliveryName').val(data.ContactName);
+                        $('#StreetPoBox').val(data.Address);
+                        $('#Suburb').val(data.Suburb);
+                        $('#City').val(data.Town);
+                        $('#StateRegion').val(data.State);
+                        $('#Country').val(data.Country);
+                        $('#PostalCode').val(data.PIN);
+                    });
+                });
+
+
+                if ('@ViewBag.Id' != '') {
+
+                    var dw = parseInt('@ViewBag.Id');
+
+                    $('#WarehouseId').val(dw);
+                    $('#DeliveryName').val('@ViewBag.ContactName');
+                    $('#StreetPoBox').val('@ViewBag.Address');
+                    $('#Suburb').val('@ViewBag.Suburb');
+                    $('#City').val('@ViewBag.Town');
+                    $('#StateRegion').val('@ViewBag.State');
+                    $('#Country').val('@ViewBag.Country');
+                    $('#PostalCode').val('@ViewBag.PIN');
+
+                }
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnPayment").on("click", function (event) {
+            window.location.href = "/BillPayment/CreateBillPayment?id=" + $('#Id').val();
+            return false;
+        });
+
+        $("#btnDraft").on("click", function (event) {
+            $("#Status").val("Saved As Draft");
+
+        });
+
+        $("#btnSave").on("click", function (event) {
+            $("#Status").val("Saved");
+
+        });
+
+
+
+        $("form").on("submit", function (event) {
+
+            var isValid = $(this).valid();
+
+            if (isValid) {
+                var result = checkproductcount();
+
+                if (result == false) {
+                    $('#errordiv').css("display", "block");
+                    $('#errordiv').append('You must add atleast one line item');
+                    return false;
+                }
+                //  event.preventDefault();
+
+                var Menu = "";
+                var Menutext = "";
+
+                $("input:checkbox[class=checkmenu]:checked").each(function () {
+                    if (Menu == "") {
+                        Menu = $(this).val();
+                        var ctd = $(this).closest('label');
+                        Menutext = ctd.text();
+                    }
+
+                    else {
+                        Menu = Menu + "," + $(this).val();
+                        var ctd = $(this).closest('label');
+                        Menutext = Menutext + "," + ctd.text();
+
+                    }
+
+                });
+
+                $("#ReceiptIds").val(Menu);
+                $("#OrderNo").val(Menutext);
+
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+            }
+
+            else {
+
+                //                $("#btnsave").show();
+            }
+
+
+        });
+
+
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp5").datepicker({ autoclose: true, todayHighlight: true });
+        //		    $("#dp3").on('dp.change', function (ev) {
+        //		        startDate = new Date(ev.date.getFullYear(), ev.date.getMonth(), ev.date.getDate(), 0, 0, 0);
+        //		        if (endDate != null && endDate != 'undefined') {
+        //		            if (endDate < startDate) {
+        //		                alert("End Date is less than Start Date");
+        //		                //   $("#startDate").val("");
+        //		            }
+        //		        }
+        //		    });
+        //		    $("#dp4").on("dp.change", function (ev) {
+        //		        alert('a');
+        //		        endDate = new Date(ev.date.getFullYear(), ev.date.getMonth(), ev.date.getDate(), 0, 0, 0);
+        //		        alert(endDate);
+        //		        if (startDate != null && startDate != 'undefined') {
+        //		            if (endDate < startDate) {
+        //		                alert("End Date is less than Start Date");
+        //		                //	$("#endDate").val("");
+        //		            }
+        //		        }
+        //		    });
+        if ('@ViewBag.podmvList' != '') {
+            //   alert('@ViewBag.podmvList');
+            var array = '@Html.Raw(Json.Encode(ViewBag.podmvList))';
+            var arr = JSON.parse(array);
+            //  alert(arr.length);
+            for (var i = 0; i < arr.length; i++) {
+                //                if (arr[i].ItemId == 0 && arr[i].Description == '' && arr[i].Quantity == 0 && arr[i].Price == 0 && arr[i].Discount == 0 && arr[i].TaxId == 0) {
+                //                    $add_rowEdit(arr[i].ItemId, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].Price, arr[i].Discount, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                //                }
+                //                else {
+                // alert(arr[i].ItemId);
+
+                $add_rowEdit(arr[i].ItemId, arr[i].ItemCode, arr[i].BarCode, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].SecUnitId, arr[i].SecUnitName, arr[i].SecUnitFormula, arr[i].UnitFormula, arr[i].UnitIdSecondary, arr[i].UnitSecondaryName, arr[i].TotalQuantity, arr[i].Price, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                // alert('a');
+                //             }
+            }
+
+            var cntr = 0;
+            var cntrdate = 0;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+
+
+                var descriptionval = description.find('.descriptionhide');
+                var productval = product.find('.producthide');
+                var quantityval = quantity.find('.quantityhide');
+                var ofval = of.find('.ofhide');
+                var unitpriceval = unitprice.find('.unitpricehide');
+                var taxval = tax.find('.taxhide');
+
+                if ('@ViewBag.Supply' != '') {
+                    if (cntr == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   ' + '@ViewBag.Supply' + '<br/>');
+                    }
+                }
+                if ('@ViewBag.Date' != '') {
+                    if ((cntr == 0 || cntr == 1) && cntrdate == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   ' + '@ViewBag.Date' + '<br/>');
+                        cntrdate++;
+                    }
+                }
+                if (!(productval.val() == '' && descriptionval.val() == '' && quantityval.val() == 0 && unitpriceval.val() == 0 && taxval.val() == '')) {
+                    if (productval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        productval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Product not selected <br/>');
+                    }
+
+                    if (quantityval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        quantityval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Quantity cannot be empty<br/>');
+                    }
+                    if (ofval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        ofval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Of cannot be empty<br/>');
+                    }
+
+                    //if (unitpriceval.val() == 0) {
+                    //    cntr++;
+                    //    $('#errordiv').css("display", "block");
+                    //    $('#errordiv').append(cntr + '   Unit Price cannot be empty<br/>');
+                    //    unitpriceval.addClass('input-red-shadow');
+                    //}
+                    if (taxval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        taxval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Tax not selected<br/>');
+                    }
+
+
+                }
+            }
+        }
+        else {
+            for (var i = 0; i < 2; i++) {
+                $add_row();
+            }
+
+        }
+
+        if ('@ViewBag.pcdmvList' != '') {
+            //   alert('@ViewBag.pcdmvList');
+            var array = '@Html.Raw(Json.Encode(ViewBag.pcdmvList))';
+            var arr = JSON.parse(array);
+            //  alert(arr.length);
+            for (var i = 0; i < arr.length; i++) {
+                //                if (arr[i].ItemId == 0 && arr[i].Description == '' && arr[i].Quantity == 0 && arr[i].Price == 0 && arr[i].Discount == 0 && arr[i].TaxId == 0) {
+                //                    $add_rowEdit(arr[i].ItemId, arr[i].ItemName, arr[i].Description, arr[i].Quantity, arr[i].UnitId, arr[i].UnitName, arr[i].Price, arr[i].Discount, arr[i].TaxId, arr[i].TaxName, arr[i].TotalAmount, arr[i].Available);
+                //                }
+                //                else {
+                $add_rowEditCosting(arr[i].CostingType, arr[i].CostingId, arr[i].CostName, arr[i].Description, arr[i].TaxId, arr[i].TaxName, arr[i].CostAmount);
+                //             }
+            }
+
+
+            var MyRows = $('table#example2').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var type = $(MyRows[i]).find('td:eq(0)');
+                var cost = $(MyRows[i]).find('td:eq(1)');
+                var description = $(MyRows[i]).find('td:eq(2)');
+                var tax = $(MyRows[i]).find('td:eq(3)');
+                var amount = $(MyRows[i]).find('td:eq(4)');
+                var costhide = $(MyRows[i]).find('td:eq(5)');
+                var taxhide = $(MyRows[i]).find('td:eq(6)');
+
+
+                var costval = cost.find('.costhide');
+                var taxval = tax.find('.costtaxhide');
+                var amountval = amount.find('.costamounthide');
+
+                if (!(costval.val() != '' && amountval.val() != 0 && taxval.val() == '')) {
+                    if (costval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        costval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Addition or Deduction type not selected <br/>');
+                    }
+
+                    if (taxval.val() == '') {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        taxval.addClass('input-red-shadow');
+                        $('#errordiv').append(cntr + '   Tax on Addition or Deduction not selected<br/>');
+                    }
+
+
+                    if (amountval.val() == 0) {
+                        cntr++;
+                        $('#errordiv').css("display", "block");
+                        $('#errordiv').append(cntr + '   Addition or Deduction amount cannot be empty<br/>');
+                        amountval.addClass('input-red-shadow');
+                    }
+
+                }
+            }
+        }
+
+
+
+
+
+
+
+    });
+
+    var tid = '';
+    $(document).ready(function () {
+        $('#example1').on('click', 'tr', function (e) {
+
+            if ($('#SupplierCode').val() == '') {
+                $('#errordiv').css("display", "block");
+                $('#errordiv').html('');
+                $('#errordiv').append("<i class='fa fa-ban'></i><button id='btnerror' class='close'  type='button'>×</button><b>Error!</b><br />");
+                $('#errordiv').append('Enter Supplier Code Or Supplier Name');
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                return false;
+
+            }
+            else {
+                $('#errordiv').html('');
+                $('#errordiv').css("display", "none");
+            }
+
+            var counter = 0;
+            var totalamount = 0;
+            var subtotal = 0;
+            var addtotalamount = 0;
+            var deducttotalamount = 0;
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            var productresults = [];
+
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var code = $(MyRows[i]).find('td:eq(1)');
+                var barcode = $(MyRows[i]).find('td:eq(2)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+                var amount = $(MyRows[i]).find('td:eq(12)');
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var taxhide = $(MyRows[i]).find('td:eq(14)');
+                var uomhide = $(MyRows[i]).find('td:eq(15)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(16)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var codeval = code.find('#productcode').val();
+                var barcodeval = barcode.find('#barcode').val();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('');
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (codeval != null) {
+                    code.html('');
+                    code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                    code.find('.productcodehide').val(codeval);
+                }
+                if (barcodeval != null) {
+                    barcode.html('');
+                    barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                    barcode.find('.barcodehide').val(barcodeval);
+                }
+
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if ((checkproduct.val() != null) && (checkproduct.val() != '')) {
+
+                    var qty = 0;
+                    var up = 0;
+                    var tx = 0;
+                    var dis = 0;
+                    var ofd = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+                    var calof = of.find('.ofhide').val();
+
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    if (calof != '') {
+                        ofd = parseFloat(calof);
+                    }
+                    else {
+                        ofd = 0;
+                    }
+
+                    var np = qty * up;
+
+                    var currentsub = np;
+                    subtotal += currentsub;
+                    var compoundedsub = currentsub;
+                    var taxid = taxhide.find('.tax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(compoundedsub) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 =(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + compoundedsub) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                //alert(amount1);
+                                var amount1 = Math.ceil(amount1 * 100) / 100;
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Product',
+                                    "Amount": amount1
+                                });
+
+
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(compoundedsub) / 100);
+                            //alert(amount1);
+                            amount1 = (amount1 * 100) / 100;
+                            productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Product',
+                                "Amount": amount1
+                            });
+
+
+                        }
+
+                    }
+
+                }
+            }
+
+
+            var MyRows1 = $('table#example2').find('tr');
+            for (var i = 0; i < MyRows1.length; i++) {
+                var type = $(MyRows1[i]).find('td:eq(0)');
+                var cost = $(MyRows1[i]).find('td:eq(1)');
+                var description = $(MyRows1[i]).find('td:eq(2)');
+                var tax = $(MyRows1[i]).find('td:eq(3)');
+                var amount = $(MyRows1[i]).find('td:eq(4)');
+                var costhide = $(MyRows1[i]).find('td:eq(5)');
+                var taxhide = $(MyRows1[i]).find('td:eq(6)');
+
+                var costval = cost.find('#drpCost').val();
+                var costdtext = cost.find('#drpCost option:selected').text();
+                var descriptionval = description.find('#costdescription').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var amountval = amount.find('#costamount').val();
+
+                if (costval != null) {
+
+                    cost.html('');
+                    cost.html("<input type='text' value=''  class='costhide input-non-active' name='costhide' readonly /> ");
+                    if (costval == '') {
+                        cost.find('.costhide').val('')
+                    }
+                    else {
+                        cost.find('.costhide').val(costdtext);
+                    }
+
+                    costhide.find('.cost').val(costval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='costdescriptionhide input-non-active'  name='costdescriptionhide' readonly /> ");
+                    description.find('.costdescriptionhide').val(descriptionval);
+                }
+
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='costtaxhide input-non-active' name='costtaxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.costtaxhide').val('');
+                    }
+                    else {
+                        tax.find('.costtaxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.costtax').val(taxval);
+                }
+                if (amountval != null) {
+                    amount.html('');
+                    amount.html("<input type='text' value=''  class='costamounthide input-non-active'  style='text-align:right;' name='costamounthide' readonly /> ");
+                    amount.find('.costamounthide').val(amountval);
+                }
+                var checkcost = $(MyRows1[i]).find('.cost');
+                if (checkcost.val() != null && checkcost.val() != '') {
+                    var ca = 0;
+
+                    var ctx = 0;
+
+                    var costaddamount = 0;
+                    var costdeductamount = 0;
+                    var calcostamount = amount.find('.costamounthide').val();
+                    var costtype = type.find('.type').val();
+                    var calcosttax = tax.find('.costtaxhide').val();
+                    if (calcostamount != '') {
+                        ca = parseFloat(calcostamount);
+                    }
+                    else {
+                        ca = 0;
+                    }
+                    //                    if (calcosttax != '') {
+                    //                        var arr = calcosttax.split('-');
+                    //                        ctx = parseFloat(arr[arr.length - 1]);
+                    //                    }
+                    //                    else {
+                    //                        ctx = 0;
+                    //                    }
+                    if (costtype == 'ADD') {
+                        addtotalamount += ca;
+                        // addtaxamount += ctx * ca / 100;
+
+                    }
+                    if (costtype == 'DEDUCT') {
+                        deducttotalamount += ca;
+                        // deducttaxamount += ctx * ca / 100;
+                    }
+
+                    var taxid = taxhide.find('.costtax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(ca) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + ca) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 99, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Others',
+                                    "Amount": amount1
+                                });
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(ca) / 100);
+                            amount1 = Math.round(amount1 * 100) / 100;
+                            productresults.push({ "Id": 99, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Others',
+                                "Amount": amount1
+                            });
+                        }
+                    }
+                }
+            }
+
+
+            if (subtotal != 0) {
+                productresults.push({ "Id": 1, "Name": "Sub Total", "Amount": subtotal });
+            }
+            if (addtotalamount != 0) {
+                productresults.push({ "Id": 8, "Name": "Added Cost", "Amount": addtotalamount });
+            }
+            if (deducttotalamount != 0) {
+                productresults.push({ "Id": 9, "Name": "Deducted Cost", "Amount": -deducttotalamount });
+            }
+
+
+            var result11 = productresults.reduce(function (res, obj) {
+                if (!(obj.Name in res))
+                    res.__array.push(res[obj.Name] = obj);
+                else {
+                    res[obj.Name].Id += obj.Id;
+                    res[obj.Name].Amount += obj.Amount;
+                }
+                return res;
+            }, { __array: [] }).__array
+                .sort(function (a, b) { return a.Id - b.Id; });
+            // alert(result11.length);
+            $("#example11 > tbody").html("");
+            var totalbill = 0;
+            if (result11 != '') {
+                for (var i = 0; i < result11.length; i++) {
+                    totalbill += parseFloat( result11[i].Amount.toFixed(2));
+                    var newRow1 = "<tr> \
+                    <td>" + result11[i].Name + "</td> \
+					<td>" + result11[i].Amount.toFixed(2) + "</td> \
+                    </tr>"
+                    $('#example11 tbody').append(newRow1);
+                }
+            }
+
+            var roundbill = totalbill;
+
+            if (roundbill != totalbill) {
+                var roundamount = roundbill - totalbill;
+                var newrow3 = "<tr> \
+                                <td>Round Off</td> \
+            					<td>" + roundamount.toFixed(2) + "</td> \
+                                </tr>";
+                $('#example11 tbody').append(newrow3);
+            }
+            var tcurrcode = $('#TransactionCurrencyCode').val();
+            var bcurrcode = $('#BaseCurrencyCode').val();
+            if (tcurrcode != '') {
+                tcurrcode = 'In ' + tcurrcode;
+                bcurrcode = 'In ' + bcurrcode;
+            }
+            if (roundbill != 0) {
+                var newrow2 = "<tr> \
+                                <td>Grand Total " + tcurrcode + "</td> \
+            					<td>" + roundbill.toFixed(2) + "</td> \
+                                </tr>";
+                $('#example11 tbody').append(newrow2);
+                if (tcurrcode != bcurrcode) {
+                    var bcurrencytotal = totalbill * currencyrate;
+                  /*  bcurrencytotal = Math.round(bcurrencytotal);*/
+                    var newrow2 = "<tr> \
+                                <td>Grand Total " + bcurrcode + "</td> \
+            					<td>" + bcurrencytotal.toFixed(2) + "</td> \
+                                </tr>";
+                    $('#example11 tbody').append(newrow2);
+                }
+            }
+
+            if ((tid == this.id && counter != 1) || (tid != this.id)) {
+
+                tid = this.id;
+
+
+
+                var product = $(this).find('td.products_0');
+                var productval = $(this).find('.product').val();
+                var code = $(this).find('td.productcode_0');
+                var codetext = code.find('.productcodehide').val();
+                var barcode = $(this).find('td.barcode_0');
+                var barcodetext = barcode.find('.barcodehide').val();
+                var description = $(this).find('td.description_0');
+                var descriptiontext = description.find('.descriptionhide').val();
+                var quantity = $(this).find('td.quantity_0');
+                var quantitytext = quantity.find('.quantityhide').val();
+                var unitprice = $(this).find('td.unitprice_0');
+                var unitpricetext = unitprice.find('.unitpricehide').val();
+                var tax = $(this).find('td.taxes_0');
+                var taxval = $(this).find('.tax').val();
+                var uom = $(this).find('td.uom_0');
+                var uomval = $(this).find('.uom').val();
+                var uomtext = $(this).find('.uomhide').val();
+                var baseuom = $(this).find('td.baseuom_0');
+                var baseuomval = $(this).find('.baseuom').val();
+                var baseuomtext = $(this).find('.baseuomhide').val();
+                var secuomval = $(this).find('.secuom').val();
+                var secuomtext = $(this).find('.secuomhide').val();
+                var of = $(this).find('td.of_0');
+                var oftext = of.find('.ofhide').val();
+
+                if (productval != '') {
+                    var dropDownUOM = '<select id="drpUom" class="form-control">';
+
+
+                    dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+                    if (!(secuomval == null || secuomval == '')) {
+
+                        dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+                    }
+                    dropDownUOM += '</select>';
+
+                    uom.html('');
+                    uom.html(dropDownUOM);
+                    uom.find('#drpUom').val(uomval);
+                }
+
+
+
+                product.html('');
+                product.html(dropDownProduct);
+                code.html('');
+                code.html("<input id='productcode' style='text-align:left;' class ='form-control'  type='text' value=''/> ");
+                barcode.html('');
+                barcode.html("<div class='textarea-panel'><textarea id='barcode' class ='form-control '  style='width: 100%; height: 200%;'  value=''/> </div>");
+                description.html('');
+                description.html("<div class='textarea-panel'><textarea id='description' class ='form-control '  style='width: 100%; height: 200%;'  value=''/> </div>");
+                quantity.html('');
+                quantity.html("<input id='quantity' style='text-align:right;' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                unitprice.html('');
+                unitprice.html("<input id='unitprice' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                of.html('');
+                of.html("<input id='of' class ='form-control' style='text-align:right;' type='text' value=''/> ");
+                tax.html('');
+                tax.html(dropDownTax);
+
+                //   if (productval != 'null') {
+                product.find('#drpProduct').val(productval);
+                //  }
+                code.find('#productcode').val(codetext);
+                barcode.find('#barcode').val(barcodetext);
+                description.find('#description').val(descriptiontext);
+                quantity.find('#quantity').val(quantitytext);
+                unitprice.find('#unitprice').val(unitpricetext);
+                of.find('#of').val(oftext);
+                // if (taxval != 'null') {
+                tax.find('#drpTax').val(taxval);
+
+                //   }
+
+
+            }
+
+            e.stopPropagation();
+
+
+
+        })
+        .on('click', '#description,#drpProduct,#drpUom,#quantity,#unitprice,#drpTax,#taxhide,#amounthide,#of,#productcode,#barcode', function (e) {
+
+            e.stopPropagation();
+        })
+        //        .on('keyup', '#description,#barcode', function (e) {
+        //            //alert($(this).val());
+        //            var bar = $(this).val() + ', ';
+        //
+        //            $(this).val(bar);
+        //            e.stopPropagation();
+        //        })
+         .on('change', '#drpProduct', function (e) {
+
+             var pid = $('#drpProduct').val();
+             var trObj = $(this).closest('tr');
+
+             if (pid == '') {
+
+                 var qty = trObj.find('#quantity').val('');
+                 var up = trObj.find('#unitprice').val('');
+                 var as = trObj.find('.availabilityhide').val('');
+                 var tx = trObj.find('#drpTax').val($('').val());
+                 var am = trObj.find('.amounthide').val('');
+                 var uom = trObj.find('td.uom_0');
+
+                 var pcode = trObj.find('#productcode').val('');
+                 trObj.find('.baseuom').val('');
+                 trObj.find('.baseuomhide').val('');
+                 trObj.find('.ofhide').val('');
+                 trObj.find('#of').val('');
+                 trObj.find('.secuom').val('');
+                 trObj.find('.secuomhide').val('');
+                 trObj.find('.secofhide').val('');
+                 uom.html('');
+                 uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                 uom.find('.uomhide').val('');
+                 trObj.find('.uom').val('');
+                 trObj.find('.totalquantityhide').val('');
+             }
+             else if (pid != 'addnew') {
+                 $.get('/Product/getSelectedProduct', { 'id': pid }, function (data, status) {
+                     var pcode = trObj.find('#productcode').val(data.Name);
+                     var qty = trObj.find('#quantity').val(1);
+                     var up = trObj.find('#unitprice').val(data.PurchasePrice);
+                     var as = trObj.find('.availabilityhide').val(data.Availability);
+
+                     var tx = trObj.find('#drpTax').val(1);
+                     trObj.find('.uom').val(data.UnitIdSecondary);
+                     trObj.find('.uomhide').val(data.UnitNameSecondary);
+                     trObj.find('.baseuom').val(data.UnitId);
+                     trObj.find('.baseuomhide').val(data.UnitName);
+                     trObj.find('.ofhide').val(data.UnitFormula);
+                     trObj.find('.secuom').val(data.UnitIdSecondary);
+                     trObj.find('.secuomhide').val(data.UnitNameSecondary);
+                     trObj.find('.secofhide').val(data.UnitFormula);
+                     trObj.find('#of').val(data.UnitFormula);
+                     var uom = trObj.find('td.uom_0');
+                     var uomval = trObj.find('.uom').val();
+                     var uomtext = trObj.find('.uomhide').val();
+                     var baseuom = trObj.find('td.baseuom_0');
+                     var baseuomval = trObj.find('.baseuom').val();
+                     var baseuomtext = trObj.find('.baseuomhide').val();
+                     var secuomval = trObj.find('.secuom').val();
+                     var secuomtext = trObj.find('.secuomhide').val();
+
+                     var dropDownUOM = '<select id="drpUom" class="form-control">';
+                     if (!(secuomval == null || secuomval == '')) {
+                     dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+
+                 }
+                         dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+
+                     dropDownUOM += '</select>';
+
+                     uom.html('');
+                     uom.html(dropDownUOM);
+                     trObj.find('.totalquantityhide').val(qty.val());
+                     var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                     var am = trObj.find('.amounthide').val(parseFloat(amount));
+                 });
+             }
+             else {
+                 $('#myModal').modal('show');
+                 var pcode = trObj.find('#productcode').val('');
+                 var qty = trObj.find('#quantity').val('');
+                 var up = trObj.find('#unitprice').val('');
+                 var as = trObj.find('.availabilityhide').val('');
+                 var tx = trObj.find('#drpTax').val($('').val());
+                 var am = trObj.find('.amounthide').val('');
+                 trObj.find('.uom').val('');
+                 trObj.find('.uomhide').val('');
+             }
+
+             e.stopPropagation();
+         })
+        //          .on('change', '#productcode', function (e) {
+        //              e.stopPropagation();
+        //          })
+         .on('keydown.autocomplete', '#productcode', function (e) {
+
+             $(this).autocomplete({
+                 source: function (request, response) {
+                     $.ajax({
+                         url: '/Product/getProductsAuto',
+                         data: { query: request.term },
+                         dataType: 'json',
+                         type: 'POST',
+                         success: function (data) {
+
+                             response($.map(data, function (item) {
+
+                                 return {
+                                     label: item.Code,
+                                     value: item.Id
+                                 }
+                             }));
+                         }
+                     })
+                 },
+                 change: function (event, ui) {
+                     var trObj = $(this).closest('tr');
+                     if (ui.item == null || ui.item == undefined) {
+                         var qty = trObj.find('#quantity').val('');
+                         var up = trObj.find('#unitprice').val('');
+                         var as = trObj.find('.availabilityhide').val('');
+                         var tx = trObj.find('#drpTax').val($('').val());
+                         var am = trObj.find('.amounthide').val('');
+                         var uom = trObj.find('td.uom_0');
+
+
+                         trObj.find('.baseuom').val('');
+                         trObj.find('.baseuomhide').val('');
+                         trObj.find('.ofhide').val('');
+                         trObj.find('#of').val('');
+                         trObj.find('.secuom').val('');
+                         trObj.find('.secuomhide').val('');
+                         trObj.find('.secofhide').val('');
+                         uom.html('');
+                         uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                         uom.find('.uomhide').val('');
+                         trObj.find('.uom').val('');
+                         trObj.find('.totalquantityhide').val('');
+                     }
+                 },
+                 select: function (event, ui) {
+                     // $('#SupplierName').val(ui.item.label);
+                     $('#drpProduct').val(ui.item.value);
+                     $('#productcode').val(ui.item.label);
+                     var trObj = $(this).closest('tr');
+                     $.get('/Product/getSelectedProductAuto', { 'query': ui.item.value }, function (data, status) {
+                         if (data == '') {
+
+
+                             var qty = trObj.find('#quantity').val('');
+                             var up = trObj.find('#unitprice').val('');
+                             var as = trObj.find('.availabilityhide').val('');
+                             var tx = trObj.find('#drpTax').val($('').val());
+                             var am = trObj.find('.amounthide').val('');
+                             var uom = trObj.find('td.uom_0');
+
+
+                             trObj.find('.baseuom').val('');
+                             trObj.find('.baseuomhide').val('');
+                             trObj.find('.ofhide').val('');
+                             trObj.find('#of').val('');
+                             trObj.find('.secuom').val('');
+                             trObj.find('.secuomhide').val('');
+                             trObj.find('.secofhide').val('');
+                             uom.html('');
+                             uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                             uom.find('.uomhide').val('');
+                             trObj.find('.uom').val('');
+                             trObj.find('.totalquantityhide').val('');
+                         }
+                         else {
+
+                             var qty = trObj.find('#quantity').val(1);
+                             var up = trObj.find('#unitprice').val(data.SalesPrice);
+                             var as = trObj.find('.availabilityhide').val(data.Availability);
+
+                             var tx = trObj.find('#drpTax').val(1);
+                             trObj.find('.uom').val(data.UnitIdSecondary);
+                             trObj.find('.uomhide').val(data.UnitNameSecondary);
+                             trObj.find('.baseuom').val(data.UnitId);
+                             trObj.find('.baseuomhide').val(data.UnitName);
+                             trObj.find('.ofhide').val(data.UnitFormula);
+                             trObj.find('.secuom').val(data.UnitIdSecondary);
+                             trObj.find('.secuomhide').val(data.UnitNameSecondary);
+                             trObj.find('.secofhide').val(data.UnitFormula);
+                             trObj.find('#of').val(data.UnitFormula);
+                             var uom = trObj.find('td.uom_0');
+                             var uomval = trObj.find('.uom').val();
+                             var uomtext = trObj.find('.uomhide').val();
+                             var baseuom = trObj.find('td.baseuom_0');
+                             var baseuomval = trObj.find('.baseuom').val();
+                             var baseuomtext = trObj.find('.baseuomhide').val();
+                             var secuomval = trObj.find('.secuom').val();
+                             var secuomtext = trObj.find('.secuomhide').val();
+
+                             var dropDownUOM = '<select id="drpUom" class="form-control">';
+                             if (!(secuomval == null || secuomval == '')) {
+                             dropDownUOM += '<option value="' + secuomval + '">' + secuomtext + '</option>';
+
+                         }
+                                 dropDownUOM += '<option value="' + baseuomval + '">' + baseuomtext + '</option>';
+
+                             dropDownUOM += '</select>';
+
+                             uom.html('');
+                             uom.html(dropDownUOM);
+                             trObj.find('.totalquantityhide').val(qty.val());
+                             var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                             var am = trObj.find('.amounthide').val(parseFloat(amount));
+
+                         }
+                     });
+                     return false;
+                 },
+                 minLength: 1
+             });
+             e.stopPropagation();
+         })
+          .on('keypress', '#quantity,#of', function (event) {
+
+              if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                  return true;
+              }
+
+              if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                  event.preventDefault();
+                  return false;
+
+              }
+              if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                  event.preventDefault();
+              }
+              event.stopPropagation();
+
+          })
+          .on('change', '#quantity, #unitprice,#of', function (event) {
+
+              var trObj = $(this).closest('tr');
+              var qtyem = trObj.find('#quantity');
+              var upem = trObj.find('#unitprice');
+              var ofem = trObj.find('#of');
+
+
+              var amem = trObj.find('.amounthide');
+              var qty = qtyem.val();
+              var up = upem.val();
+              var of = ofem.val();
+
+              if (qty == '.' || qty == '') {
+                  qty = 0;
+                  qtyem.val(0);
+
+              }
+              if (up == '.' || up == '') {
+                  up = 0;
+                  upem.val(0);
+              }
+              if (of == '.' || of == '' || of == 0) {
+                  of = 1;
+                  ofem.val(1);
+              }
+              var totqty = parseFloat(qty) ;
+              trObj.find('.totalquantityhide').val(totqty);
+              var pq = parseFloat(qty) * parseFloat(up) ;
+
+              var am = pq;
+
+              amem.val(am.toFixed(2));
+              event.stopPropagation();
+          })
+          .on('click', '.del_ExpenseRow', function (e) {
+              $(this).closest('tr').remove();
+
+              //  e.stopPropagation();
+
+          })
+          .on('change', '#drpUom', function (e) {
+
+              var uid = $('#drpUom').val();
+              var trObj = $(this).closest('tr');
+
+              var scm = trObj.find('.secuom').val();
+              var soh = trObj.find('.secofhide');
+              if (uid == scm) {
+
+                  //  alert(soh);
+                  var qty = trObj.find('#quantity');
+                  var up = trObj.find('#unitprice');
+
+                  //  trObj.find('#totalquantityhide').val();
+
+                  trObj.find('#of').val(soh.val());
+                  var totamount = parseFloat(qty.val());
+                  trObj.find('.totalquantityhide').val(totamount);
+                  var amount = parseFloat(qty.val()) * parseFloat(up.val());
+                  var am = trObj.find('.amounthide').val(parseFloat(amount));
+              }
+              else {
+                  var qty = trObj.find('#quantity');
+                  trObj.find('#of').val(1);
+                  trObj.find('.totalquantityhide').val(qty.val());
+                  var up = trObj.find('#unitprice');
+                  var amount = parseFloat(qty.val()) * parseFloat(up.val()) / parseFloat(soh.val());
+                  trObj.find('.amounthide').val(parseFloat(amount).toFixed(2));
+              }
+              e.stopPropagation();
+          }).on('keydown', '.producthide', function (e) {
+
+              if (e.keyCode == 9) {
+                  $(this).trigger('click');
+              }
+          }).on('keydown', '.amounthide', function (e) {
+
+              if (e.keyCode == 9) {
+
+                  $('#add_ExpenseRow').trigger('click');
+              }
+          });
+
+
+
+        var tcid = '';
+
+        $('#example2').on('click', 'tr', function (e) {
+
+            var result = checkproductcount();
+
+            if (result == false) {
+                $('#errordiv').css("display", "block");
+                $('#errordiv').html('');
+                $('#errordiv').append("<i class='fa fa-ban'></i><button id='btnerror' class='close'  type='button'>×</button><b>Error!</b><br />");
+                $('#errordiv').append('You must add atleast one line item');
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                return false;
+            }
+
+            var counter = 0;
+            var totalamount = 0;
+            var subtotal = 0;
+            var addtotalamount = 0;
+            var deducttotalamount = 0;
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            var productresults = [];
+
+            var MyRows = $('table#example2').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var type = $(MyRows[i]).find('td:eq(0)');
+                var cost = $(MyRows[i]).find('td:eq(1)');
+                var description = $(MyRows[i]).find('td:eq(2)');
+                var tax = $(MyRows[i]).find('td:eq(3)');
+                var amount = $(MyRows[i]).find('td:eq(4)');
+                var costhide = $(MyRows[i]).find('td:eq(5)');
+                var taxhide = $(MyRows[i]).find('td:eq(6)');
+
+                var costval = cost.find('#drpCost').val();
+                var costdtext = cost.find('#drpCost option:selected').text();
+                var descriptionval = description.find('#costdescription').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var amountval = amount.find('#costamount').val();
+
+                if (costval != null) {
+                    counter = 1;
+                    cost.html('');
+                    cost.html("<input type='text' value=''  class='costhide input-non-active' name='costhide' readonly /> ");
+                    if (costval == '') {
+                        cost.find('.costhide').val('')
+                    }
+                    else {
+                        cost.find('.costhide').val(costdtext);
+                    }
+
+                    costhide.find('.cost').val(costval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='costdescriptionhide input-non-active'  name='costdescriptionhide' readonly /> ");
+                    description.find('.costdescriptionhide').val(descriptionval);
+                }
+
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='costtaxhide input-non-active' name='costtaxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.costtaxhide').val('');
+                    }
+                    else {
+                        tax.find('.costtaxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.costtax').val(taxval);
+                }
+                if (amountval != null) {
+                    amount.html('');
+                    amount.html("<input type='text' value=''  class='costamounthide input-non-active'  style='text-align:right;' name='costamounthide' readonly /> ");
+                    amount.find('.costamounthide').val(amountval);
+                }
+                var checkcost = $(MyRows[i]).find('.cost');
+                if (checkcost.val() != null && checkcost.val() != '') {
+                    var ca = 0;
+
+                    var ctx = 0;
+
+                    var costaddamount = 0;
+                    var costdeductamount = 0;
+                    var calcostamount = amount.find('.costamounthide').val();
+                    var costtype = type.find('.type').val();
+                    var calcosttax = tax.find('.costtaxhide').val();
+                    if (calcostamount != '') {
+                        ca = parseFloat(calcostamount);
+                    }
+                    else {
+                        ca = 0;
+                    }
+                    //                    if (calcosttax != '') {
+                    //                        var arr = calcosttax.split('-');
+                    //                        ctx = parseFloat(arr[arr.length - 1]);
+                    //                    }
+                    //                    else {
+                    //                        ctx = 0;
+                    //                    }
+                    if (costtype == 'ADD') {
+                        addtotalamount += ca;
+                        // addtaxamount += ctx * ca / 100;
+
+                    }
+                    if (costtype == 'DEDUCT') {
+                        deducttotalamount += ca;
+                        // deducttaxamount += ctx * ca / 100;
+                    }
+
+                    var taxid = taxhide.find('.costtax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(ca) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + ca) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+
+
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 99, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Others',
+                                    "Amount": amount1
+                                });
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(ca) / 100);
+                            amount1 = Math.round(amount1 * 100) / 100;
+                            productresults.push({ "Id": 99, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Others',
+                                "Amount": amount1
+                            });
+                        }
+                    }
+                }
+            }
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var code = $(MyRows[i]).find('td:eq(1)');
+                var barcode = $(MyRows[i]).find('td:eq(2)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+                var amount = $(MyRows[i]).find('td:eq(12)');
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var taxhide = $(MyRows[i]).find('td:eq(14)');
+                var uomhide = $(MyRows[i]).find('td:eq(15)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(16)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var codeval = code.find('#productcode').val();
+                var barcodeval = barcode.find('#barcode').val();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('');
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (codeval != null) {
+                    code.html('');
+                    code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                    code.find('.productcodehide').val(codeval);
+                }
+                if (barcodeval != null) {
+                    barcode.html('');
+                    barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                    barcode.find('.barcodehide').val(barcodeval);
+                }
+
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if ((checkproduct.val() != null) && (checkproduct.val() != '')) {
+
+                    var qty = 0;
+                    var up = 0;
+                    var tx = 0;
+                    var dis = 0;
+                    var ofd = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+                    var calof = of.find('.ofhide').val();
+
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    if (calof != '') {
+                        ofd = parseFloat(calof);
+                    }
+                    else {
+                        ofd = 0;
+                    }
+
+                    var np = qty * up ;
+
+                    var currentsub = np;
+                    subtotal += currentsub;
+                    var compoundedsub = currentsub;
+                    var taxid = taxhide.find('.tax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(compoundedsub) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + compoundedsub) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                //alert(amount1);
+                                var amount1 = Math.ceil(amount1 * 100) / 100;
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Product',
+                                    "Amount": amount1
+                                });
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(compoundedsub) / 100);
+                            //alert(amount1);
+                            amount1 = (amount1 * 100) / 100;
+                            productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Product',
+                                "Amount": amount1
+                            });
+
+                        }
+
+                    }
+
+                }
+            }
+            if (subtotal != 0) {
+                productresults.push({ "Id": 1, "Name": "Sub Total", "Amount": subtotal });
+            }
+            if (addtotalamount != 0) {
+                productresults.push({ "Id": 8, "Name": "Added Cost", "Amount": addtotalamount });
+            }
+            if (deducttotalamount != 0) {
+                productresults.push({ "Id": 9, "Name": "Deducted Cost", "Amount": -deducttotalamount });
+            }
+
+
+            var result11 = productresults.reduce(function (res, obj) {
+                if (!(obj.Name in res))
+                    res.__array.push(res[obj.Name] = obj);
+                else {
+                    res[obj.Name].Id += obj.Id;
+                    res[obj.Name].Amount += obj.Amount;
+                }
+                return res;
+            }, { __array: [] }).__array
+                .sort(function (a, b) { return a.Id - b.Id; });
+            // alert(result11.length);
+            $("#example11 > tbody").html("");
+            var totalbill = 0;
+            if (result11 != '') {
+                for (var i = 0; i < result11.length; i++) {
+                    totalbill += parseFloat(result11[i].Amount.toFixed(2));
+                    var newRow1 = "<tr> \
+                    <td>" + result11[i].Name + "</td> \
+					<td>" + result11[i].Amount.toFixed(2) + "</td> \
+                    </tr>"
+                    $('#example11 tbody').append(newRow1);
+                }
+            }
+            var roundbill = totalbill;
+            if (roundbill != totalbill) {
+                var roundamount = roundbill - totalbill;
+                var newrow3 = "<tr> \
+                                <td>Round Off</td> \
+            					<td>" + roundamount.toFixed(2) + "</td> \
+                                </tr>";
+                $('#example11 tbody').append(newrow3);
+            }
+            var tcurrcode = $('#TransactionCurrencyCode').val();
+            var bcurrcode = $('#BaseCurrencyCode').val();
+            if (tcurrcode != '') {
+                tcurrcode = 'In ' + tcurrcode;
+                bcurrcode = 'In ' + bcurrcode;
+            }
+            if (roundbill != 0) {
+                var newrow2 = "<tr> \
+                                <td>Grand Total " + tcurrcode + "</td> \
+            					<td>" + roundbill.toFixed(2) + "</td> \
+                                </tr>";
+                $('#example11 tbody').append(newrow2);
+                if (tcurrcode != bcurrcode) {
+                    var bcurrencytotal = totalbill * currencyrate;
+                   // bcurrencytotal = bcurrencytotal;
+                    var newrow2 = "<tr> \
+                                <td>Grand Total " + bcurrcode + "</td> \
+            					<td>" + bcurrencytotal.toFixed(2) + "</td> \
+                                </tr>";
+                    $('#example11 tbody').append(newrow2);
+                }
+            }
+            if ((tcid == this.id && counter != 1) || (tcid != this.id)) {
+
+                tcid = this.id;
+
+
+                var type = $(this).find('td.type_0');
+                var typeval = $(this).find('.type').val();
+                var cost = $(this).find('td.costs_0');
+                var costval = $(this).find('.cost').val();
+                var description = $(this).find('td.costdescription_0');
+                var descriptiontext = description.find('.costdescriptionhide').val();
+                var tax = $(this).find('td.costtaxes_0');
+                var taxval = $(this).find('.costtax').val();
+                var amount = $(this).find('td.costamount_0');
+                var amounttext = $(this).find('.costamounthide').val();
+
+
+
+
+                cost.html('');
+                if (typeval == 'ADD') {
+                    cost.html(dropDownAddCost);
+                }
+                else {
+                    cost.html(dropDownDeductCost);
+                }
+                description.html('');
+                description.html("<div class='textarea-panel'><textarea id='costdescription' class ='form-control '  style='width: 100%; height: 200%;'  value=''/> </div>");
+                tax.html('');
+                tax.html(dropDownTax);
+                amount.html('');
+                amount.html("<div class='textarea-panel'><input type='text' id='costamount' class ='form-control '  style='text-align:right;'  value=''/> </div>");
+
+                cost.find('#drpCost').val(costval);
+
+                description.find('#costdescription').val(descriptiontext);
+
+                tax.find('#drpTax').val(taxval);
+                amount.find('#costamount').val(amounttext);
+
+
+            }
+
+            e.stopPropagation();
+
+
+
+        })
+        .on('click', '#costdescription,#drpCost,#drpTax,#taxhide,#costamount', function (e) {
+
+            e.stopPropagation();
+        })
+
+         .on('change', '#drpCost', function (e) {
+             var pid = $('#drpCost').val();
+             var trObj = $(this).closest('tr');
+             if (pid != '') {
+                 var tx = trObj.find('#drpTax').val($('#TaxId').val());
+             }
+             else {
+                 $('#myModal').modal('show');
+
+
+             }
+
+             e.stopPropagation();
+         })
+          .on('keypress', '#costamount', function (event) {
+
+              if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                  return true;
+              }
+
+              if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                  event.preventDefault();
+                  return false;
+
+              }
+              if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                  event.preventDefault();
+              }
+              event.stopPropagation();
+
+          })
+          .on('change', '#quantity, #unitprice, #discount', function (event) {
+
+              var trObj = $(this).closest('tr');
+              var qtyem = trObj.find('#quantity');
+              var upem = trObj.find('#unitprice');
+
+
+
+              var amem = trObj.find('.amounthide');
+              var qty = qtyem.val();
+              var up = upem.val();
+
+
+              if (qty == '.' || qty == '') {
+                  qty = 0;
+                  qtyem.val(0);
+
+              }
+              if (up == '.' || up == '') {
+                  up = 0;
+                  upem.val(0);
+              }
+
+              var pq = parseFloat(qty) * parseFloat(up);
+
+              amem.val(pq.toFixed(2));
+              event.stopPropagation();
+          })
+          .on('click', '.del_ExpenseRowCost', function (e) {
+
+              $(this).closest('tr').remove();
+              if ($('table#example2').find('tbody tr').length == 0) {
+                  $('table#example2').find('thead tr').remove();
+              }
+              //  e.stopPropagation();
+
+          });
+
+
+
+
+        $(document).click(function (e) {
+            $(".ignore").click(function () {
+                return false;
+            });
+            // alert('a');
+            //            $(".ui-autocomplete").on("click", function () {
+            //                alert('aui');
+            //                return false;
+            //            });
+            //            $("#productcode").on("click", function () {
+            //                alert('ap');
+            //                return false;
+            //            });
+            var uid = e.target.id;
+            if (uid.substring(0, 5) == "ui-id") {
+                return false;
+            }
+            //            var checkboxes = document.getElementById("checkboxes");
+            //            var expanded = false;
+            //            if (!expanded) {
+            //                checkboxes.style.display = "block";
+            //                expanded = true;
+            //            } else {
+            //              checkboxes.style.display = "none";
+            //                expanded = false;
+            //            }
+            var counter = 0;
+            var totalamount = 0;
+            var subtotal = 0;
+            var addtotalamount = 0;
+            var deducttotalamount = 0;
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            var productresults = [];
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var code = $(MyRows[i]).find('td:eq(1)');
+                var barcode = $(MyRows[i]).find('td:eq(2)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+                var amount = $(MyRows[i]).find('td:eq(12)');
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var taxhide = $(MyRows[i]).find('td:eq(14)');
+                var uomhide = $(MyRows[i]).find('td:eq(15)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(16)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var codeval = code.find('#productcode').val();
+                var barcodeval = barcode.find('#barcode').val();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('');
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (codeval != null) {
+                    code.html('');
+                    code.html("<input type='text' value=''  class='productcodehide input-non-active'  name='productcodehide' readonly /> ");
+                    code.find('.productcodehide').val(codeval);
+                }
+                if (barcodeval != null) {
+                    barcode.html('');
+                    barcode.html("<input type='text' value=''  class='barcodehide input-non-active'  name='barcodehide' readonly /> ");
+                    barcode.find('.barcodehide').val(barcodeval);
+                }
+
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+
+              
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if ((checkproduct.val() != null) && (checkproduct.val() != '')) {
+
+                    var qty = 0;
+                    var up = 0;
+                    var tx = 0;
+                    var dis = 0;
+                    var ofd = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+                    var calof = of.find('.ofhide').val();
+
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+                    if (calof != '') {
+                        ofd = parseFloat(calof);
+                    }
+                    else {
+                        ofd = 0;
+                    }
+
+                    var np = qty * up;
+
+                    var currentsub = np;
+                    subtotal += currentsub;
+                    var compoundedsub = currentsub;
+                    var taxid = taxhide.find('.tax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(compoundedsub) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+
+                                    var crate = (effectiveTotal + compoundedsub) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = (amount1 * 100) / 100;
+
+                                }
+                                var amount1 = Math.ceil(amount1 * 100) / 100;
+                               
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Product',
+                                    "Amount": amount1
+                                });
+
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+
+                            var amount1 = (taxMain[0].Rate * parseFloat(compoundedsub) / 100);
+                            //alert(amount1);
+                            amount1 = (amount1 * 100) / 100;
+                            productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Product',
+                                "Amount": amount1
+                            });
+
+
+                        }
+
+                    }
+
+                }
+            }
+            var MyRows = $('table#example2').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var type = $(MyRows[i]).find('td:eq(0)');
+                var cost = $(MyRows[i]).find('td:eq(1)');
+                var description = $(MyRows[i]).find('td:eq(2)');
+                var tax = $(MyRows[i]).find('td:eq(3)');
+                var amount = $(MyRows[i]).find('td:eq(4)');
+                var costhide = $(MyRows[i]).find('td:eq(5)');
+                var taxhide = $(MyRows[i]).find('td:eq(6)');
+
+                var costval = cost.find('#drpCost').val();
+                var costdtext = cost.find('#drpCost option:selected').text();
+                var descriptionval = description.find('#costdescription').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var amountval = amount.find('#costamount').val();
+
+                if (costval != null) {
+                    counter = 1;
+                    cost.html('');
+                    cost.html("<input type='text' value=''  class='costhide input-non-active' name='costhide' readonly /> ");
+                    if (costval == '') {
+                        cost.find('.costhide').val('')
+                    }
+                    else {
+                        cost.find('.costhide').val(costdtext);
+                    }
+
+                    costhide.find('.cost').val(costval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='costdescriptionhide input-non-active'  name='costdescriptionhide' readonly /> ");
+                    description.find('.costdescriptionhide').val(descriptionval);
+                }
+
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='costtaxhide input-non-active' name='costtaxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.costtaxhide').val('');
+                    }
+                    else {
+                        tax.find('.costtaxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.costtax').val(taxval);
+                }
+                if (amountval != null) {
+                    amount.html('');
+                    amount.html("<input type='text' value=''  class='costamounthide input-non-active'  style='text-align:right;' name='costamounthide' readonly /> ");
+                    amount.find('.costamounthide').val(amountval);
+                }
+                var checkcost = $(MyRows[i]).find('.cost');
+                if (checkcost.val() != null && checkcost.val() != '') {
+                    var ca = 0;
+
+                    var ctx = 0;
+
+                    var costaddamount = 0;
+                    var costdeductamount = 0;
+                    var calcostamount = amount.find('.costamounthide').val();
+                    var costtype = type.find('.type').val();
+                    var calcosttax = tax.find('.costtaxhide').val();
+                    if (calcostamount != '') {
+                        ca = parseFloat(calcostamount);
+                    }
+                    else {
+                        ca = 0;
+                    }
+                    //                    if (calcosttax != '') {
+                    //                        var arr = calcosttax.split('-');
+                    //                        ctx = parseFloat(arr[arr.length - 1]);
+                    //                    }
+                    //                    else {
+                    //                        ctx = 0;
+                    //                    }
+                    if (costtype == 'ADD') {
+                        addtotalamount += ca;
+                        // addtaxamount += ctx * ca / 100;
+
+                    }
+                    if (costtype == 'DEDUCT') {
+                        deducttotalamount += ca;
+                        // deducttaxamount += ctx * ca / 100;
+                    }
+
+                    var taxid = taxhide.find('.costtax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(ca) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + ca) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+
+
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 99, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Others',
+                                    "Amount": amount1
+                                });
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(ca) / 100);
+                            amount1 = Math.round(amount1 * 100) / 100;
+                            productresults.push({ "Id": 99, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Others',
+                                "Amount": amount1
+                            });
+                        }
+                    }
+                }
+            }
+            if (subtotal != 0) {
+                productresults.push({ "Id": 1, "Name": "Sub Total", "Amount": subtotal });
+            }
+            if (addtotalamount != 0) {
+                productresults.push({ "Id": 8, "Name": "Added Cost", "Amount": addtotalamount });
+            }
+            if (deducttotalamount != 0) {
+                productresults.push({ "Id": 9, "Name": "Deducted Cost", "Amount": -deducttotalamount });
+            }
+
+
+            var result11 = productresults.reduce(function (res, obj) {
+                if (!(obj.Name in res))
+                    res.__array.push(res[obj.Name] = obj);
+                else {
+                    res[obj.Name].Id += obj.Id;
+                    res[obj.Name].Amount += obj.Amount;
+                }
+                return res;
+            }, { __array: [] }).__array
+                .sort(function (a, b) { return a.Id - b.Id; });
+            // alert(result11.length);
+            $("#example11 > tbody").html("");
+            var totalbill = 0;
+            if (result11 != '') {
+                for (var i = 0; i < result11.length; i++) {
+                    totalbill += parseFloat(result11[i].Amount.toFixed(2));
+                    var newRow1 = "<tr> \
+                    <td>" + result11[i].Name + "</td> \
+					<td>" + result11[i].Amount.toFixed(2) + "</td> \
+                    </tr>"
+                    $('#example11 tbody').append(newRow1);
+                }
+            }
+            var roundbill = totalbill;
+            if (roundbill != totalbill) {
+                var roundamount = roundbill - totalbill;
+                var newrow3 = "<tr> \
+                                <td>Round Off</td> \
+            					<td>" + roundamount.toFixed(2) + "</td> \
+                                </tr>";
+                $('#example11 tbody').append(newrow3);
+            }
+            var tcurrcode = $('#TransactionCurrencyCode').val();
+            var bcurrcode = $('#BaseCurrencyCode').val();
+            if (tcurrcode != '') {
+                tcurrcode = 'In ' + tcurrcode;
+                bcurrcode = 'In ' + bcurrcode;
+            }
+            if (roundbill != 0) {
+                var newrow2 = "<tr> \
+                                <td>Grand Total " + tcurrcode + "</td> \
+            					<td>" + roundbill.toFixed(2) + "</td> \
+                                </tr>";
+                $('#example11 tbody').append(newrow2);
+                if (tcurrcode != bcurrcode) {
+                    var bcurrencytotal = totalbill * currencyrate;
+                   /* bcurrencytotal = bcurrencytotal;*/
+                    var newrow2 = "<tr> \
+                                <td>Grand Total " + bcurrcode + "</td> \
+            					<td>" + bcurrencytotal.toFixed(2) + "</td> \
+                                </tr>";
+                    $('#example11 tbody').append(newrow2);
+                }
+            }
+
+        });
+    });
+
+
+
+    $(document).ready(function () {
+        dropDownProduct = '<select id="drpProduct" class="form-control">';
+
+        dropDownProduct += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        dropDownProduct += '<option  value="' + 'addnew' + '" ><a data-toggle="modal" data-target="#myModal" href="#">ADD NEW</a> </option>';
+        $.get('/Product/getProducts', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownProduct += '<option value="' + data[count].Id + '">' + data[count].Code + '</option>';
+            };
+            //   dropDownProduct += '<option  value="' + '900' + '" >' + '<a href="' + '#myModal' + '">ADD NEW</a>' + '</option>';
+            // dropDownProduct += '<option  value="' + '900' + '" >' + 'ffffff' + '</option>';
+            dropDownProduct += '</select>';
+        });
+
+
+
+        dropDownTax = '<select id="drpTax" class="form-control">';
+        dropDownTax += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        $.get('/Tax/getTaxes', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownTax += '<option value="' + data[count].TaxId + '">' + data[count].Name + '(' + data[count].Rate + "%)" + '</option>';
+            };
+
+            dropDownTax += '</select>';
+        });
+
+        dropDownAddCost = '<select id="drpCost" class="form-control">';
+        dropDownAddCost += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        $.get('/Cost/getAddPurchaseCosts', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownAddCost += '<option value="' + data[count].Id + '">' + data[count].Name + '</option>';
+            };
+
+            dropDownAddCost += '</select>';
+        });
+        dropDownDeductCost = '<select id="drpCost" class="form-control">';
+        dropDownDeductCost += '<option  value="' + '' + '" selected>' + 'Select' + '</option>';
+        $.get('/Cost/getDeductPurchaseCosts', function (data, status) {
+
+            for (var count = 0; count < data.length; count++) {
+
+                dropDownDeductCost += '<option value="' + data[count].Id + '">' + data[count].Name + '</option>';
+            };
+
+            dropDownDeductCost += '</select>';
+        });
+
+        checkproductcount = function () {
+            var result = false;
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var product = producthide.find('.product');
+                if (parseInt(product.val()) > 0) {
+                    result = true;
+                    return result;
+                }
+
+            }
+            return result;
+        };
+
+
+        caltaxcomponenthide = function () {
+            $("#example22 > thead").html("");
+            $("#example22 > tbody").html("");
+        }
+        caltaxcomponent = function () {
+
+            var counter = 0;
+            var totalamount = 0;
+            var subtotal = 0;
+            var addtotalamount = 0;
+            var deducttotalamount = 0;
+            var currencyrate = parseFloat($('#Currencyrate').val());
+            var taxresults = [];
+
+            var MyRows = $('table#example1').find('tr');
+            for (var i = 0; i < MyRows.length; i++) {
+                var product = $(MyRows[i]).find('td:eq(0)');
+                var description = $(MyRows[i]).find('td:eq(3)');
+                var quantity = $(MyRows[i]).find('td:eq(4)');
+                var uom = $(MyRows[i]).find('td:eq(5)');
+                var of = $(MyRows[i]).find('td:eq(6)');
+                var baseuom = $(MyRows[i]).find('td:eq(7)');
+                var unitprice = $(MyRows[i]).find('td:eq(10)');
+                var tax = $(MyRows[i]).find('td:eq(11)');
+                var amount = $(MyRows[i]).find('td:eq(12)');
+                var producthide = $(MyRows[i]).find('td:eq(13)');
+                var taxhide = $(MyRows[i]).find('td:eq(14)');
+                var uomhide = $(MyRows[i]).find('td:eq(15)');
+                var baseuomhide = $(MyRows[i]).find('td:eq(16)');
+
+                var productval = product.find('#drpProduct').val();
+                var productdtext = product.find('#drpProduct option:selected').text();
+                var descriptionval = description.find('#description').val();
+                var quantityval = quantity.find('#quantity').val();
+                var unitpriceval = unitprice.find('#unitprice').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var uomval = uom.find('#drpUom').val();
+                var uomdtext = uom.find('#drpUom option:selected').text();
+                var ofval = of.find('#of').val();
+                if (productval != null) {
+                    counter = 1;
+                    product.html('');
+                    product.html("<input type='text' value=''  class='producthide input-non-active' name='producthide' readonly /> ");
+                    if (productval == '' || productval == 'addnew') {
+                        product.find('.producthide').val('');
+                    }
+                    else {
+                        product.find('.producthide').val(productdtext);
+                    }
+
+                    producthide.find('.product').val(productval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='descriptionhide input-non-active'  name='descriptionhide' readonly /> ");
+                    description.find('.descriptionhide').val(descriptionval);
+                }
+                if (quantityval != null) {
+                    quantity.html('');
+                    quantity.html("<input type='text' value='' style='text-align:right;'  class='quantityhide input-non-active' name='quantityhide' readonly /> ");
+                    quantity.find('.quantityhide').val(quantityval);
+                }
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='taxhide input-non-active' name='taxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.taxhide').val('');
+                    }
+                    else {
+                        tax.find('.taxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.tax').val(taxval);
+                }
+
+                if (uomval != null) {
+                    uom.html('');
+                    uom.html("<input type='text' value=''  class='uomhide input-non-active' name='uomhide' readonly /> ");
+                    if (uomval == '') {
+                        uom.find('.uomhide').val('');
+                    }
+                    else {
+                        uom.find('.uomhide').val(uomdtext);
+                    }
+
+                    uomhide.find('.uom').val(uomval);
+                }
+                if (ofval != null) {
+                    of.html('');
+                    of.html("<input type='text' value='' style='text-align:right;'  class='ofhide input-non-active' name='ofhide' readonly /> ");
+                    of.find('.ofhide').val(ofval);
+                }
+                if (unitpriceval != null) {
+                    unitprice.html('');
+                    unitprice.html("<input type='text' value=''  class='unitpricehide input-non-active' style='text-align:right;' name='unitpricehide' readonly /> ");
+                    unitprice.find('.unitpricehide').val(unitpriceval);
+
+                }
+
+
+                var checkproduct = $(MyRows[i]).find('.product');
+
+                if ((checkproduct.val() != null) && (checkproduct.val() != '')) {
+
+                    var qty = 0;
+                    var up = 0;
+                    var tx = 0;
+                    var dis = 0;
+                    var calquantity = quantity.find('.quantityhide').val();
+
+
+                    var calunitprice = unitprice.find('.unitpricehide').val();
+                    var caltax = tax.find('.taxhide').val();
+                    var calamount = amount.find('.amounthide').val();
+
+                    if (calquantity != '') {
+                        qty = parseFloat(calquantity);
+                    }
+                    else {
+                        qty = 0;
+                    }
+                    if (calunitprice != '') {
+                        up = parseFloat(calunitprice);
+                    }
+                    else {
+                        up = 0;
+                    }
+
+
+                    var np = qty * up;
+
+                    var currentsub = np;
+                    subtotal += currentsub;
+                    var compoundedsub = currentsub;
+                    var taxid = taxhide.find('.tax').val();
+
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(compoundedsub) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 =(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + compoundedsub) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = (amount1 * 100) / 100;
+                                }
+                                var amount1 = Math.ceil(amount1 * 100) / 100;
+                                //alert(amount1);
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) on Product',
+                                    "Amount": amount1
+                                });
+
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(compoundedsub) / 100);
+                           
+                            amount1 = (amount1 * 100) / 100;
+                            productresults.push({ "Id": 7, "Name": taxMain[0].Name + '(' + taxMain[0].Rate + '%) on Product',
+                                "Amount": amount1
+                            });
+
+                        }
+
+                    }
+
+                }
+            }
+
+            var MyRows1 = $('table#example2').find('tr');
+            for (var i = 0; i < MyRows1.length; i++) {
+                var type = $(MyRows1[i]).find('td:eq(0)');
+                var cost = $(MyRows1[i]).find('td:eq(1)');
+                var description = $(MyRows1[i]).find('td:eq(2)');
+                var tax = $(MyRows1[i]).find('td:eq(3)');
+                var amount = $(MyRows1[i]).find('td:eq(4)');
+                var costhide = $(MyRows1[i]).find('td:eq(5)');
+                var taxhide = $(MyRows1[i]).find('td:eq(6)');
+
+                var costval = cost.find('#drpCost').val();
+                var costdtext = cost.find('#drpCost option:selected').text();
+                var descriptionval = description.find('#costdescription').val();
+                var taxval = tax.find('#drpTax').val();
+                var taxdtext = tax.find('#drpTax option:selected').text();
+                var amountval = amount.find('#costamount').val();
+
+                if (costval != null) {
+                    counter = 1;
+                    cost.html('');
+                    cost.html("<input type='text' value=''  class='costhide input-non-active' name='costhide' readonly /> ");
+                    if (costval == '') {
+                        cost.find('.costhide').val('')
+                    }
+                    else {
+                        cost.find('.costhide').val(costdtext);
+                    }
+
+                    costhide.find('.cost').val(costval);
+                }
+                if (descriptionval != null) {
+                    description.html('');
+                    description.html("<input type='text' value=''  class='costdescriptionhide input-non-active'  name='costdescriptionhide' readonly /> ");
+                    description.find('.costdescriptionhide').val(descriptionval);
+                }
+
+
+                if (taxval != null) {
+                    tax.html('');
+                    tax.html("<input type='text' value=''  class='costtaxhide input-non-active' name='costtaxhide' readonly /> ");
+                    if (taxval == '') {
+                        tax.find('.costtaxhide').val('');
+                    }
+                    else {
+                        tax.find('.costtaxhide').val(taxdtext);
+                    }
+
+                    taxhide.find('.costtax').val(taxval);
+                }
+                if (amountval != null) {
+                    amount.html('');
+                    amount.html("<input type='text' value=''  class='costamounthide input-non-active'  style='text-align:right;' name='costamounthide' readonly /> ");
+                    amount.find('.costamounthide').val(amountval);
+                }
+                var checkcost = $(MyRows1[i]).find('.cost');
+                if (checkcost.val() != null && checkcost.val() != '') {
+                    var ca = 0;
+
+                    var ctx = 0;
+
+                    var costaddamount = 0;
+                    var costdeductamount = 0;
+                    var calcostamount = amount.find('.costamounthide').val();
+                    var costtype = type.find('.type').val();
+                    var costname = cost.find('.costhide').val();
+                    var costtypename = '';
+                    var calcosttax = tax.find('.costtaxhide').val();
+                    if (calcostamount != '') {
+                        ca = parseFloat(calcostamount);
+                    }
+                    else {
+                        ca = 0;
+                    }
+
+                    if (costtype == 'ADD') {
+                        addtotalamount += ca;
+                        // addtaxamount += ctx * ca / 100;
+                        costtypename = 'Additional Charges';
+
+                    }
+                    if (costtype == 'DEDUCT') {
+                        deducttotalamount += ca;
+                        // deducttaxamount += ctx * ca / 100;
+                        costtypename = 'Additional Discounts';
+                    }
+
+                    var taxid = taxhide.find('.costtax').val();
+                    var taxtype = '';
+                    if (typeof taxid === "undefined" || taxid == '') {
+                    }
+                    else {
+                        var taxComps = $.grep(taxComponents, function (e) { return e.TaxId == taxid; });
+
+                        if (taxComps.length != 0) {
+                            var effectiveTotal = 0;
+                            var parentEffectiveRate = 0;
+                            for (var j = 0; j < taxComps.length; j++) {
+                                var rate = taxComps[j].Taxrate1;
+                                var IsDependTax = taxComps[j].IsDependTax;
+                                var IsCompoundedTax = taxComps[j].IsCompoundedTax;
+                                var amount1 = 0;
+                                if (taxComps[j].IsDependTax == false && taxComps[j].IsCompoundedTax == false) {
+
+                                    var crate = parseFloat(rate);
+                                    parentEffectiveRate = crate * parseFloat(ca) / 100;
+                                    effectiveTotal += parentEffectiveRate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                }
+                                if (IsDependTax == true && IsCompoundedTax == false) {
+                                    var crate = parseFloat(parentEffectiveRate) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    amount1 = crate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                    taxtype = 'Dependent';
+
+                                }
+                                if (IsDependTax == false && IsCompoundedTax == true) {
+                                    var crate = (effectiveTotal + ca) * parseFloat(rate) / 100;
+                                    effectiveTotal += crate;
+                                    parentEffectiveRate = crate;
+                                    amount1 = parentEffectiveRate;
+                                    amount1 = Math.round(amount1 * 100) / 100;
+                                    taxtype = 'Compounded';
+                                }
+
+
+                                var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxComps[j].TaxCompId; });
+                                taxresults.push({ "Id": 99, "Type": costtypename, "Name": costname, "Amount": ca, "TaxName": taxMain[0].Name + '(' + taxComps[j].Taxrate1 + '%) ' + taxtype,
+                                    "TaxAmount": amount1
+                                });
+
+                            }
+                        }
+                        else {
+                            var taxMain = $.grep(taxSingle, function (e) { return e.TaxId == taxid; });
+                            var amount1 = (taxMain[0].Rate * parseFloat(ca) / 100);
+                            amount1 = Math.round(amount1 * 100) / 100;
+                            taxresults.push({ "Id": 99, "Type": costtypename, "Name": costname, "Amount": ca, "TaxName": taxMain[0].Name + '(' + taxMain[0].Rate + '%) ' + taxtype,
+                                "TaxAmount": amount1
+                            });
+                        }
+                    }
+                }
+            }
+
+
+            // var result11 = taxresults;
+
+            var totalbill = 0;
+            $("#example22 > thead").html("");
+            $("#example22 > tbody").html("");
+
+            var newRow = "<tr> \
+                    <th>Type</th> \
+                    <th>Name</th> \
+                    <th>Amount</th> \
+                    <th>Tax Name</th> \
+					<th>Tax Amount</th> \
+                    </tr>"
+            $('#example22  thead').append(newRow);
+            if (taxresults != '') {
+                for (var i = 0; i < taxresults.length; i++) {
+                    totalbill += taxresults[i].TaxAmount;
+                    var newRow1 = "<tr> \
+                    <td>" + taxresults[i].Type + "</td> \
+                    <td>" + taxresults[i].Name + "</td> \
+                    <td>" + taxresults[i].Amount.toFixed(2) + "</td> \
+                    <td>" + taxresults[i].TaxName + "</td> \
+					<td>" + taxresults[i].TaxAmount.toFixed(2) + "</td> \
+                    </tr>"
+                    $('#example22 tbody').append(newRow1);
+                }
+
+                var newRow2 = "<tr> \
+                    <td><a onclick='caltaxcomponent();' href='javascript:void(0);'>Refresh</a></td> \
+                    <td><a onclick='caltaxcomponenthide();' href='javascript:void(0);'>Hide</a></td> \
+                    <td></td> \
+                    <td>Total Tax Amount</td> \
+					<td>" + totalbill.toFixed(2) + "</td> \
+                    </tr>"
+                $('#example22 tbody').append(newRow2);
+            }
+
+        };
+
+        taxComponents = [];
+        if ('@ViewBag.Taxcomponents' != '') {
+
+            var arrtC = '@Html.Raw(Json.Encode(ViewBag.Taxcomponents))';
+            // alert(arrtC);
+            taxComponents = JSON.parse(arrtC);
+            //   alert(taxComponents);
+            taxComponents = $.makeArray(taxComponents);
+            //     alert(taxComponents);
+            //   alert(taxComponents[0].TaxName);
+        }
+        taxSingle = [];
+        if ('@ViewBag.TaxSingle' != '') {
+
+            var arrtC1 = '@Html.Raw(Json.Encode(ViewBag.TaxSingle))';
+            // alert(arrtC);
+            taxSingle = JSON.parse(arrtC1);
+            //   alert(taxComponents);
+            taxSingle = $.makeArray(taxSingle);
+            //     alert(taxComponents);
+            //   alert(taxComponents[0].TaxName);
+        }
+    });
+    $(document).ready(function () {
+        $('#example1').on('mouseover', 'tr', function (e) {
+            var codename = e.target.name;
+            if (codename == "productcodehide") {
+
+                if ($('.productcodehide').val() != '') {
+                    var pc = $(this).find('.productcodehide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+                    if (width < 94) {
+                        width = 94;
+                    }
+                    pc.css({ 'background-color': '#000', 'width': width, 'position': 'absolute', 'z-index': '9999', 'color': '#3333FF' });
+
+
+                }
+
+            }
+            else if (codename == "producthide") {
+
+                if ($('.producthide').val() != '') {
+                    var pc = $(this).find('.producthide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+                    if (width < 116) {
+                        width = 116;
+                    }
+                    pc.css({ 'background-color': 'white', 'width': width, 'position': 'absolute', 'z-index': '9999', 'color': '#3333FF' });
+
+
+                }
+
+            }
+
+        });
+        $('#example1').on('mouseout', 'tr', function (e) {
+            var codename = e.target.name;
+            if (codename == "productcodehide") {
+
+                if ($('.productcodehide').val() != '') {
+                    var pc = $(this).find('.productcodehide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+
+                    pc.css({ 'background-color': 'white', 'width': '94px', 'z-index': '0', 'color': '#000000' });
+
+
+                }
+
+            }
+            else if (codename == "producthide") {
+
+                if ($('.producthide').val() != '') {
+                    var pc = $(this).find('.producthide');
+                    var pcval = pc.val();
+
+                    var width = $.fn.textWidth(pcval, '12px arial');
+
+                    pc.css({ 'background-color': 'white', 'width': '116px', 'z-index': '0', 'color': '#000000' });
+
+
+                }
+
+            }
+        });
+        $.fn.textWidth = function (text, font) {
+            if (!$.fn.textWidth.fakeEl) $.fn.textWidth.fakeEl = $('<span>').hide().appendTo(document.body);
+            $.fn.textWidth.fakeEl.text(text || this.val() || this.text()).css('font', font || this.css('font'));
+            return $.fn.textWidth.fakeEl.width();
+        };
+
+    });
+</script>
+<script type="text/javascript">
+
+    var expanded = false;
+    function showCheckboxes() {
+        var checkboxes = document.getElementById("checkboxes");
+        if (!expanded) {
+            checkboxes.style.display = "block";
+            expanded = true;
+        } else {
+            checkboxes.style.display = "none";
+            expanded = false;
+        }
+    }
+
+</script>
+@*<script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#Stock").on('change', function () {
+                var supid = $("#SupplierId").val();
+                if (supid == '') {
+                    return false;
+                }
+                var stockId = $(this).val();
+                $.ajax({
+                    url: "/PurchaseInvoice/GetYetToBeInvoicedPR",
+                    type: "POST",
+                    data: JSON.stringify({ id: supid }),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        $("#checkboxes").empty();
+                        //                    $("#StockSubCategoryId").append("<option value=" + 0 + ">----All----</option>");
+                        for (var i = 0; i < data.length; i++) {
+
+                            $("#checkboxes").append("<label> <input type='checkbox' class='checkmenu' name='chksub' id='" + data[i].id + "' value='" + data[i].id + "'/>" + data[i].name + "</label>");
+                            //                        $("#StockSubCategoryId").append("<option value=" + data[i].id + ">" + data[i].name + "</option>");
+                            //alert(data[i].id);
+                        }
+
+
+                    },
+                    error: function () {
+                        //$(stateSelector).prop("disabled", true);
+                    }
+
+                })
+            });
+        });
+
+    </script>*@
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+@using (Html.BeginForm())
+{
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+
+        <section class="content-header">
+            <h1>
+                Purchase Invoice
+                <small>Entry Form</small>
+                @if (Model.CreatedFrom == "Purchase Order")
+                {
+                    <span> From Purchase Order @Model.OrderNo </span>
+                }
+                @if (Model.CreatedFrom == "Receipt Note")
+                {
+                    <span> From Purchase Receipt Note @Model.OrderNo </span>
+                }
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#"></a></li>
+                <li class="active"> </li>
+            </ol>
+        </section>
+        <div class="nav-tabs-custom">
+
+
+            <ul class="nav nav-tabs">
+                @if (Model.Id != 0)
+                {
+                    if (ViewBag.Message != "Error")
+                    {
+
+                        <li class="pull-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Purchase Invoice @Model.NO (@Model.Status)    </li>
+
+                    }
+                    @*  else
+                        {
+                            <li class="pull-left" style="color:Red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Network Connectivity Error OR System Busy. Please retry after sometime.    </li>
+                        }*@
+                    if (Model.Status == "Saved As Draft")
+                    {
+
+                        <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                        <li class="pull-right"><input type="submit" id="btnDraft" class="btn btn-primary" value="Save As Draft" /></li>
+
+                    }
+                    else
+                    {
+                        <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                        <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+                        @* <li class="pull-right"><input type="button" id="btnPayment" class="btn btn-primary" value="Make Payment" /></li>*@
+                    }
+                }
+                else
+                {
+
+                    if (Model.ReferenceNo != null)
+                    {
+                        <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                    }
+                    else
+                    {
+                        <li class="pull-right"><input type="submit" id="btnSave" class="btn btn-primary" value="Save" /></li>
+                        if (Model.Status != "Saved")
+                        {
+                            <li class="pull-right"><input type="submit" id="btnDraft" class="btn btn-primary" value="Save As Draft" /></li>
+
+
+
+                        }
+                    }
+                }
+            </ul>
+
+        </div>
+        @if (ViewBag.Message != null)
+        {
+            if (ViewBag.Message != "Error")
+            {
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <b>Purchase Invoice</b><br />
+                    @ViewBag.Message. <a href='/PurchaseInvoice/Create'> Enter a new Purchase Invoice?</a>
+                </div>
+            }
+        }
+        @if (ViewBag.ErrorTag != null)
+        {
+            <div class="alert alert-danger alert-dismissable" id="errordiv1">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                <b>Error!</b><br />
+
+                @ViewBag.ErrorTag
+
+            </div>
+        }
+        <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none;">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b><br />
+
+
+
+        </div>
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+        <!-- Main content -->
+        <section class="content">
+            @* <div class="form-group row"> <div class="col-xs-8"> <label class="control-label">Effective Date</label> <div class="input-group date" id="dp3" data-date="12-02-2012" data-date-format="mm-dd-yyyy"> <input class="form-control" type="text" readonly="" value="12-02-2012"> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div> </div> </div>*@
+
+            @* <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+
+                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />
+
+                    </li>
+                </ul>
+
+                         </div>    *@
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box">
+
+                        <div class="table-responsive">
+                            <table id="example31" class="table table2">
+                                @Html.HiddenFor(model => model.Id)
+                                @Html.HiddenFor(model => model.ReceiptIds)
+                                @Html.HiddenFor(model => model.PurchaseOrderId)
+                                @Html.HiddenFor(model => model.CreatedFrom)
+                                @Html.HiddenFor(model => model.ReferenceNo)
+                                @Html.HiddenFor(model => model.OrderNo)
+                                @Html.HiddenFor(model => model.NO)
+                                @Html.HiddenFor(model => model.SupplierId)
+                                @Html.HiddenFor(model => model.Status)
+                                @Html.HiddenFor(model => model.Suburb)
+                                @Html.HiddenFor(model => model.Country)
+                                @Html.HiddenFor(model => model.TransactionCurrency)
+                                @Html.HiddenFor(model => model.BaseCurrencyCode)
+                                <tr>
+                                    <td> @Html.Label("Supplier Invoice No")</td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.ReferenceInvoice, new { @class = "form-control", @placeholder = "Enter Invoice No" })
+                                        @Html.ValidationMessageFor(model => model.ReferenceInvoice)
+                                    </td>
+
+
+                                </tr>
+
+                                <tr>
+                                    <td> @Html.Label("Purchase Order No")</td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.PurchaseOrderNo, new { @class = "form-control", @placeholder = "Purchase Order No", @readonly = "" })
+                                        @Html.ValidationMessageFor(model => model.PurchaseOrderNo)
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Supplier Code")<span style="font-weight:bold;color:Red;">*</span></td>
+
+                                    <td>
+                                        @Html.TextBoxFor(model => model.SupplierCode, new { @class = "form-control", @placeholder = "Start Typing Supplier Code" })
+                                        @Html.ValidationMessageFor(model => model.SupplierCode)
+                                    </td>
+
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Supplier Name")<span style="font-weight:bold;color:Red;">*</span></td>
+
+                                    <td>
+                                        @Html.TextBoxFor(model => model.SupplierName, new { @class = "form-control", @placeholder = "Enter Supplier Name" })
+                                        @Html.ValidationMessageFor(model => model.SupplierName)
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Supplier Reference")</td>
+                                    <td>  @Html.TextBoxFor(model => model.Reference, new { @class = "form-control", @placeholder = "Enter Supplier Refence" })</td>
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Payment Term")</td>
+                                    <td>    @Html.DropDownListFor(model => model.PaymentTermId, new SelectList(ViewBag.PaymentTerms, "Id", "PaymentTermDescription"), "----Select----", new { @class = "form-control" })</td>
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Warehouse")</td>
+                                    <td>
+                                        @Html.DropDownListFor(model => model.WarehouseId, new SelectList(ViewBag.ddlWarehouses, "Id", "Name"), "----Select----", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.WarehouseId)
+                                    </td>
+
+
+
+                                </tr>
+                                <tr>
+
+                                    <td> @Html.Label("Order Date")</td>
+                                    <td>
+                                        <aside class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.Date, new { @class = "form-control", @readonly = "" })<span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span></aside>
+                                        @Html.ValidationMessageFor(model => model.Date)
+                                    </td>
+
+
+
+
+                                </tr>
+
+                                <tr>
+                                    <td> @Html.Label("Delivery Date")</td>
+                                    <td>
+                                        <aside class="input-group date" id="dp4" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DespatchDate, new { @class = "form-control", @readonly = "" })<span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span></aside>
+                                        @Html.ValidationMessageFor(model => model.DespatchDate)
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Invoice Date")</td>
+                                    <td>
+                                        <aside class="input-group date" id="dp5" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.InvoiceDate, new { @class = "form-control", @readonly = "" })<span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </aside>
+                                        @Html.ValidationMessageFor(model => model.InvoiceDate)
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Supplier Currency")</td>
+                                    <td> @Html.TextBoxFor(model => model.TransactionCurrencyCode, new { @class = "form-control", @readonly = "" })</td>
+
+
+
+                                </tr>
+
+
+                                <tr>
+                                    <td> @Html.Label("Purchase For (Branch)")</td>
+                                    <td>
+                                        @Html.DropDownListFor(model => model.BranchId, new SelectList(ViewBag.Branch, "Value", "Text"), "----Select----", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.BranchId)
+                                    </td>
+                                </tr>
+
+
+                            </table>
+
+                        </div><!-- /.box-body -->
+
+
+
+
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="box">
+                        <div class="table-responsive">
+                            <table id="example3" class="table table2">
+                                <tr>
+
+                                    <td> @Html.Label("Challan No")</td>
+
+                                    <td>
+                                        <div class="multiselect">
+                                            <div class="selectBox" onclick="showCheckboxes()">
+                                                <select>
+                                                    <option>Select Challan(s)</option>
+                                                </select>
+                                                <div class="overSelect"></div>
+                                            </div>
+                                            <div id="checkboxes">
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width:30%"> @Html.Label("Contact No") </td>
+                                    <td> @Html.TextBoxFor(model => model.DeliveryName, new { @class = "form-control", @placeholder = "Enter Contact No." })</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.Label("Address")</td>
+                                    <td>
+                                        @Html.TextAreaFor(model => model.StreetPoBox, new { @class = "form-control", @placeholder = "Enter Address" })
+                                        @Html.ValidationMessageFor(model => model.StreetPoBox)
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>@Html.Label("City")</td>
+                                    <td> @Html.TextBoxFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.Label("State")</td>
+                                    <td> @Html.TextBoxFor(model => model.StateRegion, new { @class = "form-control", @placeholder = "Enter State" })</td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>@Html.Label("Postal Code")</td>
+                                    <td> @Html.TextBoxFor(model => model.PostalCode, new { @class = "form-control", @placeholder = "Enter Postal Code" })</td>
+                                </tr>
+
+                                <tr>
+                                    <td>@Html.Label("Despatch Document No")</td>
+                                    <td> @Html.TextBoxFor(model => model.DespatchNo, new { @class = "form-control", @placeholder = "Enter Despatch Document No." })</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.Label("Despatch Through")</td>
+                                    <td> @Html.TextBoxFor(model => model.DespatchThrough, new { @class = "form-control", @placeholder = "Enter Despatch Through" })</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.Label("Destination")</td>
+                                    <td> @Html.TextBoxFor(model => model.DespatchDestination, new { @class = "form-control", @placeholder = "Enter Destination" })</td>
+                                </tr>
+                                <tr>
+                                    <td>@Html.Label("Value In Base Currency ") (@Html.DisplayFor(model => model.BaseCurrencyCode))</td>
+                                    <td> @Html.TextBoxFor(model => model.Currencyrate, new { @class = "form-control", @readonly = "" }) </td>
+                                </tr>
+                                <tr>
+                                    <td> @Html.Label("Purchase Ledger")</td>
+                                    <td>
+                                        @Html.DropDownListFor(model => model.LID, new SelectList(ViewBag.Ledger, "LID", "LedgerName"), "----Select----", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.LID)
+                                    </td>
+                                </tr>
+
+
+
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="clear-fix"></div>
+
+
+
+                <div class="col-xs-12">
+
+
+                    <div class="box">
+                        <input type="button" id="receiveditems" class="btn btn-primary" value="Auto Fill All Items From The Selected Challans" />
+                        <div class="box-body table-responsive no-padding">
+                            <table id="example1" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                    <tr>
+
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
+                                        @*     <th>Bar Code</th>*@
+                                        <th>Description</th>
+                                        <th>Qty</th>
+                                        <th>UOM</th>
+                                        <th>of</th>
+                                        <th>Unit</th>
+
+                                        @*   <th>Total Qty</th>*@
+                                        <th>Unit Price</th>
+                                        <th>Tax</th>
+
+                                        <th>Amount</th>
+                                        <th class='display-non-div'></th>
+                                        <th class='display-non-div'></th>
+                                        @* <th style='display:none;padding:0px;'></th>*@
+                                        <th align='center'>&nbsp;</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @* <tr>
+                                            <td>Trident</td>
+                                            <td>Internet
+                                                Explorer 4.0</td>
+                                            <td>Win 95+</td>
+                                            <td> 4</td>
+                                            <td>X</td>
+                                        </tr>*@
+                                </tbody>
+                            </table>
+
+                            @*  <input type="button" value="Add Row" id="add_ExpenseRow" />*@
+                            @*<button type="button" class="btn btn-primary btn-sm" id="add_ExpenseRow">Add New Line</button>*@
+                        </div>
+                        <img src="../../Images/add-a-new-line.jpg" id="add_ExpenseRow" style="margin-top:10px !important;" />
+                        <br />
+                        <div class="box-body table-responsive no-padding">
+                            <table id="example2" class="table table-bordered table-striped">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <img src="../../Images/addition.jpg" alt="Addition" id="addition" style="margin-top:10px !important;" />
+                        <img src="../../Images/deduction.jpg" alt="Deduction" id="deduction" style="margin-top:10px !important;" />
+                    </div><!-- /.box -->
+
+
+
+
+                    <div class="col-md-6">
+                        <div class="box">
+                            @*<textarea class="form-control" placeholder="Enter Comments" rows="7"></textarea>*@
+                            @Html.TextAreaFor(model => model.Memo, new { @rows = 7, @class = "form-control", @placeholder = "Enter Comments" })
+                            <a onclick="caltaxcomponent();" href="javascript:void(0);">Show Tax Details</a>
+                            <div class="box-body table-responsive no-padding">
+                                <table class="table table-bordered table-striped table-hover" style="text-align:center;" id="example22">
+                                    <thead></thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="box">
+                            <div class="box-body table-responsive no-padding">
+                                <table class="table table-bordered table-striped table-hover" style="text-align:center;" id="example11">
+
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- /.box-body -->
+                    <!-- Modal -->
+                    <div class="modal fade ignore" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Add New Product</h4>
+                                </div>
+                                <div class="modal-body" id="modal-body">
+                                    <div class="alert alert-danger alert-dismissable" id="errordiv1" style="display:none">
+                                        <i class="fa fa-ban"></i>
+                                        <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                                        <b>Error!</b><br />
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label class="black_txt_010">
+                                            Group :
+                                        </label>
+
+
+                                        @Html.DropDownList("GroupId", new SelectList(ViewBag.group, "Id", "Name"), "-----Select----", new { @class = "form-control" })<br />
+
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="black_txt_010">
+                                            Code :<span style="color:Red;">*</span>
+                                        </label>
+                                        <div class="clr"></div>
+
+
+                                        <input type="text" id="parentname" readonly="readonly" class="form-control parentname" name="parentname" />
+                                        @Html.TextBox("Code", null, new { @class = "form-control Code", @placeholder = "Enter 10 Digit Code", @maxlength = "10", @onkeypress = "return AlphaNumeric(event)" })
+                                        <center>
+                                            &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;   &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                        </center>
+
+                                        <div class="clr"></div>
+                                    </div>
+
+
+
+
+
+
+
+                                    <div class="form-group">
+                                        <label class="black_txt_010">
+                                            Name :<span style="color:Red;">*</span>
+                                        </label>
+
+
+                                        @Html.TextArea("Description", new { @class = "form-control", @placeholder = "Enter Description" })
+
+
+
+                                    </div>
+
+
+
+                                    <div class="form-group">
+                                        <label class="black_txt_010">
+                                            Unit:
+                                        </label>
+
+
+                                        @Html.DropDownList("UnitId", new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+
+                                        <b>Example: piece, pound, meter.</b>
+
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="black_txt_010">
+                                            Sales Price :
+                                        </label>
+
+
+                                        @Html.TextBox("SalesPrice", null, new { @class = "form-control", @placeholder = "Enter Sales Price", @maxlength = "20" })
+
+
+
+                                    </div>
+
+
+
+
+
+                                    <div class="form-group">
+                                        <label class="black_txt_010">
+                                            Is Salable Product :
+                                        </label>
+
+
+                                        @*   @Html.CheckBox("IsStockProduct", true, new {@readonly="readonly" })*@
+
+                                        <input checked="checked" type="checkbox" disabled />
+                                    </div>
+
+
+
+
+
+                                    @* <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+                                    <button type="button" class="btn btn-primary" id="btnProduct">Save changes</button>
+                                    <img src="../../Images/ajax-loader(1).gif" alt="Loading..." id="loader" style="display:none;" />
+                                </div>
+                                @*  <div class="modal-footer">
+
+                                      <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">
+                                    </div>*@
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+                </div>
+
+            </div>
+
+
+
+        </section><!-- /.content -->
+    </aside>
+
+}

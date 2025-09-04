@@ -1,0 +1,221 @@
+﻿@model XenERP.Models.ModelView.FeedStockModelView
+
+@*@model IEnumerable<XenERP.Models.ModelView.NEFTModelview>*@
+
+using XenERP.Models
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+
+    .dtwidth1{
+        width:20px;
+
+    }
+    .dtwidth2{
+        width:50px;
+
+    }
+
+     .dtwidth3{
+        width:100px;
+
+    }
+</style>
+
+
+<script type="text/javascript">
+
+   
+
+    $(document).ready(function () {
+
+        $('#print').click(function () {
+
+            $("#example1 tr:gt(0)").each(function (index, item) {
+
+                var p = $(item).find('input[type="checkbox"]:checked');              
+
+                if (p.val() != 'true')
+                {                    
+                    $(item).find('input[type="checkbox"]').closest('td').closest('tr').hide();
+
+                }
+
+            });
+
+
+            $(".Status").hide();
+            $(".DoNeft").hide();
+            $("#divPrint").print();
+
+        });
+
+    });
+
+
+
+</script>
+
+
+<aside class="right-side">
+    <div class="input-group input-group-lg">
+        <div class="col-lg-12" id="exportformat">
+            <table>
+                <tr>
+
+                    <td>
+                        <button id="print" class="btn btn-primary" type="button"><i class="fa fa-print"></i>Print </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- /btn-group -->
+    </div>
+
+</aside>
+
+
+<aside class="right-side">
+
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                Loading...
+            </p>
+        </div>
+    </div>
+    @{
+        long Branchid = Convert.ToInt64(Session["BranchId"]);
+
+    }
+
+
+    <section class="content-header">
+        <h1>NEFT Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+@using (Html.BeginForm("CreateNEFTPartial", "FarmerReport", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+
+    <div class="box">
+      
+        <div class="box-body table-responsive" id="divPrint">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                  
+                    <tr>
+                        <th class="dtwidth1">Tran Id</th>
+                        <th class="dtwidth1">Tran Ref</th>
+                        <th class="dtwidth3">Amount</th>
+                        <th class="dtwidth3">Senactype</th>
+                        <th>Senaccno</th>
+                        <th>SenName</th>
+                        <th>SMS EML</th>
+                        <th>Detail </th>
+                        <th>Ben IFSC</th>
+                        <th>Benactype</th>
+                        <th>Ben Accno</th>
+                        <th>Ben Acc Name</th>
+                        <th class="Status">Status</th>
+                        <th class="DoNeft">DO NEFT?</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+     
+
+                    @for (int i = 0; i < Model.neftList.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.TextBoxFor(modelItem => Model.neftList[i].TranId, new { @class = "dtwidth1" })
+                                @*@Model.neftList[i].TranId*@
+                                @Html.HiddenFor(modelItem => Model.neftList[i].BranchId)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].BranchName)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].FarmId)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].FarmerName)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].FlockId)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].FlockIdOriginal)
+                                @Html.HiddenFor(modelItem => Model.neftList[i].FlockCode)
+                            
+                            
+                            </td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].TranRef, new { @class = "dtwidth1" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].GCAmount, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].Senactype, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].Senaccno, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].SenName)</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].SMSEML, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].SenMobileNo, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].IfscCode)</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].BenAcType, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].AcNumber)</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].BankAcHolderNm, new { @class = "dtwidth3" })</td>
+                            <td>@Html.TextBoxFor(modelItem => Model.neftList[i].Status, new { @class = "Status" })</td>
+                            <td>@Html.CheckBoxFor(modelItem => Model.neftList[i].DoNEFT, new { @class = "DoNeft" })</td>
+
+
+                        </tr>
+                    }
+
+
+
+
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+
+        <input type="submit" id="btnSubmit" value="Submit" class="btn btn-primary" />
+    </div>
+
+   
+
+
+
+
+}
+
+
+</aside>

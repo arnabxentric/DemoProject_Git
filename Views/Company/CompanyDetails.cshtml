@@ -1,0 +1,580 @@
+﻿@model XenERP.Models.Company
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#btncancel").on("click", function () {
+
+
+            location.href = "/Company/ShowAllCompany";
+
+
+        });
+
+
+
+    });
+</script>
+<link href="../../css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<!-- font Awesome -->
+<link href="../../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!-- Ionicons -->
+<link href="../../css/ionicons.min.css" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("EditCompany", "Company", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+
+
+
+
+    <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                     Company   <small>Details</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="@Url.Action("DashBoard", "DashBoard", new { id=0})"><i class="fa fa-dashboard"></i> Home</a></li>
+                       
+                          <li class="active">Settings</li>
+                        <li class="active">Company Details</li>
+                    </ol>
+                </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="row">
+                                         
+                  
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#tab_1" data-toggle="tab">Details</a></li>
+                                    <li><a href="#tab_2" data-toggle="tab">Address</a></li>
+                                      <li><a href="#tab_3" data-toggle="tab">Contact</a></li>
+                                        <li><a href="#tab_4" data-toggle="tab">Logo</a></li>
+                                    
+                                    <li class="pull-right">
+                                     <input name="" type="button" id="btncancel" value="Back" class="btn btn-primary" />
+                                    
+                                    
+                                    
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                 <div class="row">         
+                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                       </div>
+                                   <div class="box-body">
+                                       
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Company Name :</label>
+
+                   @Html.HiddenFor(d => d.Id)
+                     @Html.HiddenFor(d => d.Userid)
+                   @Html.DisplayFor(model => model.Name, new { @class = "form-control", @placeholder = "Enter Company Name" })
+            
+
+                                      
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                                Company Dispaly Name:</label>
+                                    @Html.DisplayFor(model => model.CompanyDisplayName, new { @class = "form-control", @placeholder = "Enter Company Display Name" })
+                                   
+
+                                  
+                                    </div>
+
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                                Bussiness Line:</label>
+                                    @Html.DisplayFor(model => model.BusinessLine, new { @class = "form-control", @placeholder = "Enter Bussiness Line" })
+
+                                    </div>
+
+
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Organization Type:</label>
+                               
+                                  @Html.DisplayFor(model => model.CompanyType, new { @class = "form-control", @placeholder = "Enter Bussiness Line" })
+
+                                    </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description:</label>
+                                    @Html.DisplayFor(model => model.CompanyDescription, new { @class = "form-control", @placeholder = "Enter Description" })
+
+                                    </div>
+
+
+
+
+                                                                        </div>
+                                    </div>
+                                    </div>
+
+
+
+
+
+                               <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+              Base Currency :</label>
+
+              @{
+                         
+      try
+      {
+          XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+
+
+
+          XenERP.Models.Currency cur = rep.GetCurency(Convert.ToInt32(Model.CurrencyId));
+                        @cur.ISO_4217
+      }
+      catch { }
+}
+                                            
+                          
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+               GST/VAT No. :</label>
+
+                  
+                   @Html.DisplayFor(model => model.GST_VATNumber, new { @class = "form-control", @placeholder = " GST/VAT No." })
+                              
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Website:</label>
+                                    @Html.DisplayFor(model => model.Website, new { @class = "form-control", @placeholder = "Enter Website" })
+                                  
+                                    </div>
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             TIN No:</label>
+                                    @Html.DisplayFor(model => model.TANNO, new { @class = "form-control", @placeholder = "Enter TAN No." })
+                                   
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             PAN No:</label>
+                                    @Html.DisplayFor(model => model.PANNO, new { @class = "form-control", @placeholder = "Enter PAN No." })
+                                 
+                                    </div>
+
+
+                                    
+
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+                                      Date Format:</label>
+                                
+                                
+              @{
+                         
+      try
+      {
+          XenERP.Models.Repository.TaxRepository rep22 = new XenERP.Models.Repository.TaxRepository();
+
+
+
+          XenERP.Models.DateCultureFormat cur2 = rep22.Getdateformat(Convert.ToInt32(Model.DateCultureFormatId));
+                        @cur2.ShortDatePattern
+      }
+      catch { }
+}
+                          
+                               
+                                    </div>
+
+
+
+                                         </div>
+                                    </div>
+                                    </div>
+
+
+
+                         
+                                        </div>   
+                                        
+                                        </div>
+                                    <div class="tab-pane" id="tab_2">
+                                                <div class="row">         
+      <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                        
+                   <h4>Postal Address </h4>
+
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Country :</label>
+
+            
+                   @Html.DisplayFor(model => model.CountryId, new { @class = "form-control", @placeholder = "Enter Country" })
+                                
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              State :</label>
+
+                  
+                   @Html.DisplayFor(model => model.StateId, new { @class = "form-control", @placeholder = "Enter State" })
+                                
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             City:</label>
+                                    @Html.DisplayFor(model => model.City, new { @class = "form-control", @placeholder = "Enter City" })
+                                                             
+
+                                    </div>
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Address:</label>
+                                    @Html.DisplayFor(model => model.Address, new { @class = "form-control", @placeholder = "Enter Address" })
+                                       </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Zip Code:</label>
+                                    @Html.DisplayFor(model => model.Zipcode, new { @class = "form-control", @placeholder = "Enter Zip Code" })
+                                    
+
+                                    </div>
+
+
+
+
+
+
+
+                 
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                                                           <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                              <h4>Physical Address </h4>
+                               
+             
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Country :</label>
+
+             
+                   @Html.DisplayFor(model => model.PostalCountryId, new { @class = "form-control", @placeholder = "Enter Country" })
+                                 
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              State :</label>
+
+                  
+                   @Html.DisplayFor(model => model.PostalStateId, new { @class = "form-control", @placeholder = "Enter State" })
+                                      
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             City:</label>
+                                    @Html.DisplayFor(model => model.PostalCity, new { @class = "form-control", @placeholder = "Enter City" })
+                                   
+                                    </div>
+
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+           Address:</label>
+                                    @Html.DisplayFor(model => model.PostalAddress, new { @class = "form-control", @placeholder = "Enter Address" })
+                                   
+                                    </div>
+                                    
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                  Zip Code:</label>
+                                    @Html.DisplayFor(model => model.PostalZipcode, new { @class = "form-control", @placeholder = "Enter Zip Code" })
+                                  
+                                    </div>
+                                    
+
+
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>            
+                                     <div class="tab-pane" id="tab_3">
+                                                <div class="row">         
+      <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Contact Number :</label>
+
+             
+                   @Html.DisplayFor(model => model.ContactNumber, new { @class = "form-control", @placeholder = "Enter  Contact Number " })
+             
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Email Id :</label>
+
+                  
+                   @Html.DisplayFor(model => model.EmailId, new { @class = "form-control", @placeholder = "Enter   Email Id " })
+                              
+                                        
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Fax:</label>
+                                    @Html.DisplayFor(model => model.Fax, new { @class = "form-control", @placeholder = "Enter Fax" })
+                                   
+                                    </div>
+
+
+                                    
+                                                            
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                  
+                                         <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+               
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                   Purchase Email :</label>
+
+             
+                   @Html.DisplayFor(model => model.PurchaseEmailId, new { @class = "form-control", @placeholder = "Enter  Purchase Email" })
+                           
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+              Sales Email :</label>
+
+                  
+                   @Html.DisplayFor(model => model.SalesEmailId, new { @class = "form-control", @placeholder = "Enter Sales Email " })
+                   
+                                                     
+                                     
+                                    </div>
+
+
+
+                                         
+
+
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                          </div>
+                                         </div>                                         
+                                      
+
+
+                                      <div class="tab-pane" id="tab_4">
+                                                <div class="row">         
+                          <div class="col-md-6">
+                                <div class="box box-primary">
+                           <div class="box-header">
+                
+                                        </div>
+                                   <div class="box-body">
+                                       
+                   
+
+                                       
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+           Logo :</label>
+
+@*                <img  style="width:122px;height:68px;" id="productimg"  name="productimg" src="@Url.Content("~/Productimages/" + Model.Productimage)" id="blah" alt="Image not found" /> 
+*@
+ 
+   <img  style="width:224px;height:112px;" id="blahh" src="@Url.Content("~/Companyimages/" + Model.CompanyLogo)" alt="Image not found"  /> 
+    
+   <br />       
+                                 
+                                    </div>
+
+
+
+
+                                    
+                                                            
+                                    
+                                    
+                                    <!-- /.tab-pane -->
+                                    </div>
+                                    </div>
+                                    </div>
+                                  
+                                  
+                        
+                                          </div>
+                                         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                         </div>
+                                         </div>
+                                         </div>
+                                         
+
+
+
+
+
+
+
+
+
+                              
+                        </section>
+                        </aside>
+}

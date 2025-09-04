@@ -1,0 +1,494 @@
+﻿@model XenERP.Models.Product
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#productimg").change(function () {
+            readURL(this);
+        });
+
+    });
+</script>
+
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //        $("#parentname").css("display", "none");
+
+        //        $("#Discount").val('0');
+        $("#btnsubmit").click(function () {
+
+            var mindisc = $("#MinDiscount").val();
+            var maxdisc = $("#MaxDiscount").val();
+
+            var disc = $("#Discount").val();
+
+
+       
+
+
+            if (parseFloat(mindisc) > parseFloat(maxdisc)) {
+
+                alert('Minimum discount cannot be greater than Maximum discount');
+                return false;
+            }
+
+            if (parseFloat(maxdisc) < parseFloat(mindisc)) {
+
+
+                alert('Maximum discount cannot be less than Minimum discount');
+                return false;
+            }
+
+            if (disc > (mindisc && maxdisc)) {
+
+
+                alert(' discount cannot be greater than Minimum and Maximum discount');
+                return false;
+            }
+
+        });
+    });
+ </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //        $("#parentname").css("display", "none");
+
+        //        $("#Discount").val('0');
+        $("#GroupId").change(function () {
+
+            $.get("/Product/GetParentgroup", { id: $("#GroupId").val() }, function (data) {
+
+
+                if (data != null) {
+
+                    //                    $("#parentname").css("display", "block");
+
+                    $("#parentname").val(data);
+                }
+
+                if (data == null || data == "") {
+
+                    //                    $("#parentname").css("display", "none");
+
+                }
+
+            });
+        });
+    });
+ </script>
+
+
+ @using (Html.BeginForm("EditSalesProduct", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+          {
+    @Html.ValidationSummary(true)
+        
+     <aside class="right-side">
+          <section  class="content-header">
+                    <h1>
+                   Sales  Product   <small>Edit</small>                    
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li><a href="#">Forms</a></li>
+                        <li class="active">General Elements</li>
+                    </ol>
+                </section>
+
+
+             
+                
+                      <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                   
+                                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Update" />
+                                    
+                                    </li>
+                                </ul>
+                         
+                                         </div>    
+
+
+
+                <!-- Main content -->
+                <section class="content">
+            
+                    <div class="row top-mar">
+                        <!-- left column -->
+                        @*<div class="col-md-6">*@
+                            <!-- general form elements -->
+                         
+                               
+                                <!-- form start -->
+                           
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">
+                
+</div>
+                                   <div class="box-body">
+                                       
+                                       
+
+                     
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                                        <i class="fa fa-check"></i>
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                     @ViewBag.Message
+                                    </div>
+        }
+      @if (ViewBag.Error != null)
+      { 
+        <div class="alert alert-danger alert-dismissable">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b>
+@ViewBag.Error </div>
+      }
+      
+
+      
+                     @Html.HiddenFor(d => d.Userid)
+                  @Html.HiddenFor(d => d.Id)
+                  @Html.HiddenFor(d => d.companyid)
+                         @Html.HiddenFor(d => d.Branchid)
+  @Html.HiddenFor(d => d.PurchaseTax)
+   @Html.HiddenFor(d => d.PurchasePrice)
+      @Html.HiddenFor(d => d.IsPurchaseProduct)      
+      @Html.HiddenFor(d => d.IsSalesProduct)
+            @Html.HiddenFor(d => d.GroupId)
+
+@*
+              
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+             Product  Group :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DropDownListFor(model => model.GroupId, new SelectList(ViewBag.group, "Id", "Name"), "-----Select----", new { @class = "form-control" })<br />
+                 @Html.ValidationMessageFor(model => model.GroupId)
+                 	
+                                    </div>*@
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+                  Code :<span style="color:Red;">*</span></label>
+                  <div class="clr"></div>
+
+                  @Html.HiddenFor(d => d.Id)
+               @*   <input type="text" id="parentname" readonly="readonly" class="form-control parentname" name="parentname" />*@
+                   @Html.TextBoxFor(model => model.Code, new { @class = "form-control", @readonly="readonly",@placeholder = "Enter 10 Digit Code", @maxlength = "100", @onkeypress = "return AlphaNumeric(event)" })
+             <center> &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;   &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  @Html.ValidationMessageFor(model => model.Code)
+                     </center> 
+                                      
+                                     <div class="clr"></div>
+                                    </div>
+
+
+
+                            
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Enter Description" })
+                 @Html.ValidationMessageFor(model => model.Description)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Unit:<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.DropDownListFor(model => model.UnitId, new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.UnitId)                	
+<b>Example: piece, pound, meter.</b>          
+                                     
+                                    </div>
+
+                                    
+                               @*     
+
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+           Discount(%) :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Discount, new { @class = "form-control", @placeholder = "Enter Discount", @maxlength = "2", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.Discount)
+                                                     
+                                     
+                                    </div>
+*@
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Sales Price :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextBoxFor(model => model.SalesPrice, new { @class = "form-control", @placeholder = "Enter Sales Price", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.SalesPrice)
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+           Minm. Discount(%) :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.MinDiscount, new { @class = "form-control", @placeholder = "Enter Minimum Discount", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.Discount)
+                                                     
+                                     
+                                    </div>
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+        Maxm. Discount(%):</label>
+
+                  
+                   @Html.TextBoxFor(model => model.MaxDiscount, new { @class = "form-control", @placeholder = "Enter Maximum Discount", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.Discount)
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+           Discount(%) :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Discount, new { @class = "form-control", @placeholder = "Enter Discount", @maxlength = "14", @onkeypress = "return Decimal(event)" })
+                 @Html.ValidationMessageFor(model => model.Discount)
+                                                     
+                                     
+                                    </div>
+
+                                    
+
+                                      
+                              
+
+
+                                     
+              
+                                        </div>
+
+
+                             
+                         
+                    </div>   <!-- /.row -->
+                    </div>
+                                      <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header">             </div>
+
+
+                                     <div class="box-body">
+                                    <div class="box-body table-responsive">
+
+                                    
+                                  
+
+
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+                Sales Tax :</label>
+
+                  
+                   @Html.DropDownListFor(model => model.SalesTax, new SelectList(ViewBag.tax, "Id", "Name"), new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.SalesTax)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+            Product Image :</label>
+@*
+                                   @Html.TextBoxFor(model => model.Productimage, new { type="file"})*@
+  
+<input  type="file"  id="productimg" onchange="readURL(this);" name="productimg" accept="image/*" />   
+     <img  style="width:122px;height:37px;" id="blah" src="#" alt="Image" />            
+        @Html.ValidationMessageFor(model => model.Productimage)                                    
+                                     
+                                    </div>
+
+
+                                    
+
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Weight :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Weight, new { @class = "form-control", @placeholder = "Enter Weight", @onkeypress = "return Decimal(event)",@maxlength="20" })
+                 @Html.ValidationMessageFor(model => model.Weight)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Height :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Height, new { @class = "form-control", @placeholder = "Enter Height", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.Height)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Colour :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Colour, new { @class = "form-control", @placeholder = "Enter Colour" })
+                 @Html.ValidationMessageFor(model => model.Colour)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                     
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+Depth :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.Depth, new { @class = "form-control", @placeholder = "Enter Depth", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.Depth)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+
+                                       <div class="form-group">
+                                          <label class="black_txt_010">
+Cubic Total :</label>
+
+                  
+                   @Html.TextBoxFor(model => model.CubicTotal, new { @class = "form-control", @placeholder = "Enter Cubic Total", @onkeypress = "return Decimal(event)", @maxlength = "20" })
+                 @Html.ValidationMessageFor(model => model.CubicTotal)
+                                                     
+                                     
+                                    </div>
+
+
+
+
+
+                                    
+                                    <div class="form-group">
+                                          <label class="black_txt_010">
+           
+                                           </label>          
+                                     
+                                    </div>
+
+
+
+                                     
+                                  
+
+                                    </div>
+
+
+                                    </div>
+
+
+
+
+
+
+
+
+                                        </div>
+                                        
+                                </div>
+                                
+                                   
+                 
+                   
+                </section><!-- /.content -->
+
+        
+      
+
+
+
+
+ </aside>
+          }

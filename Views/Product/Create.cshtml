@@ -1,0 +1,298 @@
+﻿@model XenERP.Models.Product
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var form = $("#register");
+        $('#btnProduct').click(function () {
+            alert('a');
+
+            var result = $('form').valid();
+            alert(result);
+            //            var Code = $('#Code').val();
+            //            if (Code == '') {
+            //                $('#Code').parents(".form-group:first").addClass("has-error");
+            //                $('#errordiv1').css("display", "block");
+            //                $('#errordiv1').append('Enter Product Code');
+            //                return false;
+            //            }
+
+        });
+    });
+            </script>
+<!DOCTYPE html>
+
+
+    <meta name="viewport" content="width=device-width" />
+    <title>Create New Product</title>
+
+ <div class="alert alert-danger alert-dismissable" id="errordiv1" style="display:none">
+<i class="fa fa-ban"></i>
+<button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+<b>Error!</b><br />
+ </div>
+ @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "register" }))
+ {
+    @Html.ValidationSummary(true)
+    
+        
+         @* <div class="form-group">
+                                          <label class="black_txt_010">
+                  Code :<span style="color:Red;">*</span></label>
+
+                
+                   @Html.TextBox("Code", null, new { @class = "form-control", @placeholder = "Enter Code" })
+                  @Html.ValidationMessage("Code")
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextArea("Description", new { @class = "form-control", @placeholder = "Enter Description" })
+              
+                                                     
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Unit:</label>
+
+                  
+                   @Html.DropDownList("UnitId", new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Group :</label>
+
+                  
+                   @Html.DropDownList("GroupId", new SelectList(ViewBag.group, "Id", "Name"), "-----Select----", new { @class = "form-control" })
+               
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+              Category :</label>
+
+                  
+                   @Html.DropDownList("CategoryId", new SelectList(ViewBag.category, "Id", "Name"), "-----Select----", new { @class = "form-control" })
+                
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Purchase Price :</label>
+
+                  
+                   @Html.TextBox("PurchasePrice", null, new { @class = "form-control", @placeholder = "Enter Purchase Price  " })
+                
+                                                     
+                                     
+                                    </div>
+
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+               Sales Price :</label>
+
+                  
+                   @Html.TextBox("SalesPrice", null, new { @class = "form-control", @placeholder = "Enter Sales Price  " })
+              
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+            IsStockProduct :</label>
+
+                  
+                   @Html.CheckBox("IsStockProduct", new { @class = "form-control", @placeholder = "Enter Suburb" })
+              
+                                     
+                                    </div>
+
+
+
+                                    
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+          IsComponentProduct:</label>
+
+                  
+                   @Html.CheckBox("IsComponentProduct", new { @class = "form-control", @placeholder = "Enter City" })
+               
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+        IsAssembledProduct :</label>
+
+                  
+                      @Html.CheckBox("IsAssembledProduct", new { @class = "form-control", @placeholder = "Enter City" })
+                
+                                                     
+                                     
+                                       
+                                    </div>*@
+     
+           <div class="form-group">
+                                          <label class="black_txt_010">
+                  Code :<span style="color:Red;">*</span></label>
+
+                
+                   @Html.TextBoxFor(model => model.Code, new { @class = "form-control", @placeholder = "Enter Code" })
+                 @Html.ValidationMessageFor(model => model.Code)
+
+                                      
+                                     
+                                    </div>
+
+
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010">
+                  Description :<span style="color:Red;">*</span></label>
+
+                  
+                   @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Enter Description" })
+                 @Html.ValidationMessageFor(model => model.Description)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+                 Unit:</label>
+
+                  
+                   @Html.DropDownListFor(model => model.UnitId, new SelectList(ViewBag.unit, "Id", "Code"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.UnitId)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Group :</label>
+
+                  
+                 @Html.DropDownListFor(model => model.GroupId, new SelectList(ViewBag.group, "Id", "Name"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.GroupId)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+              Category :</label>
+
+                  
+                 @Html.DropDownListFor(model => model.CategoryId, new SelectList(ViewBag.category, "Id", "Name"), "-----Select----", new { @class = "form-control" })
+                 @Html.ValidationMessageFor(model => model.CategoryId)
+                                                     
+                                     
+                                    </div>
+
+                                    
+                                                <div class="form-group">
+                                          <label class="black_txt_010">
+               Purchase Price :</label>
+
+                  
+                 @Html.TextBoxFor(model => model.PurchasePrice, new { @class = "form-control", @placeholder = "Enter Purchase Price  " })
+                 @Html.ValidationMessageFor(model => model.PurchasePrice)
+                                                     
+                                     
+                                    </div>
+
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+               Sales Price :</label>
+
+                  
+                 @Html.TextBoxFor(model => model.SalesPrice, new { @class = "form-control", @placeholder = "Enter Sales Price  " })
+                 @Html.ValidationMessageFor(model => model.SalesPrice)
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+            IsStockProduct :</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                  
+                   @Html.CheckBoxFor(model => model.IsStockProduct, new { @class = "form-control", @placeholder = "Enter Suburb" })
+                 @Html.ValidationMessageFor(model => model.IsStockProduct)
+                                                     
+                                     
+                                    </div>
+
+
+
+                                    
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+          IsComponentProduct:</label>
+
+                  
+                   @Html.CheckBoxFor(model => model.IsComponentProduct, new { @class = "form-control", @placeholder = "Enter City" })
+                 @Html.ValidationMessageFor(model => model.IsComponentProduct)
+                                                     
+                                     
+                                    </div>
+
+
+                                    
+                                          <div class="form-group">
+                                          <label class="black_txt_010">
+        IsAssembledProduct :</label>
+
+                  
+                      @Html.CheckBoxFor(model => model.IsAssembledProduct, new { @class = "form-control", @placeholder = "Enter City" })
+                 @Html.ValidationMessageFor(model => model.IsAssembledProduct)
+                                                     
+                                     
+                                       
+                                    </div>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="btnProduct">Save changes</button>
+ }

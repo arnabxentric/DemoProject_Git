@@ -1,0 +1,30 @@
+﻿@model IEnumerable<XenERP.Models.UserWorkDetails>
+
+@{ Layout = null;}
+<div><h3>Employee : @ViewBag.name</h3></div>
+<table id="example1" class="table table-bordered table-striped">
+   
+    <thead>
+        <tr>
+            <th align="center">Working Time</th>
+            <th align="center">Working On</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+          
+            <tr>
+                <td align="center">@item.WorkTime</td>
+
+                <td align="center">
+                    @item.WorkOn
+                </td>
+              
+
+            </tr>
+        }
+    </tbody>
+</table>

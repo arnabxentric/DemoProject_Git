@@ -1,0 +1,598 @@
+﻿@model XenERP.Models.salesusa
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="../../Reports/css/datetimepicker/datepicker.css" />
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/SalesInvoice.js" type="text/javascript"></script>
+<script src="../../Scripts/PurchaseCostingDetail.js" type="text/javascript"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $('#suc').html('');
+        $('#suc').css("display", "none");
+        $('#err').html('');
+        $('#err').css("display", "none");
+        $('#productName').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Production/getProductDetails',
+                    data: { query: request.term },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.ProductName,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+
+            change: function (event, ui) {
+                if (ui.item == null || ui.item == undefined) {
+                    $('#productName').val('');
+                    $('#productCode').val('');
+                    $('#PrimaryUnit').val('');
+                    $('#SecondaryUnit').val('');
+                    $('#UnitFormula').val('');
+                    $('#primary').val('');
+                    $('#secondary').val('');
+                    $('#productName').parents("td:first").removeClass("has-success");
+                    $('#productCode').parents("td:first").removeClass("has-success");
+                    $('#PrimaryUnit').parents("td:first").removeClass("has-success");
+                    $('#SecondaryUnit').parents("td:first").removeClass("has-success");
+                    $('#UnitFormula').parents("td:first").removeClass("has-success");
+                    $('#primary').parents("td:first").removeClass("has-success");
+                    $('#secondary').parents("td:first").removeClass("has-success");
+                }
+            },
+
+            select: function (event, ui) {
+                $('#ProductId').val(ui.item.value);
+                $('#productName').val(ui.item.label);
+                $.get('/Production/chkProductDetails', { 'query': ui.item.label }, function (data, status) {
+                    if (data == '') {
+                        $('#ProductId').val('');
+                        $('#productName').val('');
+                    }
+                    else {
+                        $('#ProductId').val(data.Id);
+                        $('#productCode').val(data.Code);
+                        $('#PrimaryUnit').val(data.PrimaryUnit);
+                        $('#SecondaryUnit').val(data.Secondaryunit);
+                        $('#UnitFormula').val(data.UnitFormula);
+                        $('#primary').val(data.PrimaryUnit);
+                        $('#secondary').val(data.Secondaryunit);
+                        $('#productCode').parents("td:first").removeClass("has-success");
+                        $('#PrimaryUnit').parents("td:first").removeClass("has-success");
+                        $('#SecondaryUnit').parents("td:first").removeClass("has-success");
+                        $('#UnitFormula').parents("td:first").removeClass("has-success");
+                        $('#primary').parents("td:first").removeClass("has-success");
+                        $('#secondary').parents("td:first").removeClass("has-success");
+
+                    }
+
+                });
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#UnitFormula,#parentname,#secondname').keypress(function (event) {
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 0;
+
+    $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+
+    });
+
+    function addRow(tableID) {
+
+        rowadd++;
+
+        var table = document.getElementById(tableID);
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell1 = row.insertCell(0);
+        var element1 = document.createElement("select");
+        element1.className = "category";
+        element1.id = "category" + rowadd;
+        element1.name = "txtcategory";
+        var option1 = document.createElement("option");
+        option1.innerHTML = "select";
+        option1.value = "";
+        element1.add(option1, null);
+        cell1.appendChild(element1);
+
+        //        var cell1 = row.insertCell(0);
+        //        var element1 = document.createElement("input");
+        //        element1.type = "text";
+        //        element1.name = "txtcategory";
+        //        element1.id = "category" + rowadd;
+        //        element1.className = "category";
+        //        cell1.appendChild(element1);
+
+        var cell2 = row.insertCell(1);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtItem";
+        element2.id = "Item" + rowadd;
+        element2.className = "Item";
+        cell2.appendChild(element2);
+
+        var cell3 = row.insertCell(2);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtQuantity";
+        element3.className = "Quantity";
+        element3.id = "Quantity" + rowadd;
+        cell3.appendChild(element3);
+
+        //        var cell4 = row.insertCell(3);
+        //        var element4 = document.createElement("input");
+        //        element4.type = "text";
+        //        element4.name = "txtAddress";
+        //        element4.className = "Address";
+        //        element4.id = "Address" + rowadd;
+        //        cell4.appendChild(element4);
+
+
+        var cell5 = row.insertCell(3);
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.name = "txtUnit";
+        element5.className = "Unit";
+        element5.id = "Unit" + rowadd;
+        cell5.appendChild(element5);
+
+        var cell6 = row.insertCell(4);
+        var element6 = document.createElement("input");
+        element6.type = "text";
+        element6.name = "txtAmount";
+        element6.className = "Amount";
+        element6.id = "Amount" + rowadd;
+        cell6.appendChild(element6);
+
+        //        var cell7 = row.insertCell(5);
+        //        var element7 = document.createElement("input");
+        //        element7.type = "text";
+        //        element7.name = "txtRoundoff";
+        //        element7.className = "Roundoff";
+        //        element7.id = "Roundoff" + rowadd;
+        //        cell7.appendChild(element7);
+
+        //        var cell8 = row.insertCell(6);
+        //        var element8 = document.createElement("input");
+        //        element8.type = "text";
+        //        element8.name = "txtGrandTotal";
+        //        element8.className = "GtandTotal";
+        //        element8.id = "GtandTotal" + rowadd;
+        //        cell8.appendChild(element8);
+
+        var cell9 = row.insertCell(5);
+        var element9 = document.createElement("input");
+        element9.type = "button";
+        element9.id = "btndelete";
+        element9.name = "button[]";
+        element9.title = "Delete this row";
+        element9.className = "add-component-deletebotton";
+        cell9.appendChild(element9);
+
+        var cell10 = row.insertCell(6);
+        var element10 = document.createElement("input");
+        element10.type = "hidden";
+        element10.name = "txtItemId";
+        element10.className = "itemId";
+        element10.id = "itemId" + rowadd;
+        cell10.appendChild(element10);
+        cell10.className = "display-non-div";
+
+        $("#category" + rowadd).append($("<option />").val("Generic").text("Generic"));
+        $("#category" + rowadd).append($("<option />").val("Inventory").text("Inventory"));
+    }
+</script>
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 1;
+    $(document).ready(function () {
+
+        var table = document.getElementById('dataTable');
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+
+        var cell1 = row.insertCell(0);
+        var element1 = document.createElement("select");
+        element1.className = "category";
+        element1.id = "category" + rowadd;
+        element1.name = "txtcategory";
+        var option1 = document.createElement("option");
+        option1.innerHTML = "select";
+        option1.value = "";
+        element1.add(option1, null);
+        cell1.appendChild(element1);
+
+        //        var cell1 = row.insertCell(0);
+        //        var element1 = document.createElement("input");
+        //        element1.type = "text";
+        //        element1.name = "txtcategory";
+        //        element1.id = "category" + rowadd;
+        //        element1.className = "category";
+        //        cell1.appendChild(element1);
+
+        var cell2 = row.insertCell(1);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "txtItem";
+        element2.id = "Item" + rowadd;
+        element2.className = "Item";
+        cell2.appendChild(element2);
+
+        var cell3 = row.insertCell(2);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "txtQuantity";
+        element3.className = "Quantity";
+        element3.id = "Quantity" + rowadd;
+        cell3.appendChild(element3);
+
+        //        var cell4 = row.insertCell(3);
+        //        var element4 = document.createElement("input");
+        //        element4.type = "text";
+        //        element4.name = "txtAddress";
+        //        element4.className = "Address";
+        //        element4.id = "Address" + rowadd;
+        //        cell4.appendChild(element4);
+
+
+        var cell5 = row.insertCell(3);
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.name = "txtUnit";
+        element5.className = "Unit";
+        element5.id = "Unit" + rowadd;
+        cell5.appendChild(element5);
+
+        var cell6 = row.insertCell(4);
+        var element6 = document.createElement("input");
+        element6.type = "text";
+        element6.name = "txtAmount";
+        element6.className = "Amount";
+        element6.id = "Amount" + rowadd;
+        cell6.appendChild(element6);
+
+        //        var cell7 = row.insertCell(5);
+        //        var element7 = document.createElement("input");
+        //        element7.type = "text";
+        //        element7.name = "txtRoundoff";
+        //        element7.className = "Roundoff";
+        //        element7.id = "Roundoff" + rowadd;
+        //        cell7.appendChild(element7);
+
+        //        var cell8 = row.insertCell(6);
+        //        var element8 = document.createElement("input");
+        //        element8.type = "text";
+        //        element8.name = "txtGrandTotal";
+        //        element8.className = "GtandTotal";
+        //        element8.id = "GtandTotal" + rowadd;
+        //        cell8.appendChild(element8);
+
+        var cell9 = row.insertCell(5);
+        var element9 = document.createElement("input");
+        element9.type = "button";
+        element9.id = "btndelete";
+        element9.name = "button[]";
+        element9.title = "Delete this row";
+        element9.className = "add-component-deletebotton";
+        cell9.appendChild(element9);
+
+        var cell10 = row.insertCell(6);
+        var element10 = document.createElement("input");
+        element10.type = "hidden";
+        element10.name = "txtItemId";
+        element10.className = "itemId";
+        element10.id = "itemId" + rowadd;
+        cell10.appendChild(element10);
+        cell10.className = "display-non-div";
+
+        $("#category" + rowadd).append($("<option />").val("Generic").text("Generic"));
+        $("#category" + rowadd).append($("<option />").val("Inventory").text("Inventory"));
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dataTable").on("keypress", '.Item', function (event) {
+            var id = $(this).attr('id');
+            $('#Item' + rowadd).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Production/getProductDetails',
+                        data: {
+                            query: request.term
+                        },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.ProductName,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $('#' + id).val('');
+                        alert("Item not found");
+                        var coltd = $("#" + id).closest('td');
+                        var coltr = coltd.closest('tr');
+                        coltr.find('.Quantity').val('');
+                        coltr.find('.Price').val('');
+                        coltr.find('.Totalvalue').val('');
+                        coltr.find('.Availability').val('');
+                    }
+                },
+
+
+                select: function (event, ui) {
+                    $('#productid' + rowadd).val(ui.item.value);
+                    $('#Product' + rowadd).val(ui.item.label);
+                    $.get('/Production/chkProductDetails', { 'query': ui.item.label }, function (data, status) {
+                        if (data == '') {
+                            //$('#productId').val('');
+                            $('#Product' + rowadd).val('');
+                        }
+                        else {
+                            $('#Item' + rowadd).val(data.ProductName);
+                            $('#itemId' + rowadd).val(data.Id);
+                            var ctd = $('#Product' + rowadd).closest('td');
+                            var ctr = ctd.closest('tr');
+                        }
+
+                    });
+                    return false;
+                },
+                minLength: 1
+            });
+
+
+        });
+
+        $("#dataTable").on("change", '.Unit', function (event) {
+            var id = $(this).attr('id');
+            var comptd = $('#' + id).closest('td');
+            var comptr = comptd.closest('tr');
+            var num = $("#" + id).val();
+            var num2 = $("#" + id).val();
+            var unit = comptr.find('.Quantity').val();
+            if (num != null && unit != null && unit != "") {
+                result = parseFloat(num, 2) * parseFloat(unit, 2);
+                $("#Amount" + rowadd).val(result);
+            }
+        });
+
+
+        $("#dataTable").on("keypress", '.Amount', function (event) {
+            var sum = 0;
+            // iterate through each td based on class and add the values
+            $(".Amount").each(function () {
+                var value = $(this).val();
+                // add only if the value is number
+                if (!isNaN(value) && value.length != 0) {
+                    sum += parseFloat(value);
+                }
+            });
+
+            $("#Total").val(sum);
+        });
+
+
+
+//            $(document).on("click", '.add-component-botton', function () {
+//                var sum = 0;
+//                var sum1 = 0;
+//                // iterate through each td based on class and add the values
+//                $(".Amount").each(function () {
+//                    var value = $(this).val();
+//                    // add only if the value is number
+//                    if (!isNaN(value) && value.length != 0) {
+//                        sum += parseFloat(value);
+//                    }
+//                });
+
+//                $("#Total").val(sum);
+//            });
+    });
+
+
+</script>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+    <aside class="right-side"> 
+
+          <section class="content-header">
+                    <h1>DAILY SALE<small>SALES DESCRIPTION</small> </h1>
+                    <ol class="breadcrumb">
+                       <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                       <li><a href="#">Forms</a></li>
+                       <li class="active">General Elements</li>
+                    </ol>
+           </section>
+
+             <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" formaction="DailySale"/></li>
+                                </ul>
+             </div>
+
+             <div id="suc" class="alert alert-success alert-dismissable">
+                         <i class="fa fa-check"></i>
+                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                          @ViewBag.Message
+             </div>
+
+                <div id="err" class="alert alert-danger alert-dismissable">
+                           <i class="fa fa-ban"></i>
+                           <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+              <b>Error!</b>
+               @ViewBag.Error 
+               </div>
+
+                <!-- Main content -->
+                <section class="content">  
+                                <div class="row">
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"></div>
+                                <div class="box-body">
+         
+      
+         @Html.HiddenFor(d => d.Id)
+                                      <div class="form-group">
+                                          <label class="black_txt_010"> Customer Name :<span style="color:Red;"></span></label>
+                                                   @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @placeholder = "Customer Name" })
+                                    </div>
+
+                                     <div class="form-group">
+                                          <label class="black_txt_010"> Customer Address :<span style="color:Red;"></span></label>
+                                                   @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @placeholder = "Customer Address" })
+                                    </div>
+
+                                  
+                                    </div>
+                    </div>
+                    </div>   <!-- /.row -->
+                  
+
+
+                                <div class="col-md-6">
+                                <div class="box box-primary">
+                                <div class="box-header"> </div>
+                                <div class="box-body">
+
+                                  <div class="form-group">
+                                          <label class="black_txt_010"> Receipt Mode :<span style="color:Red;"></span></label>
+                                                   @Html.DropDownListFor(model => model.ReceiptMode, new SelectList(ViewBag.receipt, "Value", "Text"), new { @class = "form-control", @placeholder = "Enter Receipt Mode" })
+                                    </div>
+                             
+                                            <div class="form-group">
+                                                <label class="black_txt_010"> Sales Date:</label>
+
+                                                 <div class="input-group date" data-date-format="@Session["DateFormatLower"]"  id="dp3">
+                                                <input type="text" readonly="readonly" name="saleDate" class = "form-control" id="FromDate"  />
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> 
+                                                </div>
+                                            </div>
+                                  
+                                    </div>
+                                    </div>
+                                </div>
+
+
+                         <div class="col-xs-12">
+                         <div class="box-body">
+                         <div class="box-body table-responsive no-padding">
+                         <div class="form-group">
+                          <h3>Sale Details</h3>
+                          </div>
+                         <div class="form-group">
+                          <table class="my-table-style" id="dataTable" width="100%" border="0">
+                          <tr class="my-table-header">
+
+                          <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Category</label>
+                          </td>
+
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Item</label>
+                          </td>
+
+                             <td class="my-table-header" style="text-align:center;">
+                          <label class="black_txt_010">Quantity</label>
+                          </td>
+
+
+                          <td  style="text-align:center;">
+                          <label class="black_txt_010">Unit Price</label>
+                          </td>
+
+                          <td style="text-align:center;">
+                          <label class="black_txt_010">Total Amount</label>
+                          </td>
+
+                        
+                           <td></td>
+                           </tr>
+                          
+                           </table>
+                         
+                            <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                             </div>
+                            </div>
+                            </div>
+                            </div>
+                                  <div class="col-md-6">
+                                       <div class="box">
+                                       @*<textarea class="form-control" placeholder="Enter Comments" rows="7"></textarea>*@
+                                       @Html.TextAreaFor(model => model.Address, new { @rows = 7, @class = "form-control", @placeholder = "Enter Comments" })
+                                        <a onclick="caltaxcomponent();" href="javascript:void(0);">Show Tax Details</a>
+                                          <div class="box-body table-responsive no-padding">
+                                  <table class="table table-bordered table-striped table-hover" style="text-align:center;" id="example22">
+                                  <thead></thead>
+                                  <tbody>
+                                    </tbody>
+                                    </table>
+                                    </div>
+                                       </div>
+                                       </div>
+                                       <div class="col-md-6">
+                                       <div class="box">
+                                      <div class="box-body table-responsive no-padding">
+                                  <table class="table table-bordered table-striped table-hover" style="text-align:center;" id="example11">
+                                  <tbody>
+                                  <tr>
+                                        <td>Total :</td>
+                                     <td align="right">@Html.TextBoxFor(model=>model.Total)</td>
+                                     </tr>
+                                    </tbody>
+                                    </table>
+                                    </div>
+                                    </div> 
+                                 </div>
+                </section><!-- /.content -->
+        </aside>
+}

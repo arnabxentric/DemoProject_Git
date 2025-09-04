@@ -1,0 +1,845 @@
+﻿html {
+    height: 100%;
+    overflow: auto !important;
+}
+body {
+    background: #193048;
+    width: 100%;
+    height: 100%;
+    overflow: auto !important;
+}
+.mobilewarning {
+    margin: auto;
+    padding: 10px;
+    border: 1px solid #FEE6AB;
+    background-color: #FFF7E6;
+    width: 850px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 15px;
+}
+.maincontainer {
+    width:100%;
+    margin-left:auto;
+    margin-right:auto;
+    height: 100%;
+}
+.leftshadow {
+    width:875px;
+    height: auto;
+    margin:auto;
+}
+/*Hidden by default at the moment as part of comingsooncontainer*/
+.blogfeed {
+    display: none;
+    height:185px;
+    width:400px;
+    margin-left: 30px;
+    padding-top: 5px;
+    padding-bottom: 7px;
+    text-align:center;
+}
+.logocontainer {
+    background: #193048;
+}
+.qblogo {
+    width: 240px;
+}
+.oia-login-style .qblogo {
+    width: 192px;
+}
+.bodycontainer {
+    	background-color: 	#fff;
+}
+.bodycontainer table {
+	width: 100%;
+}
+
+.bodycontainercsbg {
+    	background-color: 	#ffffff;
+}
+
+.footer3rdPartyLogo {
+    position:fixed;
+    bottom: 5px;
+    right: 10px;
+    opacity: 0.5;
+}
+
+.footer3rdPartyLogo:hover {
+    opacity: 1;
+}
+
+/* ADDED Terms of Service CSS on 1-11-2013 */
+.bodycontainer_tos {
+    	background-color: 	#FFFFFF;
+    	font-family:		Arial, Helvetica, sans-serif;
+	height: 			90%;
+	overflow: 		auto;
+	padding: 			5px 30px;
+	-webkit-overflow-scrolling: 	touch;
+}
+.center {
+	text-align: 		center;
+}
+.indent25 {
+	text-indent:		-.25in
+}
+.margin25 {
+	margin-left:		.25in;
+}
+.margin50 {
+	margin-left:		.50in;
+}
+.margin75 {
+	margin-left:		.75in;
+}
+.margin100 {
+	margin-left:		1.0in;
+}
+/* END Terms of Service CSS on 1-11-2013 */
+
+.comingsooncontainer {
+    height: 420px;
+    padding-top: 30px;
+}
+.comingsooncontainer > div, #defaultComingSoon {
+	height: 100%;
+}
+.logincontainer {
+	float:left;
+    margin-left: 6%;
+    border: none;
+    width:420px;
+    padding-top:27px;
+    padding-left:15px;
+    z-index: 100;
+    background-color: #ffffff;
+    height: 100%;
+}
+
+.oia-login-style .logincontainer {
+    margin-left: 0;
+    width:380px;
+    padding: 0 20px;
+}
+
+/* GSSO - need the following to properly style the new Sign-in with Goggle button */
+.logincontainer .ius-sign-in-widget .ius-partner-button,
+.logincontainer .ius-sign-in-widget .ius-partner-separator {
+    max-width: 320px;
+}
+
+.logincontainertitle {
+    margin-top:10px;
+    margin-left:20px;
+    font-size: 23px;
+    color:#404040;
+    padding-bottom:5px;
+}
+.fieldcontainer {
+    margin-top:15px;
+}
+.field_label {
+    width:80px;
+    text-align:right;
+    float:left;
+    font-size: 13px;
+    color:#404040;
+    margin-top:3px;
+    line-height: 28px;
+}
+.fielddiv {
+    margin-left:10px;
+    float:left;
+}
+.textfield {
+    width: 280px !important;
+}
+.clear {
+    clear:both;
+}
+.comingsoontitle {
+    text-transform: uppercase;
+    margin-top:35px;
+    margin-left:30px;
+    font-size: 12px;
+    color:#4e9e19;
+}
+.comingsoontitle.smalltext {
+    font-size: 21px;
+}
+.helpSectionTitle {
+    margin-top:30px;
+    margin-left:50px;
+    font-size: 21px;
+    color:#4e9e19;
+}
+.comingsoonsubtitle {
+    font-size: 11px;
+    padding-left:35px;
+    color:#404040;
+    padding-bottom: 15px;
+}
+/*Hidden by default at the moment as part of comingsooncontainer*/
+.comingsoonimage {
+    display: none;
+    width: 450px;
+}
+
+/*START - Single Sign On Guidance iFrame css*/
+.singleSignOnGuidanceFrameContainer {
+    height: 100%;
+    overflow: hidden;
+    width: 440px;
+}
+/* END - Single Sign On Guidance iFrame */
+
+/*START - Simba Promo specific css*/
+
+.dtPromo {
+    background: #eee;
+    text-align: center;
+    display: none;
+}
+
+.dtHeaderContent {
+    /* explicitly setting the font-family to match OII's header text since we need them to be the same */
+    font-family: HelveticaNeueBold, HelveticaNeue-Bold, HelveticaNeueLight, HelveticaNeue-Light, HelveticaNeue, "iusHelvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: #404040;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.dtSubheadingContent {
+    font-size: 14px;
+    color: #404040;
+    margin-bottom: 20px;
+}
+
+.dtFreeDownloadLinkDiv {
+    margin-bottom: 20px;
+}
+
+.dtFreeDownloadLinkA {
+    outline: none;
+}
+
+.dtFreeDownloadLink:link {
+    background-color: #ec7027;
+    box-sizing: border-box;
+    padding: 9px 20px;
+    line-height: 34px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #fff;
+    border-radius: 2px;
+    text-decoration: none;
+}
+
+.dtFreeDownloadLink:visited {
+	color: #fff;
+    background-color: #ec7027;
+}
+
+.dtImage{
+    width: 305px;
+    height: 176px;
+    margin-bottom: 18px;
+}
+
+.dtLearnMoreLink{
+    color: #365ebf;
+    font-size: 12px;
+}
+
+/* END - Simba Promo specific css */
+
+.qbdesktoplink {
+    font-size: 11px;
+    padding:18px 0 0 20px;
+    color:#404040;
+}
+.bookmark {
+    margin-left:26px;
+    margin-bottom: 10px;
+    position:relative;
+    visibility: hidden;
+}
+.bookmark div {
+    color:#76818C;
+    font-size: 11px;
+}
+.footercontainer {
+    width:875px;
+    margin-left:auto;
+    margin-right:auto;
+    color:#76818C;
+    font-size: 11px;
+    margin-top:11px;
+}
+.copyright {
+    float:left;
+    margin-top:7px;
+}
+.oia-login-style .copyright {
+    margin-left: 16px;
+}
+.footerlinkscontainer {
+    float:right;
+    margin-right:22px;
+    width:250px;
+}
+.oia-login-style .footerlinkscontainer {
+    margin-right: 0;
+    width: auto;
+}
+.footerlinks {
+    float:right;
+    margin-top:7px;
+}
+.footerlinks a:link, .footerlinks a:active, .footerlinks a:visited {
+    color:#76818C !important;
+    text-decoration: none;
+}
+
+.verity {
+    float:left;
+    width:63px;
+    height:35px;
+    background: url('../images/login_footer_sprite.png') no-repeat left top;
+    cursor:pointer;
+}
+.trustesprite {
+    float:left;
+    width:100px;
+    height:35px;
+    background: url('../images/login_footer_sprite.png') no-repeat -93px top;
+    margin-left: 5px;
+    cursor:pointer;
+}
+.helpcontainer {
+    margin-left:28px;
+    padding-bottom: 50px;
+}
+.multitextscontainer {
+    margin-top: 1px;
+}
+.helpicon {
+    background: url('../images/login_footer_sprite.png') no-repeat -196px top;
+    width:16px;
+    height:15px;
+    float:left;
+}
+.inlinehelpicon {
+    background: url('../images/login_footer_sprite.png') no-repeat -196px top;
+    width:16px;
+    height:15px;
+}
+.helptitle {
+    margin-left:6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #2b73dd;
+    float:left;
+}
+.helpcontent {
+    visibility:hidden;
+    margin-top:-20px;
+}
+.helpkbs {
+    margin-left:-4px;
+    margin-left:40px;
+}
+.helpcontainertitle {
+    margin-top:30px;
+    margin-top:30px;
+}
+a.blog_link {
+    color:#286fff;
+    text-decoration: none;
+}
+a.blog_link:hover, a.regular_link:hover, a.footer_link:hover {
+    text-decoration: underline ! important;
+    cursor: pointer;
+}
+.company_link {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+a.company_link {
+	font-size: 14px;
+}
+a.company_link:hover {
+    text-decoration: underline ! important;
+    cursor: pointer;
+}
+.cancelled_companies_box {
+    background-color:#f1f6f9;
+    border:1px solid #dbe9f4;
+    font-size: 12px;
+    color:#404040;
+    padding:7px 9px 7px 8px;
+    margin-left:23px;
+    margin-top:12px;
+    width:475px;
+    margin-bottom:10px;
+}
+.username {
+    font-size: 12px;
+    color: #404040;
+    float:right;
+    margin-right:21px;
+    margin-top:10px;
+    margin-top:10px;
+}
+.cswarning {
+    font-size: 12px;
+    color: #a9282d;
+    margin-left:2px;
+}
+.imgpadding {
+    padding-top:1px;
+}
+.cstitle {
+    padding-top: 40px;
+    padding-left: 40px;
+    font-family: 'HelveticaNeue-Bold', 'Helvetica Neue Bold', 'Helvetica Neue';
+    font-size: 22px;
+}
+.cs-subtitle {
+    color: #404040;
+    font-family: 'HelveticaNeue-Bold', 'Helvetica Neue Bold', 'Helvetica Neue';
+    font-size: 16px;
+    margin-top: 22px;
+    padding-bottom: 4px;
+}
+.cs-other-subtitle {
+    margin-left: -20px;
+    margin-top: 22px;
+    margin-bottom: 4px;
+    color: #404040;
+    font-family: 'HelveticaNeue-Bold', 'Helvetica Neue Bold', 'Helvetica Neue';
+    font-size: 16px;
+    list-style-type: none;
+    padding-bottom: 4px;
+}
+.company-list-container {
+    margin-top: 0px;
+    margin-left: 40px;
+}
+.company-list-item {
+    color: #404040;
+    font-size: 14px;
+    list-style-type: none;
+    line-height: 22px;
+}
+.client-list-multiple {
+	margin-left: 40px;
+}
+.client-list-acs {
+    margin-left: 40px;
+}
+.company-list-title {
+    font-size: 16px;
+    color: #404040;
+    font-family: 'HelveticaNeue-Bold', 'Helvetica Neue Bold', 'Helvetica Neue';
+    padding-bottom: 4px;
+    margin-top: 22px;
+}
+.company-list {
+	padding-left: 20px;
+    margin-top: 4px;
+    margin-bottom: 22px;
+}
+.company-link {
+	color: #365ebf;
+	line-height: 22px;
+}
+.client-id {
+    color: #969696;
+}
+.client-list {
+	display: none;
+}
+.company-expander {
+	margin-right: 10px;
+}
+.triangleDown {
+	-webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+.helpcontainer {
+	margin-left: 48px;
+}
+li .qb_logo {
+    line-height: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.clients-help-text {
+	display: none;
+	margin-left: 40px;
+    padding-top: 5px;
+}
+li .new_look {
+    color: #008000
+}
+li .low_urgency {
+    color: #008000
+}
+li .medium_urgency {
+    color: #e77700
+}
+li .high_urgency {
+    color: #e33d43
+}
+.emptyblock {
+    height:10px;
+}
+DIV.footer, DIV.push {
+    height: 2em;
+}
+#fillbgtop {
+    background: url("../images/1pixelwidth.gif") repeat top left;
+    width: 100%;
+    overflow: hidden
+}
+#fillbgbottom {
+    width: 100%;
+    overflow: hidden;
+    color: #404040;
+}
+HR {
+    color: #404040;
+}
+HR.footer {
+    height: 2px;
+    color: #404040;
+}
+.footer {
+    color: #404040;
+}
+SPAN.verisignBold {
+    font-weight: bold;
+    font-size: 11px;
+}
+SPAN.misc {
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    color: black;
+}
+SPAN.miscBlue {
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    color: #2b73dd;
+}
+DIV.misc {
+    font-weight: bold;
+    font-size: 12px;
+}
+.loginButton {
+    background-color: #FFFFFF;
+    border: 1px outset;
+    width: 80px;
+}
+.loginButton2 {
+    background-color: #FFFFFF;
+    border: 1px outset
+}
+.button_instructions {
+    font-size: xx-small;
+}
+
+span.instructions A, span.instructions SPAN {
+    font-family: arial, sans-serif;
+    font-size: xx-small;
+    color: #2b73dd;
+    font-weight: normal;
+}
+span.instructions A:link {
+    font-size: xx-small;
+    color: #2b73dd;
+    font-weight: normal;
+}
+span.instructions A:visited {
+    font-size: xx-small;
+    color: #003366;
+    font-weight: normal;
+}
+.divider {
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+    border-bottom: 1px solid #D3D1D2;
+    line-height: 1px;
+    height: 1px;
+}
+UL.misc_bullet_indent_HDI {
+    list-style-position: outside;
+    margin-left: 15px;
+    padding-left: 6px;
+    margin-bottom: 0;
+    margin-top: 3px;
+}
+LI.misc_bullet_indent_HDI {
+    list-style: square outside;
+    margin-left: 0;
+    font-weight: normal;
+    font-size: 12px;
+}
+A.misc {
+    font-weight: normal;
+    font-size: 12px;
+    color: #2b73dd;
+}
+div.errordiv {
+    color: #CC0000;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom:5px;
+    background: url("../images/i_alert_16x16.gif") no-repeat;
+    padding: 2px 0 5px 20px;
+    width: 230px;
+}
+div.error {
+    color: #CC0000;
+    font-size: 12px;
+    margin-top: 10px;
+    margin-bottom:5px;
+    width: 280px;
+}
+.subErrorMessage {
+    font-weight: normal;
+    font-size: 11px;
+    margin: 5px 0 5px 0;
+}
+.normalText {
+    font-weight: normal;
+}
+.rememberMe {
+    cursor: pointer;
+    font-size: 13px;
+}
+#signuplink {
+    margin-top: 10px;
+}
+/*Start locale specific styles*/
+#margin32 {
+    height:10%;
+}
+.oia-login-style #margin32 {
+    height:5%;
+}
+.generalcontainer {
+    width:530px;
+}
+.oia-login-style .generalcontainer {
+    width: 420px;
+}
+
+.en_US .blogfeed,
+.en_CA .blogfeed
+{
+    display: block;
+}
+.en_US .comingsoonimage,
+.en_CA .comingsoonimage
+{
+    display: block;
+}
+.en_CA .dtPromo,
+.en_US .dtPromo
+{
+    display: block;
+}
+.en_US .generalcontainer,
+.en_CA .generalcontainer,
+.generalcontainer.singleSignOnEnabled
+{
+    width: 875px;
+}
+.en_US .bodycontainercsbg,
+.en_CA .bodycontainercsbg
+{
+	background-color: #ffffff;
+}
+.en_US .comingsooncontainer,
+.en_CA .comingsooncontainer,
+.fr_CA .comingsooncontainer,
+.singleSignOnEnabled .comingsooncontainer
+{
+    display:table-cell;
+    background: #eee;
+    vertical-align: top;
+}
+.morehelplinks{
+    display:none;
+}
+.en_US .morehelplinks,
+.en_CA .morehelplinks
+{
+	display:block;
+}
+.en_US .logincontainer,
+.en_CA .logincontainer
+{
+    float:none;
+    margin-left: 0;
+}
+.fr_CA .singleSignOnEnabled .logincontainer
+{
+    margin-left: 0;
+}
+.en_US .bookmark,
+.en_CA .bookmark
+{
+    visibility: visible;
+}
+.en_US .footerlinkscontainer,
+.en_CA .footerlinkscontainer
+{
+    width:360px;
+}
+.trusteSeal {
+    display:none;
+}
+.en_US .trusteSeal {
+    display:inline-block;
+}
+.en_SG .bottomSignupLink {
+    display:none;
+}
+.supportchat .comingsooncontainer{
+    display:table-cell;
+    background: #eee;
+    vertical-align: top;
+}
+.supportchat .generalcontainer {
+    width:875px;
+}
+.supportchat .logincontainer {
+    float:none;
+    margin-left: 0;
+}
+#helpSection {
+	height: 268px;
+}
+
+#helpSection .helpSectionText {
+	margin-left: 50px;
+	margin-top: 10px;
+	color: #787878;
+    font-size: 15px;
+}
+
+#helpSection .helpSectionChat {
+    margin-top: 10px;
+    margin-left: 50px;
+    height: 187px;
+}
+
+.bookmarkLoginPage {
+	display: none;
+	background-color:#fff5ce;
+	border:solid 1px #f1e4b1;
+	border-radius:6px;
+	padding:10px;
+	margin:20px 40px 0px 20px;
+	font-size:12px;
+}
+
+.cookiesUsageFooter {
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	min-height: 40px;
+	padding: 5px;
+	background-color: #f5f5f5;
+	opacity: 0.8;
+	box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.5);
+	z-index: 2
+}
+
+.cookieUsageMessageTable {
+	width: 85%;
+	color: #303030;
+	min-height: 40px;
+	line-height: 1.5;
+}
+
+.cookieWarnMessage {
+	text-align:center;
+	width: 90%;
+}
+
+.cookieCloseAction {
+	color: #505050;
+	cursor: pointer;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+button.primary {
+    background-color: #4376cf;
+}
+
+.italic {
+    font-style: italic;
+}
+
+/* Style overrides for IUS signIn widget */
+
+.has-ius .bodycontainer #ius-sign-in-widget {
+    min-height: 500px;/*ius widget height to avoid flicker*/
+}
+
+.has-ius .bodycontainer .logincontainer {
+	padding-top: 0;
+}
+
+.ius .partner-user-info {
+    margin-bottom: 15px;
+}
+
+.ius .partner-user-info .partner-avatar {
+    display: inline-block;
+    min-width: 32px;
+    min-height: 32px;
+    background-size: 32px 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.ius .partner-user-info .partner-email {
+    display: inline-block;
+    color: grey;
+    max-width: 275px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.oia-login-style .ius .ius-btn.ius-btn-submit,
+.oia-login-style .ius .ius-btn.ius-btn-submit:hover,
+.oia-login-style .ius .ius-btn.ius-btn-submit:active,
+.oia-login-style .ius .ius-btn.ius-btn-submit:focus{
+    background: #2ca01c !important;
+}
+
+.oia-login-style .ius .ius-hosted-ui-logo{
+    margin-bottom: 10px !important;
+}
+
+.oia-login-style .ius .ius-text-input:focus{
+    border: 1px solid #2CA01C !important;
+    box-shadow: 0 0 0 2px #D4D7DC !important;
+}

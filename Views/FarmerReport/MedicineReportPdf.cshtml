@@ -1,0 +1,243 @@
+﻿@model XenERP.Models.ModelView.MedicineReportModelView
+
+@{
+    Layout = null;
+}
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+
+@*<script type="text/javascript">
+     $(document).ready(function () {
+
+         $('#btnPDF').click(function () {
+
+             var flock = $("#FlockId").val();
+             $.ajax({
+
+                 type: "POST",
+                 url: "/FarmerReport/PrintMedicineReportPDF",
+                 // The key needs to match your method's input parameter (case-sensitive).
+                 data: JSON.stringify({ flockid: flock}),
+                 //    data: ({ dailyentryobject: finaljson }),
+                 //     data: dailyentryobject,
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "json",
+                 success: function (data) {
+                     //   alert(data);
+
+                 },
+                 failure: function (errMsg) {
+                     alert(errMsg);
+                 }
+             });
+
+
+
+           //  var divElement1 = document.getElementById("print1").innerHTML;
+
+       //      alert("NA");
+
+             //Get the HTML of whole page
+         //    var oldPage = document.body.innerHTML;
+
+             //Reset the page's HTML with div's HTML only
+        //     document.body.innerHTML =
+        //                   "<html><head><title></title></head><body>" +
+        //                   "<div>" + divElement1 + "</div></body>";
+           //  window.location.href = "/PoultryDailyEntry/ShowAllDailyEntry";
+             //Print Page
+        //     window.print();
+
+             //Restore orignal HTML
+             //document.body.innerHTML = oldPage;
+
+             // $("#print1").show();
+
+         });
+     });
+</script>*@
+
+
+
+
+<style type="text/css">
+    #MainDiv {
+        position: relative;
+        width: 500px;
+    }
+
+    #child .NextButton {
+        position: absolute;
+        top: 50%;
+        right: 2%;
+        height: 20px;
+        width: 20px;
+    }
+
+    #child .PreButton {
+        position: absolute;
+        top: 50%;
+        left: 2%;
+        height: 20px;
+        width: 20px;
+    }
+
+
+    #slider {
+        width: 800px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        #slider .slides {
+            display: block;
+            width: 8000px;
+            margin: 0;
+            padding: 0;
+        }
+
+        #slider .slide {
+            float: left;
+            list-style-type: none;
+            height: 120px;
+        }
+</style>
+
+
+@using (Html.BeginForm())
+{
+
+
+    <aside class="right-side">
+
+
+        @*<div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"> <input name="" type="submit" id="btnsave" value="Save" class="btn btn-primary" /></li>
+                <li class="pull-right"> <input name="" type="button" id="btnPDF" value="Print" class="btn btn-primary" /></li>
+
+            </ul>
+        </div>*@
+        <section class="content">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success alert-dismissable">
+                    <i class="fa fa-check"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    @ViewBag.Message
+                </div>
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissable">
+                    <i class="fa fa-ban"></i>
+                    <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                    <b>Error!</b>
+                    @ViewBag.Error
+                </div>
+            }
+
+
+            @*@Html.HiddenFor(d => d.Id)*@
+
+            <section class="content">
+                <div >
+                    <div class="row">
+
+                        <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:15px;">
+                            <tr>
+                                <td>Farmer Name : </td>
+                                <td>&nbsp;&nbsp;@Html.DisplayFor(model => model.FarmerName, new { @class = "form-control" })</td>
+                                <td>&nbsp;&nbsp; </td>
+                                <td>Flock Code:</td>
+                                <td>&nbsp;&nbsp;@Html.DisplayFor(model => model.FlockCode, new { @class = "form-control" })@Html.HiddenFor(model => model.FlockId, new { @class = "form-control" })</td>
+                                </tr>
+                               <tr>
+                                <td>Flock Start Date: </td>
+                                <td>&nbsp;&nbsp;@Html.DisplayFor(model => model.FlockStartingDateString, new { @class = "form-control" })</td>
+                                <td>&nbsp;&nbsp; </td>
+                                <td>Flock End Date:</td>
+                                <td>&nbsp;&nbsp;@Html.DisplayFor(model => model.FlockEndDateString, new { @class = "form-control" })</td>
+                                <td>Growing Stage</td>
+                                <td>&nbsp;&nbsp;@Html.DisplayFor(model => model.AgeOfChicks, new { @class = "form-control" })</td>
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <h3>Medicine Details</h3>
+                        </div>
+                        <div class="form-group">
+                            <div class="table-responsive">
+                                <table style="width:100%; border-collapse:collapse; text-align:center; border:1px solid black; margin-bottom:15px;">
+                                    <tr>
+                                        <td style="text-decoration:underline;">Medicine Name</td>
+                                        <td style="text-decoration:underline;">Rate</td>
+                                        <td style="text-decoration:underline;">Consumption</td>
+                                        <td style="text-decoration:underline;">Amount</td>                                     
+
+                                    </tr>
+
+
+
+
+                                        @{ int H = 0;
+
+                                        }
+
+                                        @for (int i = 0; i < @Model.medlist.Count(); i++)
+                                        {
+                                            H = H + i;
+
+                                        <tr>
+
+                                            <td style="text-align:center;">
+                                                @Html.DisplayFor(model => model.medlist[i].MedicineName, new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Category" + i, @Name = "CategoryName" + i })
+
+                                            </td>
+
+                                            <td style="text-align:center;">
+                                                @Html.DisplayFor(model => model.medlist[i].Rate, new { @class = "form-control", @placeholder = "Enter Farm Unit Name", @maxlength = "100", @id = "Feed" + i, @Name = "FeedName" + i })
+
+                                            </td>
+
+                                            <td style="text-align:center;">
+                                                @Html.DisplayFor(model => model.medlist[i].Consumed, new { @class = "form-control", @id = "FeedDesc" + i, @Name = "FeedDesc" + i })
+                                            </td>
+
+                                            <td style="text-align:center;">
+                                                @Html.DisplayFor(model => model.medlist[i].Amount, new { @class = "form-control FeedQuantity", @id = "FeedQuantity" + i, @Name = "FeedQuantity" + i })
+                                            </td>
+
+                                        </tr>
+                                        }
+
+                                    </table>
+
+                                    @Html.Hidden("IdToHold", H)
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                </section>
+        </aside>
+                                            }

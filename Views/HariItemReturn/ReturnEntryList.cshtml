@@ -1,0 +1,237 @@
+﻿@model IEnumerable<XenERP.Models.HariDailyEntryModelView>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#example1").on('click', '.edit', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+            window.location.href = "/HariItemReturn/EditReturn?Id=" + id;
+
+        });
+
+        $("#example1").on('click', '.del', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+            window.location.href = "/HariItemReturn/DeleteReturn?Id=" + id;
+
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+
+        $("#btnsubmit").on('click', function () {
+            var frmDt = $("#FromDate").val();
+            var topDt = $("#ToDate").val();
+            if (frmDt == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please enter from date');
+                return false;
+            }
+            if (topDt == '') {
+                $("#myModal").modal('show');
+                $('.msg1').html('Please enter to date');
+                return false;
+            }
+            $("#loading").fadeIn();
+            window.location.href = "/HariItemReturn/ReturnEntryListSearch?DateFrom=" + frmDt + "&&DateTo=" + topDt;
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Returned Entry <small>List</small> </h1>
+
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+
+        <div class="box">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+                        <table>
+                            <tr>
+                                <td>
+                                    <span class="r-txt">&nbsp; &nbsp; &nbsp; &nbsp;From Date:</span>
+                                </td>
+                                <td> &nbsp; &nbsp; &nbsp;</td>
+                                <td>
+                                    <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">
+                                        <input type="text" readonly="readonly" class="form-control" id="FromDate" />
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td> &nbsp; &nbsp; &nbsp;</td>
+                                <td>
+                                    <span class="r-txt"> &nbsp; &nbsp; &nbsp; &nbsp;To Date:</span>
+                                </td>
+                                <td> &nbsp; &nbsp; &nbsp;</td>
+                                <td>
+                                    <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">
+                                        <input readonly="readonly" type="text" class="form-control" id="ToDate" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td> &nbsp; &nbsp; &nbsp;</td>
+                                <td> &nbsp; &nbsp; &nbsp;</td>
+
+                                <td>
+                                    <div>
+                                        <div id="btnshow">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnsubmit" class="btn btn-primary" value="Show" /></div>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="box-body table-responsive">
+            <div class="col-xs-12" style="text-align:center">
+                <a href="@Url.Action("CreateReturn", "HariItemReturn")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Return</a>
+            </div>
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Date</th>
+                        <th>FarmerName</th>
+                        <th>Challan No</th>
+                        <th>Flock Code</th>
+                        <th>Return Details</th>
+                        <th>Status</th>
+                      
+                        <th></th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+
+                            <td align="center">
+                                @item.DateOfEntry
+                                @Html.HiddenFor(m => item.Id, new { @class = "id" })
+                            </td>
+
+                            <td> @Html.DisplayFor(modelItem => item.FarmerName)</td>
+                            <td> @Html.DisplayFor(modelItem => item.ChallanNo)</td>
+                            <td> @Html.DisplayFor(modelItem => item.FlockCode)</td>
+
+
+                            <td width="450px">
+                                @foreach (var fd in item.issDet)
+                                {
+                                    <table id="#example5" class="chompa table-bordered">
+
+
+                                        <tr>
+                                            <td width="350px">
+                                                @Html.DisplayFor(modelItem => fd.Item)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemIssuedQuantity)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemUnitType)
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>
+
+                            @if (item.Status == true)
+                            {
+                                <td>Already Issued To Farmer</td>
+                              
+                                <td></td>
+                            }
+
+                            else
+                            {
+                                <td>Not Issued</td>
+                                @*<td style="text-align:center"><button class="btn btn-primary btn-sm edit ">Edit</button></td>*@
+                                <td style="text-align:center"><button class="btn btn-danger btn-sm del">Delete</button></td>
+                            }
+
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

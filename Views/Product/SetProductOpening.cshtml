@@ -1,0 +1,257 @@
+﻿@model IEnumerable<XenERP.Models.ProductOpeningModelView>
+
+@{
+    ViewBag.Title = "ProductMultiUnit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int cntr = 0;
+}
+
+
+<script src="../../js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+<script src="../../js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+@*<script src="~/Scripts/inputFilter.js"></script>*@
+<script type="text/javascript">
+    $(function () {
+
+
+        $('#example1').dataTable({
+
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.credit').change(function () {
+
+            var creditdays = $(this).val();
+           // alert(creditdays);
+            var trObj = $(this).closest('tr');
+            var customerId = trObj.find('.cid').val();
+            //alert(customerId);
+            //var contactno1 = trObj.find('.cno1').val();
+            //var cvc1 = trObj.find('.cvc1').val();
+            //var cc1 = trObj.find('.cc1').val();
+
+            $.post('/Customer/UpdateCreditDays', { 'customerId': customerId, 'creditdays': creditdays }, function (data, status) {
+                if (data == "Success") {
+                    //var tdcn1 = trObj.find(".tdcn1").text(contactno1);
+                    //var tdcc1 = trObj.find(".tdcc1").text("Verified").css('color', 'green');
+                    //var tdbn1 = trObj.find(".tdbn1").text("");
+
+                }
+                else {
+                    alert("Update Failed. Please Reload the Page");
+                }
+            });
+        });
+        $('.gst').change(function () {
+
+            var gst = $(this).val();
+            // alert(creditdays);
+            var trObj = $(this).closest('tr');
+            var customerId = trObj.find('.cid').val();
+            //alert(customerId);
+            //var contactno1 = trObj.find('.cno1').val();
+            //var cvc1 = trObj.find('.cvc1').val();
+            //var cc1 = trObj.find('.cc1').val();
+
+            $.post('/Customer/UpdateGST', { 'customerId': customerId, 'gst': gst }, function (data, status) {
+                if (data == "Success") {
+                    //var tdcn1 = trObj.find(".tdcn1").text(contactno1);
+                    //var tdcc1 = trObj.find(".tdcc1").text("Verified").css('color', 'green');
+                    //var tdbn1 = trObj.find(".tdbn1").text("");
+
+                }
+                else {
+                    alert("Update Failed. Please Reload the Page");
+                }
+            });
+        });
+        $('.btnDelete').click(function () {
+
+            var contact = $(this).val();
+            // alert(creditdays);
+            var trObj = $(this).closest('tr');
+            var productId = trObj.find('.cid').val();
+            //alert(customerId);
+            //var contactno1 = trObj.find('.cno1').val();
+            //var cvc1 = trObj.find('.cvc1').val();
+            //var cc1 = trObj.find('.cc1').val();
+
+            $.post('/Product/DeleteProduct', { 'productId': productId }, function (data, status) {
+                if (data == "Success") {
+                    //var tdcn1 = trObj.find(".tdcn1").text(contactno1);
+                    //var tdcc1 = trObj.find(".tdcc1").text("Verified").css('color', 'green');
+                    //var tdbn1 = trObj.find(".tdbn1").text("");
+                    trObj.remove();
+                    alert("Deleted Sucessfully!!!");
+                }
+                else {
+                    alert("Delete Failed. Product in Use.");
+                }
+            });
+        });
+        $('.btnSave').click(function () {
+
+           // var address = $(this).val();
+            // alert(creditdays);
+            var trObj = $(this).closest('tr');
+            var productId = trObj.find('.cid').val();
+            var pu = trObj.find('.pu').val();
+            var uf = trObj.find('.uf').val();
+            var su = trObj.find('.su').val();
+            //alert(customerId);
+            //var contactno1 = trObj.find('.cno1').val();
+            //var cvc1 = trObj.find('.cvc1').val();
+            //var cc1 = trObj.find('.cc1').val();
+
+            $.post('/Product/UpdateProductUnit', { 'productId': productId, 'pu': pu, 'uf':uf,'su':su }, function (data, status) {
+                if (data == "Success") {
+                   /* alert(data);*/
+                    //var tdcn1 = trObj.find(".tdcn1").text(contactno1);
+                  //  $(this).html('Ok');
+                    trObj.find(".btn").css( 'background-color', 'green');
+                    //var tdbn1 = trObj.find(".btn").html('Ok');
+                   // trObj.find(".btn").html('Ok');
+
+                }
+                else {
+                    /* var tdcc1 = $(this).css('background-color', 'red');*/
+                    trObj.find(".btn").css('background-color', 'red');
+                   /* alert("Update Failed. Please Reload the Page");*/
+                }
+            });
+        });
+            $(".credit,.contact").inputFilter(function (value) {
+                return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+            });
+
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>
+            Product<small>Unit Mapping</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+
+
+    <div class="box">
+
+
+
+        <div class="box-body table-responsive">
+            <table class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <tr>
+                    <th style="color: black; text-align: center;">
+                        Sl. No.
+                    </th>
+                    <th style="width: 40%; color: black; text-align: center;">
+                        Product Name
+                    </th>
+                    <th style="width: 2%; color: black; text-align: center;">
+                       Quantity Primary
+                    </th>
+                    <th style="width: 20%; color: black; text-align: center;">
+                        Primary Unit
+                    </th>
+                    <th style="width: 2%; color: black; text-align: center;">
+                        Secondary Primary
+                    </th>
+                    <th style="width: 20%; color: black; text-align: left;">
+                        Secondary Unit
+                    </th>
+                    <th>
+
+                    </th>
+                    @*<th>
+
+                    </th>*@
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    ++cntr;
+            <tr>
+                <td style="text-align:center;">
+                    @cntr
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.Id, new { @class = "cid" })
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td style="text-align:right;" align="right">
+                    @Html.TextBoxFor(modelItem => item.OpeningSecondary, new { @class = "uf" })
+                </td>
+                <td style="text-align:center;">
+                    @*@Html.TextBoxFor(modelItem => item.CreditDays, new { @class = "form-control credit" })*@
+                     @Html.DropDownListFor(modelItem => item.UnitIdSecondary, item.UnitSecondaryList, "Please Select", new { @class = "pu" }) 
+                </td>
+                <td style="text-align:right;" align="right">
+                    @Html.TextBoxFor(modelItem => item.OpeningPrimary, new { @class = "uf" })
+                </td>
+                <td style="text-align: left;">
+                    @Html.DropDownListFor(modelItem => item.UnitId, item.UnitList, "Please Select", new { @class = "su" })
+                    @*@Html.DropDownListFor(modelItem => item.UnitId, new SelectList(ViewBag.UnitMaster, "Id", "Code"), "-----Select----", new { @class = "form-control" })*@
+                </td>
+                <td>
+                    <button type="button" value="Save" class="btn btn-md btn-primary btnSave">Save</button>
+                </td>
+                @*<td>
+                    <button type="button" value="Delete" class="btn btn-md btn-warning btnDelete">Delete</button>
+                </td>*@
+            </tr>
+                }
+
+            </table>
+
+        </div>
+    </div>
+</aside>
+

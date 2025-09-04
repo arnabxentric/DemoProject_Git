@@ -1,0 +1,269 @@
+﻿@model XenERP.Models.Genral.Login
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>XPert Login - Sign in to XPert to manage your business</title>
+
+    <link href="~/Content/login.css" rel="stylesheet" />
+    <link href="~/Content/harmony.css" rel="stylesheet" />
+    <link href="~/Content/ius.min.css" rel="stylesheet" />
+    <link href="~/Content/ecosystem.min.css" rel="stylesheet" />
+
+
+    <script type="text/javascript">
+            if(window.top !== window.self) {
+                window.top.location.href = window.self.location.href;
+            }
+    </script>
+
+    <script src="../../Scripts/jquery-2.1.0.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/JqueryValidation.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery.validate.unobtrusive.js" type="text/javascript"></script>
+
+    <style>
+        .field-validation-error {
+            color: #ff0000;
+            font-size: 14px;
+            font-weight: lighter;
+            background: url("~/Images/error.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+            font-size: 14px;
+            line-height: 32px;
+            margin-top: 2px;
+            padding: 14px 10px 5px;
+            width: 314px;
+        }
+    </style>
+
+    <style type="text/css">
+        .ius-sign-in-widget .ius-channel-email, .ius-sign-in-widget .ius-label-email-me-a-code, .ius-sign-in-widget .ius-label-text-me-a-code {
+            font-weight: 700;
+        }
+
+        .show-focus {
+            border: 1px solid #52A8EC;
+            outline: 0;
+            border-color: rgba(82,168,236,.8);
+            box-shadow: 0 1px 1px rgba(0,0,0,.075) inset,0 0 8px rgba(82,168,236,.6);
+        }
+    </style>
+
+
+</head>
+<body class="has-ius en_US  oia-login-style">
+    <div id="margin32"></div>
+
+    <div class="leftshadow generalcontainer ">
+        <div class="maincontainer" id="maincontainer">
+            <div class="logocontainer">
+                <img class="qblogo" alt="QuickBooks" src="~/Images/xepert_inventory.png">
+            </div>
+            <div class="bodycontainer">
+                <table cellspacing="0" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td class="comingsooncontainer">
+                                <div>
+                                    <div id="defaultComingSoon" style="display: block;">
+                                        <div class="dtPromo">
+                                            <div class="dtHeaderContent">
+                                                Welcome to Hi-Breed Avian Research and Integrators
+                                            </div>
+
+                                            <div>
+                                                <a class="dtFreeDownloadLinkA" href="#">
+                                                    <img class="dtImage" alt="QuickBooks Windows App" src="~/Images/chick.jpg">
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <a class="dtFreeDownloadLinkA" href="#">
+                                                    <img class="dtImage" alt="QuickBooks Windows App" src="~/Images/bird.jpg">
+                                                </a>
+                                            </div>
+                                            <div class="dtFreeDownloadLinkDiv">
+                                                <a class="dtFreeDownloadLink" href="">Download the App</a>
+                                            </div><div><a class="dtLearnMoreLink" href="#">Learn how it works</a></div>
+                                        </div>
+                                        <div class="comingsoonsubtitle" style="display:none">
+                                            Read more at the <a class="blog_link" target="qboblog" href="#">QuickBooks Online Blog!</a>
+                                        </div>
+                                    </div>
+                                    <div id="helpSection" style="display: none;">
+                                        <div class="helpSectionTitle">Having trouble signing in?</div>
+                                        <div class="helpSectionText">Not to worry, we're here to help.</div>
+                                        <div class="helpSectionText" style="margin-top:1px;">Recover your <a href="/c37/v1807.825/0/extrequest/login/recover?source=login" target="qbologinrecover">user ID or password</a></div>
+
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="logincontainer">
+                                <div id="ius-sign-in-widget" class="ius-sbg-style">
+                                    <div id="ius-sign-in-logos-outside-card" class="ius-widget-header-ecosystem-logos"></div>
+                                    <div id="ius-sign-in-wrapper" class="ius-reset ius ius-sign-in-widget ius-hosted-ui en-us" style="">
+                                        <div id="ius-sign-in-logos-inside-card" class="ius-widget-header-ecosystem-logos"></div>
+                                        <div id="ius-sign-in-ecosystem-logos" class="ius-widget-header-ecosystem-logos">
+                                            <header id="ius-hosted-ui-sign-in-logo-header" class="ius-hosted-ui ius-hosted-ui-main-header ius-hosted-ui-widget-header theme-intuit">
+                                                <div id="ius-hosted-ui-sign-in-logo-container" class="ius-hosted-ui-logo-container">
+                                                    <img style="padding-left:55px;" src="~/Images/Picture1.png">
+
+                                                </div>
+                                            </header>
+                                            <section id="ius-style-canary" class="ius-style-canary" style="display: none; font-weight:400; font-size: 1px;"></section>
+                                        </div>
+                                        <hr id="ius-sign-in-separator" class="ius-conditional-hr">
+                                        <section id="ius-sign-in-spinner" class="ius-sign-in-spinner ius-hide ius-section">
+                                            <div class="ius-spinner"></div>
+                                        </section>
+                                        <section id="ius-sign-in" class="ius-section">
+                                            <header class="ius-header-container ius-header-small-padding">
+                                                <div><span id="ius-sign-in-header" class="ius-header">Sign In</span></div>
+                                                <div id="ius-sign-in-sub-header-content-container" class="ius-sign-in-sub-header-content-container">
+                                                    <span id="ius-sign-in-sub-header" class="ius-sub-header">
+                                                        <span>Sign in to your Hi-Breed Avian Research and Integrators account to access all our products. <span id="ius-sign-in-header-product-name"></span>. </span>
+                                                        <a href="" id="ius-sign-in-ecosystem-learn-more" class="ius-small-info-link">Learn&nbsp;more</a>
+                                                    </span>
+                                                </div>
+                                            </header>
+                                            <div id="ius-sign-in-messages">
+                                                <div id="ius-sign-in-error" role="alert" aria-live="polite" class="ius-hide ius-error-alert ius-main-error"></div>
+                                            </div>
+                                            @using (Html.BeginForm())
+                                            {
+                                                @Html.ValidationSummary(true)
+                                                <fieldset id="ius-fieldset-pin" class="ius-hide">
+                                                    <label id="ius-label-pin" class="ius-label" for="ius-pin">Security code</label>
+                                                    <div class="ius-text-input-container">
+                                                        <input id="ius-pin" class="ius-text-input" name="Pin" aria-required="true" required="required">
+                                                        <span id="ius-status-pin" class="ius-status" aria-live="assertive" role="alert"></span>
+                                                    </div><span id="ius-error-pin" class="ius-error ius-field-block" for="ius-pin" aria-live="assertive" role="alert"></span>
+                                                </fieldset><div id="ius-sign-in-partner-auth-buttons-container" class="ius-clearfix">
+                                                    <div id="ius-partner-auth-buttons" class="ius-partner-auth-buttons">
+                                                        <div id="ius-partner-buttons-list" class="ius-partner-buttons-list">
+                                                            <div class="ius-partner-button" data-partner-uid="google">
+                                                                <button type="button" id="ius-google-button" class="ius-google-button">
+                                                                    <div class="ius-google-icon-and-text">
+                                                                        <span class="ius-google-icon"></span>
+                                                                        <span class="ius-google-button-text">Sign in with Google</span>
+                                                                    </div>
+                                                                </button>
+                                                            </div>
+                                                            <section id="ius-style-canary" class="ius-style-canary" style="display: none; font-weight:400; font-size: 1px;"></section>
+                                                        </div><div class="ius-partner-separator">
+                                                            <span class="ius-strike ius-strike-side"></span>
+                                                            <span id="ius-partner-alternative-text" class="ius-strike-center-text">or</span> <span class="ius-strike ius-strike-side"></span>
+                                                        </div>
+                                                    </div>
+                                                    <section id="ius-style-canary" class="ius-style-canary" style="display: none; font-weight:400; font-size: 1px;"></section>
+                                                </div><fieldset id="ius-fieldset-userid">
+                                                    <label id="ius-label-userid" class="ius-label ius-top-label" for="ius-userid">User ID</label><div class="ius-text-input-container">
+
+                                                        @Html.TextBoxFor(model => model.UserName, new { @class = "ius-text-input", @placeholder = "Enter User ID", @tabindex = "1" })
+                                                        @Html.ValidationMessageFor(model => model.UserName)
+                                                        <span id="ius-status-userid" class="ius-status" aria-live="assertive" role="alert"></span>
+                                                    </div>
+                                                    <span id="ius-error-userid" class="ius-error ius-field-block" for="ius-userid" aria-live="assertive" role="alert"></span>
+                                                </fieldset><fieldset id="ius-fieldset-password">
+                                                    <label id="ius-label-password" class="ius-label" for="ius-password">Password</label><div class="ius-text-input-container">
+
+                                                        @Html.EditorFor(model => model.Password, new { @class = "ius-text-input", @placeholder = "Enter Password", @tabindex = "2" })
+                                                        @Html.ValidationMessageFor(model => model.Password)
+                                                        <span id="ius-status-password" class="ius-status" aria-live="assertive" role="alert"></span>
+                                                    </div><span id="ius-error-password" class="ius-error ius-field-block" for="ius-password" aria-live="assertive" role="alert"></span>
+                                                </fieldset>
+                                                <div id="ius-label-remember" class="ius-checkbox-container ius-remember-me ius-default-bottom-spacer">
+                                                    <input id="ius-remember" class="ius-checkbox-input ius-checkbox-hide" type="checkbox" tabindex="3"> <label id="ius-signin-label-checkbox" class="ius-checkbox-label" tabindex="-1"></label>
+                                                    <label id="ius-label-remember-me" class="ius-checkbox-text ius-display-inline-block ius-sub-header-size" for="ius-remember">Remember my user ID</label>
+                                                    <label id="ius-label-stay-signed-in" class="ius-hide ius-checkbox-text ius-display-inline-block ius-sub-header-size" for="ius-remember">Stay signed in</label>
+                                                    <label id="ius-remember-sub-label" class="ius-hide ius-display-block ius-remember-sub-label">Check this only on devices you own</label>
+                                                </div>
+                                                <div id="ius-sign-in-actions" class="ius-clearfix">
+                                                    <button id="ius-sign-in-submit-btn" class="ius-btn ius-btn-submit ius-display-inline-block ius-float-left ius-btn-prominent" name="SignIn" type="submit" data-clicked-text="Signing In ..." tabindex="4">
+                                                        <span id="ius-sign-in-submit-img" class="ius-white-lock-img"></span> <span id="ius-sign-in-submit-btn-text">Sign in</span>
+                                                    </button>
+                                                </div><div id="ius-terms-of-use" class="ius-side ius-italic ius-centered-tos">
+                                                    <span id="ius-terms-of-use-text">
+                                                        By clicking Sign In, you agree to our<br><a id="ius-link-terms-of-use" href="#">License Agreement</a><span id="ius-sign-in-consent-and">&nbsp;and have read and acknowledge our&nbsp;</span>
+                                                        <a id="ius-sign-in-privacy-statement-link" href="#">Privacy Statement</a>
+                                                    </span>.
+                                                </div><hr class="ius-conditional-hr">
+                                            }
+                                            <ul class="ius-sign-in-list">
+                                                <li><a id="ius-link-account-recovery" href="">I forgot my user ID or Password</a></li>
+                                                <li class="ius-hide" style="display: none;"><a id="ius-link-pwd-recovery" href="#">Forgot your password?</a></li>
+                                                <li class="ius-hide" style="display: none;"><a id="ius-link-userid-recovery" href="#">Forgot your user ID?</a></li>
+                                                <li id="ius-sign-up-link-li">
+                                                    <span id="ius-link-sign-up-prefix-text">New to XPert Inventory? </span> <span>
+                                                        <a id="ius-link-sign-up" href="#">Sign up</a><span id="ius-create-account-option-period" style="display: none;"></span>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </section><section id="ius-sign-in-recaptcha" class="ius-captcha ius-hide"></section><section id="ius-sign-in-mfa-parent" class="ius-hide"></section>
+                                        <section id="ius-sign-in-recaptcha-parent" class="ius-hide"></section>
+                                        <section id="ius-sign-in-sso-confirmation-parent" class="ius-hide"></section><section id="ius-account-disabled" class="ius-hide ius-section">
+                                            <header class="ius-header-container">
+                                                <span id="ius-account-disabled-header" class="ius-header">The feature you've requested is temporarily unavailable.</span>
+                                                <span id="ius-account-disabled-sub-header" class="ius-sub-header">Make sure your browser has Javascript and cookies enabled. If the problem persists you can clear your cache and cookies and then restart your computer, or try using a different browser.<br><a href="#" id="ius-account-disabled-try-again-link">Try signing in again</a></span>
+                                            </header><div id="ius-account-disabled-actions">
+                                                <span id="ius-account-disabled-contact-support" class="ius-display-block ius-default-bottom-spacer ius-sub-header-size">
+                                                    For more help, please <a id="ius-account-disabled-contact-support-link">contact customer support </a>and reference code <span id="ius-account-disabled-error-code"></span>
+                                                    .
+                                                </span>
+                                            </div>
+                                        </section><section id="ius-account-locked-out-section" class="ius-hide ius-section"></section><section id="ius-post-auth-best-account-section" class="ius-hide ius-section">
+                                            <header class="ius-header-container ius-header-small-padding">
+                                                <span id="ius-post-auth-best-account-header" class="ius-header">Look what we found!</span>
+                                            </header><div class="ius-default-bottom-spacer">
+                                                <div id="ius-post-auth-best-account-info" class="ius-default-bottom-spacer">
+                                                    An account using:<br><strong><span id="ius-post-auth-best-account-info-user-id"></span><br></strong>
+                                                </div><div id="ius-post-auth-best-account-action-info">
+                                                    <span id="ius-post-auth-best-account-current-account-text">Using your most current account can help you get your taxes done faster. </span><span id="ius-post-auth-best-account-switch-account-text">Do you want to sign out &amp; sign back in with this account?</span><br><a href="#" id="ius-post-auth-best-account-learn-more-link">Learn&nbsp;more</a>
+                                                </div>
+                                            </div><div id="ius-post-auth-best-account-actions" class="ius-clearfix ius-btn-container ius-text-input-container ius-btn-continue-flow"><button id="ius-post-auth-best-account-submit-btn" class="ius-btn ius-btn-submit">Switch accounts</button> <button id="ius-post-auth-best-account-back-btn" type="button" class="ius-btn ius-btn-back">Not now</button></div>
+                                        </section><section id="ius-verified-user-update-section" class="ius-hide ius-section"><div id="ius-verified-user-update-widget"></div></section><section id="ius-sign-in-brand-shake-seam-parent" class="ius-section ius-hide"></section><section id="ius-sign-in-invitation-expired" class="ius-section ius-hide"><div class="ius-default-bottom-spacer ius-header-container"><div class="ius-header">This invitation has expired</div></div><div id="ius-sign-in-invitation-expired-body" class="ius-default-bottom-spacer ius-header-container">It appears that the invitation has either already been accepted or is no longer valid. If you require a new invitation, please contact the company administrator.</div><div><input id="ius-sign-in-invitation-expired-submit-btn" class="ius-btn ius-btn-submit ius-display-inline-block ius-btn-prominent" name="SignIn" type="submit" value="Sign&nbsp;In" data-clicked-text="Signing In ..."> <button type="button" id="ius-sign-in-expired-done" class="ius-btn ius-btn-back ius-btn-prominent ius-hide">Done</button></div></section><section id="ius-sign-in-invitation-success" class="ius-section ius-hide">
+                                            <div class="ius-default-bottom-spacer"><div class="ius-header ius-header-container">Success!</div></div><div id="ius-sign-in-invitation-success-body" class="ius-default-bottom-spacer ius-header-container"><span id="realm_id_success_message"></span></div><div><input id="ius-sign-in-invitation-continue-btn" class="ius-btn ius-btn-submit ius-display-inline-block ius-btn-prominent" name="ContinueTo" type="submit"> <button type="button" id="ius-sign-in-invitation-back-btn" class="ius-btn ius-btn-back ius-hide">Close Window</button></div>
+                                        </section><section id="ius-sign-in-setRealm-failure" class="ius-section ius-hide">
+                                            <div class="ius-default-bottom-spacer"><div class="ius-header"><span id="ius-sign-in-setRealm-failure-error-header"></span></div></div>
+                                            <div id="ius-sign-in-setRealm-failure-error-body" class="ius-default-bottom-spacer"><span id="ius-sign-in-setRealm-failure-error-message"></span></div>
+                                            <div><input id="ius-sign-in-setRealm-failure-submit-btn" class="ius-btn ius-btn-submit ius-display-inline-block ius-float-left" name="SignIn" type="submit" value="Sign&nbsp;In" data-clicked-text="Signing In ..."></div>
+                                        </section><section id="ius-sign-in-do-accept-fail" class="ius-section ius-hide">
+                                            <div class="ius-default-bottom-spacer">
+                                                <div class="ius-header">
+                                                    <span id="ius-sign-in-do-accept-error-header">
+                                                    </span>
+                                                </div>
+                                            </div><div id="ius-sign-in-do-accept-error-body" class="ius-default-bottom-spacer">There was an error during the invitation process. Please try again.</div>
+                                            <div><input id="ius-sign-in-do-accept-fail-submit-btn" class="ius-btn ius-btn-submit ius-display-inline-block ius-float-left" name="SignIn" type="submit" value="Try again"></div>
+                                        </section>
+                                        <div id="ius-captcha-tos-container-display" class="ius-captcha-tos-container ius-hide"><span id="ius-captcha-terms-of-use" class="ius-captcha"><span id="ius-captcha-terms-of-use-text">Invisible reCAPTCHA by Google <a id="ius-captcha-privacy-policy" href="#">Privacy Policy</a><span id="ius-sign-up-consent-and">&nbsp;and&nbsp;</span><a id="ius-captcha-terms" href="#">Terms of Use</a>.</span></span></div><div class="ius-invisible-recaptcha" id="ius-invisible-recaptcha-display"></div>
+                                    </div>
+                                    <section id="ius-style-canary" class="ius-style-canary" style="display: none; font-weight:400; font-size: 1px;"></section>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="footercontainer generalcontainer ">
+        <div class="copyright">©  2018 <a href="http://xentrictechnologies.com">Xentric Technologies</a>. All rights reserved.</div>
+        <div class="footerlinkscontainer">
+            <div class="footerlinks">
+                <a class="footer_link" href="#">Privacy</a>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a class="footer_link" href="#">Support</a>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+</body>
+</html>

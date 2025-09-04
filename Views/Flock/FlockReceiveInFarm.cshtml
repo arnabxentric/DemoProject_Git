@@ -1,0 +1,432 @@
+﻿@model XenERP.Models.ModelView.FlockModelView
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true });
+        var oo = $("#Chkplchd").val($("#ChicksPlaced_HO_").val());       
+        var po = parseInt(oo.val());
+
+        //var v = $("#UnitId").val();
+        //$.get("/Flock/GetAvailableChicks", { uc: v }, function (data) {
+           
+        //    $("#AvailableChicks").val(data);
+        //    $("#Avchhd").val(data);
+
+
+        //});
+
+
+
+        $("#ChicksPlaced_HO_").keyup(function () {
+            var v =parseInt( $("#Avchhd").val()) || 0;
+            var j = parseInt( $("#ChicksPlaced_HO_").val()) || 0;
+            var cvb = v + po - j;
+
+            $("#AvailableChicks").val(cvb);
+        });
+
+        var l;
+        $("#FarmId").change(function () {
+            var p = $("#FarmId").val();
+
+            $.get("/Flock/GetFarmCodeFromFarmId", { farmid: p }, function (data) {
+              
+             
+                l = data.Name;
+                alert(l);
+                //  $("#Avchhd").val(data);
+                $.get("/Flock/GetChallanNoForFlock", { FarmCode: l }, function (data1) {
+                    alert(data1);
+                    $("#FlockCode").val(data1);
+                    //  $("#Avchhd").val(data);
+
+
+                });
+
+            });
+           
+           
+
+
+        });
+
+
+
+    });
+
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    $(document).ready(function () {       
+        $("#dataTable").on('keyup', '.Chicksquantity', function () {
+           
+                      //  var brnc = $("#BranchId").val();
+                    var ctd = $(this).closest('td');
+                    var ctr = ctd.closest('tr');
+                    var vkk = parseInt(ctr.find(".AvailableChickHidden").val()) || 0;
+                    var vcc = parseInt(ctr.find(".AvailableWeightHidden").val()) || 0;
+                    var vgg = parseInt(ctr.find(".Chicksquantity").val()) || 0;
+                    var vjj = parseFloat(ctr.find(".ChicksWeight").val()) || 0;
+                    
+                    if (vgg > vkk)
+                    {
+
+                        alert("Please Dont Issue More Than Availabality");
+                    }
+
+                    ctr.find(".AvChicks").val(vkk - vgg);
+                    ctr.find(".ACWeight").val((vcc - vjj).toFixed(2));
+
+                    if (isNaN(vcc / vkk)) {
+                        ctr.find(".ChicksWeight").val(0);
+
+                    }
+                    else {
+                        ctr.find(".ChicksWeight").val(((vcc / vkk) * vgg).toFixed(2));
+                    }
+                 //   ctr.find(".TotalQuantity").val((hhh * vgg).toFixed(2));
+
+                   
+                })
+            });
+        
+
+    
+
+</script>
+
+
+
+@using (Html.BeginForm("FlockReceiveInFarm", "Flock"))
+{
+
+    <aside class="right-side">
+
+        <section class="content-header">
+            <h1>Flock<small>Edit</small> </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active"> Farm Edit</li>
+            </ol>
+        </section>
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="pull-right"><input name="" type="submit" value="Submit" class="btn btn-primary"> </li>
+
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        @*<section class="content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                        </div>
+                        <div class="box-body">*@
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button"></button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+
+
+
+        @Html.HiddenFor(d => d.Id)
+        @Html.HiddenFor(d => d.UserId)
+        @Html.HiddenFor(d => d.CompanyId)
+        @Html.HiddenFor(d => d.BranchId)
+        @Html.HiddenFor(d=>d.FinancialYearId)
+        
+
+        <div class="col-md-12">
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Farmer Name:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FarmerName, new { @class = "form-control",  @readonly = "readonly" })                        
+                            @Html.HiddenFor(model => model.FarmId)
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Flock Code:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.FlockCode, new { @class = "form-control",  @readonly = "readonly" })
+                            @Html.HiddenFor(model=>model.FlockId)
+
+                        </div>
+
+
+                     
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Unit Code:<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.UnitCode, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.HiddenFor(model => model.UnitId)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Date Of Despatch:<span style="color:Red;">*</span></label>
+
+                            @Html.TextBoxFor(model => model.DateOfDespatchString, new { @class = "form-control", @readonly = "" }) 
+                        </div>
+
+
+                       
+                           
+                       
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010">Date Of Issue:<span style="color:Red;">*</span></label>
+                            <div class="input-group date" id="dp3" data-date-format="@Session["DateFormatLower"]">@Html.TextBoxFor(model => model.DateOfReceivestring, new { @class = "form-control", @readonly = "" })  <span class="input-group-addon" style=" width:auto !important"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                            @Html.ValidationMessageFor(model => model.DateOfReceivestring)
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">  </div>
+                    <div class="box-body">
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Challan No :<span style="color:Red;">*</span> </label>
+                            @Html.TextBoxFor(model => model.ChallanNo, new { @class = "form-control", @placeholder = "Enter Challan No", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.ChallanNo)
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Contract Code :<span style="color:Red;">*</span> </label>
+
+                            @Html.TextBoxFor(model => model.ContractCode, new { @readonly = "readonly", @class = "form-control", @placeholder = "Enter Challan No", @maxlength = "100" })
+                            @*@Html.Text(model => model.ContractCode, new SelectList(ViewBag.ContractCode, "ContractCode", "ContractCode"), "------None-----", new { @class = "form-control", @placeholder = "Enter Contract Code", @maxlength = "100" })*@
+                            @Html.ValidationMessageFor(model => model.ContractCode)
+
+                        </div>
+
+
+
+
+                        @*<div class="form-group">
+                            <label class="black_txt_010"> Available Chicks:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.AvailableChicks, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "100",@readonly ="readonly" })
+                            @Html.ValidationMessageFor(model => model.AvailableChicks)
+                            @Html.Hidden("Avchhd")
+                        </div>*@
+
+                        @*<div class="form-group">
+                            <label class="black_txt_010"> Chicks placed:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.ChicksPlaced_HO_, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.ChicksPlaced_HO_)
+                            @Html.Hidden("Chkplchd")
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Chicks Weight:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.ChicksWeight, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.ChicksWeight)
+                        </div>*@
+
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Quality Of Chicken  :<span style="color:Red;">*</span> </label>
+                            @Html.DropDownList("QualityOfChicken", ViewData["QualityList"] as SelectList, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.QualityOfChicken)
+
+                        </div>
+
+
+
+                        @*<div class="form-group">
+                            <label class="black_txt_010"> LineSupervisor Code:<span style="color:Red;"></span> </label>
+                            @Html.TextBoxFor(model => model.LineSupervisorCode, new { @class = "form-control", @placeholder = "Enter Farmer Address", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.LineSupervisorCode)
+                        </div>*@
+
+                        <div class="form-group">
+                            <label class="black_txt_010"> Line SupervisorName:</label>
+
+                            @Html.DropDownListFor(model => model.LineSupervisorId, new SelectList(ViewBag.User, "SupId", "Name"), new { @class = "form-control", @placeholder = "Enter Contract Code", @maxlength = "100" })
+                            @Html.ValidationMessageFor(model => model.LineSupervisorId)
+                            @Html.HiddenFor(model => model.Status, new { @class = "form-control" })
+
+                        </div>
+
+
+
+                        @*   <div class="form-group">
+                            <label class="black_txt_010"> Status :<span style="color:Red;">*</span> </label>
+                            @Html.CheckBoxFor(model => model.Status, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Status)
+
+                        </div>    *@
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="form-group">
+                <h3>Chick Details</h3>
+            </div>
+            <div class="form-group">
+                <div class="table-responsive">
+                    <table class="my-table-style table" id="dataTable">
+                        <tr class="my-table-header">
+                            <td class="my-table-header" style="text-align:center;">
+                                <label class="black_txt_010">Received Challan</label>
+                            </td>
+
+                            @*<td class="my-table-header" style="text-align:center;">
+                                <label class="black_txt_010">Available Chicks</label>
+                            </td>
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Available Chicks Weight</label>
+                            </td>*@
+
+                            <td style="text-align:center;">
+                                <label class="black_txt_010"></label>
+                            </td>
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Issued Chicks</label>
+                            </td>
+
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Issued Chicks Weight</label>
+                            </td>           
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Shortage Of Chicks</label>                                
+
+                            </td>
+                            <td style="text-align:center;">
+                                <label class="black_txt_010">Mortality Of Chicks</label>
+
+                            </td>
+                        </tr>
+
+                        @{ int H = 0;
+
+                        }
+
+                        @for (int i = 0; i < Model.flockdetails.Count(); i++)
+                        {
+
+                            H = H + i;
+
+
+                            <tr>
+
+                                <td style="text-align:center;">
+
+                                    
+
+                                    @*@Html.Hidden("IdToHoldInEdit", i, new { @Name = "IdToHoldInEdit" + i, @class = "IdToHoldInEdit" })*@                            
+
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].ChlNo, new { @class = "form-control ReceivedChallanNo", @maxlength = "100", @id = "ReceivedChallanNo" + i, @Name = "ReceivedChallanNo" + i, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => Model.flockdetails[i].ChickReceivedDetailsId, new { @class = "form-control ChickReceivedDetailsId", @maxlength = "100", @id = "ChickReceivedDetailsId" + i, @Name = "ChickReceivedDetailsId" + i, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => Model.flockdetails[i].ChickDetailsId, new { @class = "form-control ChickDetailsId", @maxlength = "100", @id = "ChickDetailsId" + i, @Name = "ChickDetailsId" + i, @readonly = "readonly" })
+                                    @Html.HiddenFor(model => Model.flockdetails[i].ChickId, new { @class = "form-control ChickId", @maxlength = "100", @id = "ChickId" + i, @Name = "ChickId" + i, @readonly = "readonly" })
+
+
+                                </td>
+
+                               
+                                @*<td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].AvailableChicks, new { @class = "form-control AvChicks", @maxlength = "100", @id = "AvChicks" + i, @Name = "AvChicks" + i, @readonly = "readonly" }) 
+                                    @Html.HiddenFor(model => Model.flockdetails[i].AvailableChicks, new { @class = "form-control AvailableChickHidden", @maxlength = "100", @id = "AvailableChickHidden" + i, @Name = "AvailableChickHidden" + i, @readonly = "readonly" })                                                                     
+                                </td>
+                                                             
+
+                                <td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].AvailableChicksWt, new { @class = "form-control ACWeight", @readonly = "readonly", @placeholder = "Enter Unit Name", @maxlength = "100", @id = "ACWeight" + i, @Name = "ACWeight" + i })
+                                    @Html.HiddenFor(model => Model.flockdetails[i].AvailableChicksWt, new { @class = "form-control AvailableWeightHidden", @readonly = "readonly", @placeholder = "Enter Unit Name", @maxlength = "100", @id = "AvailableWeightHidden" + i, @Name = "AvailableWeightHidden" + i })
+                                  
+                                </td>*@
+
+                                <td style="text-align:center;">
+                                    @Html.HiddenFor(model => Model.flockdetails[i].PriceRate, new { @class = "form-control PriceRate", @readonly = "readonly", @id = "PriceRate" + i, @Name = "PriceRate" + i })
+                                </td>
+
+                                <td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].IssuingChicks, new { @class = "form-control Chicksquantity", @id = "Chicksquantity" + i, @Name = "Chicksquantity" + i })
+                                </td>                             
+
+                                <td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].IssuingChicksWt, new { @class = "form-control ChicksWeight", @readonly = "readonly", @id = "ChicksWeight" + i, @Name = "ChicksWeight" + i })
+                                </td>  
+                                <td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].ShortageOfChicks, new { @class = "form-control ShortageOfChicks", @id = "ShortageOfChicks" + i, @Name = "ShortageOfChicks" + i })
+                                </td>  
+                                <td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].MortalityOfChicks, new { @class = "form-control MortalityOfChicks", @id = "MortalityOfChicks" + i, @Name = "MortalityOfChicks" + i })
+                                </td>     
+                                @*<td style="text-align:center;">
+                                    @Html.TextBoxFor(model => Model.flockdetails[i].AvailableChicks, new { @class = "form-control AvChicks", @maxlength = "100", @id = "AvChicks" + i, @Name = "AvChicks" + i, @readonly = "readonly" })
+                                  
+                                </td>*@
+
+
+                                
+                                                          
+                            </tr>
+                                    }
+
+                    </table>
+
+                    @Html.Hidden("IdToHold", H)
+                </div>
+                @* <input type="button" class="add-component-botton" id="btnAdd" onclick="addRow('dataTable')" />*@
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+    </aside>
+}

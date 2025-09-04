@@ -1,0 +1,653 @@
+﻿@using XenERP.Models;
+@{
+    var roleId = Convert.ToUInt32(Session["RoleId"]);
+}
+<!-- sidebar: style can be found in sidebar.less -->
+<section class="sidebar">
+    <!-- Sidebar user panel -->
+
+
+
+    <div class="user-panel">
+        <div class="pull-left image">
+            @if (Session["companylogo"] == null)
+            {
+
+            }
+            else
+            {
+                @*    <img height="215px" width="215px" src="@Url.Content("~/Companyimages/" + @Session["companylogo"].ToString())"   alt="Company Image" />*@
+
+            }
+        </div>
+        <div class="pull-left info">
+            @if (Session["companyname"] == null)
+            {
+
+            }
+            else
+            {
+                <p style="text-align:center" class="companyname"><h4>@Session["companyname"].ToString()</h4></p>
+                <p style="text-align:center" class="companyname"><h4><span style="color:aquamarine">@Session["FinYear"].ToString()</span></h4></p>
+            }
+        </div>
+    </div>
+
+    <!-- search form -->
+    @*    <form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..."/>
+                <span class="input-group-btn">
+                    <button type='submit' name='seach' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>*@
+    <!-- /.search form -->
+    <!-- sidebar menu: : style can be found in sidebar.less -->
+<ul class="sidebar-menu">
+
+
+    @if (Session["Role"] == "SuperAdmin")
+    {
+
+
+        //===========================================================================================================================
+
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fw fa-dashboard"></i> <span>DashBoard</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="@Url.Action("DashBoard", "DashBoard", new { id = 0 })"><i class="fa fa-angle-double-right"></i>DashBoard</a></li>
+
+            </ul>
+        </li>
+
+
+        //===========================================================================================================================
+
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fw fa-money"></i> <span>Purchase</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+
+                <li><a href="@Url.Action("Index", "PurchaseOrder")"><i class="fa fa-angle-double-right"></i>Purchase Order</a></li>
+
+                <li><a href="@Url.Action("Index", "PurchaseReceipt")"><i class="fa fa-angle-double-right"></i>Purchase Receipt</a></li>
+
+                <li><a href="@Url.Action("Index", "PurchaseInvoice")"><i class="fa fa-angle-double-right"></i>Purchase Invoice</a></li>
+
+                <li><a href="@Url.Action("Index", "PurchaseReturn")"><i class="fa fa-angle-double-right"></i>Purchase Return/Debit Note</a></li>
+
+                <li><a href="@Url.Action("CreatePurchaseReceipt", "SupplierPayment")"><i class="fa fa-angle-double-right"></i>Pay Payment</a></li>
+                <li><a href="@Url.Action("PurchaseInvoiceTrack", "Reports")"><i class="fa fa-angle-double-right"></i>PI Payment Track</a></li>
+
+            </ul>
+        </li>
+
+
+
+        //===========================================================================================================================
+
+
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fw fa-money"></i> <span>Transfer</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+
+                @*<li><a href="@Url.Action("Index", "TransferOrder")"><i class="fa fa-angle-double-right"></i>Transfer Order</a></li>*@
+
+                <li><a href="@Url.Action("Index", "TransferDelivery")"><i class="fa fa-angle-double-right"></i>Transfer Delivery</a></li>
+
+                <li><a href="@Url.Action("Index", "TransferReceive")"><i class="fa fa-angle-double-right"></i>Transfer Receive</a></li>
+
+
+
+            </ul>
+        </li>
+
+
+
+        //===========================================================================================================================
+
+
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fw fa-briefcase"></i> <span>Sales</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+
+                <li><a href="@Url.Action("Index", "SalesQuote")"><i class="fa fa-angle-double-right"></i>Sales Quote</a></li>
+
+                <li><a href="@Url.Action("Index", "SalesOrder")"><i class="fa fa-angle-double-right"></i>Sales Order</a></li>
+
+
+                <li><a href="@Url.Action("Index", "SalesDelivery")"><i class="fa fa-angle-double-right"></i>Sales Delivery Note</a></li>
+
+                <li><a href="@Url.Action("Index", "SalesInvoice")"><i class="fa fa-angle-double-right"></i>Sales Invoice</a></li>
+
+                <li><a href="@Url.Action("Index", "SalesReturn")"><i class="fa fa-angle-double-right"></i>Sales Return/Credit Note </a></li>
+
+                <li><a href="@Url.Action("CreateSalesReceipt", "SalesReceipt")"><i class="fa fa-angle-double-right"></i>Receive Payment</a></li>
+                <li><a href="@Url.Action("SalesInvoiceTrack", "Reports")"><i class="fa fa-angle-double-right"></i>SI Payment Track</a></li>
+
+            </ul>
+        </li>
+
+
+        //===========================================================================================================================
+
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fw fa-money"></i> <span>Production</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+
+                <li><a href="@Url.Action("ShowAllPlant", "Plant")"><i class="fa fa-angle-double-right"></i>Plant</a></li>
+
+                <li><a href="@Url.Action("ProductionDetails", "Production")"><i class="fa fa-angle-double-right"></i>Production</a></li>
+
+                <li><a href="@Url.Action("ShowAllIssue", "Issue")"><i class="fa fa-angle-double-right"></i>Product Issue</a></li>
+
+                <li><a href="@Url.Action("ShowAllNutritionList", "Nutrition")"><i class="fa fa-angle-double-right"></i>Nutrition </a></li>
+
+                <li><a href="@Url.Action("CreateIngredientsFormula", "IngredientsFormula")"><i class="fa fa-angle-double-right"></i>Nutrition Specification</a></li>
+            </ul>
+        </li>
+
+
+
+        //===========================================================================================================================
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-fw fa-money"></i> <span>Employee</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+
+                <li><a href="@Url.Action("ShowAllEmployee", "Employee")"><i class="fa fa-angle-double-right"></i>Create Employee</a></li>
+                <li>
+                    <a href="@Url.Action("ShowAllDesignationList", "Designation")">
+                        <i class="fa fa-angle-double-right"></i>
+                        Employee Designation
+                    </a>
+                </li>
+
+                <li>
+                    <a href="@Url.Action("ShowAllEmployeeTypeList", "EmployeeType")">
+                        <i class="fa fa-angle-double-right"></i>
+                        Employee Type
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("ShowAllDocumentList", "Document")">
+                        <i class="fa fa-angle-double-right"></i>
+                        Employee Document
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("ShowAllGradeList", "Grade")">
+                        <i class="fa fa-angle-double-right"></i>
+                        Employee Grade
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+
+
+        //===========================================================================================================================
+        <li class="treeview">
+            <a href="#">
+                <i class="glyphicon glyphicon-user"></i> <span>Admin</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+
+                <li><a href="@Url.Action("ShowAllMenu", "Menu")"><i class="fa fa-angle-double-right"></i> Menu</a></li>
+
+                <li><a href="@Url.Action("ShowAllUser", "User")"><i class="fa fa-angle-double-right"></i>User </a></li>
+
+                <li><a href="@Url.Action("ShowAllRole", "Company")"><i class="fa fa-angle-double-right"></i>Role </a></li>
+
+            </ul>
+        </li>
+
+        //===========================================================================================================================
+
+        <li class="treeview">
+
+            <a href="#">
+
+                <i class="fa fa-fw fa-book"></i> <span>Reports</span>
+                <i class="fa fa-angle-left pull-right"></i>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="@Url.Action("AllReports", "Reports")"><i class="fa fa-angle-double-right"></i>All Reports </a></li>
+
+            </ul>
+        </li>
+
+
+
+
+
+
+
+
+    }
+
+    else
+    {
+
+        XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+
+        InventoryEntities db = new InventoryEntities();
+        var menuheader = db.MenuHeaderMasters.ToList();
+        int CompId = Convert.ToInt32(Session["companyid"]);
+        int userid = Convert.ToInt32(Session["AssignId"]);
+
+
+
+        var list = rep.GetMenuheader(userid, CompId);
+
+
+
+
+
+        //===========================================================================================================================
+        <li class="treeview">
+            @{
+                var dash = list.Where(l => l.AccessMenuHeaderId == 9);
+            }
+            @if (dash.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-table"></i> <span>DashBoard</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+
+                    @foreach (var das in dash)
+                    {
+                        if (das.Name == "DashBoard")
+                        {
+
+                            <li><a href="@Url.Action("DashBoard", "DashBoard", new { id = CompId })"><i class="fa fa-angle-double-right"></i> DashBoard</a></li>
+                        }
+
+                    }
+                </ul>
+            }
+
+        </li>
+
+
+
+
+        //===========================================================================================================================
+
+        <li class="treeview">
+            @{
+                var purchase = list.Where(l => l.AccessMenuHeaderId == 1);
+            }
+            @if (purchase.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-table"></i> <span>Purchase</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+
+
+                    @foreach (var pur in purchase)
+                    {
+
+
+                        if (pur.Name == "PurchaseOrder")
+                        {
+                            <li><a href="@Url.Action("Index", "PurchaseOrder")"><i class="fa fa-angle-double-right"></i>Purchase Order </a></li>
+                        }
+
+                        if (pur.Name == "PurchaseReceipt")
+                        {
+                            <li><a href="@Url.Action("Index", "PurchaseReceipt")"><i class="fa fa-angle-double-right"></i>Purchase Receipt </a></li>
+                        }
+
+                        if (pur.Name == "PurchaseInvoice")
+                        {
+                            <li><a href="@Url.Action("Index", "PurchaseInvoice")"><i class="fa fa-angle-double-right"></i>Purchase Invoice</a></li>
+                        }
+
+                        if (pur.Name == "PurchaseReturn")
+                        {
+                            <li><a href="@Url.Action("Index", "PurchaseReturn")"><i class="fa fa-angle-double-right"></i>Purchase Return/Debit Note</a></li>
+                        }
+
+                        if (pur.Name == "PayPayment")
+                        {
+                            <li><a href="@Url.Action("CreatePurchaseReceipt", "SupplierPayment")"><i class="fa fa-angle-double-right"></i>Pay Payment</a></li>
+                        }
+                        <li><a href="@Url.Action("PurchaseInvoiceTrack", "Reports")"><i class="fa fa-angle-double-right"></i>PI Payment Track</a></li>
+                    }
+                </ul>
+            }
+
+        </li>
+
+
+
+        //===========================================================================================================================
+        <li class="treeview">
+
+            @if (purchase.Count() > 0)
+            {
+                <a href="#">
+                    <i class="fa fa-fw fa-money"></i> <span>Transfer</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+                    @*<li><a href="@Url.Action("Index", "TransferOrder")"><i class="fa fa-angle-double-right"></i>Transfer Order</a></li>*@
+
+                    <li><a href="@Url.Action("Index", "TransferDelivery")"><i class="fa fa-angle-double-right"></i>Transfer Delivery</a></li>
+
+                    <li><a href="@Url.Action("Index", "TransferReceive")"><i class="fa fa-angle-double-right"></i>Transfer Receive</a></li>
+
+
+
+                </ul>
+            }
+        </li>
+
+
+
+        //===========================================================================================================================
+
+        <li class="treeview">
+            @{
+                var sales = list.Where(l => l.AccessMenuHeaderId == 2);
+            }
+            @if (sales.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-table"></i> <span>Sales</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+
+                    @foreach (var sale in sales)
+                    {
+
+
+                        if (sale.Name == "SalesQuote")
+                        {
+                            <li><a href="@Url.Action("Index", "SalesQuote")"><i class="fa fa-angle-double-right"></i>Sales Quote</a></li>
+                        }
+
+
+                        if (sale.Name == "SalesOrder")
+                        {
+                            <li><a href="@Url.Action("Index", "SalesOrder")"><i class="fa fa-angle-double-right"></i>Sales Order</a></li>
+                        }
+
+                        if (sale.Name == "SalesDelivery")
+                        {
+                            <li><a href="@Url.Action("Index", "SalesDelivery")"><i class="fa fa-angle-double-right"></i>Sales Delivery Note</a></li>
+                        }
+
+                        if (sale.Name == "SalesInvoice")
+                        {
+                            <li><a href="@Url.Action("Index", "SalesInvoice")"><i class="fa fa-angle-double-right"></i>Sales Invoice</a></li>
+                        }
+
+                        if (sale.Name == "SalesReturn")
+                        {
+                            <li><a href="@Url.Action("Index", "SalesReturn")"><i class="fa fa-angle-double-right"></i>Sales Return/Credit Note </a></li>
+                        }
+
+                        if (sale.Name == "ReceivePayment")
+                        {
+                            <li><a href="@Url.Action("CreateSalesReceipt", "SalesReceipt")"><i class="fa fa-angle-double-right"></i>Receive Payment</a></li>
+                        }
+                        <li><a href="@Url.Action("SalesInvoiceTrack", "Reports")"><i class="fa fa-angle-double-right"></i>SI Payment Track</a></li>
+
+                    }
+                </ul>
+            }
+
+        </li>
+
+        <li class="treeview">
+            @{
+                var report = list.Where(l => l.AccessMenuHeaderId == 7);
+            }
+
+            @if (report.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-fw fa-book"></i> <span>Reports</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Action("AllReports", "Reports")"><i class="fa fa-angle-double-right"></i>All Reports </a></li>
+
+                </ul>
+            }
+
+        </li>
+
+
+
+        //===========================================================================================================================
+
+
+        <li class="treeview">
+            @{
+                var production = list.Where(l => l.AccessMenuHeaderId == 10);
+            }
+            @if (production.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-table"></i> <span>Production</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+
+                    @foreach (var adm in production)
+                    {
+
+                        if (adm.Name == "Plant")
+                        {
+                            <li><a href="@Url.Action("ShowAllPlant", "Plant")"><i class="fa fa-angle-double-right"></i>Plant</a></li>
+                        }
+
+
+                        if (adm.Name == "Production")
+                        {
+                            <li><a href="@Url.Action("ProductionDetails", "Production")"><i class="fa fa-angle-double-right"></i>Production</a></li>
+
+                        }
+                        if (adm.Name == "ProductIssue")
+                        {
+                            <li><a href="@Url.Action("ShowAllIssue", "Issue")"><i class="fa fa-angle-double-right"></i>Product Issue</a></li>
+
+                        }
+
+                        if (adm.Name == "Nutrition")
+                        {
+                            <li><a href="@Url.Action("ShowAllNutritionList", "Nutrition")"><i class="fa fa-angle-double-right"></i>Nutrition </a></li>
+
+                        }
+
+                        if (adm.Name == "NutritionSpecification")
+                        {
+                            <li><a href="@Url.Action("CreateIngredientsFormula", "IngredientsFormula")"><i class="fa fa-angle-double-right"></i>Nutrition Specification</a></li>
+
+                        }
+
+
+
+                    }
+                </ul>
+            }
+
+        </li>
+
+
+
+        //===========================================================================================================================
+
+
+        <li class="treeview">
+            @{
+                var employee = list.Where(l => l.AccessMenuHeaderId == 11);
+            }
+            @if (employee.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-table"></i> <span>Employee</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+
+                    @foreach (var adm in employee)
+                    {
+
+                        if (adm.Name == "CreateEmployee")
+                        {
+                            <li><a href="@Url.Action("ShowAllEmployee", "Employee")"><i class="fa fa-angle-double-right"></i>Create Employee</a></li>
+                        }
+
+
+                        if (adm.Name == "EmployeeDesignation")
+                        {
+                            <li>
+                                <a href="@Url.Action("ShowAllDesignationList", "Designation")">
+                                    <i class="fa fa-angle-double-right"></i>
+                                    Employee Designation
+                                </a>
+                            </li>
+
+                        }
+                        if (adm.Name == "EmployeeType")
+                        {
+                            <li>
+                                <a href="@Url.Action("ShowAllEmployeeTypeList", "EmployeeType")">
+                                    <i class="fa fa-angle-double-right"></i>
+                                    Employee Type
+                                </a>
+                            </li>
+
+                        }
+
+                        if (adm.Name == "EmployeeDocument")
+                        {
+                            <li>
+                                <a href="@Url.Action("ShowAllDocumentList", "Document")">
+                                    <i class="fa fa-angle-double-right"></i>
+                                    Employee Document
+                                </a>
+                            </li>
+
+                        }
+
+                        if (adm.Name == "EmployeeGrade")
+                        {
+                            <li>
+                                <a href="@Url.Action("ShowAllGradeList", "Grade")">
+                                    <i class="fa fa-angle-double-right"></i>
+                                    Employee Grade
+                                </a>
+                            </li>
+
+                        }
+                    }
+                </ul>
+            }
+
+        </li>
+
+        //===========================================================================================================================
+
+
+        <li class="treeview">
+            @{
+                var admin = list.Where(l => l.AccessMenuHeaderId == 8);
+            }
+            @if (admin.Count() > 0)
+            {
+                <a href="#">
+
+                    <i class="fa fa-table"></i> <span>Admin</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+
+
+                    @foreach (var adm in admin)
+                    {
+
+                        if (adm.Name == "Menu")
+                        {
+                            <li><a href="@Url.Action("ShowAllMenu", "Menu")"><i class="fa fa-angle-double-right"></i> Menu </a></li>
+                        }
+
+
+                        if (adm.Name == "User")
+                        {
+                            <li><a href="@Url.Action("ShowAllUser", "User")"><i class="fa fa-angle-double-right"></i>User </a></li>
+
+                        }
+                        if (adm.Name == "Role")
+                        {
+                            <li><a href="@Url.Action("ShowAllRole", "Company")"><i class="fa fa-angle-double-right"></i>Role </a></li>
+
+                        }
+
+
+
+                    }
+                </ul>
+            }
+
+        </li>
+
+        //===========================================================================================================================
+
+
+
+
+        //===========================================================================================================================
+        if (roleId == 11)
+        {
+
+            <li><a href="@Url.Action("SalesinvoiceList", "SalesResponsive")"><i class="fa fa-angle-double-right"></i>Sales Invoice</a></li>
+            <li><a href="@Url.Action("ReceiveVoucherList", "SalesResponsive")"><i class="fa fa-angle-double-right"></i>Receive Voucher</a></li>
+            <li><a href="@Url.Action("ShowAllCustomer", "SalesResponsive")"><i class="fa fa-angle-double-right"></i>Customer</a></li>
+         
+        }
+
+    }
+
+</ul>
+</section>
+<!-- /.sidebar -->

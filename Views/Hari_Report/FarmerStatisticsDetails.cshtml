@@ -1,0 +1,378 @@
+﻿@model IEnumerable<XenERP.Models.FarmerStatistics>
+
+
+@{
+    Layout = null;
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+
+
+
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    .tblr table th, table td input, textarea, .uneditable-input {
+        width: 200px;
+    }
+
+    /*.tblr table th, table td input, textarea, .uneditable-input {
+            width: 62px;
+        }*/
+
+    .tblr {
+        overflow-y: auto;
+        overflow-x: inherit;
+    }
+</style>
+
+<style>
+    .modal-content {
+        /*b2b266*/
+        background-color: #b2b266;
+        width: 600px;
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+
+    .table th {
+        text-align: center;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+
+<script language="javascript" type="text/javascript">
+
+
+    $(document).ready(function () {
+        $("#print").hide();
+        $('#btnprnt').click(function () {
+
+            //Get the HTML of div
+            var divElements = document.getElementById("print").innerHTML;
+
+            //Get the HTML of whole page
+            var oldPage = document.body.innerHTML;
+
+            //Reset the page's HTML with div's HTML only
+            document.body.innerHTML =
+                "<html><head><title></title></head><body>" +
+                divElements + "</body>";
+            // window.location.href = "/DistributionSheet/MilkDistributionSheet";
+            //Print Page
+            window.print();
+
+            //Restore orignal HTML
+            //document.body.innerHTML = oldPage;
+
+            // $("#print1").show();
+
+        });
+    });
+</script>
+<div class="box">
+
+    <div class="box">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header"><h4>Farmer Statistics Report On @ViewBag.Date</h4>  </div>
+                <div>
+                    @*<div id="">  &nbsp; &nbsp; &nbsp; &nbsp;<input type="button" id="btnprnt" class="btn btn-primary" value="Print" /></div>*@
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="box-body table-responsive tblr">
+
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>SlNo.</th>
+                    <th>Farmer</th>
+                    <th>Flock</th>
+                    <th>LM</th>
+                    <th>Place Dt</th>
+                    <th>Placement</th>
+                    <th>Total Mortality</th>
+                    <th>Mortality %</th>
+                    <th>Last 10 Days Mortality</th>
+                    <th>Bird Age</th>
+                    <th>Last Entry</th>
+                    @*<th width="100px">
+                            <table border="1" class="chompa">
+                                <tr>
+                                    <th width="75px">Feed Issued</th>
+                                    <th width="25px">Quantity</th>
+                                </tr>
+                            </table>
+                        </th>
+                        <th width="100px">
+                            <table border="1" class="chompa">
+                                <tr>
+                                    <th width="75px">Feed Consumed</th>
+                                    <th width="25px">Quantity</th>
+                                </tr>
+                            </table>
+                        </th>
+                        <th width="100px">
+                            <table border="1" class="chompa">
+                                <tr>
+                                    <th width="75px">Last 10 Days Consumed</th>
+                                    <th width="25px">Quantity</th>
+                                </tr>
+                            </table>
+                        </th>*@
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+
+                    Slno = Slno + 1;
+                    <tr>
+                        <td>@Slno</td>
+                        <td><a href="@Url.Action("FarmerDailyEntryDetails","Hari_Report",new { FlockId=item.FlockId})">@item.FarmerName</a></td>
+                        <td>@item.FlockCode</td>
+                        <td>@item.LsName</td>
+                        <td>@item.PlacementDate</td>
+                        <td>@item.TotalPlacement</td>
+                        <td>@item.TotalMortality </td>
+
+                       
+
+                        <td>@item.MortalityPer</td>
+                        <td>@item.LastMortality</td>
+                        <td>@item.BirdAge</td>
+                        <td>@item.LastEntry</td>
+                        @*<td width="100px">
+                                @foreach (var fd in item.TotalFeedList)
+                                {
+                                    <table id="#" class="chompa table-bordered">
+                                        <tr>
+                                            <td width="75px">
+                                                @Html.DisplayFor(modelItem => fd.FeedName)
+                                            </td>
+                                            <td width="25px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ConsumeQuantity)
+                                                @Html.DisplayFor(modelItem => fd.Uom)
+                                            </td>
+
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>
+
+                            <td width="100px">
+                                @foreach (var fd in item.TotalFeedConsumedList)
+                                {
+                                    <table id="#" class="chompa table-bordered">
+                                        <tr>
+                                            <td width="75px">
+                                                @Html.DisplayFor(modelItem => fd.FeedName)
+                                            </td>
+                                            <td width="25px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ConsumeQuantity)
+                                                @Html.DisplayFor(modelItem => fd.Uom)
+                                            </td>
+
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>
+
+                            <td width="100px">
+                                @foreach (var fd in item.FeedConsumedList)
+                                {
+                                    <table id="#" class="chompa table-bordered">
+                                        <tr>
+                                            <td width="75px">
+                                                @Html.DisplayFor(modelItem => fd.FeedName)
+                                            </td>
+                                            <td width="25px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ConsumeQuantity)
+                                                @Html.DisplayFor(modelItem => fd.Uom)
+                                            </td>
+
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>*@
+
+                    </tr>
+
+                }
+
+
+            </tbody>
+        </table>
+    </div><!-- /.box-body -->
+
+    <div id="print">
+        <div class="box">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header"><h4>Farmer Statistics Report On @ViewBag.Date</h4>  </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="box-body table-responsive ">
+
+            <table id="" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">SlNo.</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Farmer</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Flock</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">LM</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Place Dt</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Placement</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Total Mortality</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Last 10 Days Mortality</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Bird Age</th>
+                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">Last Entry</th>
+                        @*<th width="100px" style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;">
+                                <table border="1" class="chompa">
+                                    <tr>
+                                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="75px">Feed Issued</th>
+                                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="25px">Quantity</th>
+                                    </tr>
+                                </table>
+                            </th>
+                            <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="100px">
+                                <table border="1" class="chompa">
+                                    <tr>
+                                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="75px">Feed Consumed</th>
+                                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="25px">Quantity</th>
+                                    </tr>
+                                </table>
+                            </th>
+                            <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="100px">
+                                <table border="1" class="chompa">
+                                    <tr>
+                                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="75px">Last 10 Days Consumed</th>
+                                        <th style="width:3%; text-align:left; background:#29a364; font-family:inherit; font-size:18px; font-weight: bold; color:#fff; padding:5px 10px;" width="25px">Quantity</th>
+                                    </tr>
+                                </table>
+                            </th>*@
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@Slno</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.FarmerName</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.FlockCode</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.LsName</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.PlacementDate</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.TotalPlacement</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.TotalMortality</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.LastMortality</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.BirdAge</td>
+                            <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;">@item.LastEntry</td>
+                            @*<td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;" width="100px">
+                                    @foreach (var fd in item.TotalFeedList)
+                                {
+                                        <table id="#" class="chompa table-bordered">
+                                            <tr >
+                                                <td width="75px">
+                                                    @Html.DisplayFor(modelItem => fd.FeedName)
+                                                </td>
+                                                <td width="25px">
+                                                    @Html.DisplayFor(modelItem => fd.ConsumeQuantity)
+                                                    @Html.DisplayFor(modelItem => fd.Uom)
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+                                }
+                                </td>
+
+                                <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;" width="100px">
+                                    @foreach (var fd in item.TotalFeedConsumedList)
+                                {
+                                        <table id="#" class="chompa table-bordered">
+                                            <tr>
+                                                <td  width="75px">
+                                                    @Html.DisplayFor(modelItem => fd.FeedName)
+                                                </td>
+                                                <td width="25px">
+                                                    @Html.DisplayFor(modelItem => fd.ConsumeQuantity)
+                                                    @Html.DisplayFor(modelItem => fd.Uom)
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+                                }
+                                </td>
+
+                                <td style="text-align:left; font-family:inherit; font-size:15px; font-weight: bold; color:#000; padding:5px 10px; border:1px solid #000;" width="100px">
+                                    @foreach (var fd in item.FeedConsumedList)
+                                {
+                                        <table id="#" class="chompa table-bordered">
+                                            <tr>
+                                                <td  width="75px">
+                                                    @Html.DisplayFor(modelItem => fd.FeedName)
+                                                </td>
+                                                <td width="25px" align="right">
+                                                    @Html.DisplayFor(modelItem => fd.ConsumeQuantity)
+                                                    @Html.DisplayFor(modelItem => fd.Uom)
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+                                }
+                                </td>*@
+
+                        </tr>
+
+                    }
+
+
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+
+    </div>
+</div>

@@ -1,0 +1,186 @@
+﻿@model IEnumerable<XenERP.Models.UnitIssueModelView>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#example1").on('click', '.edit', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+            window.location.href = "/HariUnitIssue/ItemIssueToUnitEdit?Id=" + id;
+
+        });
+   
+        $("#example1").on('click', '.del', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+
+            window.location.href = "/HariUnitIssue/DeleteFarmIssue?Id=" + id;
+
+        });
+
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Feed & Medicine Issued to Unit <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+
+            <div class="col-xs-12" style="text-align:center">
+                <a href="@Url.Action("ItemIssueToUnit", "HariUnitIssue")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Feed Issue To Unit</a>
+            </div>
+
+         
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Challan No</th>
+                        <th>System Challan No</th>
+                        <th>Date Of Issue</th>
+                        <th>Unit Name</th>
+                        <th width="450px">
+                            <table border="0" class="chompa">
+                                <tr>
+                                    <th width="150px">Item</th>
+                                    <th width="100px">HOIssued</th>
+                                    <th width="100px">UnitReceived</th>
+                                    <th width="100px">UOM</th>
+                                </tr>
+                            </table>
+                        </th>
+                        <th>Status</th>
+                        <th></th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td>@Slno</td>
+
+                            <td align="center">
+                                @item.HandChallanNo
+                                @Html.HiddenFor(m => item.Id, new { @class = "id" })
+                            </td>
+                            <td> @Html.DisplayFor(modelItem => item.DeliveryChallanNo)</td>
+
+                            <td> @Html.DisplayFor(modelItem => item.IssueDateString)</td>
+                            <td> @Html.DisplayFor(modelItem => item.FarmName)</td>
+
+                            <td width="450px">
+                                @foreach (var fd in item.issDet)
+                                {
+                                    <table id="#" class="chompa table-bordered">
+
+
+                                        <tr>
+                                            <td width="150px">
+                                                @Html.DisplayFor(modelItem => fd.Item)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemIssuedQuantity)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemReceivedQuantity)
+                                            </td>
+                                            <td width="100px" align="right">
+                                                @Html.DisplayFor(modelItem => fd.ItemUnitType)
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                }
+                            </td>
+                            @if (item.Status == true)
+                            {
+                                <td>Received</td>
+                                <td></td>
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td>Not Received</td>
+                                <td style="text-align:center"><button class="btn btn-primary btn-sm edit ">Edit</button></td>
+                                <td style="text-align:center"><button class="btn btn-danger btn-sm del">Delete</button></td>
+                            }
+
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

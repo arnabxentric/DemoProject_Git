@@ -1,0 +1,1282 @@
+﻿@model XenERP.Models.ReceiptPaymentModelView
+@{
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+
+    Layout = "~/Views/Shared/_LayoutContra.cshtml";
+}
+<link href="../../Content/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../css/datetimepicker/datepicker.css" />
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+
+<style type="text/css">
+    .ErrorControl {
+        background: none repeat scroll 0 0 #fbe3e4;
+        border: 1px solid;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .CashC, .BankC, .RTGSC, .LineTotalC {
+        text-align: right;
+    }
+
+    .input-validation-error {
+        border-color: rgba(243, 48, 21, 0.80);
+        box-shadow: 0 1px 1px rgba(228, 109, 33, 0.08) inset, 0 0 8px rgba(248, 101, 8, 0.60);
+        outline: 0 none;
+    }
+</style>
+
+
+<script language="javascript">
+    $(document).ready(function () {
+       
+        $('input[type=radio][name=IsBillWise]').on('change', function (event) {
+           
+            var mode = $("#ModeOfPay").val();
+           
+            if (event.target.value == 'True') {
+                var voucherAmount = parseFloat($('#RPNEFTAmount').val() || 0) + parseFloat($('#RPBankAmount').val() || 0) + parseFloat($('#RPCashAmount').val() || 0);
+                $('#BalanceAmount').val(voucherAmount);
+                if (mode == '') {
+                    $(".chkbalanceamt").css("display", "none");
+                }
+                else {
+                    $(".chkbalanceamt").css("display", "block");
+                }
+                var ledgerId = $('#RPDetails_0__LID').val();
+                if (ledgerId == '') {
+                    $('#errordiv').css("display", "block");
+                    $('#errordiv').append('Ledger Name cannot be empty.');
+
+                }
+                else {
+
+                  
+
+                    $.get('/Voucher/GetPartyInvoice', { LID: ledgerId }, function (data, status) {
+                        if (data.length > 0) {
+                            $('#InvoiceDiv').html('');
+                            $('#InvoiceDiv').css('bg');
+                            for (var count = 0; count < data.length; count++) {
+
+                                if (data[count].Due > 0) {
+                                    $('#InvoiceDiv').append('<div  style="display:inline-block;width:150px;border:1px solid black;padding:5px;margin:5px;background-color:rosybrown;"><input type="hidden"  id="BillList_' + count + '__Name" name="BillList[' + count + '].Name" value=' + data[count].InvNo + ' /><input type="hidden" class="billamount"  id="BillList_' + count + '__BillAmount" name="BillList[' + count + '].BillAmount" value=' + data[count].Amount + ' /> <input type="checkbox" class="chk" id="BillList_' + count + '__Id" name="BillList[' + count + '].Id" value=' + data[count].InvId + ' />' + data[count].InvNo + 'BillAmount:<input type="text" class="invoiceamount" value=' + data[count].BillAmount + ' readonly=""  style="width:140px;text-align:right;" /><b>DueBillAmount:</b><input type="text" class="bill" value=' + data[count].Due + ' readonly=""  style="width:140px;text-align:right;" />Paid Amount:<input type="text" class="paid" readonly="" style="width:140px;text-align:right;"  id="BillList_' + count + '__Paid" name="BillList[' + count + '].Paid"  />Due Amount:<input type="text" readonly="" class="due"  style="width:140px;text-align:right;"  id="BillList_' + count + '__Due" name="BillList[' + count + '].Due" /></div>');
+                                }
+                                else {
+                                    $('#InvoiceDiv').append('<div  style="display:inline-block;width:150px;border:1px solid black;padding:5px;margin:5px;background-color:rosybrown;"><input type="hidden"  id="BillList_' + count + '__Name" name="BillList[' + count + '].Name" value=' + data[count].InvNo + ' /><input type="hidden" class="billamount"  id="BillList_' + count + '__BillAmount" name="BillList[' + count + '].BillAmount" value=' + data[count].Amount + ' /> <input type="checkbox" class="chk" id="BillList_' + count + '__Id" name="BillList[' + count + '].Id" value=' + data[count].InvId + ' />' + data[count].InvNo + 'BillAmount:<input type="text" class="invoiceamount" value=' + data[count].BillAmount + ' readonly=""  style="width:140px;text-align:right;" />NetAmount:<input type="text" class="bill" value=' + data[count].Amount + ' readonly=""  style="width:140px;text-align:right;" />Paid Amount:<input type="text" class="paid" readonly="" style="width:140px;text-align:right;"  id="BillList_' + count + '__Paid" name="BillList[' + count + '].Paid" />Due Amount:<input type="text" readonly="" class="due"  style="width:140px;text-align:right;"  id="BillList_' + count + '__Due" name="BillList[' + count + '].Due" /></div>');
+                                }
+                            }
+                        }
+                        else {
+                            $('#InvoiceDiv').html('No data found.')
+                            $("#IsBillWise-true").prop('checked', false);
+                            $("#IsBillWise-false").prop('checked', true);
+                        }
+
+                    });
+                }
+
+            }
+            else {
+                $(".chkbalanceamt").css("display", "none");
+                $('#BalanceAmount').val(0);
+                $('#InvoiceDiv').html('');
+            }
+
+        });
+
+        $('#InvoiceDiv').on('change', '.chk', function (e) {
+
+            var voucherAmount = parseFloat($('#RPNEFTAmount').val() || 0) + parseFloat($('#RPBankAmount').val() || 0) + parseFloat($('#RPCashAmount').val() || 0);
+            var totalpaid = 0;
+            if ($(this).prop('checked') == false) {
+                var oldparent = $(this).closest('div');
+                var oldpaid = parseFloat(oldparent.find('.paid').val() || 0);
+                oldparent.find('.paid').val(0);
+                oldparent.find('.due').val(0);
+
+            }
+            $('.paid').each(function () {
+                totalpaid += parseFloat($(this).val()) || 0;
+            });
+            if (voucherAmount == totalpaid) {
+                $(this).prop('checked', false);
+                return false;
+            }
+            $('.chk:checkbox:checked').each(function () {
+                var parent = $(this).closest('div');
+
+
+                var dueAmount = 0;
+                var billAmount = parseFloat(parent.find('.bill').val());
+
+                if (voucherAmount >= billAmount) {
+                    parent.find('.paid').val(billAmount);
+                    parent.find('.due').val(0);
+                    voucherAmount = voucherAmount - billAmount;
+
+                }
+                else {
+                    if (voucherAmount > 0) {
+                        var paidamount = voucherAmount;
+                        var dueamount = billAmount - paidamount;
+                        voucherAmount = voucherAmount - paidamount;
+                        parent.find('.paid').val(paidamount);
+                        parent.find('.due').val(dueamount);
+                    }
+                    else {
+                        parent.find('.paid').val(0);
+                        parent.find('.due').val(0);
+                        $(this).prop('checked', false);
+                    }
+
+                }
+
+            })
+            $('#BalanceAmount').val(voucherAmount);
+
+        });
+    });
+</script>
+
+
+
+<script language="javascript" type="text/javascript">
+
+    var rowadd = 0;
+    $(document).ready(function () {
+        $("#dataTable").on('keypress', '.CashC, .BankC,.RTGSC', function (event) {
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+
+                event.preventDefault();
+                return false;
+
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+            event.stopPropagation();
+
+        })
+
+
+        $("#dataTable").on("click", '.add-component-deletebotton', function (event) {
+   // $(document).on('click', '.add-component-deletebotton', function () {
+
+        var id = $(this).closest('td').parent()[0].sectionRowIndex;
+
+        document.getElementById("dataTable").deleteRow(id);
+
+        var MyRows = $('table#dataTable').find('tr');
+        for (var i = 1; i < MyRows.length; i++) {
+            var j = parseInt(i) - 1;
+            var lid = $(MyRows[i]).find('.LIDC');
+            var lname = $(MyRows[i]).find('.LNameC');
+            var cash = $(MyRows[i]).find('.CashC');
+            var bank = $(MyRows[i]).find('.BankC');
+            var rtgs = $(MyRows[i]).find('.RTGSC');
+            var linetotal = $(MyRows[i]).find('.LineTotalC');
+
+            lid.attr("name", "RPDetails[" + j + "].LID");
+            lid.attr("id", "RPDetails_" + j + "__LID");
+
+            lname.attr("name", "RPDetails[" + j + "].LName");
+            lname.attr("id", "RPDetails_" + j + "__LName");
+
+            cash.attr("name", "RPDetails[" + j + "].Cash");
+            cash.attr("id", "RPDetails_" + j + "__Cash");
+
+            bank.attr("name", "RPDetails[" + j + "].Bank");
+            bank.attr("id", "RPDetails_" + j + "__Bank");
+
+            rtgs.attr("name", "RPDetails[" + j + "].RTGS");
+            rtgs.attr("id", "RPDetails_" + j + "__RTGS");
+
+            linetotal.attr("name", "RPDetails[" + j + "].LineTotal");
+            linetotal.attr("id", "RPDetails_" + j + "__LineTotal");
+
+        }
+
+        findtotal();
+        });
+    });
+
+    function addRow(tableID) {
+
+
+
+        var table = document.getElementById(tableID);
+
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+        rowadd = rowCount - 1;
+
+        var cell0 = row.insertCell(0);
+        var element0 = document.createElement("input");
+        element0.type = "hidden";
+        element0.name = "RPDetails[" + rowadd + "].LID";
+        element0.id = "RPDetails_" + rowadd + "__LID";
+        element0.className = "LIDC form-control";
+        cell0.appendChild(element0);
+        cell0.className = "display-non-div";
+
+
+        var cell1 = row.insertCell(1);
+        var element1 = document.createElement("input");
+        element1.type = "text";
+        element1.name = "RPDetails[" + rowadd + "].LName";
+        element1.id = "RPDetails_" + rowadd + "__LName";
+        element1.className = "LNameC form-control";
+        cell1.appendChild(element1);
+
+
+        var cell2 = row.insertCell(2);
+        var element2 = document.createElement("input");
+        element2.type = "text";
+        element2.name = "RPDetails[" + rowadd + "].Cash";
+        element2.id = "RPDetails_" + rowadd + "__Cash";
+        element2.className = "CashC form-control";
+        cell2.appendChild(element2);
+
+        var cell3 = row.insertCell(3);
+        var element3 = document.createElement("input");
+        element3.type = "text";
+        element3.name = "RPDetails[" + rowadd + "].Bank";
+        element3.id = "RPDetails_" + rowadd + "__Bank";
+        element3.className = "BankC form-control";
+        cell3.appendChild(element3);
+
+        var cell4 = row.insertCell(4);
+        var element4 = document.createElement("input");
+        element4.type = "text";
+        element4.name = "RPDetails[" + rowadd + "].RTGS";
+        element4.id = "RPDetails_" + rowadd + "__RTGS";
+        element4.className = "RTGSC form-control";
+        cell4.appendChild(element4);
+
+        var cell5 = row.insertCell(5);
+        var element5 = document.createElement("input");
+        element5.type = "text";
+        element5.name = "RPDetails[" + rowadd + "].LineTotal";
+        element5.id = "RPDetails_" + rowadd + "__LineTotal";
+        element5.className = "LineTotalC form-control";
+        element5.readOnly = true;
+        cell5.appendChild(element5);
+
+        var cell6 = row.insertCell(6);
+        var element6 = document.createElement("input");
+        element6.type = "button";
+        element6.id = "btndelete";
+        element6.name = "button[]";
+        element6.title = "Delete this row";
+        element6.className = "add-component-deletebotton";
+        cell6.appendChild(element6);
+
+        $("#RPDetails_" + rowadd + "__LName").rules('add', { required: true, messages: { required: 'The Foo field is required' } });
+        $("#RPDetails_" + rowadde + "__LineTotal").rules('add', { required: true, messages: { required: 'The Foo field is required' } });
+
+    }
+</script>
+<script language="javascript" type="text/javascript">
+
+    var rowadde = 0;
+    $(document).ready(function () {
+
+        if ('@Model.RPDetails' != '')
+        {
+            var array = '@Html.Raw(Json.Encode(Model.RPDetails))';
+            var arr = JSON.parse(array);
+            //  alert(arr.length);
+            for (rowadde = 0; rowadde < arr.length; rowadde++) {
+                var table = document.getElementById('dataTable');
+                var rowCount = table.rows.length;
+                var row = table.insertRow(rowCount);
+
+                var cell0 = row.insertCell(0);
+                var element0 = document.createElement("input");
+                element0.type = "hidden";
+                element0.name = "RPDetails[" + rowadde + "].LID";
+                element0.id = "RPDetails_" + rowadde + "__LID";
+                element0.className = "LIDC form-control";
+                element0.value = arr[rowadde].LID;
+                cell0.appendChild(element0);
+                cell0.className = "display-non-div";
+
+                var cell1 = row.insertCell(1);
+                var element1 = document.createElement("input");
+                element1.type = "text";
+                element1.name = "RPDetails[" + rowadde + "].LName";
+                element1.id = "RPDetails_" + rowadde + "__LName";
+                element1.className = "LNameC form-control";
+                element1.value = arr[rowadde].LName;
+                cell1.appendChild(element1);
+
+
+                var cell2 = row.insertCell(2);
+                var element2 = document.createElement("input");
+                element2.type = "text";
+                element2.name = "RPDetails[" + rowadde + "].Cash";
+                element2.id = "RPDetails_" + rowadde + "__Cash";
+                element2.className = "CashC form-control";
+                element2.value = arr[rowadde].Cash;
+                cell2.appendChild(element2);
+
+                var cell3 = row.insertCell(3);
+                var element3 = document.createElement("input");
+                element3.type = "text";
+                element3.name = "RPDetails[" + rowadde + "].Bank";
+                element3.id = "RPDetails_" + rowadde + "__Bank";
+                element3.className = "BankC form-control";
+                element3.value = arr[rowadde].Bank;
+                cell3.appendChild(element3);
+
+                var cell4 = row.insertCell(4);
+                var element4 = document.createElement("input");
+                element4.type = "text";
+                element4.name = "RPDetails[" + rowadde + "].RTGS";
+                element4.id = "RPDetails_" + rowadde + "__RTGS";
+                element4.className = "RTGSC form-control";
+                element4.value = arr[rowadde].RTGS;
+                cell4.appendChild(element4);
+
+                var cell5 = row.insertCell(5);
+                var element5 = document.createElement("input");
+                element5.type = "text";
+                element5.name = "RPDetails[" + rowadde + "].LineTotal";
+                element5.id = "RPDetails_" + rowadde + "__LineTotal";
+                element5.className = "LineTotalC form-control";
+                element5.value = arr[rowadde].LineTotal;
+                element5.readOnly = true;
+                cell5.appendChild(element5);
+
+                var cell6 = row.insertCell(6);
+                var element6 = document.createElement("input");
+                element6.type = "button";
+                element6.id = "btndelete";
+                element6.name = "button[]";
+                element6.title = "Delete this row";
+                element6.className = "add-component-deletebotton";
+                cell6.appendChild(element6);
+
+                $("#RPDetails_" + rowadde + "__LName").rules('add', { required: true, messages: { required: 'The Foo field is required' } });
+                $("#RPDetails_" + rowadde + "__LineTotal").rules('add', { required: true, messages: { required: 'The Foo field is required' } });
+            }
+        }
+        else {
+
+            var table = document.getElementById('dataTable');
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+
+            var cell0 = row.insertCell(0);
+            var element0 = document.createElement("input");
+            element0.type = "hidden";
+            element0.name = "RPDetails[" + rowadde + "].LID";
+            element0.id = "RPDetails_" + rowadde + "__LID";
+            element0.className = "LIDC form-control";
+            cell0.appendChild(element0);
+            cell0.className = "display-non-div";
+
+            var cell1 = row.insertCell(1);
+            var element1 = document.createElement("input");
+            element1.type = "text";
+            element1.name = "RPDetails[" + rowadde + "].LName";
+            element1.id = "RPDetails_" + rowadde + "__LName";
+            element1.className = "LNameC form-control";
+            cell1.appendChild(element1);
+
+
+            var cell2 = row.insertCell(2);
+            var element2 = document.createElement("input");
+            element2.type = "text";
+            element2.name = "RPDetails[" + rowadde + "].Cash";
+            element2.id = "RPDetails_" + rowadde + "__Cash";
+            element2.className = "CashC form-control";
+            cell2.appendChild(element2);
+
+            var cell3 = row.insertCell(3);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            element3.name = "RPDetails[" + rowadde + "].Bank";
+            element3.id = "RPDetails_" + rowadde + "__Bank";
+            element3.className = "BankC form-control";
+            cell3.appendChild(element3);
+
+            var cell4 = row.insertCell(4);
+            var element4 = document.createElement("input");
+            element4.type = "text";
+            element4.name = "RPDetails[" + rowadde + "].RTGS";
+            element4.id = "RPDetails_" + rowadde + "__RTGS";
+            element4.className = "RTGSC form-control";
+            cell4.appendChild(element4);
+
+            var cell5 = row.insertCell(5);
+            var element5 = document.createElement("input");
+            element5.type = "text";
+            element5.name = "RPDetails[" + rowadde + "].LineTotal";
+            element5.id = "RPDetails_" + rowadde + "__LineTotal";
+            element5.className = "LineTotalC form-control";
+            element5.readOnly = true;
+            cell5.appendChild(element5);
+
+            var cell6 = row.insertCell(6);
+            var element6 = document.createElement("input");
+            element6.type = "button";
+            element6.id = "btndelete";
+            element6.name = "button[]";
+            element6.title = "Delete this row";
+            element6.className = "add-component-deletebotton";
+            cell6.appendChild(element6);
+
+        $("#RPDetails_" + rowadde + "__LName").rules('add', { required: true, messages: { required: 'The Foo field is required' } });
+        $("#RPDetails_" + rowadde + "__LineTotal").rules('add', { required: true, messages: { required: 'The Foo field is required' } });
+            rowadde++;
+        }
+        });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#err').on('click', '#btnerror', function () {
+            $('#err').css("display", "none");
+
+            // e.stopPropagation();
+        });
+
+
+
+        $("#dataTable").on("keydown.autocomplete", '.LNameC', function (event) {
+            var id = $(this).attr('id');
+            var ctd = $('#' + id).closest('td');
+            var ctr = ctd.closest('tr');
+
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/LedgerMaster/getLedgersByName',
+                        data: { query: request.term },
+                        dataType: 'json',
+                        type: 'POST',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return {
+                                    label: item.Name,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+                change: function (event, ui) {
+                    if (ui.item == null || ui.item == undefined) {
+                        $(this).val('');
+                        ctr.find('.LIDC').val('');
+
+                    }
+                },
+
+
+                select: function (event, ui) {
+                    ctr.find('.LIDC').val(ui.item.value);
+                    $(this).val(ui.item.label);
+                    return false;
+                },
+                minLength: 1
+            });
+
+
+        });
+
+
+
+        $("#dataTable").on("keyup", ".CashC,.BankC,.RTGSC", function (event) {
+            var id = $(this).attr('id');
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var cash = comptr.find('.CashC').val() || 0;
+            var bank = comptr.find('.BankC').val() || 0;
+            var rtgs = comptr.find('.RTGSC').val() || 0;
+            var result = parseFloat(cash) + parseFloat(bank) + parseFloat(rtgs);
+            comptr.find('.LineTotalC').val(result.toFixed(2));
+            findtotal();
+
+        });
+
+
+    });
+
+    function findtotal() {
+        var totalcash = 0;
+        var totalbank = 0;
+        var totalneft = 0;
+
+        $('.CashC').each(function () {
+            var cash = $(this).val() || 0;
+            totalcash += parseFloat(cash);
+        });
+        $('.BankC').each(function () {
+            var bank = $(this).val() || 0;
+            totalbank += parseFloat(bank);
+        });
+        $('.RTGSC').each(function () {
+            var neft = $(this).val() || 0;
+            totalneft += parseFloat(neft);
+        });
+        $('#RPCashAmount').val(totalcash);
+        $('#RPBankAmount').val(totalbank);
+        $('#RPNEFTAmount').val(totalneft);
+    }
+
+</script>
+
+
+<script language="javascript">
+
+
+    $(document).ready(function () {
+
+
+
+        $("#dp3").datepicker({ autoclose: true, todayHighlight: true }).datepicker("setDate", new Date());
+        // $("#dp3").datepicker({ update: true});
+        $("#dp4").datepicker({ autoclose: true, todayHighlight: true });
+
+        var vt = '@(ViewBag.ModeOfPay)';
+        if (vt == '') {
+            $('#RPBankAmount').val(0.00);
+            $('#RPCashAmount').val(0.00);
+            $('#TotBalance').val(0.00);
+         //   $('#Totalpayment').val(0.00);
+        }
+        else {
+
+            $('#vouchertype').val(vt);
+         //   $('#Totalpayment').val('@(ViewBag.TotalPayment)');
+
+        }
+
+
+
+        $('#RPBankAmount').keyup(function () {
+            var chAmnt = $('#RPBankAmount').val();
+            var caAmnt = $('#RPCashAmount').val();
+            if (chAmnt == '') {
+                chAmnt = 0;
+            }
+            if (caAmnt == '') {
+                caAmnt = 0;
+            }
+            var amnt = parseFloat(chAmnt) + parseFloat(caAmnt);
+        //    $('#Totalpayment').val(amnt);
+
+
+
+        });
+
+
+
+        $('#RPCashAmount').keyup(function () {
+            var chAmnt = $('#RPBankAmount').val();
+            var caAmnt = $('#RPCashAmount').val();
+            if (chAmnt == '') {
+                chAmnt = 0;
+            }
+            if (caAmnt == '') {
+                caAmnt = 0;
+            }
+            var amnt = parseFloat(chAmnt) + parseFloat(caAmnt);
+         //   $('#Totalpayment').val(amnt);
+
+
+        });
+
+
+        $('#btnsubmit').on("click", function () {
+            var rowcount = $('#dataTable tr').length;
+            if (rowcount < 2) {
+                $('#errordiv').css("display", "block");
+                $('#errordiv').append('You must add atleast one line item');
+                return false;
+            }
+            $('.LNameC').each(function () {
+                var comptd = $(this).closest('td');
+                var comptr = comptd.closest('tr');
+                var lid = comptr.find('.LIDC').val() || 0;
+                var ledlen = $(this).length || 0;
+                if (ledlen > 0) {
+                    if (parseInt(lid) == 0) {
+                        $(this).val('')
+                    }
+
+                }
+            });
+            var isValid = $("form").valid();
+
+            if (isValid) {
+               
+                $("#loading").fadeIn();
+                var opts = {
+                    lines: 12, // The number of lines to draw
+                    length: 7, // The length of each line
+                    width: 4, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 2.0, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false // Whether to use hardware acceleration
+                };
+                var target = document.getElementById('loading');
+                var spinner = new Spinner(opts).spin(target);
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+      //  $("#chequeNo").attr("maxlength", "30");
+      //  $("#RPBankAmount").attr("maxlength", "10");
+      //  $("#RPCashAmount").attr("maxlength", "10");
+      //  $("#Totalpayment").attr("maxlength", "10");
+      //  $("#Remarks").attr("maxlength", "200");
+
+
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnsupppdf").click(function () {
+            var model = @Html.Raw(Json.Encode(Model.Id));
+           
+            var url = "/Voucher/PrintPaymentVoucherPDF?id=" + model;
+
+            window.location.href = url;
+
+        });
+
+
+
+        //$("#RPBankId").change(function () {
+        //    var bankid = $("#RPBankId").val();
+        //    if (bankid != null) {
+
+        //        $.get('/Voucher/GetBankClosingAmount',
+        //            {
+        //                Bankid: bankid
+        //            },
+        //            function (data, status) {
+        //                $('#TotBalance').val(data);
+        //            });
+        //    }
+        //});
+
+//        $("#vouchertype").change(function () {
+//            var bankid = $("#vouchertype").val();
+//          //  alert(bankid);
+//            if (bankid == 'Payment') {
+
+//                $(".chkbank").css('display', 'block');
+//            }
+//            else {
+//                $(".chkbank").css('display', 'none');
+//            }
+//        });
+
+
+
+
+        $("#RPBankAmount,#RPCashAmount").on("keypress", function (event) {
+
+
+
+            if (event.which == 8 || event.which == 37 || event.which == 38 || event.which == 39 || event.which == 0) {
+                return true;
+            }
+
+            if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57) && event.which != 8) {
+                event.preventDefault();
+                return false;
+            }
+            if (($(this).val().indexOf('.') != -1) && ($(this).val().substring($(this).val().indexOf('.'), $(this).val().indexOf('.').length).length > 2)) {
+
+                event.preventDefault();
+            }
+
+        });
+
+
+        if ('@ViewBag.ModeOfPay' != '') {
+            rowadd
+
+
+            var modeofpay = '@ViewBag.ModeOfPay';
+            $("#ModeOfPay").val(modeofpay);
+
+            if (modeofpay == "Cash") {
+                $("#RPCashAmount").css("display", "block");
+                $("#RPBankAmount").css("display", "none");
+                $("#RPNEFTAmount").css("display", "none");
+                $("#NeftRtgsNo").css("display", "none");
+                $('#chequeNo').css("display", "none");
+                $('#chequeDetails').css("display", "none");
+                $('#cdate').css("display", "none");
+                $('#BankId').css("display", "none");
+                //         $('#Totalpayment').css("display", "block");
+
+                $(".chkbank").css("display", "none");
+                $(".chkno").css("display", "none");
+                $(".chkdet").css("display", "none");
+                $(".chkbankamt").css("display", "none");
+                $(".chkneftamt").css("display", "none");
+                $(".chkdate").css("display", "none");
+                $(".Neft").css("display", "none");
+                $(".cashamt").css("display", "block");
+            }
+            else if (modeofpay == "Cheque") {
+                $("#RPCashAmount").css("display", "none");
+                $("#RPBankAmount").css("display", "block");
+                $("#RPNEFTAmount").css("display", "none");
+                $("#NeftRtgsNo").css("display", "none");
+                $('#chequeNo').css("display", "block");
+                $('#chequeDetails').css("display", "block");
+                $('#cdate').css("display", "block");
+                $('#BankId').css("display", "block");
+                //         $('#Totalpayment').css("display", "block");
+
+                $(".chkbank").css("display", "block");
+                $(".chkno").css("display", "block");
+                $(".chkdet").css("display", "block");
+                $(".chkbankamt").css("display", "block");
+                $(".chkneftamt").css("display", "none");
+                $(".chkdate").css("display", "block");
+                $(".Neft").css("display", "none");
+                $(".cashamt").css("display", "none");
+            }
+            else if (modeofpay == "NEFT") {
+
+                $("#RPCashAmount").css("display", "none");
+                $("#RPBankAmount").css("display", "none");
+                $("#RPNEFTAmount").css("display", "block");
+                $("#NeftRtgsNo").css("display", "block");
+                $('#chequeNo').css("display", "none");
+                $('#chequeDetails').css("display", "none");
+                $('#cdate').css("display", "none");
+                $('#BankId').css("display", "block");
+                // $('#Totalpayment').css("display", "block");
+
+                $(".chkbank").css("display", "block");
+                $(".chkno").css("display", "none");
+                $(".chkdet").css("display", "none");
+                $(".chkbankamt").css("display", "none");
+                $(".chkneftamt").css("display", "block");
+                $(".chkdate").css("display", "none");
+                $(".Neft").css("display", "block");
+                $(".cashamt").css("display", "none");
+            }
+
+        }
+        else {
+            $("#RPCashAmount").val('');
+            $("#RPBankAmount").val('');
+            $("#RPNEFTAmount").val('');
+            $("#NeftRtgsNo").val('');
+            $('#chequeNo').val('');
+            $('#chequeDetails').val('');
+            $('#cdate').val('');
+            $('#NeftRtgsNo').val('');
+
+            $("#RPCashAmount").css("display", "none");
+            $("#RPBankAmount").css("display", "none");
+            $("#RPNEFTAmount").css("display", "none");
+            $("#NeftRtgsNo").css("display", "none");
+            $('#chequeNo').css("display", "none");
+            $('#chequeDetails').css("display", "none");
+            $('#cdate').css("display", "none");
+            $('#BankId').css("display", "none");
+
+            $(".chkbank").css("display", "none");
+            $(".chkno").css("display", "none");
+            $(".chkdet").css("display", "none");
+            $(".chkbankamt").css("display", "none");
+            $(".chkneftamt").css("display", "none");
+            $(".chkdate").css("display", "none");
+            $(".Neft").css("display", "none");
+            $(".cashamt").css("display", "none");
+        }
+
+
+        $("#ModeOfPay").change(function () {
+            var mode = $("#ModeOfPay").val();
+            $("#RPCashAmount").val('');
+            $("#RPBankAmount").val('');
+            $("#RPNEFTAmount").val('');
+            $("#NeftRtgsNo").val('');
+         //   $('#Totalpayment').val('');
+            $('#chequeNo').val('');
+            $('#chequeDetails').val('');
+            $('#cdate').val('');
+            $('#NeftRtgsNo').val('');
+            findtotal();
+            if (mode == '') {
+
+                $("#RPCashAmount").css("display", "none");
+                $("#RPBankAmount").css("display", "none");
+                $("#RPNEFTAmount").css("display", "none");
+                $("#NeftRtgsNo").css("display", "none");
+                $('#chequeNo').css("display", "none");
+                $('#chequeDetails').css("display", "none");
+                $('#cdate').css("display", "none");
+                $('#NeftRtgsNo').css("display", "none");
+          //      $('#Totalpayment').css("display", "none");
+
+                $(".chkbank").css("display", "none");
+                $(".chkno").css("display", "none");
+                $(".chkdet").css("display", "none");
+                $(".chkbankamt").css("display", "none");
+                $(".chkneftamt").css("display", "none");
+                $(".chkdate").css("display", "none");
+                $(".Neft").css("display", "none");
+                $(".cashamt").css("display", "none");
+          //      $(".totpay").css("display", "none");
+
+
+            }
+            else {
+                if(mode=='Cash')
+                {
+                    $("#RPCashAmount").css("display", "block");
+                    $("#RPBankAmount").css("display", "none");
+                    $("#RPNEFTAmount").css("display", "none");
+                    $("#NeftRtgsNo").css("display", "none");
+                    $('#chequeNo').css("display", "none");
+                    $('#chequeDetails').css("display", "none");
+                    $('#cdate').css("display", "none");
+                    $('#BankId').css("display", "none");
+                    //         $('#Totalpayment').css("display", "block");
+
+                    $(".chkbank").css("display", "none");
+                    $(".chkno").css("display", "none");
+                    $(".chkdet").css("display", "none");
+                    $(".chkbankamt").css("display", "none");
+                    $(".chkneftamt").css("display", "none");
+                    $(".chkdate").css("display", "none");
+                    $(".Neft").css("display", "none");
+                    $(".cashamt").css("display", "block");
+                }
+                else if (mode == 'Cheque') {
+
+                    $("#RPCashAmount").css("display", "none");
+                    $("#RPBankAmount").css("display", "block");
+                    $("#RPNEFTAmount").css("display", "none");
+                    $("#NeftRtgsNo").css("display", "none");
+                    $('#chequeNo').css("display", "block");
+                    $('#chequeDetails').css("display", "block");
+                    $('#cdate').css("display", "block");
+                    $('#BankId').css("display", "block");
+                    //         $('#Totalpayment').css("display", "block");
+
+                    $(".chkbank").css("display", "block");
+                    $(".chkno").css("display", "block");
+                    $(".chkdet").css("display", "block");
+                    $(".chkbankamt").css("display", "block");
+                    $(".chkneftamt").css("display", "none");
+                    $(".chkdate").css("display", "block");
+                    $(".Neft").css("display", "none");
+                    $(".cashamt").css("display", "none");
+                }
+                else if (mode == 'NEFT') {
+
+                    $("#RPCashAmount").css("display", "none");
+                    $("#RPBankAmount").css("display", "none");
+                    $("#RPNEFTAmount").css("display", "block");
+                    $("#NeftRtgsNo").css("display", "block");
+                    $('#chequeNo').css("display", "none");
+                    $('#chequeDetails').css("display", "none");
+                    $('#cdate').css("display", "none");
+                    $('#BankId').css("display", "block");
+                    // $('#Totalpayment').css("display", "block");
+
+                    $(".chkbank").css("display", "block");
+                    $(".chkno").css("display", "none");
+                    $(".chkdet").css("display", "none");
+                    $(".chkbankamt").css("display", "none");
+                    $(".chkneftamt").css("display", "block");
+                    $(".chkdate").css("display", "none");
+                    $(".Neft").css("display", "block");
+                    $(".cashamt").css("display", "none");
+                }
+            }
+        });
+
+    });
+
+
+</script>
+
+
+
+@using (Html.BeginForm("CreatePaymentVoucher", "Voucher"))
+{
+    @Html.ValidationSummary(true)
+
+    <aside class="right-side">
+        <div id="loading">
+            <div id="loadingcontent">
+                <p id="loadingspinner">
+                    Loading...
+                </p>
+            </div>
+        </div>
+        <section class="content-header">
+            <h1>
+                Payment  Voucher  <small>Master Entry</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">General Elements</li>
+            </ol>
+        </section>
+
+
+
+
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+
+                @if (Model.Id != 0)
+                {
+                    <li id="" class="pull-right">  <a id="btnsupppdf"><img src="../../Images/capture-pdf.png"></a></li>
+                }
+                else
+                {
+                    <li class="pull-right"><input type="submit" id="btnsubmit" class="btn btn-primary" value="Save" />  </li>
+                }
+            </ul>
+
+        </div>
+
+
+
+        @if (ViewBag.VoucherNo != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                Voucher No @ViewBag.VoucherNo created successfully.
+            </div>
+        }
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+        <div class="alert alert-danger alert-dismissable" id="errordiv" style="display:none">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b><br />
+        </div>
+        <!-- Main content -->
+        <section class="content">
+
+            @*<div class="row top-mar">*@
+            <!-- left column -->
+            @*<div class="col-md-6">*@
+            <!-- general form elements -->
+            <!-- form start -->
+            <div class="col-xs-12">
+                <div class="box-body">
+                    <div class="box-body table-responsive no-padding">
+                        <div class="form-group">
+                            <h3>Voucher Details</h3>
+                        </div>
+                        <div class="form-group">
+                            <table class="my-table-style" id="dataTable" width="100%" border="0">
+                                <tr class="my-table-header">
+
+
+
+                                    <td class="my-table-header" style="text-align:center;" width="30%">
+                                        <label class="black_txt_010">Ledger Name</label>
+                                    </td>
+
+                                    <td style="text-align:center;">
+                                        <label class="black_txt_010">From Cash</label>
+                                    </td>
+
+                                    <td style="text-align:center;">
+                                        <label class="black_txt_010">From Bank</label>
+                                    </td>
+
+                                    <td style="text-align:center;">
+                                        <label class="black_txt_010">From RTGS</label>
+                                    </td>
+
+                                    <td style="text-align:center;">
+                                        <label class="black_txt_010">Line Total</label>
+                                    </td>
+
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <input type="button" class="add-component-botton" onclick="addRow('dataTable')" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">
+
+                    </div>
+                    <div class="box-body">
+
+
+
+                        @if (ViewBag.BranchId == 0 || ViewBag.Createdby == 14 || ViewBag.Createdby == 22)
+                        {
+                            <div class="form-group">
+                                <label class="black_txt_010">
+                                    Choose Branch :<span style="color:Red;">*</span>
+                                </label>
+
+
+                                @Html.DropDownListFor(model => model.BId, new SelectList(ViewBag.branchList, "Id", "Name"), "-----Select a Branch----", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.BId)
+
+
+                            </div>
+                        }
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Voucher Date :
+                            </label>
+
+
+
+
+                            <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp4">  @Html.TextBoxFor(model => model.CardName, new { @class = "form-control" })  <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Paid To:
+                            </label>
+                            @Html.TextBoxFor(model => model.CreditCardNo, new { @class = "form-control", @placeholder = "Enter PaidTo" })
+                        </div>
+
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Remarks:
+                            </label>
+                            @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Enter Remarks" })
+
+                            @*<textarea id="Remarks" name="Remarks" class="form-control"></textarea>*@
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Is Bill Wise Money Receive Applicable:
+                            </label>
+                            @Html.RadioButtonFor(model => model.IsBillWise, true, new { id = "IsBillWise-true" })   Yes
+                            @Html.RadioButtonFor(model => model.IsBillWise, false, new { id = "IsBillWise-false" }) No
+                        </div>
+
+
+
+
+
+
+                    </div>
+
+
+
+
+                </div>   <!-- /.row -->
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">
+
+                    </div>
+                    <div class="box-body">
+
+                        <div class="form-group">
+                            <label class="black_txt_010">
+                                Mode of Payment:<span style="color:Red;">*</span>
+                            </label>
+
+                            @*<select id="ModeOfPay" name="ModeOfPay" class="form-control">
+                            <option value="">--Select a Mode of Payment--</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="NEFT">Neft/Rtgs</option>
+                        </select>*@
+                            @Html.DropDownListFor(model => model.ModeOfPay, ViewData["mode"] as SelectList, "--Select a Mode of Payment--", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModeOfPay)
+                        </div>
+
+
+
+                        <div class="form-group chkbank">
+                            <label class="black_txt_010">
+                                Bank Account Name :<span style="color:Red;">*</span>
+                            </label>(This Field is mandatory For Cheque Payment)
+
+
+                            @Html.DropDownListFor(model => model.RPBankId, new SelectList(ViewBag.Bank, "Id", "Name"), "-----Select a Bank Account----", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.RPBankId)
+
+
+                        </div>
+
+                        <div class="form-group chkno">
+                            <label class="black_txt_010">
+                                Cheque No. :
+                            </label>
+
+
+                            @Html.TextBoxFor(model => model.chequeNo, new { @class = "form-control", @placeholder = "Enter cheque No. " })
+
+                            @Html.ValidationMessageFor(model => model.chequeNo)
+
+
+                        </div>
+
+
+                        <div class="form-group chkdet">
+                            <label class="black_txt_010">
+                                Cheque Details :
+                            </label>
+
+
+                            @Html.TextAreaFor(model => model.chequeDetails, new { @class = "form-control", @placeholder = "Enter cheque Details " })
+
+                            @Html.ValidationMessageFor(model => model.chequeDetails)
+
+
+                        </div>
+
+
+                        <div class="form-group chkdate">
+                            <label class="black_txt_010">
+                                Cheque Date :
+                            </label>
+
+
+
+
+                            <div class="input-group date" data-date-format="@Session["DateFormatLower"]" id="dp3">   <input type="text" name="cdate" class="form-control" /> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+
+                        </div>
+
+                        <div class="form-group Neft">
+                            <label class="black_txt_010">
+                                Neft/Rtgs No :
+                            </label>
+
+
+
+                            @Html.TextBoxFor(model => model.NeftRtgsNo, new { @class = "form-control", @placeholder = "Enter Neft/Rtgs No " })
+                            @Html.ValidationMessageFor(model => model.NeftRtgsNo)
+
+
+                        </div>
+
+                        <div class="form-group chkneftamt">
+                            <label class="black_txt_010">
+                                NEFT/RTGS Amount :
+                            </label>
+
+
+
+                            @Html.TextBoxFor(model => model.RPNEFTAmount, new { @class = "form-control", @placeholder = "Enter NTGS  Amount ", @readonly = "" })
+                            @Html.ValidationMessageFor(model => model.RPNEFTAmount)
+
+
+                        </div>
+
+                        <div class="form-group cashamt">
+                            <label class="black_txt_010">
+                                Cash Amount :
+                            </label>
+
+
+
+                            @Html.TextBoxFor(model => model.RPCashAmount, new { @class = "form-control", @placeholder = "Enter Cash Amount ", @readonly = "" })
+                            @Html.ValidationMessageFor(model => model.RPCashAmount)
+
+
+                        </div>
+
+                        <div class="form-group chkbankamt">
+                            <label class="black_txt_010">
+                                Bank Amount :
+                            </label>
+
+
+
+                            @Html.TextBoxFor(model => model.RPBankAmount, new { @class = "form-control", @placeholder = "Enter Bank  Amount ", @readonly = "" })
+                            @Html.ValidationMessageFor(model => model.RPBankAmount)
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>   <!-- /.row -->
+            </div>
+
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-body" id="InvoiceDiv">
+
+                    </div>
+                </div>
+            </div>
+
+
+        </section><!-- /.content -->
+
+
+
+
+
+
+
+    </aside>
+}

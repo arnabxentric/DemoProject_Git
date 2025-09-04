@@ -1,0 +1,147 @@
+﻿@model IEnumerable<XenERP.Models.EntryAccess>
+
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    long roleId = Convert.ToInt64(Session["RoleId"]);
+}
+@{
+
+    int Slno = 0;
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<link href="~/css/datetimepicker/datepicker.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/JqueryValidation.js"></script>
+<script src="../../js/plugins/datetimepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="../../js/jquery-ui-1.10.3.js" type="text/javascript"></script>
+<link href="~/Content/select2/select2.min.css" rel="stylesheet" />
+<script src="~/Content/select2/select2.full.min.js"></script>
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    .modal-content {
+        background-color: #b2b266;
+        /*width: 600px;*/
+        margin: 130px auto 0 auto;
+        text-align: center;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        //$('#example1').dataTable({
+        //    "bPaginate": true,
+        //    "bLengthChange": true,
+        //    "bFilter": true,
+        //    "bSort": false,
+        //    "bInfo": true,
+        //    "bAutoWidth": true
+        //});
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("#example1").on('click', '.edit', function () {
+            var comptd = $(this).closest('td');
+            var comptr = comptd.closest('tr');
+            var id = comptr.find('.id').val();
+            window.location.href = "/HariDailyEntry/AccessDetails?Id=" + id;
+
+        });
+ 
+
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Access Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+
+
+
+    <div class="box">
+
+        <div class="box-body table-responsive">
+            @if (roleId == 4)
+            {
+                <div class="col-xs-12" style="text-align:center">
+                    <a href="@Url.Action("GcReadyForDespatch", "HariDailyEntry")" class="btn btn-danger"> <i class="fa fa-fw fa-plus-square"></i>New Lot Tracking</a>
+                </div>
+            }
+
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Branch Name</th>
+                        <th>Entry Access</th>
+                        <th>Edit Access</th>
+                        <th>Sales Access</th>
+                        <th>Active Linesman</th>
+                        <th></th>
+
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                    <tr>
+                        <td>@Slno</td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BranchName)
+                            @Html.HiddenFor(m => item.AccessId, new { @class = "id" })
+                        </td>
+                        <td> @Html.DisplayFor(modelItem => item.Access)</td>
+                        <td> @Html.DisplayFor(modelItem => item.EditAccess)</td>
+                        <td> @Html.DisplayFor(modelItem => item.SalesAccess)</td>
+                        <td> @Html.DisplayFor(modelItem => item.TotalLinsman)</td>
+                        <td style="text-align:center"><button class="btn btn-primary btn-sm edit ">Update Access</button></td>
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>
+
+

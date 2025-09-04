@@ -1,0 +1,184 @@
+﻿@model IEnumerable<XenERP.Models.CollectionExpense>
+@using XenERP.Models
+@{
+
+    var SlNo = 0;
+
+    decimal? opening = 0;
+    decimal? sale = 0;
+    decimal? collection = 0;
+    decimal? cashcollection = 0;
+    decimal? bankcollection = 0;
+    decimal? closing = 0;
+
+}
+<!--for graph   -->
+<!--for graph   -->
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+</style>
+<style type="text/css">
+    .ui-autocomplete-loading {
+        background: white url("../../Images/ajax-loader(1).gif") right center no-repeat;
+    }
+
+    .marginleft10 {
+        margin-left: 10px !important;
+    }
+
+    .screenlet-title-bar {
+        color: #0099cc;
+        font-size: 14pt;
+        font-weight: bold;
+        height: 24px;
+    }
+
+    .ErrorControl {
+        background: none repeat scroll;
+        border: 1px solid Red;
+        padding: 4px;
+        width: 96%;
+    }
+
+    .pad svg {
+        width: 100% !important;
+    }
+</style>
+<link href="../../css/Invoice.css" rel="stylesheet" type="text/css" />  @* invoice new css*@
+@*<aside class="right-side">
+    <div class="box box-primary">
+        <div class="box-header"></div>
+        <div class="box-body">*@
+<div>
+    <table class="invoice" width="90%" border="1" cellspacing="2" cellpadding="2">
+        @foreach (BranchMaster branch in ViewBag.Branches)
+        {
+            SlNo = 0;
+            opening = 0;
+            sale = 0;
+            cashcollection = 0;
+            bankcollection = 0;
+            collection = 0;
+            closing = 0;
+            if (Model.Where(d => d.BranchName == branch.Name).Count() == 0)
+            {
+                continue;
+            }
+            <thead>
+                <tr>
+                    <th colspan="8">
+
+                        <h3>Sales Collection for HARI Unit : @branch.Name   @ViewBag.From</h3>
+                    </th>
+                </tr>
+
+                <tr>
+                    <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;"><b>SlNo.</b></th>
+                    <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+                        <b>Ledger Name</b>
+                    </th>
+                    <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+                        <b>Opening</b>
+                    </th>
+                    <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+                        <b>Sale</b>
+                    </th>
+                    <th style="text-align:center;">
+                        Cash Collection
+                    </th>
+                    <th style="text-align:center;">
+                        Bank Collection
+                    </th>
+                    <th style="text-align:center;">
+                        Total Collection
+                    </th>
+                    <th style="text-align:center;padding:10px;font-size:16px;font-weight:500;">
+                        <b>Closing</b>
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Where(d => d.BranchName == branch.Name))
+                {
+                    SlNo = SlNo + 1;
+                    var collectotal = item.CashCollection + item.BankCollection;
+                    var clos = item.Opening + item.Sale - collectotal;
+                    opening += item.Opening;
+                    sale += item.Sale;
+                    cashcollection += item.CashCollection;
+                    bankcollection += item.BankCollection;
+                    collection += collectotal;
+                    closing += clos;
+
+                    <tr>
+                        <td style="text-align:center;padding:5px;font-size:16px;font-weight:500;"> @SlNo</td>
+
+                        <td style="text-align:center;padding:5px;font-size:16px;font-weight:500;">
+
+                            @Html.DisplayFor(modelItem => item.LedgerName)
+                        </td>
+
+
+                        <td style="text-align:right;padding:5px;font-size:16px;font-weight:500;">
+                            @Html.DisplayFor(modelItem => item.Opening)
+                        </td>
+
+                        <td style="text-align:right;padding:5px;font-size:16px;font-weight:500;">
+                            @Html.DisplayFor(modelItem => item.Sale)
+                        </td>
+                        <td style="text-align:right;">
+                            @Html.DisplayFor(modelItem => item.CashCollection)
+                        </td>
+                        <td style="text-align:right;">
+                            @Html.DisplayFor(modelItem => item.BankCollection)
+                        </td>
+                        <td style="text-align:right;">
+                            @collectotal
+                        </td>
+                        <td style="text-align:right;padding:5px;font-size:16px;font-weight:500;">
+                            @clos
+                        </td>
+
+                    </tr>
+
+                }
+
+                <tr>
+                    <td colspan="2"  style="text-align:center;padding:5px;font-size:16px;font-weight:500;"><b>Total</b></td>
+                    <td style="text-align:right;padding:5px;font-size:16px;font-weight:500;">
+                        <b> @opening</b>
+                    </td>
+                    <td style="text-align:right;padding:5px;font-size:16px;font-weight:500;">
+                        <b> @sale</b>
+                    </td>
+                    <td style="text-align:right;">
+                        <b> @cashcollection</b>
+                    </td>
+                    <td style="text-align:right;">
+                        <b> @bankcollection</b>
+                    </td>
+                    <td style="text-align:right;">
+                        <b> @collection</b>
+                    </td>
+                    <td style="text-align:right;padding:5px;font-size:16px;font-weight:500;">
+                        <b> @closing</b>
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+        }
+    </table>
+</div>
+@*</div>
+        </div>
+    </aside>*@
+

@@ -1,0 +1,156 @@
+﻿@model IEnumerable<XenERP.Models.FarmMaster>
+using XenERP.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@{
+
+    int Slno = 0;
+    var roleid = Convert.ToInt32(Session["RoleId"]);
+}
+<link href="../../css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<link href="../../css/Designer.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    table.dataTable thead .sorting_desc {
+        background: url("/Images/sort_desc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    table.dataTable thead .sorting_asc {
+        background: url("/Images/sort_asc.png") no-repeat scroll right center #53A9BC;
+    }
+
+    td.addwid {
+        width: 100px;
+    }
+</style>
+<script type="text/javascript">
+
+    $(function () {
+        $('#example1').dataTable({
+            "bPaginate": true,
+            "bLengthChange": true,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": true
+        });
+    });
+</script>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Farm Details <small>List</small> </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Forms</a></li>
+            <li class="active">General Elements</li>
+        </ol>
+    </section>
+
+
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <i class="fa fa-check"></i>
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <i class="fa fa-ban"></i>
+            <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+            <b>Error!</b>
+            @ViewBag.Error
+        </div>
+    }
+    @{
+        XenERP.Models.Repository.TaxRepository rep = new XenERP.Models.Repository.TaxRepository();
+        int CompId = Convert.ToInt32(Session["companyid"]);
+        int userid = Convert.ToInt32(Session["AssignId"]);
+        var list = rep.GetMenuheader(userid, CompId);
+        var master = list.Where(l => l.AccessMenuHeaderId == 19).FirstOrDefault();
+
+
+    }
+
+
+    <div class="box">
+
+        <div class="col-xs-12"><a href="@Url.Action("CreateFarm", "Farm")" class="btn btn-primary"> <i class="fa fa-fw fa-plus-square"></i>Create New Farm</a></div><br /><br />
+        <div class="box-body table-responsive">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>SlNo.</th>
+                        <th>Farm Name</th>
+                        @*<th>Farm Code</th>*@
+                        <th>Address</th>
+                        @*<th>Farmer Name</th>*@
+                        <th>Farmer ContactNo</th>
+                        <th>Farmer AccountNo</th>
+                        <th>PAN No</th>
+                        <th>GEO Tag</th>
+                        <th>Status</th>
+                        <th></th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        Slno = Slno + 1;
+                        <tr>
+                            <td class="col-xs-1">@Slno</td>
+                            <td class="col-xs-1"> <a href='@Url.Action("FarmInformationDetails", "Farm", new { id = item.Id })' class="AccoDet">@item.FarmName</a> @Html.HiddenFor(m => item.Id, new { @class = "AcId" })</td>
+
+                            @*<td> @Html.DisplayFor(modelItem => item.FarmCode)</td>*@
+                            <td class="col-md-1" style="line-height:4"> @Html.DisplayFor(modelItem => item.Address)</td>
+                            @*<td class="col-xs-1"> @Html.DisplayFor(modelItem => item.FarmerName)</td>*@
+                            <td class="col-xs-1"> @Html.DisplayFor(modelItem => item.FarmerContactNo)</td>
+                            <td class="col-xs-1"> @Html.DisplayFor(modelItem => item.AcNumber)</td>
+                            <td class="col-xs-1"> @Html.DisplayFor(modelItem => item.PanNo)</td>
+                            <td class="col-xs-1"> @Html.DisplayFor(modelItem => item.FarmerLatitude)<br />  @Html.DisplayFor(modelItem => item.FarmerLongitude)</td>
+                            @if (item.IsActive == true)
+                            {
+                                <td class="col-xs-1">
+
+                                    Active
+                                </td>
+                            }
+
+                            else
+                            {
+                                <td class="col-xs-1">
+                                    In - Active
+                                </td>
+                            }
+                            @if (master != null || Session["Role"] == "SuperAdmin")
+                            {
+                                <td class="col-xs-1"> @Html.ActionLink("Edit", "EditFarm", "Farm", new { id = item.Id }, null)  </td>
+                                <td class="col-xs-1"> @Html.ActionLink("Delete", "DeleteFarm", "Farm", new { id = item.Id, }, new { onclick = "return confirm('Are you sure you wish to delete this row?');" })</td>
+
+
+                            }
+
+                           
+                            else
+                            {
+                                <td class="col-xs-1"></td>
+                                <td class="col-xs-1"></td>
+                            }
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div><!-- /.box-body -->
+    </div>
+</aside>

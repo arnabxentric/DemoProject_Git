@@ -1,0 +1,36 @@
+@charset "utf-8";
+/* CSS Document */
+@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed);
+body{background:url(../images/bg.jpg) repeat-y center #aad3ce; margin:0; padding:0; font-family: 'Roboto Condensed', sans-serif;}
+
+.navpanel{background:url(../images/nav-panel.png) no-repeat center; margin:40px 0 0 0;}
+.navpanel h1{text-align:center; margin:0; padding:0;}
+
+.login{background:url(../images/login.jpg) no-repeat; width:521px; height:294px; margin:80px auto 0 auto;}
+.shadow{background:url(../images/shadow.png) no-repeat; width:489px; height:32px; margin:0 auto;}
+.login ul{margin:0 auto; padding:73px 0 0 0; width:308px;}
+.login ul li{margin:5px 0; padding:0; display:inline; list-style:none; float:left; }
+
+.log-left{width:102px; float:left; font-size:15px;}
+.log-right{width:190px; float:left;}
+
+.log-right input[type="text"]{background:url(../images/input.jpg) repeat-x; border:1px solid #d4d5c4; padding:5px 4px; width:100%; border-radius:12px;}
+.log-right input[type="password"]{background:url(../images/input.jpg) repeat-x; border:1px solid #d4d5c4; padding:5px 4px; width:100%; border-radius:12px;}
+
+.log-right input[type="submit"]{background:url(../images/btn.jpg) repeat-x; border:none; cursor:pointer; color:#FFF; font-size:14px; padding:4px 14px; border-radius:12px;}
+
+
+.log-right input[type="text"]:focus{background:#dbddbc;}
+.log-right input[type="password"]:focus{background:#dbddbc;}
+.log-right a{text-decoration:none; color:#3998AD; font-size:11px; font-weight:bold;}
+
+.copyright{padding:25px 0; text-align:center; font-size:12px;}
+
+
+
+
+
+
+
+
+

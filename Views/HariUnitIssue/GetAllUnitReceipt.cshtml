@@ -1,0 +1,71 @@
+﻿@model XenERP.Models.UnitIssueModelView
+@{
+    Layout = null;
+    var slNo = 0;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Bird Type</title>
+
+
+
+
+</head>
+
+<body>
+
+    <div class="row">
+
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+
+                <div class="x_content">
+
+                    <table id="datatable-fixed-header" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Serial No</th>
+                                <th>Challan No</th>
+                                <th>Date</th>
+                                <th>Total Quantity</th>
+                                <th>Issued Quantity</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+                            @foreach (var item in Model.recDet)
+                            {
+                                slNo = slNo + 1;
+                                <tr>
+                                    <td>
+                                        @slNo
+
+                                    </td>
+                                    <td>@item.ChallanNo</td>
+                                    <td>@item.ReceiptDate</td>
+
+                                    <td>
+                                        @(item.TotalQuantity + " " + item.IssuUnit)
+                                    </td>
+                                    <td>@(item.IssuedQuantity + " " + item.IssuUnit)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+
+</html>

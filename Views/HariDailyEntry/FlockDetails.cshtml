@@ -1,0 +1,356 @@
+﻿@model XenERP.Models.HariDailyEntryModelView
+@{
+    Layout = null;
+    var slNo = 0;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Bird Type</title>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#TodayMortality").on('keyup', function () {
+                var todayMortality = $(this).val() || 0;
+                var totalReceiveBird = $("#ReceivedBird").val() || 0;
+                var totalMortality = parseFloat($("#TotalMortality").val()) || 0;
+                var fixedMortalityFixed = parseFloat($("#TotalMortalityFixed").val()) || 0;
+                var grandTotalMortal = parseFloat(todayMortality) + parseFloat(fixedMortalityFixed);
+                $("#TotalMortality").val(grandTotalMortal);
+                if (parseFloat(grandTotalMortal) > parseFloat(totalReceiveBird)) {
+                    $("#myModal").modal('show');
+                    $('.msg1').html('Total Mortality can not greater than Received Bird');
+                    $("#TotalMortality").val(totalMortality);
+                    $(this).val(0);
+                    return false;
+                }
+            });
+
+            $("#AvgBodyWeight").on('keyup', function () {
+                var avgwt = $(this).val() || 0;
+                var totalReceiveBird = parseFloat($("#ReceivedBird").val()) || 0;
+                var totalMortality = parseFloat($("#TotalMortality").val()) || 0;
+                var todayMorta = parseFloat($("#TodayMortality").val()) || 0;
+                var presentBird = parseFloat(totalReceiveBird) - (parseFloat(todayMorta) + parseFloat(totalMortality));
+
+                var totalWt = parseFloat(presentBird) * parseFloat(avgwt);
+                $("#TotalBodyWeight").val(totalWt.toFixed(2));
+            });
+
+            $(".lftquan").on('keyup', function () {
+                var comptd = $(this).closest('td');
+                var comptr = comptd.closest('tr');
+                var Lstquantity = comptr.find('.lstquan').val();
+                var proCat = comptr.find('.procat').val();
+                var leftQuantity = $(this).val();
+
+
+                if (parseFloat(leftQuantity) > parseFloat(Lstquantity)) {
+                    $("#myModal").modal('show');
+                    $('.msg1').html('Left quantity can not greater than Last quantity');
+                    $(this).val(0);
+                    comptr.find('.consQuan').val(0);
+                    return false;
+                }
+
+                var consumeQuantity = (parseFloat(Lstquantity) - parseFloat(leftQuantity)) || 0;
+
+                comptr.find('.consQuan').val(consumeQuantity);
+
+                if (proCat == 4) {
+                    var totalConsumed = $("#TotalFeedConsumedFixed").val();
+                    var consu = 0;
+                    $(".consQuan").each(function () {
+                        var comptd1 = $(this).closest('td');
+                        var comptr1 = comptd1.closest('tr');
+                        var proCat1 = comptr1.find('.procat').val();
+                        if (proCat1 == 4) {
+                            var quan = parseFloat($(this).val());
+                            consu = parseFloat(consu + quan);
+
+                        }
+
+                    });
+                    var totalCons = (parseFloat(totalConsumed) + parseFloat(consu)) || 0;
+                    $("#TotalFeedConsumed").val(totalCons);
+                }
+
+            });
+
+
+          
+         
+
+
+            $("#btnsave").on('click', function () {
+
+                var avgWt = $("#AvgBodyWeight").val();
+               
+                var birdAge = $("#AgeOfBird").val();
+                if (birdAge == 7 || birdAge == 14 || birdAge == 21 || birdAge == 28 || birdAge == 35 || birdAge == 42 || birdAge == 48) {
+                    if (avgWt == '') {
+                        $("#myModal").modal('show');
+                        $('.msg1').html('Please enter Avg. Body Weight ');
+                        return false;
+                    }
+                }
+
+               
+                $("#loading").fadeIn();
+            });
+
+        });
+    </script>
+
+
+</head>
+
+<body>
+    <div id="loading">
+        <div id="loadingcontent">
+            <p id="loadingspinner">
+                <img src="~/Images/newLoad.gif" />
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissable">
+                <i class="fa fa-check"></i>
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                @ViewBag.Message
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger alert-dismissable">
+                <i class="fa fa-ban"></i>
+                <button class="close" aria-hidden="true" data-dismiss="alert" type="button">×</button>
+                <b>Error!</b>
+                @ViewBag.Error
+            </div>
+        }
+        <!-- Horizontal Form -->
+        @Html.HiddenFor(m => m.DateOfEntry)
+        @Html.HiddenFor(m => m.LinesmanId)
+        @Html.HiddenFor(m => m.FarmerId)
+        @Html.HiddenFor(m => m.TotalMortalityFixed)
+        @Html.HiddenFor(m => m.TotalFeedConsumedFixed)
+        <div class="" style="text-align:center">
+            <h4 class=""><b style="color:green">ENTRY DATE : @Model.DateOfEntry</b></h4>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="col-md-6">
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Received Bird :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.ReceivedBird, new { @class = "form-control", @readonly = "readonly" })
+
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Last Opening Bird :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.LastOpeningBird, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Total Mortality :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.TotalMortality, new { @class = "form-control", @style = "color:red", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Total Feed Received :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.TotalFeedReceived, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    @*<div class="form-group">
+                            <label class="col-sm-6 control-label">Total Excess Bird :</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(m => m.TotalExcessBird, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>*@
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Starting Date :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.FlockStartingDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Age Of Bird (In Day)  :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.AgeOfBird, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-6 control-label">Total Feed Consumed :</label>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(m => m.TotalFeedConsumed, new { @class = "form-control", @style = "color:red", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="" style="text-align:center">
+                <h4 class=""><b style="color:red">Mortality & Excess Bird Entry</b></h4>
+            </div>
+            <div class="box-body">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Today's Mortality :</label>
+                        @Html.TextBoxFor(m => m.TodayMortality, new { @class = "form-control" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reason For Death :</label>
+                        @Html.TextAreaFor(m => m.ReasonforDeath, new { @class = "form-control" })
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+
+                    @*<div class="form-group">
+                            <label>Today's Excess Bird :</label>
+                            @Html.TextBoxFor(m => m.TodayExcessBird, new { @class = "form-control" })
+                        </div>*@
+
+
+                    <div class="form-group">
+                        <label>Avg Body Weight (In KG) :</label>
+                        @Html.TextBoxFor(m => m.AvgBodyWeight, new { @class = "form-control" })
+                    </div>
+
+                    <div class="form-group">
+                        <label>Total body weight at the time of closing (IN KG) :</label>
+                        @Html.TextBoxFor(m => m.TotalBodyWeight, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @if (Model.FedMedList!=null)
+    {
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header" style="text-align:center">
+                        <h4 class=""><b>FEED & MEDICINE ENTRY</b></h4>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table id="datatable-fixed-header" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Feed/Medicine</th>
+                                    <th>Received Quantity</th>
+                                    <th>Last Opening Quantity</th>
+                                    <th>Left Quantity</th>
+                                    <th>Consumed Quantity</th>
+                                    <th>UOM</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody>
+                                @if (Model.FedMedList.Count() > 0)
+                                {
+                                    for (int i = 0; i < Model.FedMedList.Count(); i++)
+                                    {
+                                        slNo = slNo + 1;
+
+                                        <tr>
+                                            @if (Model.FedMedList[i].ProductCategory == 4)
+                                            {
+                                                <td style="color:deeppink">
+                                                    @Model.FedMedList[i].ProductName
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="color:indigo">
+                                                    @Model.FedMedList[i].ProductName
+                                                </td>
+                                            }
+                                            <td>
+                                                @Model.FedMedList[i].ReceiveQuantity
+                                                @Html.HiddenFor(m => Model.FedMedList[i].ReceiveQuantity, new { @class = "recquan" })
+                                            </td>
+                                            <td>
+                                                @Model.FedMedList[i].LstOpQnty
+                                                @Html.HiddenFor(m => Model.FedMedList[i].LstOpQnty, new { @class = "lstquan" })
+                                                @Html.HiddenFor(m => Model.FedMedList[i].ProductName)
+                                                @Html.HiddenFor(m => Model.FedMedList[i].ProductId)
+                                                @Html.HiddenFor(m => Model.FedMedList[i].ProductSize)
+                                                @Html.HiddenFor(m => Model.FedMedList[i].ReceivedId)
+                                                @Html.HiddenFor(m => Model.FedMedList[i].ProductCategory, new { @class = "procat" })
+                                            </td>
+
+                                            <td style="color:green">
+                                                @Html.TextBoxFor(m => Model.FedMedList[i].LeftQuantity, new { @class = "form-control lftquan" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(m => Model.FedMedList[i].ConsumedQuantity, new { @class = "form-control consQuan", @readonly = "readonly" })
+                                            </td>
+                                            <td>@Model.FedMedList[i].Unit</td>
+                                        </tr>
+
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="text-align:center">
+                        <input name="" type="submit" id="btnsave" value="Submit" class="btn btn-danger" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+</body>
+
+
+</html>

@@ -1,0 +1,204 @@
+﻿@model IEnumerable<XenERP.Models.SalesInvoiceModelView>
+@{
+
+    var SlNo = 0;
+    decimal totalKgs = 0;
+    decimal Bags = 0;
+    decimal netBags = 0;
+    decimal netKgs = 0;
+    decimal netAmount = 0;
+    Layout = null;
+
+}
+
+
+<!--for graph   -->
+<!--for graph   -->
+
+
+<aside class="right-side">
+
+
+
+    <div class="box box-primary">
+
+
+        <div class="box-body table-responsive divContent">
+
+            <table id="example1" width="100%" class="table table-bordered table-striped dataTable" aria-describedby="example1_info">
+                <thead>
+                    <tr>
+                        <td colspan="8">
+
+                            @if (ViewBag.branchname != null)
+                            {
+                                <b>@ViewBag.Name (@ViewBag.branchname) </b>
+                            }
+                            else
+                            {
+                                @ViewBag.Name
+                            }
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td colspan="8">
+                            <b>Customer Sales By Stock</b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="8">
+                            @try
+                            {
+
+                                if (ViewBag.from != null)
+                                {
+                                    @Html.Raw("From:")@String.Format("{0:dd/MM/yyyy}", ViewBag.from)     @Html.Raw("&nbsp;&nbsp;")     @Html.Raw("")             @Html.Raw("To:")@String.Format("{0:dd/MM/yyyy}", ViewBag.to);
+
+                                }
+                            }
+                            catch
+                            {
+                            }
+                        </td>
+                    </tr>
+
+                    <tr>
+
+                        <th>
+                            SlNo.
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Bill No.
+                        </th>
+
+                        <th>
+                            Party Name
+                        </th>
+
+                        <th>
+                            Bags
+                        </th>
+
+                        <th>
+                            Kg/Bags
+                        </th>
+                        <th>
+                            Total Kgs
+                        </th>
+                        <th>
+                            Total Amount
+                        </th>
+
+
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        SlNo = SlNo + 1;
+
+                        totalKgs = Math.Round(item.TaxProduct, 3);
+                        Bags = Math.Round(item.SubTotal, 0);
+                        netBags += Bags;
+                        netKgs += totalKgs;
+
+                        netAmount += item.TotalAddAmount;
+
+
+                        <tr>
+
+                            <td>
+                                @SlNo
+                            </td>
+                            <td>
+
+                                @*                   @String.Format(@Session["DateFormatUpper"].ToString(), item.Date)*@
+
+                                @String.Format("{0:dd/MM/yyyy}", item.CreatedOn)
+                            </td>
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.NO)
+
+                            </td>
+
+
+                            <td align="left">
+                                @Html.DisplayFor(modelItem => item.DeliveryName)
+
+                            </td>
+
+                            <td align="right">
+                                @Bags
+                            </td>
+                            <td align="right">
+
+                                @Math.Round(item.TaxOther, 2)
+                            </td>
+                            <td align="right">
+
+                                @Math.Round(item.TaxProduct, 2)
+                            </td>
+                            <td align="right">
+                                @Math.Round(item.TotalAddAmount, 2)
+
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+
+                        <td></td>
+                        <td>
+
+                            Grand Total
+
+
+                        </td>
+
+
+
+                        <td align="center"></td>
+                        <td align="center"></td>
+                        <td align="right">
+                            @netBags
+
+                        </td>
+                        <td align="center"></td>
+                        <td align="right">
+                            @Math.Round(netKgs, 2)
+
+                        </td>
+                        <td align="right">
+                            @Math.Round(netAmount, 2)
+
+                        </td>
+
+
+
+
+                    </tr>
+                </tfoot>
+
+            </table>
+
+
+
+
+        </div>
+
+    </div>
+</aside>
